@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  agri-farm-server:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+    command: npm run start:prod
+    restart: always
+
+  postgres:
+    image: postgres:14
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data
