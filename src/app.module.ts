@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { UsersModule } from './modules/users/users.module';
+import { LandsModule } from './modules/lands/lands.module';
+import { LoggerModule } from './common/logger/logger.module';
 
 @Module({
   imports: [
@@ -10,8 +11,9 @@ import { AppService } from './app.service';
       envFilePath:
         process.env.NODE_ENV === 'development' ? '.env.development' : '.env',
     }),
+    UsersModule,
+    LandsModule,
+    LoggerModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
