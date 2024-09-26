@@ -12,7 +12,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ConfigService } from '@nestjs/config';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { LoggerService } from 'src/common/logger/logger.service';
+import { LoggerService } from 'src/modules/logger/logger.service';
 
 @ApiTags('users')
 @Controller('users')
