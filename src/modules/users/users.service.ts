@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
 import { LoggerService } from '../logger/logger.service';
 import { RedisService } from 'src/caches/redis/redis.service';
+import { MailService } from 'src/mails/mail.service';
 
 @Injectable()
 export class UsersService {
@@ -14,6 +15,7 @@ export class UsersService {
     private readonly userEntity: Repository<User>,
     private readonly loggerService: LoggerService,
     private readonly redisService: RedisService,
+    private readonly mailService: MailService,
   ) {}
 
   /**
@@ -23,6 +25,7 @@ export class UsersService {
    * 1. Check email is already exists
    * 2. Hash the password
    * 3. Create a new user
+   * 4. Send a welcome email
    * @returns
    */
   async create(createUserDto: CreateUserDto) {
@@ -44,8 +47,8 @@ export class UsersService {
     });
     // Log the user creation
     this.loggerService.log(`New User created with email: ${new_user.email}`);
-    // Save the user to Redis
-    await this.redisService.set(new_user.email, JSON.stringify(new_user));
+    // Send a welcome email
+    this.mailService.sendMail(new_user.email, new_user.full_name);
     return new_user;
   }
 }

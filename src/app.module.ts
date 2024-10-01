@@ -13,7 +13,8 @@ import { MessagesModule } from './modules/messages/messages.module';
 import { ProcessesModule } from './modules/processes/processes.module';
 import { AuthsModule } from './modules/auths/auths.module';
 import { RedisModule } from './caches/redis/redis.module';
-import { MailsModule } from './mails/mails.module';
+import { MailModule } from './mails/mail.module';
+import { ReportsModule } from './modules/reports/reports.module';
 
 @Module({
   imports: [
@@ -37,7 +38,8 @@ import { MailsModule } from './mails/mails.module';
     ProcessesModule,
     AuthsModule,
     RedisModule,
-    MailsModule,
+    MailModule,
+    ReportsModule,
   ],
 })
 export class AppModule {}

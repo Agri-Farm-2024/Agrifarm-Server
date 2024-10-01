@@ -21,6 +21,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/cache-manager": "^2.2.2",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",
@@ -30,6 +31,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.4.2",
     "@nestjs/typeorm": "^10.0.2",
+    "@nestjs/websockets": "^10.4.4",
     "bcryptjs": "^2.4.3",
     "cache-manager": "^5.7.6",
     "class-transformer": "^0.5.1",
@@ -38,11 +40,13 @@
     "install": "^0.13.0",
     "ioredis": "^5.4.1",
     "nest-winston": "^1.9.7",
+    "nodemailer": "^6.9.15",
     "npm": "^10.8.3",
     "pg": "^8.13.0",
     "redis": "^4.7.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
+    "socket.io": "^4.8.0",
     "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.20",
     "winston-daily-rotate-file": "^5.0.0"
