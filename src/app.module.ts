@@ -10,6 +10,10 @@ import { ServicesModule } from './modules/services/services.module';
 import { DinariesModule } from './modules/dinaries/dinaries.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { MessagesModule } from './modules/messages/messages.module';
+import { ProcessesModule } from './modules/processes/processes.module';
+import { AuthsModule } from './modules/auths/auths.module';
+import { RedisModule } from './caches/redis/redis.module';
+import { MailsModule } from './mails/mails.module';
 
 @Module({
   imports: [
@@ -30,6 +34,10 @@ import { MessagesModule } from './modules/messages/messages.module';
     DinariesModule,
     NotificationsModule,
     MessagesModule,
+    ProcessesModule,
+    AuthsModule,
+    RedisModule,
+    MailsModule,
   ],
 })
 export class AppModule {}

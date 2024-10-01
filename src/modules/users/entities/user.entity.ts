@@ -1,16 +1,13 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
-import { IUserEntity } from '../interfaces/IUserEntity.interface';
+import { Entity, Column } from 'typeorm';
+import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
+import { UserRole } from 'src/utils/roles/user-role.enum';
 
 @Entity('users') // Maps this class to the 'users' table in the database
-export class User implements IUserEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class User extends AbstractEntity {
+  constructor(user: Partial<User>) {
+    super();
+    Object.assign(this, user);
+  }
 
   @Column({ unique: true })
   email: string;
@@ -21,15 +18,19 @@ export class User implements IUserEntity {
   @Column()
   full_name: string;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'date', nullable: true })
   dob: Date;
+
+  @Column({ nullable: true })
+  avatar_url: string;
 
   @Column({ default: true })
   isActive: boolean;
 
-  @CreateDateColumn({ type: 'timestamptz' }) // PostgreSQL supports the 'timestamptz' type
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamptz' })
-  updatedAt: Date;
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.land_renter,
+  })
+  role: UserRole;
 }
