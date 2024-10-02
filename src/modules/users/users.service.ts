@@ -4,12 +4,13 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
-import { LoggerService } from '../logger/logger.service';
+import { LoggerService } from '../../logger/logger.service';
 import { RedisService } from 'src/caches/redis/redis.service';
 import { MailService } from 'src/mails/mail.service';
+import { IUserService } from './interfaces/IUserService.interface';
 
 @Injectable()
-export class UsersService {
+export class UsersService implements IUserService {
   constructor(
     @InjectRepository(User)
     private readonly userEntity: Repository<User>,
@@ -17,6 +18,14 @@ export class UsersService {
     private readonly redisService: RedisService,
     private readonly mailService: MailService,
   ) {}
+
+  findUserByEmail(email: string) {
+    return this.userEntity.findOne({
+      where: {
+        email: email,
+      },
+    });
+  }
 
   /**
    *

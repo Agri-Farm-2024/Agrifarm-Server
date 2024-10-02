@@ -12,7 +12,7 @@ import { CreateLandDto } from './dto/create-land.dto';
 import { UpdateLandDto } from './dto/update-land.dto';
 import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags('lands')
+@ApiTags('Land')
 @Controller('lands')
 export class LandsController {
   constructor(private readonly landsService: LandsService) {}

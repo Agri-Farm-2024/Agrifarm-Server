@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './modules/users/users.module';
 import { LandsModule } from './modules/lands/lands.module';
-import { LoggerModule } from './modules/logger/logger.module';
+import { LoggerModule } from './logger/logger.module';
 import { DatabaseModule } from './database/postgres/database.module';
 import { RequestsModule } from './modules/requests/requests.module';
 import { TasksModule } from './modules/tasks/tasks.module';
