@@ -21,6 +21,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         password: this.configService.get('REDIS_PASSWORD'),
         db: this.configService.get('REDIS_DB'),
       });
+      // [Redis Service] Connect to Redis
       Logger.log('Connected to Redis');
     } catch (error) {
       Logger.error('Failed to connect to Redis', error);

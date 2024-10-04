@@ -15,6 +15,7 @@ import { AuthsModule } from './modules/auths/auths.module';
 import { RedisModule } from './caches/redis/redis.module';
 import { MailModule } from './mails/mail.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { PlantsModule } from './modules/plants/plants.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { ReportsModule } from './modules/reports/reports.module';
     RedisModule,
     MailModule,
     ReportsModule,
+    PlantsModule,
   ],
 })
 export class AppModule {}
