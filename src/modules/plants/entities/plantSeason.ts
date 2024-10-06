@@ -1,7 +1,7 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Plant } from './plant.entity';
-import { PlantSeasonType } from 'src/utils/roles/plantSeason-type.enum';
+import { PlantSeasonType } from 'src/utils/types/plantSeason-type.enum';
 
 @Entity('plants_season')
 export class PlantSeason extends AbstractEntity {
