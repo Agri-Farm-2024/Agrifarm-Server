@@ -2,6 +2,8 @@ import { Entity, Column, OneToMany } from 'typeorm';
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { UserRole } from 'src/utils/roles/user-role.enum';
 import { Land } from 'src/modules/lands/entities/land.entity';
+import { DinaryStage } from 'src/modules/dinaries/entities/dinaryStage.entity';
+import { Notification } from 'src/modules/notifications/entities/notification.entity';
 
 @Entity('users') // Maps this class to the 'users' table in the database
 export class User extends AbstractEntity {
@@ -36,8 +38,15 @@ export class User extends AbstractEntity {
   role: UserRole;
 
   @OneToMany(() => Land, (land) => land.staff)
-  plants_by_staff: Land[];
+  Land_by_staff: Land[];
 
   @OneToMany(() => Land, (land) => land.land_renter)
-  plants_by_land_renter: Land[];
+  Land_by_land_renter: Land[];
+
+  @OneToMany(() => DinaryStage, (dinaryStage) => dinaryStage.writter)
+  DinaryStage_by_writter: DinaryStage[];
+
+  @OneToMany(() => Notification, (notification) => notification.user)
+  notifications: Notification[];
 }
+
