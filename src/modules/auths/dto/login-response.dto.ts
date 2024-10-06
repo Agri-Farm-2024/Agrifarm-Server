@@ -1,13 +1,10 @@
+import { User } from 'src/modules/users/entities/user.entity';
+
 export class LoginResponseDTO {
-  user: {
-    id: string;
-    email: string;
-    full_name: string;
-    created_at: Date;
-    updated_at: Date;
-  };
+  user: User;
   token: {
-    access_token: string;
-    token_type: string;
+    accessToken: string;
+    refreshToken: string;
+    publicKey: string;
   };
 }
