@@ -19,8 +19,8 @@ export class UsersService implements IUserService {
     private readonly mailService: MailService,
   ) {}
 
-  findUserByEmail(email: string) {
-    return this.userEntity.findOne({
+  async findUserByEmail(email: string) {
+    return await this.userEntity.findOne({
       where: {
         email: email,
       },
@@ -28,7 +28,7 @@ export class UsersService implements IUserService {
   }
 
   /**
-   *
+   *@function create
    * @param createUserDto
    * @logic
    * 1. Check email is already exists
@@ -59,5 +59,30 @@ export class UsersService implements IUserService {
     // Send a welcome email
     this.mailService.sendMail(new_user.email, new_user.full_name);
     return new_user;
+  }
+
+  /**
+   *@function getAllUsers
+   * @returns
+   */
+
+  async getAllUsers(page_size: number, page_index: number): Promise<any> {
+    // Get all users
+    const [users, total_count] = await Promise.all([
+      this.userEntity.find({
+        skip: (page_index - 1) * page_size,
+        take: page_size,
+        select: ['id', 'full_name', 'email', 'created_at'],
+      }),
+      this.userEntity.count({}),
+    ]);
+    // get total page
+    const total_page = Math.ceil(total_count / page_size);
+    return {
+      users,
+      total_page,
+      page_index,
+      page_size,
+    };
   }
 }

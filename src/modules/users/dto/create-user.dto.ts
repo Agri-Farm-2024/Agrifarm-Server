@@ -52,5 +52,6 @@ export class CreateUserDto {
     example: UserRole.land_renter,
     description: 'The role of the user',
   })
-  role: UserRole;
+  @IsOptional()
+  role: number;
 }

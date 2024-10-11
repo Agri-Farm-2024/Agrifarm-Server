@@ -10,11 +10,11 @@ export class Dinary extends AbstractEntity {
     Object.assign(this, dinary);
   }
 
-  @ManyToOne(() => User, (user) => user.Land_by_land_renter, {
+  @ManyToOne(() => User, (user) => user.dinary_by_land_renter, {
     nullable: true,
   })
   @JoinColumn({ name: 'land_renter_id' })
-  land_renter: User;
+  land_renter_id: User;
 
   @OneToMany(() => DinaryStage, (dinaryStage) => dinaryStage.dinary)
   dinaries_stage: DinaryStage[];

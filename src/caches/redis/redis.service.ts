@@ -22,7 +22,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         db: this.configService.get('REDIS_DB'),
       });
       // [Redis Service] Connect to Redis
-      Logger.log('Connected to Redis');
+      Logger.log('Connected to Redis', `Redis Service`);
     } catch (error) {
       Logger.error('Failed to connect to Redis', error);
     }

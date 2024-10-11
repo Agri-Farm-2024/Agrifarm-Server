@@ -5,6 +5,9 @@ import { Land } from 'src/modules/lands/entities/land.entity';
 import { Request } from 'src/modules/requests/entities/request.entity';
 import { DinaryStage } from 'src/modules/dinaries/entities/dinaryStage.entity';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
+import { UserStatus } from 'src/utils/status/user-status.enum';
+import { Task } from 'src/modules/tasks/entities/task.entity';
+import { Dinary } from 'src/modules/dinaries/entities/dinary.entity';
 
 @Entity('users') // Maps this class to the 'users' table in the database
 export class User extends AbstractEntity {
@@ -28,8 +31,12 @@ export class User extends AbstractEntity {
   @Column({ nullable: true })
   avatar_url: string;
 
-  @Column({ default: true })
-  isActive: boolean;
+  @Column({
+    type: 'enum',
+    enum: UserStatus,
+    default: UserStatus.pending,
+  })
+  status: UserStatus;
 
   @Column({
     type: 'enum',
@@ -39,19 +46,26 @@ export class User extends AbstractEntity {
   role: UserRole;
 
   @OneToMany(() => Land, (land) => land.staff)
-  Land_by_staff: Land[];
+  land_by_staff: Land[];
 
   @OneToMany(() => Land, (land) => land.land_renter)
-  plants_by_land_renter: Land[];
+  land_by_land_renter: Land[];
 
   @OneToMany(() => Request, (request) => request.land_renter)
   request_by_land_renter: Request[];
-  Land_by_land_renter: Land[];
+
+  @OneToMany(() => Dinary, (dinary) => dinary.land_renter_id)
+  dinary_by_land_renter: DinaryStage[];
 
   @OneToMany(() => DinaryStage, (dinaryStage) => dinaryStage.writter)
-  DinaryStage_by_writter: DinaryStage[];
+  dinary_stage_by_writer: DinaryStage[];
 
   @OneToMany(() => Notification, (notification) => notification.user)
   notifications: Notification[];
-}
 
+  @OneToMany(() => Task, (task) => task.assigned_by_id)
+  task_assigned_by: Task[];
+
+  @OneToMany(() => Task, (task) => task.assigned_to_id)
+  task_assigned_to: Task[];
+}

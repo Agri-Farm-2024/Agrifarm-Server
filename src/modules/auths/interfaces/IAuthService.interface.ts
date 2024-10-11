@@ -5,4 +5,6 @@ export interface IAuthService {
   login(data: LoginDTO, typeLogin: string): Promise<any>;
 
   loginWIthEmailAndPassword(data: LoginDTO): Promise<LoginResponseDTO>;
+
+  // getAccessToken(refreshToken: string): Promise<any>;
 }

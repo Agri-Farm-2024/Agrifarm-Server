@@ -17,7 +17,7 @@ export class DinaryStage extends AbstractEntity {
   @JoinColumn({ name: 'dinary_id' })
   dinary: Dinary[];
 
-  @ManyToOne(() => User, (user) => user.DinaryStage_by_writter, {
+  @ManyToOne(() => User, (user) => user.dinary_stage_by_writer, {
     nullable: true,
   })
   @JoinColumn({ name: 'writer_id' })
@@ -26,6 +26,11 @@ export class DinaryStage extends AbstractEntity {
   @Column()
   content: string;
 
+  @Column({
+    default: 0,
+  })
+  numbered_order: number;
+
   @OneToMany(() => DinaryImage, (dinaryImage) => dinaryImage.dinary_image_id)
-    dinaries_image: DinaryImage[];
+  dinaries_image: DinaryImage[];
 }

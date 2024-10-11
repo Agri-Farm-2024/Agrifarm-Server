@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { IAuthService } from './interfaces/IAuthService.interface';
 import { LoginDTO } from './dto/login.dto';
 import { UsersService } from '../users/users.service';
@@ -7,6 +12,7 @@ import { JwtService } from '@nestjs/jwt';
 import { generateKeyPairSync } from 'crypto';
 import * as bcrypt from 'bcrypt';
 import { RedisService } from 'src/caches/redis/redis.service';
+import { TokenStatus } from 'src/utils/status/token-status.enum';
 
 @Injectable()
 export class AuthsService implements IAuthService {
@@ -16,9 +22,18 @@ export class AuthsService implements IAuthService {
     private readonly redisService: RedisService,
   ) {}
 
+  /**
+   *
+   * @param data
+   * @param typeLogin
+   * 1. Check the login type
+   * 2. Call the login strategy
+   * @returns
+   */
+
   async login(data: LoginDTO, typeLogin: string): Promise<any> {
     const loginStrategy = {
-      email: this.loginWIthEmailAndPassword.bind(this),
+      emailAndPassword: this.loginWIthEmailAndPassword.bind(this),
     };
 
     if (!loginStrategy[typeLogin]) {
@@ -36,39 +51,51 @@ export class AuthsService implements IAuthService {
    * 2. Check the password
    * 3. Generate a token
    * 4. Save the token to the redis
-   * 5. Return the token
+   * 5. Return
    */
   async loginWIthEmailAndPassword(data: LoginDTO): Promise<LoginResponseDTO> {
-    // 1. Find the user by email
-    const user = await this.userService.findUserByEmail(data.email);
+    try {
+      // 1. Find the user by email
+      const user = await this.userService.findUserByEmail(data.email);
 
-    if (!user) {
-      throw new BadRequestException('User not found');
-    }
-    // 2. Check the password
-    const isPasswordMatch = await bcrypt.compareSync(
-      data.password,
-      user.password,
-    );
+      Logger.log(JSON.stringify(user), `User found`);
 
-    if (!isPasswordMatch) {
-      throw new BadRequestException('Invalid password');
+      if (!user) {
+        throw new BadRequestException('User not found');
+      }
+      // 2. Check the password
+      const isPasswordMatch = await bcrypt.compareSync(
+        data.password,
+        user.password,
+      );
+
+      if (!isPasswordMatch) {
+        throw new BadRequestException('Invalid password');
+      }
+
+      Logger.log(`Password match`);
+      // 3. Generate a token
+      const payload = {
+        id: user.id,
+        email: user.email,
+        full_name: user.full_name,
+        role: user.role,
+      };
+      const token = await this.generateToken(payload);
+      // 4. Save the token to the redis
+      // await this.redisService.set(user.id, token.refreshToken);
+      return {
+        user: user,
+        token,
+      };
+    } catch (error) {
+      throw error;
     }
-    // 3. Generate a token
-    const payload = {
-      id: user.id,
-      email: user.email,
-      full_name: user.full_name,
-      role: user.role,
-    };
-    const token = await this.generateToken(payload);
-    // 4. Save the token to the redis
-    // await this.redisService.set(user.id, token.refreshToken);
-    return {
-      user: user,
-      token,
-    };
   }
+
+  // async getAccessToken(refreshToken: string): Promise<any> {
+  //   return 'getAccessToken';
+  // }
 
   /**
    *
@@ -78,39 +105,53 @@ export class AuthsService implements IAuthService {
    * 2. Create a token with the payload and the private key
    */
 
-  async generateToken(payload: any): Promise<any> {
-    // Create 2 public and private keys with crypto
-    const { publicKey, privateKey } = generateKeyPairSync('rsa', {
-      modulusLength: 4096,
-      publicKeyEncoding: {
-        type: 'spki',
-        format: 'pem',
-      },
-      privateKeyEncoding: {
-        type: 'pkcs8',
-        format: 'pem',
-      },
-    });
-    // Create tokens with the payload and the private key
-    const refreshToken = this.jwtService.sign(payload, {
-      secret: privateKey,
-    });
+  private async generateToken(payload: any): Promise<any> {
+    try {
+      // Create 2 public and private keys with crypto
+      const { publicKey, privateKey } = generateKeyPairSync('rsa', {
+        modulusLength: 4096,
+        publicKeyEncoding: {
+          type: 'spki',
+          format: 'pem',
+        },
+        privateKeyEncoding: {
+          type: 'pkcs8',
+          format: 'pem',
+        },
+      });
+      // Create tokens with the payload and the private key
+      const refreshToken = this.jwtService.sign(payload, {
+        secret: privateKey,
+        algorithm: 'RS256',
+      });
 
-    const accessToken = this.jwtService.sign(payload, {
-      secret: privateKey,
-      expiresIn: '1d',
-    });
-    // Verify the token with the public key
-    const verifyToken = this.jwtService.verify(accessToken, {
-      secret: publicKey,
-    });
+      const accessToken = this.jwtService.sign(payload, {
+        secret: privateKey,
+        expiresIn: '1d',
+        algorithm: 'RS256',
+      });
+      // Verify the token with the public key
+      const verifyToken = await this.jwtService.verifyAsync(accessToken, {
+        secret: publicKey,
+      });
 
-    Logger.log(`Verify token: ${JSON.stringify(verifyToken)}`);
+      Logger.log(`Verify token: ${JSON.stringify(verifyToken)}`);
+      //Save to redis
+      await this.redisService.set(
+        `token:${refreshToken}`,
+        JSON.stringify({
+          user_id: payload.id,
+          publicKey: publicKey,
+          status: TokenStatus.valid,
+        }),
+      );
 
-    return {
-      accessToken,
-      refreshToken,
-      publicKey,
-    };
+      return {
+        accessToken,
+        refreshToken,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 }
