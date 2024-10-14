@@ -1,5 +1,6 @@
 import { AbstractEntity } from "src/database/postgres/entities/abstract.entity";
-import { Entity, Column, ManyToOne, JoinColumn, } from "typeorm";
+import { Entity, Column, ManyToOne, JoinColumn, OneToMany, } from "typeorm";
+import { ServiceSpecific } from "./serviceSpecific.entity";
 
 @Entity('services')
 export class Service extends AbstractEntity {
@@ -13,6 +14,9 @@ export class Service extends AbstractEntity {
 
   @Column()
   price: number;
+
+  @OneToMany(() => ServiceSpecific, (serviceSpecific) => serviceSpecific.service_id)
+  service_specific: ServiceSpecific[];
 
   
 }
