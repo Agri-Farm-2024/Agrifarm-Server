@@ -93,10 +93,6 @@ export class AuthsService implements IAuthService {
     }
   }
 
-  // async getAccessToken(refreshToken: string): Promise<any> {
-  //   return 'getAccessToken';
-  // }
-
   /**
    *
    * @param payload

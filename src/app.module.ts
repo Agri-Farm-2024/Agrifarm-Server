@@ -16,6 +16,11 @@ import { MailModule } from './mails/mail.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { PlantsModule } from './modules/plants/plants.module';
 import { ChannelsModule } from './modules/channels/channels.module';
+import { BookingsModule } from './modules/bookings/bookings.module';
+import { OrdersModule } from './modules/orders/orders.module';
+import { MaterialsModule } from './modules/materials/materials.module';
+import { TransactionsModule } from './modules/transactions/transactions.module';
+import { ExtendsModule } from './modules/extends/extends.module';
 
 @Module({
   imports: [
@@ -42,6 +47,11 @@ import { ChannelsModule } from './modules/channels/channels.module';
     ReportsModule,
     PlantsModule,
     ChannelsModule,
+    BookingsModule,
+    OrdersModule,
+    MaterialsModule,
+    TransactionsModule,
+    ExtendsModule,
   ],
 })
 export class AppModule {}
