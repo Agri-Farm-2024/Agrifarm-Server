@@ -8,6 +8,7 @@ import { Notification } from 'src/modules/notifications/entities/notification.en
 import { UserStatus } from 'src/utils/status/user-status.enum';
 import { Task } from 'src/modules/tasks/entities/task.entity';
 import { Dinary } from 'src/modules/dinaries/entities/dinary.entity';
+import { ServiceSpecific } from 'src/modules/services/entities/serviceSpecific.entity';
 
 @Entity('users') // Maps this class to the 'users' table in the database
 export class User extends AbstractEntity {
@@ -68,4 +69,7 @@ export class User extends AbstractEntity {
 
   @OneToMany(() => Task, (task) => task.assigned_to_id)
   task_assigned_to: Task[];
+
+  @OneToMany(() => ServiceSpecific, (serviceSpecific) => serviceSpecific.land_renter)
+  service_specific: ServiceSpecific[];
 }
