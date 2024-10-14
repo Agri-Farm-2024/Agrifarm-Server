@@ -1,6 +1,6 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
@@ -8,6 +8,7 @@ import { LoggerService } from '../../logger/logger.service';
 import { RedisService } from 'src/caches/redis/redis.service';
 import { MailService } from 'src/mails/mail.service';
 import { IUserService } from './interfaces/IUserService.interface';
+import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -66,23 +67,29 @@ export class UsersService implements IUserService {
    * @returns
    */
 
-  async getAllUsers(page_size: number, page_index: number): Promise<any> {
+  async getAllUsers(pagination: PaginationParams): Promise<any> {
     // Get all users
     const [users, total_count] = await Promise.all([
       this.userEntity.find({
-        skip: (page_index - 1) * page_size,
-        take: page_size,
+        skip: (pagination.page_index - 1) * pagination.page_size,
+        take: pagination.page_size,
         select: ['id', 'full_name', 'email', 'created_at'],
+        where: pagination.search.map((searchItem) => {
+          return {
+            [searchItem.field]: Like(`%${searchItem.value}%`),
+          };
+        }),
       }),
       this.userEntity.count({}),
     ]);
     // get total page
-    const total_page = Math.ceil(total_count / page_size);
+    const total_page = Math.ceil(total_count / pagination.page_size);
     return {
       users,
-      total_page,
-      page_index,
-      page_size,
+      pagination: {
+        ...pagination,
+        total_page,
+      },
     };
   }
 }

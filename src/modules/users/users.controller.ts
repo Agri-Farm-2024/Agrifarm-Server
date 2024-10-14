@@ -15,6 +15,11 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { Roles } from 'src/common/decorations/role.decoration';
 import { UserRole } from 'src/utils/roles/user-role.enum';
+import {
+  ApplyPaginationMetadata,
+  Pagination,
+} from 'src/common/decorations/pagination.decoration';
+import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 
 @ApiTags('users')
 @Controller('users')
@@ -29,13 +34,11 @@ export class UsersController {
     return await this.usersService.create(createUserDto);
   }
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   // @Roles(UserRole.admin, UserRole.land_renter)
+  @ApplyPaginationMetadata
   @Get()
-  async findAll(
-    @Query('page_size') page_size: number,
-    @Query('page_index') page_index: number,
-  ): Promise<any> {
-    return await this.usersService.getAllUsers(page_size, page_index);
+  async findAll(@Pagination() pagination: PaginationParams): Promise<any> {
+    return await this.usersService.getAllUsers(pagination);
   }
 }

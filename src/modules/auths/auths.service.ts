@@ -154,4 +154,32 @@ export class AuthsService implements IAuthService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  private async getAccessToken(refreshToken: string): Promise<any> {
+    const infoTokenStr = await this.redisService.get(`token:${refreshToken}`);
+    const infoToken = JSON.parse(infoTokenStr);
+    if (!infoToken) {
+      throw new BadRequestException('Refresh token is invalid');
+    }
+    if (infoToken.status !== TokenStatus.valid) {
+      if (infoToken.status === TokenStatus.logouted) {
+        throw new BadRequestException('User is logged out');
+      }
+      if (infoToken.status === TokenStatus.invalid) {
+        throw new BadRequestException('Refresh token is invalid');
+      }
+    }
+    const payload = {
+      id: infoToken.user_id,
+      email: infoToken.email,
+      full_name: infoToken.full_name,
+      role: infoToken.role,
+    };
+    const accessToken = this.jwtService.sign(payload, {
+      secret: infoToken.publicKey,
+      expiresIn: '1d',
+      algorithm: 'RS256',
+    });
+    return accessToken;
+  }
 }

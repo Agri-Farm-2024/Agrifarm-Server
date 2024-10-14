@@ -22,9 +22,11 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-
+    Logger.log(request.headers, 'Request headers');
+    const authHeader = request.headers['authorization'];
+    Logger.log(JSON.stringify(authHeader), 'Authorization header');
     // Get access token from request headers
-    const accessToken = request.headers['author'];
+    const accessToken = request.headers['authorization'];
     if (Array.isArray(accessToken)) {
       throw new UnauthorizedException('Access token is invalid');
     }

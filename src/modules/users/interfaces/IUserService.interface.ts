@@ -1,7 +1,9 @@
+import { PaginationParams } from 'src/common/decorations/types/pagination.type';
+
 export interface IUserService {
   create(createUserDto: any): any;
 
   findUserByEmail(email: string): any;
 
-  getAllUsers(page_size: number, page_index: number): Promise<any>;
+  getAllUsers(pagination: PaginationParams): Promise<any>;
 }
