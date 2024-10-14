@@ -13,18 +13,9 @@ async function bootstrap() {
       .setTitle('NestJS API')
       .setDescription('API description')
       .setVersion('1.0')
-      .addBearerAuth(
-        {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-          in: 'header',
-        },
-        'Authorization',
-      )
       .addGlobalParameters(
         {
-          name: 'Author',
+          name: 'Authorization',
           description: 'Access token',
           required: false,
           in: 'header',
