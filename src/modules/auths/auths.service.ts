@@ -148,7 +148,7 @@ export class AuthsService implements IAuthService {
    * @returns
    */
 
-  private async sendOTPRegister(email: string): Promise<any> {
+  async sendOTPRegister(email: string): Promise<any> {
     // check user is already registered
     const user = await this.userService.findUserByEmail(email);
     if (user) {
@@ -230,6 +230,32 @@ export class AuthsService implements IAuthService {
     };
   }
 
+  async getAccessToken(refreshToken: string): Promise<string> {
+    const token_exist = await this.redisService.get(`token:${refreshToken}`);
+    const token_exist_obj: InfoToken = JSON.parse(token_exist);
+
+    if (!token_exist_obj || token_exist_obj.status !== TokenStatus.valid) {
+      throw new BadRequestException('Token is invalid');
+    }
+
+    const user = await this.userService.findUserById(token_exist_obj.user_id);
+
+    const payload = {
+      id: user.id,
+      email: user.email,
+      full_name: user.full_name,
+      role: user.role,
+    };
+    // generate new access token
+    const accessToken = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_PRIVATE_KEY'),
+      expiresIn: '1d',
+      algorithm: 'RS256',
+    });
+
+    return accessToken;
+  }
+
   /**
    *@function refreshToken
    * @param payload
@@ -288,31 +314,5 @@ export class AuthsService implements IAuthService {
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
-  }
-
-  async getAccessToken(refreshToken: string): Promise<any> {
-    const token_exist = await this.redisService.get(`token:${refreshToken}`);
-    const token_exist_obj: InfoToken = JSON.parse(token_exist);
-
-    if (!token_exist_obj || token_exist_obj.status !== TokenStatus.valid) {
-      throw new BadRequestException('Token is invalid');
-    }
-
-    const user = await this.userService.findUserById(token_exist_obj.user_id);
-
-    const payload = {
-      id: user.id,
-      email: user.email,
-      full_name: user.full_name,
-      role: user.role,
-    };
-    // generate new access token
-    const accessToken = this.jwtService.sign(payload, {
-      secret: this.configService.get('JWT_PRIVATE_KEY'),
-      expiresIn: '1d',
-      algorithm: 'RS256',
-    });
-
-    return accessToken;
   }
 }

@@ -14,6 +14,7 @@ export class CreateUserDto {
     description: 'The email of the user',
   })
   @IsEmail({}, { message: 'Invalid email format' })
+  @IsNotEmpty({ message: 'Email is required' })
   email: string;
 
   @ApiProperty({
