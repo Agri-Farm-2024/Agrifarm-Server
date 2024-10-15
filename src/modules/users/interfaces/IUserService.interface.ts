@@ -6,4 +6,6 @@ export interface IUserService {
   findUserByEmail(email: string): any;
 
   getAllUsers(pagination: PaginationParams): Promise<any>;
+
+  findUserById(id: string): any;
 }

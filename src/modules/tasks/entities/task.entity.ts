@@ -16,9 +16,9 @@ export class Task extends AbstractEntity {
 
   @ManyToOne(() => User, (user) => user.task_assigned_by)
   @JoinColumn({ name: 'assigned_by_id' })
-  assigned_by_id: User;
+  assign_by: User;
 
   @ManyToOne(() => User, (user) => user.task_assigned_to)
   @JoinColumn({ name: 'assigned_to_id' })
-  assigned_to_id: User;
+  assign_to: User;
 }

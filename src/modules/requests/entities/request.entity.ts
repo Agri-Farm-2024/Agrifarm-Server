@@ -26,11 +26,11 @@ export class Request extends AbstractEntity {
   @Column({ nullable: true, type: 'timestamptz' })
   time_end: Date;
 
-  @ManyToOne(() => User, (user) => user.request_by_land_renter, {
+  @ManyToOne(() => User, (user) => user.request, {
     nullable: true,
   })
-  @JoinColumn({ name: 'land_renter_id' })
-  land_renter: User;
+  @JoinColumn({ name: 'sender_id' })
+  sender: User;
 
   @Column({
     default: RequestSupportType.direct,
