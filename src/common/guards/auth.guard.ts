@@ -11,6 +11,8 @@ import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { RedisService } from 'src/caches/redis/redis.service';
 import { IInfoToken } from 'src/modules/auths/interfaces/IInfoToken.interface';
+import { ConfigService } from '@nestjs/config';
+import { TokenStatus } from 'src/modules/auths/types/token-status.enum';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -18,45 +20,39 @@ export class AuthGuard implements CanActivate {
     private readonly jwtService: JwtService,
     private reflector: Reflector,
     private readonly redisSerivce: RedisService,
+    private readonly configService: ConfigService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    Logger.log(request.headers, 'Request headers');
-    const authHeader = request.headers['authorization'];
-    Logger.log(JSON.stringify(authHeader), 'Authorization header');
+
     // Get access token from request headers
-    const accessToken = request.headers['authorization'];
-    if (Array.isArray(accessToken)) {
-      throw new UnauthorizedException('Access token is invalid');
+    let accessToken = request.headers['authorization'];
+    if (!accessToken) {
+      throw new UnauthorizedException('Access token is missing');
     }
+    accessToken = accessToken?.split(' ')[1];
     Logger.log(accessToken, 'Access token');
 
     // Get refresh token from request headers
     const refreshToken = request.headers['refresh'];
     Logger.log(refreshToken, 'Refresh token');
 
-    // Check if access token is missing
-    if (!accessToken) {
-      throw new UnauthorizedException('Access token is missing');
-    }
-
-    // Check if refresh token is missing
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token is missing');
     }
 
     // Check if refresh token exists in Redis
     const infoTokenStr = await this.redisSerivce.get(`token:${refreshToken}`);
-    const infoToken: IInfoToken = JSON.parse(infoTokenStr);
-    if (!infoToken) {
+    const infoToken: InfoToken = JSON.parse(infoTokenStr);
+    if (!infoToken || infoToken.status !== TokenStatus.valid) {
       throw new UnauthorizedException('Refresh token is invalid');
     }
 
     // Validate the access token
     try {
       const decoded = this.jwtService.verify(accessToken, {
-        secret: infoToken.publicKey,
+        secret: this.configService.get('JWT_PUBLIC_KEY'),
       });
 
       if (decoded.id !== infoToken.user_id) {
@@ -74,6 +70,9 @@ export class AuthGuard implements CanActivate {
 
       return true;
     } catch (error) {
+      if (error instanceof ForbiddenException) {
+        throw error;
+      }
       throw new UnauthorizedException(error.message);
     }
   }

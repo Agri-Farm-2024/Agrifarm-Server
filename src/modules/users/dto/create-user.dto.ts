@@ -6,7 +6,7 @@ import {
   IsUrl,
   IsDateString,
 } from 'class-validator';
-import { UserRole } from 'src/utils/roles/user-role.enum';
+import { UserRole } from '../types/user-role.enum';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -14,6 +14,7 @@ export class CreateUserDto {
     description: 'The email of the user',
   })
   @IsEmail({}, { message: 'Invalid email format' })
+  @IsNotEmpty({ message: 'Email is required' })
   email: string;
 
   @ApiProperty({
