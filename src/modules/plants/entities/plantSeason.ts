@@ -5,22 +5,21 @@ import { PlantSeasonType } from 'src/utils/types/plantSeason-type.enum';
 
 @Entity('plants_season')
 export class PlantSeason extends AbstractEntity {
-  constructor(plant: Partial<Plant>) {
+  constructor(plantSeason: Partial<PlantSeason>) {
     super();
-    Object.assign(this, plant);
+    Object.assign(this, plantSeason);
   }
 
-  @Column()
-  name: string;
+  @Column('uuid', { name: 'plant_id', nullable: true })
+  plant_id: string;
 
-  @ManyToOne(() => Plant, (plant) => plant.plants_season, { nullable: false })
-  @JoinColumn({ name: 'plant_id' })
-  plant: Plant;
+  @Column('int')
+  month_start: number;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('int')
   price_purchase_per_kg: number;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('int')
   price_process: number;
 
   @Column({
@@ -29,4 +28,8 @@ export class PlantSeason extends AbstractEntity {
     default: PlantSeasonType.in_season,
   })
   type: PlantSeasonType;
+
+  @ManyToOne(() => Plant, (plant) => plant.plants_season, { nullable: true })
+  @JoinColumn({ name: 'plant_id' })
+  plant: Plant;
 }

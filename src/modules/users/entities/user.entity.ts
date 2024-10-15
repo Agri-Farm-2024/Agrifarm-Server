@@ -7,6 +7,9 @@ import { Notification } from 'src/modules/notifications/entities/notification.en
 import { Task } from 'src/modules/tasks/entities/task.entity';
 import { Dinary } from 'src/modules/dinaries/entities/dinary.entity';
 import { ServiceSpecific } from 'src/modules/services/entities/serviceSpecific.entity';
+import { BookindLand } from 'src/modules/bookings/entities/bookindLand.entity';
+import { Extend } from 'src/modules/extends/entities/extend.entity';
+import { Order } from 'src/modules/orders/entities/order.entity';
 import { UserStatus } from '../types/user-status.enum';
 import { UserRole } from '../types/user-role.enum';
 
@@ -78,4 +81,16 @@ export class User extends AbstractEntity {
     (serviceSpecific) => serviceSpecific.land_renter,
   )
   service_specific: ServiceSpecific[];
+
+  @OneToMany(() => BookindLand, (bookindLand) => bookindLand.land_renter_id)
+  booking_landrenter_id: BookindLand[];
+
+  @OneToMany(() => BookindLand, (bookindLand) => bookindLand.staff_id)
+  booking_staff_id: BookindLand[];
+
+  @OneToMany(() => Extend, (extend) => extend.land_renter)
+  extend_landrenter_id: Extend[];
+
+  @OneToMany(() => Order, (order) => order.land_renter)
+  orders_landrenter_id: Order[];
 }
