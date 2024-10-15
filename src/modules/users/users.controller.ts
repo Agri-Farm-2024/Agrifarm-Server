@@ -34,8 +34,8 @@ export class UsersController {
     return await this.usersService.create(createUserDto);
   }
 
-  // @UseGuards(AuthGuard)
-  // @Roles(UserRole.admin, UserRole.land_renter)
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.admin, UserRole.land_renter)
   @ApplyPaginationMetadata
   @Get()
   async findAll(@Pagination() pagination: PaginationParams): Promise<any> {
