@@ -10,9 +10,9 @@ import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { RedisService } from 'src/caches/redis/redis.service';
-import { IInfoToken } from 'src/modules/auths/interfaces/IInfoToken.interface';
 import { ConfigService } from '@nestjs/config';
 import { TokenStatus } from 'src/modules/auths/types/token-status.enum';
+import { InfoToken } from 'src/modules/auths/types/InfoToken.type';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
