@@ -35,7 +35,7 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard)
-  // @Roles(UserRole.admin, UserRole.land_renter)
+  @Roles(UserRole.admin, UserRole.land_renter)
   @ApplyPaginationMetadata
   @Get()
   async findAll(@Pagination() pagination: PaginationParams): Promise<any> {

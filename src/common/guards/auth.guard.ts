@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { RedisService } from 'src/caches/redis/redis.service';
-import { IInfoToken } from 'src/modules/auths/interfaces/IInfoToken.interface';
+import { InfoToken } from 'src/modules/auths/types/InfoToken.type';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -48,7 +48,7 @@ export class AuthGuard implements CanActivate {
 
     // Check if refresh token exists in Redis
     const infoTokenStr = await this.redisSerivce.get(`token:${refreshToken}`);
-    const infoToken: IInfoToken = JSON.parse(infoTokenStr);
+    const infoToken: InfoToken = JSON.parse(infoTokenStr);
     if (!infoToken) {
       throw new UnauthorizedException('Refresh token is invalid');
     }

@@ -1,4 +1,4 @@
-export interface IInfoToken {
+export interface InfoToken {
   user_id: string;
   refreshToken: string;
   publicKey: string;
