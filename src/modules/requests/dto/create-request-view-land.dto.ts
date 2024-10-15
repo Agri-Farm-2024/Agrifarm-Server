@@ -1,12 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsUrl,
-  IsDateString,
-} from 'class-validator';
-import { UserRole } from 'src/modules/users/types/user-role.enum';
+import { IsDateString, IsEmail, IsNotEmpty } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateRequestViewLandDTO {
   @ApiProperty({
@@ -14,44 +8,28 @@ export class CreateRequestViewLandDTO {
     description: 'The email of the user',
   })
   @IsEmail({}, { message: 'Invalid email format' })
-  email: string;
+  guest_email: string;
 
   @ApiProperty({
-    example: 'password123',
-    description: 'The password of the user',
-  })
-  @IsNotEmpty({ message: 'Password is required' })
-  password: string;
-
-  @ApiProperty({
-    example: 'John Doe',
+    example: 'Test',
     description: 'The full name of the user',
   })
   @IsNotEmpty({ message: 'Full name is required' })
-  full_name: string;
+  guest_full_name: string;
 
   @ApiProperty({
-    example: 'http://example.com/avatar.jpg',
-    description: 'The avatar URL of the user',
-    required: false,
+    example: '123456789',
+    description: 'The phone number of the user',
   })
-  @IsOptional()
-  @IsUrl({}, { message: 'Invalid avatar URL format' })
-  avatar_url?: string;
+  @IsNotEmpty({ message: 'Phone number is required' })
+  guest_phone: string;
 
   @ApiProperty({
-    example: '1990-01-01',
-    description: 'The date of birth of the user',
-    required: false,
+    example: '2024-10-15 10:30:00',
+    description:
+      'The start time for the request in "YYYY-MM-DD HH:mm:ss" format',
   })
-  @IsOptional()
-  @IsDateString({}, { message: 'Invalid date format' })
-  dob?: Date;
-
-  @ApiProperty({
-    example: UserRole.land_renter,
-    description: 'The role of the user',
-  })
-  @IsOptional()
-  role: number;
+  @Transform(({ value }) => value.replace(' ', 'T') + 'Z') // Transform input to ISO 8601 format
+  @IsDateString({}, { message: 'Invalid date-time format' })
+  time_start: string;
 }
