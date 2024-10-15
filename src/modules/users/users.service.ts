@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  Logger,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Like, Repository } from 'typeorm';
@@ -88,7 +87,7 @@ export class UsersService implements IUserService {
         this.userEntity.find({
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
-          select: ['id', 'full_name', 'email', 'created_at'],
+          select: ['id', 'full_name', 'email', 'created_at', 'dob', 'role'],
           where: pagination.search.map((searchItem) => {
             if (searchItem.field === '') {
               return {
@@ -114,9 +113,20 @@ export class UsersService implements IUserService {
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
-      } else {
-        throw new InternalServerErrorException(error.message);
       }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async findUserById(id: string): Promise<any> {
+    try {
+      return await this.userEntity.findOne({
+        where: {
+          id: id,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
   }
 }

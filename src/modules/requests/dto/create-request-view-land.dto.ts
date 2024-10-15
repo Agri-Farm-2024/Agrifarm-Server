@@ -6,9 +6,9 @@ import {
   IsUrl,
   IsDateString,
 } from 'class-validator';
-import { UserRole } from '../types/user-role.enum';
+import { UserRole } from 'src/modules/users/types/user-role.enum';
 
-export class CreateUserDto {
+export class CreateRequestViewLandDTO {
   @ApiProperty({
     example: 'test@example.com',
     description: 'The email of the user',
