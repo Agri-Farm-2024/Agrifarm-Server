@@ -13,6 +13,13 @@ import { generateKeyPairSync } from 'crypto';
 import * as bcrypt from 'bcrypt';
 import { RedisService } from 'src/caches/redis/redis.service';
 import { TokenStatus } from 'src/utils/status/token-status.enum';
+import { MailService } from 'src/mails/mail.service';
+import { SubjectMailEnum } from 'src/mails/types/subject.type';
+import { TemplateMailEnum } from 'src/mails/types/template.type';
+import { InfoOTP } from './types/IntoOTP.type';
+import { OTPStatus } from './types/otp-status.type';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { UserRole } from 'src/utils/roles/user-role.enum';
 
 @Injectable()
 export class AuthsService implements IAuthService {
@@ -20,6 +27,7 @@ export class AuthsService implements IAuthService {
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
     private readonly redisService: RedisService,
+    private readonly mailService: MailService,
   ) {}
 
   /**
@@ -31,7 +39,7 @@ export class AuthsService implements IAuthService {
    * @returns
    */
 
-  async login(data: LoginDTO, typeLogin: string): Promise<any> {
+  async loginStrategy(data: LoginDTO, typeLogin: string): Promise<any> {
     const loginStrategy = {
       emailAndPassword: this.loginWIthEmailAndPassword.bind(this),
     };
@@ -44,7 +52,7 @@ export class AuthsService implements IAuthService {
   }
 
   /**
-   *
+   *@function loginWIthEmailAndPassword
    * @param data
    * @returns
    * 1. Find the user by email
@@ -93,8 +101,135 @@ export class AuthsService implements IAuthService {
     }
   }
 
+  async register(data: CreateUserDto): Promise<any> {
+    // check role is valid
+    if (data.role !== UserRole.land_renter) {
+      throw new BadRequestException('Invalid role to register');
+    }
+    // check verify otp register
+    const exist_otp = await this.redisService.get(`otp:${data.email}:register`);
+    const exist_otp_obj: InfoOTP = JSON.parse(exist_otp);
+    if (!exist_otp_obj || exist_otp_obj.status !== OTPStatus.verified) {
+      throw new BadRequestException('Please verify the OTP first');
+    }
+    // call create user
+    return await this.userService.create(data);
+  }
+
   /**
-   *
+   * @function sendOTPStrategy
+   * @param email
+   * @param type
+   * @returns
+   */
+
+  async sendOTPStrategy(email: string, type: string): Promise<any> {
+    const otpStrategy = {
+      register: this.sendOTPRegister.bind(this),
+      // forgotPassword: this.sendOTPForgotPassword.bind(this),
+    };
+
+    if (!otpStrategy[type]) {
+      throw new BadRequestException('Invalid OTP type !');
+    }
+
+    return await otpStrategy[type](email);
+  }
+
+  /**
+   * @function sendOTPRegister
+   * @param email
+   * 1. Check user is already registered
+   * 2. Check redis exist otp
+   * 3. Send OTP
+   * 4. Save OTP to redis
+   * @returns
+   */
+
+  private async sendOTPRegister(email: string): Promise<any> {
+    // check user is already registered
+    const user = await this.userService.findUserByEmail(email);
+    if (user) {
+      throw new BadRequestException('You are already registered');
+    }
+    // generate otp
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    // send otp
+    await this.mailService.sendMail(
+      email,
+      SubjectMailEnum.otpRegister,
+      TemplateMailEnum.otpRegister,
+      { otp: otp },
+    );
+    // save otp to redis with expired time 5 minutes
+    await this.redisService.set(
+      `otp:${email}:register`,
+      JSON.stringify({
+        otp: otp,
+        expired: Date.now() + 300000,
+        status: OTPStatus.pending,
+      }),
+    );
+
+    return `OTP is sent to ${email} please check your email`;
+  }
+
+  // private async sendOTPForgotPassword(email: string): Promise<void> {
+  //   // check user is already registered
+  //   const user = await this.userService.findUserByEmail(email);
+  //   if (user) {
+  //     throw new BadRequestException('You are already registered');
+  //   }
+  //   // check redis exist otp
+  //   const otp = Math.floor(100000 + Math.random() * 900000);
+  //   const exist_otp = await this.redisService.get(`otp:${email}:register`);
+  //   const exist_otp_obj: InfoOTP = JSON.parse(exist_otp);
+
+  //   if (exist_otp_obj) {
+  //     if (otp === exist_otp_obj.otp) {
+  //       throw new BadRequestException('OTP is already sent please check email');
+  //     }
+  //   }
+  // }
+
+  /**
+   * @function verifyOTP
+   */
+
+  async verifyOTP(email: string, otp: number, type: string): Promise<any> {
+    // get otp from redis
+    const exist_otp = await this.redisService.get(`otp:${email}:${type}`);
+    // parse to object
+    const exist_otp_obj: InfoOTP = JSON.parse(exist_otp);
+    if (!exist_otp_obj) {
+      throw new BadRequestException('OTP is invalid');
+    }
+    // check otp is expired
+    if (exist_otp_obj.expired_at < Date.now()) {
+      throw new BadRequestException('OTP is expired');
+    }
+    // check otp is verified
+    if (exist_otp_obj.status === OTPStatus.verified) {
+      throw new BadRequestException('OTP is verified');
+    }
+    // check otp is match
+    if (exist_otp_obj.otp !== otp) {
+      throw new BadRequestException('OTP is invalid');
+    }
+    // update otp status
+    exist_otp_obj.status = OTPStatus.verified;
+    // save otp to redis
+    await this.redisService.set(
+      `otp:${email}:${type}`,
+      JSON.stringify(exist_otp_obj),
+    );
+    return {
+      status: OTPStatus.verified,
+    };
+  }
+
+  /**
+   *@function refreshToken
    * @param payload
    * @returns
    * 1. Create 2 public and private keys pair

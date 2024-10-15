@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -9,6 +14,8 @@ import { RedisService } from 'src/caches/redis/redis.service';
 import { MailService } from 'src/mails/mail.service';
 import { IUserService } from './interfaces/IUserService.interface';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
+import { SubjectMailEnum } from 'src/mails/types/subject.type';
+import { TemplateMailEnum } from 'src/mails/types/template.type';
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -58,7 +65,14 @@ export class UsersService implements IUserService {
     // Log the user creation
     this.loggerService.log(`New User created with email: ${new_user.email}`);
     // Send a welcome email
-    this.mailService.sendMail(new_user.email, new_user.full_name);
+    this.mailService.sendMail(
+      new_user.email,
+      SubjectMailEnum.welcome,
+      TemplateMailEnum.welcome,
+      {
+        name: new_user.full_name,
+      },
+    );
     return new_user;
   }
 
@@ -68,28 +82,41 @@ export class UsersService implements IUserService {
    */
 
   async getAllUsers(pagination: PaginationParams): Promise<any> {
-    // Get all users
-    const [users, total_count] = await Promise.all([
-      this.userEntity.find({
-        skip: (pagination.page_index - 1) * pagination.page_size,
-        take: pagination.page_size,
-        select: ['id', 'full_name', 'email', 'created_at'],
-        where: pagination.search.map((searchItem) => {
-          return {
-            [searchItem.field]: Like(`%${searchItem.value}%`),
-          };
+    try {
+      // Get all users
+      const [users, total_count] = await Promise.all([
+        this.userEntity.find({
+          skip: (pagination.page_index - 1) * pagination.page_size,
+          take: pagination.page_size,
+          select: ['id', 'full_name', 'email', 'created_at'],
+          where: pagination.search.map((searchItem) => {
+            if (searchItem.field === '') {
+              return {
+                email: Like(`%${searchItem.value}%`),
+              };
+            }
+            return {
+              [searchItem.field]: Like(`%${searchItem.value}%`),
+            };
+          }),
         }),
-      }),
-      this.userEntity.count({}),
-    ]);
-    // get total page
-    const total_page = Math.ceil(total_count / pagination.page_size);
-    return {
-      users,
-      pagination: {
-        ...pagination,
-        total_page,
-      },
-    };
+        this.userEntity.count({}),
+      ]);
+      // get total page
+      const total_page = Math.ceil(total_count / pagination.page_size);
+      return {
+        users,
+        pagination: {
+          ...pagination,
+          total_page,
+        },
+      };
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      } else {
+        throw new InternalServerErrorException(error.message);
+      }
+    }
   }
 }
