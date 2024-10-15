@@ -9,6 +9,9 @@ import { UserStatus } from 'src/utils/status/user-status.enum';
 import { Task } from 'src/modules/tasks/entities/task.entity';
 import { Dinary } from 'src/modules/dinaries/entities/dinary.entity';
 import { ServiceSpecific } from 'src/modules/services/entities/serviceSpecific.entity';
+import { BookindLand } from 'src/modules/bookings/entities/bookindLand.entity';
+import { Extend } from 'src/modules/extends/entities/extend.entity';
+import { Order } from 'src/modules/orders/entities/order.entity';
 
 @Entity('users') // Maps this class to the 'users' table in the database
 export class User extends AbstractEntity {
@@ -72,4 +75,16 @@ export class User extends AbstractEntity {
 
   @OneToMany(() => ServiceSpecific, (serviceSpecific) => serviceSpecific.land_renter)
   service_specific: ServiceSpecific[];
+
+  @OneToMany(() => BookindLand, (bookindLand) => bookindLand.land_renter_id)
+  booking_landrenter_id: BookindLand[];
+
+  @OneToMany(() => BookindLand, (bookindLand) => bookindLand.staff_id)
+  booking_staff_id: BookindLand[];
+
+  @OneToMany(()=> Extend, (extend) => extend.land_renter)
+  extend_landrenter_id: Extend[];
+
+  @OneToMany(() => Order, (order) => order.land_renter)
+  orders_landrenter_id: Order[];
 }

@@ -1,6 +1,8 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
+import { BookindLand } from 'src/modules/bookings/entities/bookindLand.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { LandStatus } from 'src/utils/status/land-status.enum';
+import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 
 @Entity('lands')
 export class Land extends AbstractEntity {
@@ -30,4 +32,14 @@ export class Land extends AbstractEntity {
 
   @Column('decimal', { precision: 10, scale: 2 })
   price_booking_per_month: number;
+
+  @OneToMany(() => BookindLand, (bookindLand) => bookindLand.land_id)
+  booking_land_id: BookindLand[];
+
+  @Column({
+    type: 'enum',
+    enum: LandStatus,
+    default: LandStatus.free,
+  })
+  status: LandStatus;
 }

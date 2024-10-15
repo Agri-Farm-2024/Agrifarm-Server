@@ -4,10 +4,11 @@ import { PlantsController } from './plants.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Plant } from './entities/plant.entity';
 import { PlantSeason } from './entities/plantSeason';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Plant, PlantSeason])],
   controllers: [PlantsController],
-  providers: [PlantsService],
+  providers: [PlantsService, LoggerService],
 })
 export class PlantsModule {}
