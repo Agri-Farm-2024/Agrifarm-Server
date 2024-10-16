@@ -21,6 +21,7 @@ import { UserRole } from '../users/types/user-role.enum';
 import { ConfigService } from '@nestjs/config';
 import { TokenStatus } from './types/token-status.enum';
 import { InfoToken } from './types/InfoToken.type';
+import { UserStatus } from '../users/types/user-status.enum';
 
 @Injectable()
 export class AuthsService implements IAuthService {
@@ -68,6 +69,10 @@ export class AuthsService implements IAuthService {
       // 1. Find the user by email
       const user = await this.userService.findUserByEmail(data.email);
 
+      if (user.status !== UserStatus.active) {
+        throw new BadRequestException('User is not active');
+      }
+
       Logger.log(JSON.stringify(user), `User found`);
 
       if (!user) {
@@ -99,7 +104,10 @@ export class AuthsService implements IAuthService {
         token,
       };
     } catch (error) {
-      throw error;
+      if (error.response) {
+        throw new BadRequestException(error.response.data.message);
+      }
+      throw new InternalServerErrorException(error.message);
     }
   }
 

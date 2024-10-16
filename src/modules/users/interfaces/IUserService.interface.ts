@@ -8,4 +8,6 @@ export interface IUserService {
   getAllUsers(pagination: PaginationParams): Promise<any>;
 
   findUserById(id: string): any;
+
+  updateStatus(id: string, status: string): any;
 }

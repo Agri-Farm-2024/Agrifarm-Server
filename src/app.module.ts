@@ -31,7 +31,7 @@ import { ExtendsModule } from './modules/extends/extends.module';
         process.env.NODE_ENV === 'development' ? '.env.development' : '.env',
     }),
     // Import modules
-    LoggerModule.register('App-Module'),
+    LoggerModule,
     UsersModule,
     LandsModule,
     DatabaseModule,

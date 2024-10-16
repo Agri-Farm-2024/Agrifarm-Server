@@ -15,6 +15,7 @@ import { IUserService } from './interfaces/IUserService.interface';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { SubjectMailEnum } from 'src/mails/types/subject.type';
 import { TemplateMailEnum } from 'src/mails/types/template.type';
+import { UserStatus } from './types/user-status.enum';
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -126,6 +127,29 @@ export class UsersService implements IUserService {
         },
       });
     } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async updateStatus(id: string, status: string): Promise<any> {
+    try {
+      // Find the user
+      const user = await this.findUserById(id);
+      if (!user) {
+        throw new BadRequestException('User not found');
+      }
+      // Update the status
+      if (status === UserStatus.pending) {
+        throw new BadRequestException('Invalid status');
+      }
+
+      user.status = status;
+      // Save the user
+      return await this.userEntity.save(user);
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
       throw new InternalServerErrorException(error.message);
     }
   }

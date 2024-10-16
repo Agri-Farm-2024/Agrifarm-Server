@@ -1,35 +1,48 @@
-name: Build and Deploy Docker Agri-farm-server
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
 
+    services:
+      docker:
+        image: docker:19.03.12
+        options: --privileged
+
     steps:
-      -users: actions/checkouts@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      -name: Login to docker hub
-        uses: docker/login-action@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          node-version: '18'
 
-      -name: create .env file
-        run: echo "${{ secrets.ENV }}" || base64 -d > .env
+      - name: Install dependencies
+        run: npm install
 
-      -name: Build Docker Image
-        run: docker build -t agri-farm-server .
+      - name: Run linting
+        run: npm run lint
 
-      -name: Push Docker Image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/agri-farm-server
+      - name: Run unit tests
+        run: npm run test
 
-      -name: Upload image metadata
-        uses: actions/metadata-action@v2
-        with:
-          images: ${{ secrets.DOCKER_USERNAME }}/agri-farm-server:latest
-          tags: 
-            ${{ github.sha }}
+      - name: Build the application
+        run: npm run build
+
+      - name: Build Docker image
+        run: docker build -t nestjs-app .
+
+      - name: Push Docker image to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          docker tag nestjs-app yourdockerhubusername/nestjs-app:latest
+          docker push yourdockerhubusername/nestjs-app:latest

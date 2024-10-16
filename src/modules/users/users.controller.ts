@@ -7,6 +7,8 @@ import {
   UseGuards,
   Request,
   Logger,
+  Patch,
+  Param,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -20,6 +22,7 @@ import {
 } from 'src/common/decorations/pagination.decoration';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { UserRole } from './types/user-role.enum';
+import { UpdateStatusUserDto } from './dto/update-status-user.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -40,5 +43,13 @@ export class UsersController {
   @Get()
   async findAll(@Pagination() pagination: PaginationParams): Promise<any> {
     return await this.usersService.getAllUsers(pagination);
+  }
+
+  @Patch('/updateStatus/:id')
+  async updateStatus(
+    @Body('') data: UpdateStatusUserDto,
+    @Param('id') id: string,
+  ) {
+    return await this.usersService.updateStatus(id, data.status);
   }
 }

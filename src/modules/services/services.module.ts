@@ -9,9 +9,6 @@ import { LoggerModule } from 'src/logger/logger.module';
 @Module({
   controllers: [ServicesController],
   providers: [ServicesService],
-  imports: [
-    TypeOrmModule.forFeature([ServiceSpecific, Service]),
-    LoggerModule.register('Service-Module'),
-  ],
+  imports: [TypeOrmModule.forFeature([ServiceSpecific, Service]), LoggerModule],
 })
 export class ServicesModule {}

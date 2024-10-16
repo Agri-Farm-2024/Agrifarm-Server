@@ -6,36 +6,24 @@ import 'winston-daily-rotate-file';
 export class LoggerService extends Logger {
   private readonly logger: winston.Logger;
 
-  constructor(context: string) {
-    super(context);
+  constructor() {
+    super('AppLogger'); // Default context
 
     this.logger = winston.createLogger({
       level: 'info',
       format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.simple(),
+        winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), // Custom timestamp format
+        winston.format.printf(({ timestamp, level, message, context }) => {
+          return `${timestamp} [${context || 'AppLogger'}] ${level}: ${message}`;
+        }),
       ),
       transports: [
         new winston.transports.DailyRotateFile({
-          dirname: `logs/${context}/info`,
+          dirname: 'logs',
           filename: '%DATE%.log',
           datePattern: 'YYYY-MM-DD',
+          zippedArchive: true,
           level: 'info',
-          zippedArchive: true,
-        }),
-        new winston.transports.DailyRotateFile({
-          dirname: `logs/${context}/debug`,
-          filename: '%DATE%.log',
-          datePattern: 'YYYY-MM-DD',
-          level: 'info',
-          zippedArchive: true,
-        }),
-        new winston.transports.DailyRotateFile({
-          dirname: `logs/${context}/error`,
-          filename: '%DATE%-error.log',
-          datePattern: 'YYYY-MM-DD',
-          level: 'error',
-          zippedArchive: true,
         }),
       ],
     });
@@ -45,7 +33,7 @@ export class LoggerService extends Logger {
     this.logger.info(message, { context });
   }
 
-  eror(message: string, trace: string, context?: string) {
+  error(message: string, trace: string, context?: string) {
     this.logger.error(message, { trace, context });
   }
 

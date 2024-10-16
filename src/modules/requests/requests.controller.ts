@@ -16,7 +16,7 @@ import { CreateRequestViewLandDTO } from './dto/create-request-view-land.dto';
 export class RequestsController {
   constructor(private readonly requestsService: RequestsService) {}
 
-  @Post('/viewLand')
+  @Post('/createRequestViewLand')
   createRequestViewLand(@Body() data: CreateRequestViewLandDTO) {
     return this.requestsService.createRequestViewLand(data);
   }

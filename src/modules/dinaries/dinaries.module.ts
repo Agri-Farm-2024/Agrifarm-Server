@@ -11,8 +11,8 @@ import { DinaryImage } from './entities/DinaryImange.entity';
   controllers: [DinariesController],
   providers: [DinariesService],
   imports: [
-    LoggerModule.register('Dinary-Module'),
-    TypeOrmModule.forFeature([Dinary, DinaryStage,  DinaryImage]),
+    LoggerModule,
+    TypeOrmModule.forFeature([Dinary, DinaryStage, DinaryImage]),
   ],
   exports: [DinariesService],
 })
