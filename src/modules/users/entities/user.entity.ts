@@ -12,6 +12,7 @@ import { Extend } from 'src/modules/extends/entities/extend.entity';
 import { Order } from 'src/modules/orders/entities/order.entity';
 import { UserStatus } from '../types/user-status.enum';
 import { UserRole } from '../types/user-role.enum';
+import { ProcessStandard } from 'src/modules/processes/entities/standards/processStandard.entity';
 
 @Entity('users') // Maps this class to the 'users' table in the database
 export class User extends AbstractEntity {
@@ -55,7 +56,6 @@ export class User extends AbstractEntity {
   @OneToMany(() => Land, (land) => land.staff)
   land_by_staff: Land[];
 
-
   @OneToMany(() => Request, (request) => request.sender)
   request: Request[];
 
@@ -91,4 +91,6 @@ export class User extends AbstractEntity {
 
   @OneToMany(() => Order, (order) => order.land_renter)
   orders_landrenter_id: Order[];
+  @OneToMany(() => ProcessStandard, (processStandard) => processStandard.expert)
+  process_standard_expert_id: ProcessStandard[];
 }
