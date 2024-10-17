@@ -62,8 +62,8 @@ export class PlantsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePlantDto: UpdatePlantDto) {
-    return this.plantsService.update(+id, updatePlantDto);
+  updatePlant(@Param('id') id: string, @Body() updatePlantDto: UpdatePlantDto) {
+    return this.plantsService.updatePlant(id, updatePlantDto.status);
   }
 
   @Delete(':id')
