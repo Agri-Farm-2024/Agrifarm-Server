@@ -8,6 +8,7 @@ import {
   IsUUID,
 } from 'class-validator';
 import { LandStatus } from 'src/utils/status/land-status.enum';
+import { CreateLandSubDescriptionDTO } from './create-land-sub-description.dto';
 
 export class CreateLandDto {
   @ApiProperty({
@@ -16,6 +17,13 @@ export class CreateLandDto {
   })
   @IsNotEmpty()
   name: string;
+
+  @ApiProperty({
+    description: 'the description of the land',
+    example: 'Land 1 is a beautiful land with a lot of trees',
+  })
+  @IsOptional() // Allows description to be null or undefined
+  title: string;
 
   @ApiProperty({
     description: 'the description of the land',
@@ -34,14 +42,6 @@ export class CreateLandDto {
   acreage_land: number;
 
   @ApiProperty({
-    description: ' the UUID of the staff who manages the land',
-    example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-  })
-  @IsOptional() // Allows staff_id to be null or undefined
-  @IsUUID()
-  staff_id: string | null;
-
-  @ApiProperty({
     description: 'The price of booking per month',
     example: 100,
   })
@@ -51,10 +51,30 @@ export class CreateLandDto {
   price_booking_per_month: number;
 
   @ApiProperty({
-    description: 'The status of the land',
-    example: LandStatus.free,
+    description: 'The sub description of the land',
+    type: [CreateLandSubDescriptionDTO], // Correct way to specify array type
   })
-  @IsNotEmpty()
-  @IsEnum(LandStatus)
-  status: LandStatus;
+  @IsOptional()
+  sub_description: CreateLandSubDescriptionDTO[];
+
+  @ApiProperty({
+    description: 'The image url of the land',
+    type: [], // Correct way to specify array type
+    example: [
+      'https://www.google.com.vn/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png',
+    ],
+  })
+  @IsOptional()
+  images: string[];
+
+  @ApiProperty({
+    description: 'The video url of the land',
+    type: [], // Correct way to specify array type
+    example: [
+      'https://www.youtube.com/watch?v=8p9jSRxJ8jw',
+      'https://www.youtube.com/watch?v=8p9jSRxJ8jw',
+    ],
+  })
+  @IsOptional()
+  videos: string[];
 }

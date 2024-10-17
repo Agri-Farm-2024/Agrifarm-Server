@@ -13,7 +13,7 @@ export class Land extends AbstractEntity {
     Object.assign(this, land);
   }
 
-  @Column()
+  @Column({ unique: true })
   name: string;
 
   @Column({ nullable: true })

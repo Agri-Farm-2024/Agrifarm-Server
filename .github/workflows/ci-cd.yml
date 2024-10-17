@@ -57,9 +57,10 @@ jobs:
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/agri-farm-server:latest
-            docker stop nestjs_app || true
-            docker rm nestjs_app || true
-            docker run -d --name nestjs_app -p 3000:3000 ${{ secrets.DOCKER_HUB_USERNAME }}/agri-farm-server:latest
+            docker stop agri-farm-server || true
+            docker rm agri-farm-server || true
+            docker run -d --name agri-farm-server -p 3000:3000 ${{ secrets.DOCKER_HUB_USERNAME }}/agri-farm-server:latest
