@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateLandDto } from './dto/create-land.dto';
 import { UpdateLandDto } from './dto/update-land.dto';
 import { ILandService } from './interfaces/ILandService.interface';
@@ -39,19 +43,50 @@ export class LandsService implements ILandService {
     }
   }
 
-  findAll() {
-    return `This action returns all lands`;
+  async findAll(): Promise<any> {
+    try {
+      const lands = await this.landEntity.find();
+      return lands;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} land`;
-  }
-
-  update(id: number, updateLandDto: UpdateLandDto) {
-    return `This action updates a #${id} land`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} land`;
+  async getDetailLandById(id: string): Promise<any> {
+    try {
+      const lands = await this.landEntity.find({
+        where: {
+          id: id,
+        },
+        relations: ['sub_description', 'url', 'staff'],
+        select: {
+          sub_description: {
+            sub_title: true,
+            sub_description: true,
+            id: true,
+          },
+          url: {
+            string_url: true,
+            type: true,
+            id: true,
+          },
+          staff: {
+            id: true,
+            full_name: true,
+            email: true,
+            role: true,
+          },
+        },
+      });
+      return lands;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Internal server error');
+    }
   }
 }

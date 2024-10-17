@@ -53,6 +53,7 @@ export function ApplyPaginationMetadata(
     description: 'Number of items per page',
     example: 10,
   })(target, key, descriptor);
+
   ApiQuery({
     name: 'page_index',
     required: false,
@@ -60,6 +61,7 @@ export function ApplyPaginationMetadata(
     description: 'Page index to fetch',
     example: 1,
   })(target, key, descriptor);
+
   ApiQuery({
     name: 'search',
     required: false,

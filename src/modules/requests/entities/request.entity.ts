@@ -21,6 +21,9 @@ export class Request extends AbstractEntity {
   @Column({ nullable: true })
   guest_phone: string;
 
+  @Column({ nullable: true })
+  description: string;
+
   @Column({ nullable: true, type: 'timestamptz' })
   time_start: Date;
 
