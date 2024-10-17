@@ -18,17 +18,14 @@ export class Land extends AbstractEntity {
   description: string;
 
   @Column('decimal', { precision: 6, scale: 2 })
-  acreage: number;
+  acreage_land: number;
+
+  @Column('uuid', { name: 'staff_id', nullable: true })
+  staff_id: string;
 
   @ManyToOne(() => User, (user) => user.land_by_staff, { nullable: true })
   @JoinColumn({ name: 'staff_id' })
   staff: User;
-
-  @ManyToOne(() => User, (user) => user.land_by_land_renter, {
-    nullable: true,
-  })
-  @JoinColumn({ name: 'land_renter_id' })
-  land_renter: User;
 
   @Column('decimal', { precision: 10, scale: 2 })
   price_booking_per_month: number;
