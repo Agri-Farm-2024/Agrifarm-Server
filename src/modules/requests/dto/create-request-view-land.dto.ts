@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsEmail, IsNotEmpty } from 'class-validator';
+import { IsDateString, IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class CreateRequestViewLandDTO {
@@ -23,6 +23,13 @@ export class CreateRequestViewLandDTO {
   })
   @IsNotEmpty({ message: 'Phone number is required' })
   guest_phone: string;
+
+  @ApiProperty({
+    example: "I'm interested in viewing the land",
+    description: 'The description of the request',
+  })
+  @IsOptional()
+  description: string;
 
   @ApiProperty({
     example: '2024-10-15 10:30:00',

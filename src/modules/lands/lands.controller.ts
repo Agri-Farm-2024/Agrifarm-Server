@@ -27,18 +27,8 @@ export class LandsController {
     return this.landsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.landsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLandDto: UpdateLandDto) {
-    return this.landsService.update(+id, updateLandDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.landsService.remove(+id);
+  @Get('/:land_id')
+  findOne(@Param('land_id') id: string) {
+    return this.landsService.getDetailLandById(id);
   }
 }

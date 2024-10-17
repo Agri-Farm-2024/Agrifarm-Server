@@ -25,25 +25,33 @@ export class BookindLand extends AbstractEntity {
   @JoinColumn({ name: 'staff_id' })
   staff_id: User;
 
-  @ManyToOne(() => Land, (land) => land.booking_land_id, {
+  @ManyToOne(() => Land, (land) => land.booking_land, {
     nullable: true,
   })
   @JoinColumn({ name: 'land_id' })
   land_id: Land;
+
   @Column()
   total_month: number;
+
   @Column()
   price_per_month: number;
+
   @Column()
   price_deposit: number;
+
   @Column()
   total_price: number;
+
   @Column()
   reason_for_reject: string;
+
   @Column()
   purpose_rental: string;
+
   @Column()
   contract_image: string;
+
   @Column({
     type: 'enum',
     enum: BookingStatus,

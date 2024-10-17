@@ -94,22 +94,25 @@ export class UsersService implements IUserService {
 
   async getAllUsers(pagination: PaginationParams): Promise<any> {
     try {
+      const filter = pagination.search.map((searchItem) => {
+        // check filter empty
+        if (searchItem.field === '') {
+          return {
+            email: Like(`%${searchItem.value}%`),
+          };
+        }
+
+        return {
+          [searchItem.field]: Like(`%${searchItem.value}%`),
+        };
+      });
       // Get all users
       const [users, total_count] = await Promise.all([
         this.userEntity.find({
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
           select: ['id', 'full_name', 'email', 'created_at', 'dob', 'role'],
-          where: pagination.search.map((searchItem) => {
-            if (searchItem.field === '') {
-              return {
-                email: Like(`%${searchItem.value}%`),
-              };
-            }
-            return {
-              [searchItem.field]: Like(`%${searchItem.value}%`),
-            };
-          }),
+          where: filter,
         }),
         this.userEntity.count({}),
       ]);
