@@ -55,8 +55,6 @@ export class User extends AbstractEntity {
   @OneToMany(() => Land, (land) => land.staff)
   land_by_staff: Land[];
 
-  @OneToMany(() => Land, (land) => land.land_renter)
-  land_by_land_renter: Land[];
 
   @OneToMany(() => Request, (request) => request.sender)
   request: Request[];

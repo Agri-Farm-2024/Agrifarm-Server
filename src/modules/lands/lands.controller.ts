@@ -17,9 +17,9 @@ import { ApiTags } from '@nestjs/swagger';
 export class LandsController {
   constructor(private readonly landsService: LandsService) {}
 
-  @Post()
+  @Post('/createLand')
   create(@Body() createLandDto: CreateLandDto) {
-    return this.landsService.create(createLandDto);
+    return this.landsService.createLand(createLandDto);
   }
 
   @Get()
