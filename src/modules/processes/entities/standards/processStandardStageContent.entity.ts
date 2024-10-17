@@ -14,7 +14,7 @@ export class ProcessStandardStageContent extends AbstractEntity {
   process_standard_stage_id: string;
 
   @Column()
-  tile: string;
+  title: string;
   @Column()
   content: string;
   @Column('int')

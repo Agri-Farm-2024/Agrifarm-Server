@@ -29,21 +29,22 @@ export class ProcessStandard extends AbstractEntity {
   name: string;
   @Column('int')
   total_month: number;
-  @Column()
+  @Column(null, { nullable: true })
   reason_of_reject: string;
 
   @Column({
     type: 'enum',
     enum: StatusProcessStandard,
-    default: 'pending',
+    default: StatusProcessStandard.pending,
   })
   status: StatusProcessStandard;
 
   @Column({
     type: 'enum',
     enum: TypeProcess,
+   
   })
-  type: TypeProcess;
+  type_process: TypeProcess;
 
   @ManyToOne(() => Plant, (plant) => plant.process_standard)
   @JoinColumn({ name: 'plant_id' })
@@ -53,6 +54,9 @@ export class ProcessStandard extends AbstractEntity {
   @JoinColumn({ name: 'expert_id' })
   expert: User;
 
-  @OneToMany(() => ProcessStandardStage, (processStandardStage) => processStandardStage.process_standard_stage)
-    process_standard_stage: ProcessStandardStage[];
+  @OneToMany(
+    () => ProcessStandardStage,
+    (processStandardStage) => processStandardStage.process_standard_stage,
+  )
+  process_standard_stage: ProcessStandardStage[];
 }

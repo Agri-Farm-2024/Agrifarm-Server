@@ -17,9 +17,9 @@ import { ApiTags } from '@nestjs/swagger';
 export class ProcessesController {
   constructor(private readonly processesService: ProcessesService) {}
 
-  @Post()
-  create(@Body() createProcessDto: CreateProcessDto) {
-    return this.processesService.create(createProcessDto);
+  @Post('/createProcessStandard')
+  createProcessStandard(@Body() data: CreateProcessDto) {
+    return this.processesService.createProcessStandard(data);
   }
 
   @Get()
