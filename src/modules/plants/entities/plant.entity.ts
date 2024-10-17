@@ -3,6 +3,7 @@ import { Column, Entity, OneToMany } from 'typeorm';
 import { PlantSeason } from './plantSeason';
 import { ServiceSpecific } from 'src/modules/services/entities/serviceSpecific.entity';
 import { StatusPlant } from '../types/plant-status.enum';
+import { ProcessStandard } from 'src/modules/processes/entities/standards/processStandard.entity';
 
 @Entity('plants')
 export class Plant extends AbstractEntity {
@@ -29,4 +30,7 @@ export class Plant extends AbstractEntity {
     (serviceSpecific) => serviceSpecific.plantService_id,
   )
   service_specific: ServiceSpecific[];
+
+  @OneToMany(() => ProcessStandard, (processStandard) => processStandard.plant_process_id)
+  process_standard: ProcessStandard[];
 }
