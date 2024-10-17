@@ -16,6 +16,7 @@ import { IPlantService } from './interfaces/IPlantService.interface';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { PlantSeason } from './entities/plantSeason';
 import { CreatePlantSeasonDto } from './dto/create-plantSeason.dto';
+import { StatusPlant } from './types/plant-status.enum';
 
 @Injectable()
 export class PlantsService implements IPlantService {
@@ -73,8 +74,22 @@ export class PlantsService implements IPlantService {
     return `This action returns a #${id} plant`;
   }
 
-  update(id: number, updatePlantDto: UpdatePlantDto) {
-    return `This action updates a #${id} plant`;
+  async updatePlant(id: string, status: StatusPlant): Promise<Plant> {
+    try {
+      const plant = await this.plantEntity.findOne({
+        where: {
+          id: id,
+        },
+      });
+      if (!plant) {
+        throw new BadRequestException('Plant not found');
+      }
+
+      plant.status = status;
+      return await this.plantEntity.save(plant);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   remove(id: number) {
