@@ -104,8 +104,8 @@ export class AuthsService implements IAuthService {
         token,
       };
     } catch (error) {
-      if (error.response) {
-        throw new BadRequestException(error.response.data.message);
+      if (error instanceof BadRequestException) {
+        throw error;
       }
       throw new InternalServerErrorException(error.message);
     }

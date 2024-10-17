@@ -28,11 +28,22 @@ export class UsersService implements IUserService {
   ) {}
 
   async findUserByEmail(email: string) {
-    return await this.userEntity.findOne({
-      where: {
-        email: email,
-      },
-    });
+    try {
+      const user = await this.userEntity.findOne({
+        where: {
+          email: email,
+        },
+      });
+      if (!user) {
+        throw new BadRequestException('User not found');
+      }
+      return user;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   /**
