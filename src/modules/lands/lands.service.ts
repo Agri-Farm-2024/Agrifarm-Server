@@ -25,15 +25,15 @@ export class LandsService implements ILandService {
       });
       if (land) {
         throw new InternalServerErrorException('Land name already exist');
-        //create new land
-        const new_land = this.landEntity.save({
-          ...data,
-        });
-
-        // Log the land creation
-        this.loggerService.log('New land is created');
-        return new_land;
       }
+      //create new land
+      const new_land = this.landEntity.save({
+        ...data,
+      });
+
+      // Log the land creation
+      this.loggerService.log('New land is created');
+      return new_land;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
