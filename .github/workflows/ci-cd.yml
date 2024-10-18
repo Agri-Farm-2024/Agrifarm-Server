@@ -60,7 +60,7 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            docker rmi agri-farm-server:latest || true
+            docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/agri-farm-server:latest || true
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/agri-farm-server:latest
             docker stop agri-farm-server || true
             docker rm agri-farm-server || true

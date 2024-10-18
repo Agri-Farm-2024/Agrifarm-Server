@@ -178,4 +178,28 @@ export class LandsService implements ILandService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  async updateLand(data: UpdateLandDto, id: string): Promise<any> {
+    try {
+      const land = await this.landEntity.findOne({
+        where: {
+          id: id,
+        },
+      });
+      if (!land) {
+        throw new BadRequestException('Land not found');
+      }
+      const updated_land = await this.landEntity.save({
+        ...land,
+        ...data,
+      });
+
+      return updated_land;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }

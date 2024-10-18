@@ -22,13 +22,13 @@ export class Land extends AbstractEntity {
   @Column()
   description: string;
 
-  @Column('decimal', { precision: 6, scale: 2 })
+  @Column('decimal', { scale: 2 })
   acreage_land: number;
 
   @Column('uuid', { name: 'staff_id', nullable: true })
   staff_id: string;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal', { scale: 2 })
   price_booking_per_month: number;
 
   @Column({

@@ -4,4 +4,6 @@ export interface ILandService {
   findAll(): any;
 
   getDetailLandById(id: string): any;
+
+  updateLand(data: any, id: string): any;
 }
