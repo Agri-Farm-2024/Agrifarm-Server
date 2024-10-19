@@ -103,7 +103,6 @@ export class PlantsService implements IPlantService {
       this.plantEntity.find({
         skip: (pagination.page_index - 1) * pagination.page_size,
         take: pagination.page_size,
-        select: ['name', 'created_at', 'updated_at'],
       }),
       this.plantEntity.count({}),
     ]);

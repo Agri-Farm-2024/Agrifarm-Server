@@ -1,8 +1,8 @@
 version: '3'
 services:
   app:
-    image: baohc1109/agri-farm-server
-    container_name: agri-farm-server
+    image: baohc1109/agri-farm-server:lastest
+    container_name: agri-farm-server:lastest
     ports:
       - "3000:3000"
     environment:
