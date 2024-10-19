@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   Logger,
+  Put,
 } from '@nestjs/common';
 import { PlantsService } from './plants.service';
 import { CreatePlantDto } from './dto/create-plant.dto';
@@ -62,12 +63,21 @@ export class PlantsController {
   }
 
   @Patch(':id')
-  updatePlant(@Param('id') id: string, @Body() updatePlantDto: UpdatePlantDto) {
-    return this.plantsService.updatePlant(id, updatePlantDto.status);
+  async updatePlant(@Param('id') id: string, @Body() updatePlantDto: UpdatePlantDto) {
+    return  await this.plantsService.updatePlant(id, updatePlantDto.status);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.plantsService.remove(+id);
+  @Put('/updatePlantSeason/:id')
+  async updatePlantSeason(
+    @Param('id') id: string,
+    @Body() data: CreatePlantSeasonDto,
+  ) {
+    return await this.plantsService.updatePlantSeason(id, data);
   }
+
+  @Delete('/plant/:id')
+ async remove(@Param('id') id: string) {
+    return await this.plantsService.removePlant(id);
+  }
+
 }
