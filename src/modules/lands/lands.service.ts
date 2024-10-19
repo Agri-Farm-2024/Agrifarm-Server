@@ -14,6 +14,7 @@ import { CreateLandSubDescriptionDTO } from './dto/create-land-sub-description.d
 import { LandSubDescription } from './entities/landSubDescription.entity';
 import { LandURL } from './entities/landURL.entity';
 import { LandURLType } from './types/land-url-type.enum';
+import { LandStatus } from './types/land-status.enum';
 
 @Injectable()
 export class LandsService implements ILandService {
@@ -132,9 +133,16 @@ export class LandsService implements ILandService {
     }
   }
 
-  async findAll(): Promise<any> {
+  async findAll(status: LandStatus): Promise<any> {
     try {
-      const lands = await this.landEntity.find();
+      const lands = await this.landEntity.find({
+        where: {
+          status,
+        },
+        relations: {
+          url: true,
+        },
+      });
       return lands;
     } catch (error) {
       if (error instanceof BadRequestException) {
@@ -170,6 +178,9 @@ export class LandsService implements ILandService {
           },
         },
       });
+      if (!lands) {
+        throw new BadRequestException('Land not found');
+      }
       return lands;
     } catch (error) {
       if (error instanceof BadRequestException) {

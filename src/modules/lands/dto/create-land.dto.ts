@@ -7,7 +7,6 @@ import {
   IsPositive,
   IsUUID,
 } from 'class-validator';
-import { LandStatus } from 'src/utils/status/land-status.enum';
 import { CreateLandSubDescriptionDTO } from './create-land-sub-description.dto';
 
 export class CreateLandDto {

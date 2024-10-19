@@ -6,11 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { LandsService } from './lands.service';
 import { CreateLandDto } from './dto/create-land.dto';
 import { UpdateLandDto } from './dto/update-land.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { LandStatus } from './types/land-status.enum';
 
 @ApiTags('Land')
 @Controller('lands')
@@ -23,8 +25,8 @@ export class LandsController {
   }
 
   @Get()
-  findAll() {
-    return this.landsService.findAll();
+  findAll(@Query('status') status: LandStatus) {
+    return this.landsService.findAll(status);
   }
 
   @Get('/:land_id')

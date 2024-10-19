@@ -1,7 +1,6 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { BookindLand } from 'src/modules/bookings/entities/bookindLand.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import { LandStatus } from 'src/utils/status/land-status.enum';
 import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Land } from './land.entity';
 import { LandURLType } from '../types/land-url-type.enum';

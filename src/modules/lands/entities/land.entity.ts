@@ -1,10 +1,10 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { BookindLand } from 'src/modules/bookings/entities/bookindLand.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import { LandStatus } from 'src/utils/status/land-status.enum';
 import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { LandSubDescription } from './landSubDescription.entity';
 import { LandURL } from './landURL.entity';
+import { LandStatus } from '../types/land-status.enum';
 
 @Entity('lands')
 export class Land extends AbstractEntity {
