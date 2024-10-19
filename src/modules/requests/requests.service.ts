@@ -14,7 +14,7 @@ import { LoggerService } from 'src/logger/logger.service';
 import { TasksService } from '../tasks/tasks.service';
 import { RequestType } from './types/request-type.enum';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
-import { RequestFilterDTO } from './dto/request-filter.dto';
+import { RequestStatus } from 'src/utils/status/request-status.enum';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -55,13 +55,31 @@ export class RequestsService implements IRequestService {
     }
   }
 
-  async getListRequest(pagination: PaginationParams): Promise<any> {
+  async getListRequest(
+    pagination: PaginationParams,
+    status: RequestStatus,
+    type: RequestType,
+  ): Promise<any> {
     try {
+      // const filter condition
+      const filter_condition: any = {};
+      // check if status and type is provided
+      if (status) {
+        filter_condition.status = status;
+      }
+      // check if type is provided
+      if (type) {
+        filter_condition.type = type;
+      }
       // get list request
       const [requests, total_count] = await Promise.all([
         this.requestEntity.find({
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
+          where: filter_condition,
+          order: {
+            status: 'ASC',
+          },
         }),
         this.requestEntity.count({}),
       ]);
@@ -74,6 +92,48 @@ export class RequestsService implements IRequestService {
           total_page,
         },
       };
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async getDetailRequest(request_id: string): Promise<any> {
+    try {
+      const request = await this.requestEntity.findOne({
+        where: {
+          id: request_id,
+        },
+        relations: ['task'],
+      });
+      if (!request) {
+        throw new BadRequestException('Request not found');
+      }
+      return request;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async updateRequestStatus(
+    request_id: string,
+    status: RequestStatus,
+  ): Promise<any> {
+    try {
+      // check request exist
+      const request = await this.requestEntity.findOne({
+        where: {
+          id: request_id,
+        },
+      });
+      if (!request) {
+        throw new BadRequestException('Request not found');
+      }
+      // update request status
+      const updated_request = await this.requestEntity.save({
+        ...request,
+        status,
+      });
+      return updated_request;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

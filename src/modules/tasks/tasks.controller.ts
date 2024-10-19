@@ -9,6 +9,7 @@ import {
   Put,
   Request,
   UseGuards,
+  Logger,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -30,6 +31,16 @@ export class TasksController {
     @Body() data: AssignTaskDto,
     @Request() request: any,
   ) {
-    return this.tasksService.assignTask(task_id, data.user_id, request.user.id);
+    return this.tasksService.assignTask(
+      task_id,
+      data.assigned_to_id,
+      request.user,
+    );
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/getByUser')
+  getTasksByUserId(@Request() request: any) {
+    return this.tasksService.getTasksByUserId(request.user.id);
   }
 }

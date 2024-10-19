@@ -1,9 +1,17 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { RequestSupportType } from '../types/request-support-type.enum';
 import { RequestStatus } from 'src/utils/status/request-status.enum';
 import { RequestType } from '../types/request-type.enum';
+import { Task } from 'src/modules/tasks/entities/task.entity';
 
 @Entity('requests')
 export class Request extends AbstractEntity {
@@ -13,7 +21,7 @@ export class Request extends AbstractEntity {
   }
 
   @Column({ nullable: true })
-  guest_name: string;
+  guest_full_name: string;
 
   @Column({ nullable: true })
   guest_email: string;
@@ -30,11 +38,8 @@ export class Request extends AbstractEntity {
   @Column({ nullable: true, type: 'timestamptz' })
   time_end: Date;
 
-  @ManyToOne(() => User, (user) => user.request, {
-    nullable: true,
-  })
-  @JoinColumn({ name: 'sender_id' })
-  sender: User;
+  @Column({ nullable: true, type: 'uuid' })
+  sender_id: string;
 
   @Column({
     default: RequestSupportType.direct,
@@ -48,4 +53,13 @@ export class Request extends AbstractEntity {
 
   @Column({ default: RequestStatus.pending, type: 'enum', enum: RequestStatus })
   status: RequestStatus;
+
+  @ManyToOne(() => User, (user) => user.request, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'sender_id' })
+  sender: User;
+
+  @OneToOne(() => Task, (task) => task.request)
+  task: Task;
 }

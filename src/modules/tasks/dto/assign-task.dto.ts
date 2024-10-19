@@ -8,5 +8,5 @@ export class AssignTaskDto {
     required: true,
   })
   @IsNotEmpty({ message: 'User ID is required' })
-  user_id: string;
+  assigned_to_id: string;
 }

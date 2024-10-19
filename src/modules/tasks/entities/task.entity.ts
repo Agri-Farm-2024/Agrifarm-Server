@@ -1,3 +1,4 @@
+import { request } from 'http';
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { Request } from 'src/modules/requests/entities/request.entity';
 import { User } from 'src/modules/users/entities/user.entity';
@@ -26,7 +27,7 @@ export class Task extends AbstractEntity {
   })
   assigned_at: Date;
 
-  @OneToOne(() => Request)
+  @OneToOne(() => Request, (request) => request.task)
   @JoinColumn({ name: 'request_id' })
   request: Request;
 

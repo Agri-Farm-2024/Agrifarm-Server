@@ -10,7 +10,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { RequestsService } from './requests.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CreateRequestViewLandDTO } from './dto/create-request-view-land.dto';
 import {
   ApplyPaginationMetadata,
@@ -18,8 +18,7 @@ import {
 } from 'src/common/decorations/pagination.decoration';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { RequestType } from './types/request-type.enum';
-import { RequestFilterDTO } from './dto/request-filter.dto';
-import { filter } from 'rxjs';
+import { RequestStatus } from 'src/utils/status/request-status.enum';
 
 @ApiTags('Request')
 @Controller('requests')
@@ -33,11 +32,21 @@ export class RequestsController {
 
   @Get('')
   @ApplyPaginationMetadata
+  @ApiQuery({ name: 'status', required: false, enum: RequestStatus })
+  @ApiQuery({ name: 'type', required: false, enum: RequestType })
   async getListRequest(
     @Pagination() pagination: PaginationParams,
-    @Query() filter: RequestFilterDTO,
+    @Query('status') status: RequestStatus,
+    @Query('type') type: RequestType,
   ): Promise<any> {
     // Logger.log(filter);
-    return await this.requestsService.getListRequest(pagination);
+    return await this.requestsService.getListRequest(pagination, status, type);
+  }
+
+  @Get(':request_id')
+  async getDetailRequest(
+    @Param('request_id') request_id: string,
+  ): Promise<any> {
+    return await this.requestsService.getDetailRequest(request_id);
   }
 }
