@@ -10,4 +10,7 @@ export interface IPlantService {
   getAllPlantSeasons(pagination: PaginationParams): Promise<any>;
 
   updatePlant(id: string, status: StatusPlant): Promise<any>;
+
+  removePlant(id: string): Promise<any>;
+  updatePlantSeason(id: string, data: any): Promise<any>;
 }

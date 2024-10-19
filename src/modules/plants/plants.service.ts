@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreatePlantDto } from './dto/create-plant.dto';
 import { UpdatePlantDto } from './dto/update-plant.dto';
@@ -92,8 +93,44 @@ export class PlantsService implements IPlantService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} plant`;
+  async updatePlantSeason(id: string, data: any): Promise<PlantSeason> {
+    //update plant season
+    try {
+      const plant_season = await this.plantSeasonEntity.findOne({
+        where: {
+          id: id,
+        },
+      });
+      if (!plant_season) {
+        throw new BadRequestException('Plant season not found');
+      }
+      //update plant season
+      plant_season.month_start = data.month_start;
+      plant_season.type = data.type;
+      plant_season.price_purchase_per_kg = data.price_purchase_per_kg;
+      plant_season.price_process = data.price_process;
+
+      return await this.plantSeasonEntity.save(plant_season);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async removePlant(id: string): Promise<void> {
+    //delete plant
+    try {
+      const plant = await this.plantEntity.findOne({
+        where: { id },
+      });
+      if (!plant) {
+        throw new NotFoundException(`Plant with ID ${id} not found`);
+      }
+
+      // Delete the plant
+      await this.plantEntity.remove(plant);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   async getAllPlants(pagination: PaginationParams): Promise<any> {
