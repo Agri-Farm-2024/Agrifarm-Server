@@ -79,7 +79,18 @@ export class TasksService implements ITaskService {
     try {
       const tasks = await this.taskEntity.find({
         where: { assigned_to_id: user_id },
-        relations: ['request'],
+        relations: {
+          request: true,
+          assign_by: true,
+        },
+        select: {
+          assign_by: {
+            id: true,
+            full_name: true,
+            email: true,
+            role: true,
+          },
+        },
         order: { created_at: 'DESC' },
       });
       return tasks;
