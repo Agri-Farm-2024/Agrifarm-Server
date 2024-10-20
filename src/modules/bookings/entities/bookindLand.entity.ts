@@ -13,6 +13,21 @@ export class BookindLand extends AbstractEntity {
     Object.assign(this, bookindLand);
   }
 
+  @Column('uuid')
+  land_renter_id: string;
+
+  @Column('uuid')
+  staff_id: string;
+
+  @Column('uuid')
+  land_id: string;
+
+  @Column()
+  time_start: Date;
+
+  @Column()
+  time_end: Date;
+
   @Column()
   total_month: number;
 
@@ -47,21 +62,21 @@ export class BookindLand extends AbstractEntity {
   @OneToOne(() => OrderDetail, (orderDetail) => orderDetail.booking_id)
   booking_order_detail: OrderDetail;
 
-  @ManyToOne(() => User, (user) => user.booking_landrenter_id, {
+  @ManyToOne(() => User, (user) => user.booking_by_lanrenter, {
     nullable: true,
   })
   @JoinColumn({ name: 'landrenter_id' })
-  land_renter_id: User;
+  land_renter: User;
 
   @ManyToOne(() => User, (user) => user.booking_staff_id, {
     nullable: true,
   })
   @JoinColumn({ name: 'staff_id' })
-  staff_id: User;
+  staff: User;
 
   @ManyToOne(() => Land, (land) => land.booking_land, {
     nullable: true,
   })
   @JoinColumn({ name: 'land_id' })
-  land_id: Land;
+  land: Land;
 }

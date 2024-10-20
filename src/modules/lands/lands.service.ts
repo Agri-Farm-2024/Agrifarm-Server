@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { CreateLandDto } from './dto/create-land.dto';
-import { UpdateLandDto } from './dto/update-land.dto';
+import { UpdateLandDTO } from './dto/update-land.dto';
 import { ILandService } from './interfaces/ILandService.interface';
 import { Land } from './entities/land.entity';
 import { LoggerService } from 'src/logger/logger.service';
@@ -193,7 +193,7 @@ export class LandsService implements ILandService {
     }
   }
 
-  async updateLand(data: UpdateLandDto, id: string): Promise<any> {
+  async updateLand(data: UpdateLandDTO, id: string): Promise<any> {
     try {
       const land = await this.landEntity.findOne({
         where: {
@@ -206,6 +206,30 @@ export class LandsService implements ILandService {
       const updated_land = await this.landEntity.save({
         ...land,
         ...data,
+      });
+
+      return updated_land;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async updateLandStatus(id: string, status: LandStatus): Promise<any> {
+    try {
+      const land = await this.landEntity.findOne({
+        where: {
+          id: id,
+        },
+      });
+      if (!land) {
+        throw new BadRequestException('Land not found');
+      }
+      const updated_land = await this.landEntity.save({
+        ...land,
+        status: status,
       });
 
       return updated_land;

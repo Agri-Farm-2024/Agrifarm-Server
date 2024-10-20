@@ -31,6 +31,9 @@ export class Plant extends AbstractEntity {
   )
   service_specific: ServiceSpecific[];
 
-  @OneToMany(() => ProcessStandard, (processStandard) => processStandard.plant_process_id)
+  @OneToMany(
+    () => ProcessStandard,
+    (processStandard) => processStandard.plant_process_id,
+  )
   process_standard: ProcessStandard[];
 }

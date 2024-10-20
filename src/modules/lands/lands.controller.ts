@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { LandsService } from './lands.service';
 import { CreateLandDto } from './dto/create-land.dto';
-import { UpdateLandDto } from './dto/update-land.dto';
+import { UpdateLandDTO } from './dto/update-land.dto';
 import { ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { LandStatus } from './types/land-status.enum';
 

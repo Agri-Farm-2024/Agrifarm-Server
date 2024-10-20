@@ -14,5 +14,6 @@ import { LandURL } from './entities/landURL.entity';
     TypeOrmModule.forFeature([Land, LandSubDescription, LandURL]),
     LoggerModule,
   ],
+  exports: [LandsService],
 })
 export class LandsModule {}

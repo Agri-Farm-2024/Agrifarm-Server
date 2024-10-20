@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
@@ -20,7 +21,13 @@ export class BookingsController {
 
   @UseGuards(AuthGuard)
   @Post()
-  async createBooking(@Body() createBookingDto: CreateBookingDto) {
-    return this.bookingsService.createBooking(createBookingDto);
+  async createBooking(
+    @Body() createBookingDto: CreateBookingDto,
+    @Request() request: any,
+  ): Promise<any> {
+    return await this.bookingsService.createBooking(
+      createBookingDto,
+      request.user,
+    );
   }
 }
