@@ -135,10 +135,13 @@ export class LandsService implements ILandService {
 
   async findAll(status: LandStatus): Promise<any> {
     try {
+      // filter condition
+      const filter_condition: any = {};
+      if (status) {
+        filter_condition.status = status;
+      }
       const lands = await this.landEntity.find({
-        where: {
-          status,
-        },
+        where: filter_condition,
         relations: {
           url: true,
         },
