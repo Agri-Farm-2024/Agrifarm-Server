@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
   Logger,
   Put,
 } from '@nestjs/common';
@@ -28,7 +27,7 @@ export class PlantsController {
 
   @Post('/createPlant')
   createPlant(@Body() createPlantDto: CreatePlantDto) {
-    return this.plantsService.create(createPlantDto);
+    return this.plantsService.createPlant(createPlantDto);
   }
 
   @Post('/createPlantSeason')
@@ -42,7 +41,7 @@ export class PlantsController {
   // }
 
   @ApplyPaginationMetadata
-  @Get('/plant')
+  @Get('/')
   async getAllPlants(@Pagination() pagination: PaginationParams): Promise<any> {
     Logger.log('Get all plants');
     return await this.plantsService.getAllPlants(pagination);
@@ -63,8 +62,11 @@ export class PlantsController {
   }
 
   @Patch(':id')
-  async updatePlant(@Param('id') id: string, @Body() updatePlantDto: UpdatePlantDto) {
-    return  await this.plantsService.updatePlant(id, updatePlantDto.status);
+  async updatePlant(
+    @Param('id') id: string,
+    @Body() updatePlantDto: UpdatePlantDto,
+  ) {
+    return await this.plantsService.updatePlant(id, updatePlantDto.status);
   }
 
   @Put('/updatePlantSeason/:id')
@@ -75,9 +77,8 @@ export class PlantsController {
     return await this.plantsService.updatePlantSeason(id, data);
   }
 
-  @Delete('/plant/:id')
- async remove(@Param('id') id: string) {
+  @Delete('/:id')
+  async remove(@Param('id') id: string) {
     return await this.plantsService.removePlant(id);
   }
-
 }

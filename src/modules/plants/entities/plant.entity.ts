@@ -1,6 +1,6 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
-import { PlantSeason } from './plantSeason';
+import { PlantSeason } from './plantSeason.entity';
 import { StatusPlant } from '../types/plant-status.enum';
 import { ProcessStandard } from 'src/modules/processes/entities/standards/processStandard.entity';
 import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';

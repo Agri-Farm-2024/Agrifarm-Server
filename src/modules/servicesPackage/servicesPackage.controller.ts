@@ -8,37 +8,21 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ServicesService } from './servicesPackage.service';
-import { CreateServiceDto } from './dto/create-service.dto';
-import { UpdateServiceDto } from './dto/update-service.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { CreateServicePackageDTO } from './dto/create-service-package.dto';
 
 @ApiTags('Service')
 @Controller('services')
 export class ServicesController {
   constructor(private readonly servicesService: ServicesService) {}
 
-  @Post()
-  create(@Body() createServiceDto: CreateServiceDto) {
-    return this.servicesService.create(createServiceDto);
+  @Post('/createServicePackage')
+  async createServicePackage(@Body() data: CreateServicePackageDTO) {
+    return this.servicesService.createServicePackage(data);
   }
 
-  @Get()
-  findAll() {
-    return this.servicesService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.servicesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateServiceDto: UpdateServiceDto) {
-    return this.servicesService.update(+id, updateServiceDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.servicesService.remove(+id);
+  @Get('/getListServicePackages')
+  async getListServicePackages() {
+    return this.servicesService.getListServicePackages();
   }
 }

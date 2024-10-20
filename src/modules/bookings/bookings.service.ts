@@ -13,6 +13,7 @@ import { BookindLand } from './entities/bookindLand.entity';
 import { In, LessThanOrEqual, Not, Repository } from 'typeorm';
 import { BookingStatus } from './types/booking-status.enum';
 import { Payload } from '../auths/types/payload.type';
+import { UserRole } from '../users/types/user-role.enum';
 
 @Injectable()
 export class BookingsService implements IBookingService {
@@ -22,6 +23,7 @@ export class BookingsService implements IBookingService {
 
     private readonly landService: LandsService,
   ) {}
+
   /**
    * @function createBooking
    * @param createBookingDto
@@ -72,6 +74,124 @@ export class BookingsService implements IBookingService {
       // update land status to booked
       await this.landService.updateLandStatus(land.id, LandStatus.booked);
       return new_booking;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  /**
+   * @function getListBooking
+   * @param user
+   */
+
+  async getListBookingStrategy(user: Payload): Promise<any> {
+    try {
+      const getListBookingStrategy = {
+        [UserRole.admin]: this.getAllBooking.bind(this),
+        [UserRole.manager]: this.getAllBooking.bind(this),
+        [UserRole.staff]: this.getALLBookingByStaff.bind(this),
+        [UserRole.land_renter]: this.getALLBookingByLandrenter.bind(this),
+      };
+
+      return await getListBookingStrategy[user.role](user);
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  private async getAllBooking(user: any): Promise<any> {
+    try {
+      const bookings = await this.bookingEntity.find({
+        relations: {
+          land: true,
+          land_renter: true,
+          staff: true,
+        },
+      });
+      return bookings;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  private async getALLBookingByStaff(user: any): Promise<any> {
+    try {
+      const bookings = await this.bookingEntity.find({
+        where: {
+          staff_id: user.id,
+        },
+        relations: {
+          land: true,
+          land_renter: true,
+          staff: true,
+        },
+      });
+      return bookings;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  private async getALLBookingByLandrenter(user: any): Promise<any> {
+    try {
+      const bookings = await this.bookingEntity.find({
+        where: {
+          landrenter_id: user.id,
+        },
+        relations: {
+          land: true,
+          land_renter: true,
+          staff: true,
+        },
+      });
+      return bookings;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  /**
+   * @function getDetailBooking
+   * @param bookingId
+   */
+
+  async getBookingDetail(bookingId: string): Promise<any> {
+    try {
+      // get booking detail
+      const booking = await this.bookingEntity.findOne({
+        where: {
+          id: bookingId,
+        },
+        relations: {
+          land: true,
+          land_renter: true,
+          staff: true,
+        },
+        select: {
+          land_renter: {
+            id: true,
+            full_name: true,
+            email: true,
+            role: true,
+          },
+          staff: {
+            id: true,
+            full_name: true,
+            email: true,
+            role: true,
+          },
+        },
+      });
+      if (!booking) {
+        throw new BadRequestException('Booking not found');
+      }
+      return booking;
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;

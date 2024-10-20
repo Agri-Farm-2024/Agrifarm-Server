@@ -2,7 +2,7 @@ import { Pagination } from 'src/common/decorations/pagination.decoration';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { StatusPlant } from '../types/plant-status.enum';
 export interface IPlantService {
-  create(createPlantDto: any): any;
+  createPlant(createPlantDto: any): any;
 
   getAllPlants(pagination: PaginationParams): Promise<any>;
 

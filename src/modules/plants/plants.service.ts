@@ -6,16 +6,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreatePlantDto } from './dto/create-plant.dto';
-import { UpdatePlantDto } from './dto/update-plant.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../users/entities/user.entity';
 import { LoggerService } from 'src/logger/logger.service';
-import { Like, Repository } from 'typeorm';
-import { CreateUserDto } from '../users/dto/create-user.dto';
+import { Repository } from 'typeorm';
 import { Plant } from './entities/plant.entity';
 import { IPlantService } from './interfaces/IPlantService.interface';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
-import { PlantSeason } from './entities/plantSeason';
+import { PlantSeason } from './entities/plantSeason.entity';
 import { CreatePlantSeasonDto } from './dto/create-plantSeason.dto';
 import { StatusPlant } from './types/plant-status.enum';
 
@@ -24,13 +21,16 @@ export class PlantsService implements IPlantService {
   constructor(
     @InjectRepository(Plant)
     private readonly plantEntity: Repository<Plant>,
+
     private readonly loggerService: LoggerService,
+
     @InjectRepository(PlantSeason)
     private readonly plantSeasonEntity: Repository<PlantSeason>,
+
     private readonly logger: LoggerService,
   ) {}
 
-  async create(createPlantDto: CreatePlantDto) {
+  async createPlant(createPlantDto: CreatePlantDto) {
     //create new plant
     const new_plant = await this.plantEntity.save({
       ...createPlantDto,

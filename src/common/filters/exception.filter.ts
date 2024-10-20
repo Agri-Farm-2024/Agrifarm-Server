@@ -21,11 +21,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const errorResponse: any = exception.getResponse();
-      // Use provided message or fallback to default based on the status
-      message =
-        errorResponse.message ||
-        exception.message ||
-        this.getDefaultMessage(status);
+      // Handle array or string messages
+      message = Array.isArray(errorResponse.message)
+        ? errorResponse.message.join(', ') // Join array of messages into a single string
+        : errorResponse.message ||
+          exception.message ||
+          this.getDefaultMessage(status);
+
       metadata = errorResponse.metadata || null; // Optional: additional error data
     } else {
       // If the exception is not an instance of HttpException (e.g. internal errors)

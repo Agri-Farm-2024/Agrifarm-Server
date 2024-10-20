@@ -5,6 +5,7 @@ import {
   UseGuards,
   Request,
   Get,
+  Param,
 } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
@@ -30,10 +31,17 @@ export class BookingsController {
     );
   }
 
-  // @UseGuards(AuthGuard)
-  // @Roles(UserRole.admin, UserRole.manager)
-  // @Get('/getAllBooking')
-  // async getAllBooking(): Promise<any> {
-  //   return await this.bookingsService.getAllBooking();
-  // }
+  @Get('/:booking_id')
+  async getBookingDetail(
+    @Param('booking_id') booking_id: string,
+  ): Promise<any> {
+    return await this.bookingsService.getBookingDetail(booking_id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.admin, UserRole.manager)
+  @Get('/')
+  async getAllBooking(@Request() request: any): Promise<any> {
+    return await this.bookingsService.getListBookingStrategy(request.user);
+  }
 }

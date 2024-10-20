@@ -13,7 +13,10 @@ export class PlantSeason extends AbstractEntity {
   @Column('uuid', { name: 'plant_id', nullable: true })
   plant_id: string;
 
-  @Column('int')
+  @Column({
+    type: 'int',
+    default: 1,
+  })
   month_start: number;
 
   @Column('int')

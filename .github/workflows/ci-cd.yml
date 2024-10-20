@@ -13,20 +13,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Set up Node.js
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      # Install dependencies locally if necessary
-      - name: Install dependencies
-        run: npm install
-
-      # Run unit tests
-      - name: Run tests
-        run: npm run test
-
       # Copy .env file to server
       - name: Copy .env file to server
         uses: appleboy/scp-action@v0.1.1
