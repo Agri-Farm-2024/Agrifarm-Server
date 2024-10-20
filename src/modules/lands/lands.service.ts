@@ -157,7 +157,7 @@ export class LandsService implements ILandService {
 
   async getDetailLandById(id: string): Promise<any> {
     try {
-      const lands = await this.landEntity.find({
+      const lands = await this.landEntity.findOne({
         where: {
           id: id,
         },

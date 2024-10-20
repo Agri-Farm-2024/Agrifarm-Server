@@ -32,11 +32,9 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('Access token is missing');
     }
     accessToken = accessToken?.split(' ')[1];
-    Logger.log(accessToken, 'Access token');
 
     // Get refresh token from request headers
     const refreshToken = request.headers['refresh'];
-    Logger.log(refreshToken, 'Refresh token');
 
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token is missing');

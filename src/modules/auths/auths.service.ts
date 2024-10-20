@@ -238,7 +238,7 @@ export class AuthsService implements IAuthService {
     };
   }
 
-  async getAccessToken(refreshToken: string): Promise<string> {
+  async getAccessToken(refreshToken: string): Promise<any> {
     const token_exist = await this.redisService.get(`token:${refreshToken}`);
     const token_exist_obj: InfoToken = JSON.parse(token_exist);
 
@@ -261,7 +261,7 @@ export class AuthsService implements IAuthService {
       algorithm: 'RS256',
     });
 
-    return accessToken;
+    return { accessToken };
   }
 
   /**

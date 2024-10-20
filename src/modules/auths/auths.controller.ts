@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Query } from '@nestjs/common';
+import { Controller, Post, Body, Query, Request, Get } from '@nestjs/common';
 import { AuthsService } from './auths.service';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { LoginDTO } from './dto/login.dto';
@@ -50,8 +50,10 @@ export class AuthsController {
     return await this.authsService.register(data);
   }
 
-  @Post('/getAccessToken')
-  async getAccessToken(@Body() data: GetAccessTokenDto) {
-    return await this.authsService.getAccessToken(data.refreshToken);
+  @Get('/getAccessToken')
+  async getAccessToken(@Request() data: any) {
+    const header = data.headers;
+    const refreshToken = header['refresh'];
+    return await this.authsService.getAccessToken(refreshToken);
   }
 }

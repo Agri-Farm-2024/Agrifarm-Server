@@ -80,7 +80,7 @@ export class User extends AbstractEntity {
   )
   service_specific: ServiceSpecific[];
 
-  @OneToMany(() => BookindLand, (bookindLand) => bookindLand.land_renter_id)
+  @OneToMany(() => BookindLand, (bookindLand) => bookindLand.land_renter)
   booking_by_lanrenter: BookindLand[];
 
   @OneToMany(() => BookindLand, (bookindLand) => bookindLand.staff_id)

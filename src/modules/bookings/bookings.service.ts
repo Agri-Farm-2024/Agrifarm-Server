@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { IBookingService } from './interfaces/IBookingService.interface';
@@ -60,7 +61,8 @@ export class BookingsService implements IBookingService {
       // create new booking
       const new_booking = await this.bookingEntity.save({
         ...createBookingDto,
-        land_renter_id: land_renter.id,
+        landrenter_id: land_renter.id,
+        price_per_month: Math.floor(land.price_booking_per_month),
         time_end: time_end,
         staff_id: land.staff_id,
         total_price: total_price,

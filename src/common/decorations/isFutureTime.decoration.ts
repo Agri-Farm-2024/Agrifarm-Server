@@ -13,6 +13,7 @@ export function IsFutureDate(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(value: any, args: ValidationArguments) {
+          value = new Date(value); // Convert the value to a Date object
           if (!(value instanceof Date)) return false; // Ensure the value is a Date object
           const now = new Date();
           return value > now; // Check if the date is in the future

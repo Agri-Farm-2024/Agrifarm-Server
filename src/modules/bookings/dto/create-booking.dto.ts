@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsDate, IsNotEmpty, Max, Min } from 'class-validator';
 import { IsFutureDate } from 'src/common/decorations/isFutureTime.decoration';
 
@@ -20,8 +21,9 @@ export class CreateBookingDto {
   @IsNotEmpty({
     message: 'You must enter a total month ',
   })
+  @Type(() => Date)
   @IsDate({
-    message: 'You must enter a valid date',
+    message: 'Date must be a valid date format',
   })
   @IsFutureDate({
     message: 'Date must be in the future',
@@ -48,6 +50,9 @@ export class CreateBookingDto {
     description: 'purpose rental',
     type: String,
     example: 'rental for business',
+  })
+  @IsNotEmpty({
+    message: 'You must enter a purpose rental ',
   })
   purpose_rental: string;
 }

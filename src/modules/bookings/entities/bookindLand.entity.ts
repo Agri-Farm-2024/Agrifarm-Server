@@ -14,7 +14,7 @@ export class BookindLand extends AbstractEntity {
   }
 
   @Column('uuid')
-  land_renter_id: string;
+  landrenter_id: string;
 
   @Column('uuid')
   staff_id: string;
@@ -28,7 +28,10 @@ export class BookindLand extends AbstractEntity {
   @Column()
   time_end: Date;
 
-  @Column()
+  @Column({
+    type: 'int',
+    default: 1,
+  })
   total_month: number;
 
   @Column()
@@ -37,17 +40,21 @@ export class BookindLand extends AbstractEntity {
   @Column()
   price_deposit: number;
 
-  @Column()
+  @Column({ type: 'bigint' })
   total_price: number;
-
-  @Column()
-  reason_for_reject: string;
 
   @Column()
   purpose_rental: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   contract_image: string;
+
+  @Column({
+    nullable: true,
+  })
+  reason_for_reject: string;
 
   @Column({
     type: 'enum',
