@@ -11,7 +11,7 @@ import {
 import { LandsService } from './lands.service';
 import { CreateLandDto } from './dto/create-land.dto';
 import { UpdateLandDto } from './dto/update-land.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { LandStatus } from './types/land-status.enum';
 
 @ApiTags('Land')
@@ -24,6 +24,12 @@ export class LandsController {
     return this.landsService.createLand(createLandDto);
   }
 
+  @ApiQuery({
+    enum: LandStatus,
+    description: 'Get all lands by status',
+    required: false,
+    name: 'status',
+  })
   @Get()
   findAll(@Query('status') status: LandStatus) {
     return this.landsService.findAll(status);

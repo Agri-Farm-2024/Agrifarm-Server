@@ -3,8 +3,8 @@ import { Extend } from 'src/modules/extends/entities/extend.entity';
 import { Land } from 'src/modules/lands/entities/land.entity';
 import { OrderDetail } from 'src/modules/orders/entities/orderDetail.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import { BookingStatus } from 'src/utils/status/booking-status.enum';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
+import { BookingStatus } from '../types/booking-status.enum';
 
 @Entity('bookings_land')
 export class BookindLand extends AbstractEntity {
@@ -12,24 +12,6 @@ export class BookindLand extends AbstractEntity {
     super();
     Object.assign(this, bookindLand);
   }
-
-  @ManyToOne(() => User, (user) => user.booking_landrenter_id, {
-    nullable: true,
-  })
-  @JoinColumn({ name: 'landrenter_id' })
-  land_renter_id: User;
-
-  @ManyToOne(() => User, (user) => user.booking_staff_id, {
-    nullable: true,
-  })
-  @JoinColumn({ name: 'staff_id' })
-  staff_id: User;
-
-  @ManyToOne(() => Land, (land) => land.booking_land, {
-    nullable: true,
-  })
-  @JoinColumn({ name: 'land_id' })
-  land_id: Land;
 
   @Column()
   total_month: number;
@@ -64,4 +46,22 @@ export class BookindLand extends AbstractEntity {
 
   @OneToOne(() => OrderDetail, (orderDetail) => orderDetail.booking_id)
   booking_order_detail: OrderDetail;
+
+  @ManyToOne(() => User, (user) => user.booking_landrenter_id, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'landrenter_id' })
+  land_renter_id: User;
+
+  @ManyToOne(() => User, (user) => user.booking_staff_id, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'staff_id' })
+  staff_id: User;
+
+  @ManyToOne(() => Land, (land) => land.booking_land, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'land_id' })
+  land_id: Land;
 }
