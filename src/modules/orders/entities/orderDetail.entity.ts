@@ -3,8 +3,8 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 import { Order } from './order.entity';
 import { BookindLand } from 'src/modules/bookings/entities/bookindLand.entity';
 import { Material } from 'src/modules/materials/entities/material.entity';
-import { ServiceSpecific } from 'src/modules/services/entities/serviceSpecific.entity';
 import { TypeOrderDetail } from 'src/utils/types/orderDetail-type.enum';
+import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
 @Entity('order_details')
 export class OrderDetail extends AbstractEntity {
   constructor(orderDetail: Partial<OrderDetail>) {
@@ -42,6 +42,4 @@ export class OrderDetail extends AbstractEntity {
     default: TypeOrderDetail.booking,
   })
   type: TypeOrderDetail;
-
-  
 }

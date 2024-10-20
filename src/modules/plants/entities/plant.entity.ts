@@ -1,9 +1,9 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { PlantSeason } from './plantSeason';
-import { ServiceSpecific } from 'src/modules/services/entities/serviceSpecific.entity';
 import { StatusPlant } from '../types/plant-status.enum';
 import { ProcessStandard } from 'src/modules/processes/entities/standards/processStandard.entity';
+import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
 
 @Entity('plants')
 export class Plant extends AbstractEntity {
@@ -25,10 +25,7 @@ export class Plant extends AbstractEntity {
   @OneToMany(() => PlantSeason, (plantSeason) => plantSeason.plant)
   plants_season: PlantSeason[];
 
-  @OneToMany(
-    () => ServiceSpecific,
-    (serviceSpecific) => serviceSpecific.plantService_id,
-  )
+  @OneToMany(() => ServiceSpecific, (serviceSpecific) => serviceSpecific.plant)
   service_specific: ServiceSpecific[];
 
   @OneToMany(

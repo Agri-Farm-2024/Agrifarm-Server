@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  Logger,
 } from '@nestjs/common';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { IBookingService } from './interfaces/IBookingService.interface';

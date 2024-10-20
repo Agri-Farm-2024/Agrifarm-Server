@@ -6,13 +6,13 @@ import { DinaryStage } from 'src/modules/dinaries/entities/dinaryStage.entity';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { Task } from 'src/modules/tasks/entities/task.entity';
 import { Dinary } from 'src/modules/dinaries/entities/dinary.entity';
-import { ServiceSpecific } from 'src/modules/services/entities/serviceSpecific.entity';
 import { BookindLand } from 'src/modules/bookings/entities/bookindLand.entity';
 import { Extend } from 'src/modules/extends/entities/extend.entity';
 import { Order } from 'src/modules/orders/entities/order.entity';
 import { UserStatus } from '../types/user-status.enum';
 import { UserRole } from '../types/user-role.enum';
 import { ProcessStandard } from 'src/modules/processes/entities/standards/processStandard.entity';
+import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
 
 @Entity('users') // Maps this class to the 'users' table in the database
 export class User extends AbstractEntity {
