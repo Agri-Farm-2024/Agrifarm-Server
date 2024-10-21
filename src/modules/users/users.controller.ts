@@ -6,11 +6,12 @@ import {
   UseGuards,
   Patch,
   Param,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ConfigService } from '@nestjs/config';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { Roles } from 'src/common/decorations/role.decoration';
 import {
@@ -34,12 +35,16 @@ export class UsersController {
     return await this.usersService.create(createUserDto);
   }
 
-  @UseGuards(AuthGuard)
-  @Roles(UserRole.admin)
+  // @UseGuards(AuthGuard)
+  // @Roles(UserRole.admin)
   @ApplyPaginationMetadata
+  @ApiQuery({ name: 'role', required: false, enum: UserRole })
   @Get()
-  async findAll(@Pagination() pagination: PaginationParams): Promise<any> {
-    return await this.usersService.getAllUsers(pagination);
+  async findAll(
+    @Pagination() pagination: PaginationParams,
+    @Query('role') role: UserRole,
+  ): Promise<any> {
+    return await this.usersService.getAllUsers(pagination, role);
   }
 
   @Patch('/updateStatus/:id')

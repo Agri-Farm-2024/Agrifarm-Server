@@ -81,7 +81,9 @@ export class RequestsService implements IRequestService {
             status: 'ASC',
           },
         }),
-        this.requestEntity.count({}),
+        this.requestEntity.count({
+          where: filter_condition,
+        }),
       ]);
       // get total page
       const total_page = Math.ceil(total_count / pagination.page_size);

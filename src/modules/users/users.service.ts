@@ -16,6 +16,7 @@ import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { SubjectMailEnum } from 'src/mails/types/subject.type';
 import { TemplateMailEnum } from 'src/mails/types/template.type';
 import { UserStatus } from './types/user-status.enum';
+import { UserRole } from './types/user-role.enum';
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -92,29 +93,35 @@ export class UsersService implements IUserService {
    * @returns
    */
 
-  async getAllUsers(pagination: PaginationParams): Promise<any> {
+  async getAllUsers(
+    pagination: PaginationParams,
+    role: UserRole,
+  ): Promise<any> {
     try {
-      const filter = pagination.search.map((searchItem) => {
-        // check filter empty
-        if (searchItem.field === '') {
-          return {
-            email: Like(`%${searchItem.value}%`),
-          };
+      // Build filter_search array based on search parameters
+      const filter_search = pagination.search.reduce((acc, searchItem) => {
+        if (searchItem.field && searchItem.value) {
+          acc[searchItem.field] = Like(`%${searchItem.value}%`);
         }
+        return acc;
+      }, {});
 
-        return {
-          [searchItem.field]: Like(`%${searchItem.value}%`),
-        };
-      });
-      // Get all users
+      // Create filter for role
+      const filter_role = role ? { role } : {};
+
+      // Merge filters
+      const filters = { ...filter_search, ...filter_role };
+      // Get all user
       const [users, total_count] = await Promise.all([
         this.userEntity.find({
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
           select: ['id', 'full_name', 'email', 'created_at', 'dob', 'role'],
-          where: filter,
+          where: filters,
         }),
-        this.userEntity.count({}),
+        this.userEntity.count({
+          where: filters,
+        }),
       ]);
       // get total page
       const total_page = Math.ceil(total_count / pagination.page_size);
