@@ -13,16 +13,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Copy .env file to server
-      - name: Copy .env file to server
-        uses: appleboy/scp-action@v0.1.1
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          source: ${{secrets.ENV}}
-          target: '/Agrifarm-Server/.env'
-
       # Deploy to server via SSH and perform multiple steps
       - name: Deploy and build on server
         uses: appleboy/ssh-action@v0.1.8
@@ -40,15 +30,18 @@ jobs:
             # Step 3: Install dependencies
             npm install
 
-            # Step 3: Remove any old Docker images related to the project
+            # Step 4: Add environment variables
+            echo ${{secrets.ENV}} > .env
+
+            # Step 5: Remove any old Docker images related to the project
             docker rmi agri-farm-server || true
 
-            # Step 4: Build a new Docker image and tag it as the latest
+            # Step 6: Build a new Docker image and tag it as the latest
             docker build -t agri-farm-server:latest .
 
-            # Step 5: Stop and remove the old running container
+            # Step 7: Stop and remove the old running container
             docker stop agri-farm-server || true
             docker rm agri-farm-server || true
 
-            # Step 6: Run the new Docker container using the new image
+            # Step 8: Run the new Docker container using the new image
             docker run --env-file .env -d --name agri-farm-server -p 3000:3000 agri-farm-server:latest

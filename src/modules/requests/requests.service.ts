@@ -105,7 +105,30 @@ export class RequestsService implements IRequestService {
         where: {
           id: request_id,
         },
-        relations: ['task'],
+        relations: {
+          task: {
+            assign_by: true,
+            assign_to: true,
+          },
+        },
+        select: {
+          task: {
+            id: true,
+            assigned_at: true,
+            assign_by: {
+              id: true,
+              email: true,
+              full_name: true,
+              role: true,
+            },
+            assign_to: {
+              id: true,
+              email: true,
+              full_name: true,
+              role: true,
+            },
+          },
+        },
       });
       if (!request) {
         throw new BadRequestException('Request not found');
