@@ -8,7 +8,7 @@ import {
 import { CreatePlantDto } from './dto/create-plant.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoggerService } from 'src/logger/logger.service';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Plant } from './entities/plant.entity';
 import { IPlantService } from './interfaces/IPlantService.interface';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
@@ -134,14 +134,25 @@ export class PlantsService implements IPlantService {
   }
 
   async getAllPlants(pagination: PaginationParams): Promise<any> {
-    //get all plant
-    Logger.log('Get all plants');
+    // check filter condition
+    const filter_search = pagination.search.reduce((acc, searchItem) => {
+      if (searchItem.field && searchItem.value) {
+        acc[searchItem.field] = Like(`%${searchItem.value}%`);
+      }
+      return acc;
+    }, {});
+    // check condition by enum
+
+    const filter = { ...filter_search };
     const [plants, total_count] = await Promise.all([
       this.plantEntity.find({
         skip: (pagination.page_index - 1) * pagination.page_size,
         take: pagination.page_size,
+        where: filter,
       }),
-      this.plantEntity.count({}),
+      this.plantEntity.count({
+        where: filter,
+      }),
     ]);
 
     // get total page
@@ -158,7 +169,6 @@ export class PlantsService implements IPlantService {
   async getAllPlantSeasons(pagination: PaginationParams): Promise<any> {
     try {
       //get all plant season
-      Logger.log('Get all plant seasons');
       const [plant_seasons, total_count] = await Promise.all([
         this.plantSeasonEntity.find({
           skip: (pagination.page_index - 1) * pagination.page_size,
