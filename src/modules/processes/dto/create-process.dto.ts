@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, Max, Min, IsOptional } from 'class-validator';
+import { IsNotEmpty, Max, Min, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TypeProcess } from '../types/type-process.enum';
 import { CreateProcessStageDto } from './create-process-stage.dto';
@@ -7,7 +7,6 @@ export class CreateProcessDto {
     description: 'the UUID of the plant',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
-  @IsString()
   @IsNotEmpty()
   plant_id: string;
 
@@ -15,9 +14,9 @@ export class CreateProcessDto {
     description: 'the name process',
     example: 'Process 1',
   })
-  @IsString()
   @IsNotEmpty()
   name: string;
+
   @ApiProperty({
     description: 'total month of process',
     example: 12,
@@ -27,13 +26,12 @@ export class CreateProcessDto {
   @Max(12)
   @Min(1)
   total_month: number;
+
   @ApiProperty({
     description: 'the type of process',
     example: TypeProcess.in_season,
   })
   @IsNotEmpty()
-  @IsString()
-  @IsOptional()
   type_process: TypeProcess;
 
   @ApiProperty({
@@ -41,6 +39,5 @@ export class CreateProcessDto {
     type: [CreateProcessStageDto],
   })
   @IsOptional()
-  @IsNotEmpty()
   stage: CreateProcessStageDto[];
 }

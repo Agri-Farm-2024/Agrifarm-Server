@@ -91,6 +91,7 @@ export class User extends AbstractEntity {
 
   @OneToMany(() => Order, (order) => order.land_renter)
   orders_landrenter_id: Order[];
+
   @OneToMany(() => ProcessStandard, (processStandard) => processStandard.expert)
-  process_standard_expert_id: ProcessStandard[];
+  process_standard_by_expert: ProcessStandard[];
 }

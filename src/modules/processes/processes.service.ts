@@ -4,11 +4,10 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { CreateProcessDto } from './dto/create-process.dto';
-import { UpdateProcessDto } from './dto/update-process.dto';
 import { IProcessesService } from './interfaces/IProcessesService.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProcessStandard } from './entities/standards/processStandard.entity';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ProcessStandardStage } from './entities/standards/processStandardStage.entity';
 import { ProcessStandardStageContent } from './entities/standards/processStandardStageContent.entity';
 import { CreateProcessStageDto } from './dto/create-process-stage.dto';
@@ -61,6 +60,7 @@ export class ProcessesService implements IProcessesService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
   async createProcessStage(
     data: CreateProcessStageDto,
     process_id: string,
@@ -87,6 +87,7 @@ export class ProcessesService implements IProcessesService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
   async createProcessStageContent(
     data: CreateProcessStageContentDto,
     process_stage_id: string,
@@ -107,10 +108,6 @@ export class ProcessesService implements IProcessesService {
 
   findOne(id: number) {
     return `This action returns a #${id} process`;
-  }
-
-  update(id: number, updateProcessDto: UpdateProcessDto) {
-    return `This action updates a #${id} process`;
   }
 
   remove(id: number) {

@@ -10,6 +10,12 @@ import { ProcessStandardStageContent } from './entities/standards/processStandar
 @Module({
   controllers: [ProcessesController],
   providers: [ProcessesService],
-  imports: [TypeOrmModule.forFeature([ProcessStandard, ProcessStandardStage,ProcessStandardStageContent])],
+  imports: [
+    TypeOrmModule.forFeature([
+      ProcessStandard,
+      ProcessStandardStage,
+      ProcessStandardStageContent,
+    ]),
+  ],
 })
 export class ProcessesModule {}

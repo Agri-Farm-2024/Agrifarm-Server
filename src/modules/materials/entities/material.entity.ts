@@ -11,21 +11,28 @@ export class Material extends AbstractEntity {
 
   @Column()
   name: string;
+
   @Column()
   total_quantity: number;
+
   @Column()
   price_per_piece: number;
+
   @Column()
   deposit_per_piece: number;
+
   @Column()
   image_material: string;
+
   @Column()
   price_of_rent: number;
+
   @Column({
     type: 'enum',
     enum: ['buy', 'rent'],
   })
   type: string;
+
   @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.material_id)
   material_order_details_id: OrderDetail[];
 }

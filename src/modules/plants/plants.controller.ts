@@ -12,13 +12,14 @@ import {
 import { PlantsService } from './plants.service';
 import { CreatePlantDto } from './dto/create-plant.dto';
 import { UpdatePlantDto } from './dto/update-plant.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import {
   ApplyPaginationMetadata,
   Pagination,
 } from 'src/common/decorations/pagination.decoration';
 import { CreatePlantSeasonDto } from './dto/create-plantSeason.dto';
+import { StatusPlant } from './types/plant-status.enum';
 
 @ApiTags('Plants')
 @Controller('plants')
@@ -41,6 +42,11 @@ export class PlantsController {
   // }
 
   @ApplyPaginationMetadata
+  @ApiProperty({
+    type: StatusPlant,
+    description: 'Filter plants by status',
+    required: false,
+  })
   @Get('/')
   async getAllPlants(@Pagination() pagination: PaginationParams): Promise<any> {
     Logger.log('Get all plants');

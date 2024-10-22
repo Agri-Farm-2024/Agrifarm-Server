@@ -1,7 +1,8 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { ProcessStandardStage } from './processStandardStage.entity';
-@Entity('processes_technical_standard_stage_content')
+
+@Entity('processes_technical_standard_stage_material')
 export class ProcessStandardStageContent extends AbstractEntity {
   constructor(
     processStandardStageContent: Partial<ProcessStandardStageContent>,
@@ -13,20 +14,8 @@ export class ProcessStandardStageContent extends AbstractEntity {
   @Column('uuid', { nullable: true })
   process_standard_stage_id: string;
 
-  @Column()
-  title: string;
-
-  @Column()
-  content: string;
-
-  @Column('int')
-  time_start: number;
-
-  @Column('int')
-  time_end: number;
-
-  @Column('int')
-  content_numberic_order: number;
+  @Column('uuid')
+  material_id: string;
 
   @ManyToOne(
     () => ProcessStandardStage,

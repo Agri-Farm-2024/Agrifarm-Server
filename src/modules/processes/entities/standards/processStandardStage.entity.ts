@@ -1,7 +1,6 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { ProcessStandard } from './processStandard.entity';
-import { JoinAttribute } from 'typeorm/query-builder/JoinAttribute';
 import { TypeStageProcess } from '../../types/type-stage.enum';
 import { ProcessStandardStageContent } from './processStandardStageContent.entity';
 
@@ -12,16 +11,18 @@ export class ProcessStandardStage extends AbstractEntity {
     Object.assign(this, processStandardStage);
   }
 
-  @Column('uuid', { name: 'process_standard_id', nullable: true })
+  @Column('uuid')
   process_standard_id: string;
 
   @Column()
-  title: string;
+  stage_title: string;
 
   @Column('int')
-  numberic_order: number;
+  stage_numberic_order: number;
+
   @Column('int')
   time_start: number;
+
   @Column('int')
   time_end: number;
 
@@ -29,7 +30,8 @@ export class ProcessStandardStage extends AbstractEntity {
     type: 'enum',
     enum: TypeStageProcess,
   })
-  type_stage: TypeStageProcess;
+  stage_type: TypeStageProcess;
+
   @ManyToOne(
     () => ProcessStandard,
     (processStandard) => processStandard.process_standard_stage,
