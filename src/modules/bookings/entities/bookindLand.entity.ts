@@ -3,7 +3,14 @@ import { Extend } from 'src/modules/extends/entities/extend.entity';
 import { Land } from 'src/modules/lands/entities/land.entity';
 import { OrderDetail } from 'src/modules/orders/entities/orderDetail.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { BookingStatus } from '../types/booking-status.enum';
 
 @Entity('bookings_land')
@@ -12,6 +19,9 @@ export class BookindLand extends AbstractEntity {
     super();
     Object.assign(this, bookindLand);
   }
+
+  @PrimaryGeneratedColumn('uuid')
+  booking_id: string;
 
   @Column('uuid')
   landrenter_id: string;
@@ -45,6 +55,9 @@ export class BookindLand extends AbstractEntity {
 
   @Column()
   purpose_rental: string;
+
+  @Column({ default: false })
+  is_schedule: boolean;
 
   @Column({
     nullable: true,

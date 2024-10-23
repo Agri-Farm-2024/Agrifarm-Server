@@ -1,5 +1,5 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { PlantSeason } from './plantSeason.entity';
 import { StatusPlant } from '../types/plant-status.enum';
 import { ProcessStandard } from 'src/modules/processes/entities/standards/processStandard.entity';
@@ -11,6 +11,9 @@ export class Plant extends AbstractEntity {
     super();
     Object.assign(this, plant);
   }
+
+  @PrimaryGeneratedColumn('uuid')
+  plant_id: string;
 
   @Column()
   name: string;

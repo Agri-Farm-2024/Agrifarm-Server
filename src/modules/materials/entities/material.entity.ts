@@ -1,6 +1,6 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { OrderDetail } from 'src/modules/orders/entities/orderDetail.entity';
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('materials')
 export class Material extends AbstractEntity {
@@ -8,6 +8,9 @@ export class Material extends AbstractEntity {
     super();
     Object.assign(this, material);
   }
+
+  @PrimaryGeneratedColumn('uuid')
+  material_id: string;
 
   @Column()
   name: string;

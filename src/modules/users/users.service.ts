@@ -116,7 +116,14 @@ export class UsersService implements IUserService {
         this.userEntity.find({
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
-          select: ['id', 'full_name', 'email', 'created_at', 'dob', 'role'],
+          select: {
+            user_id: true,
+            full_name: true,
+            email: true,
+            role: true,
+            status: true,
+            created_at: true,
+          },
           where: filters,
         }),
         this.userEntity.count({
@@ -144,7 +151,7 @@ export class UsersService implements IUserService {
     try {
       return await this.userEntity.findOne({
         where: {
-          id: id,
+          user_id: id,
         },
       });
     } catch (error) {

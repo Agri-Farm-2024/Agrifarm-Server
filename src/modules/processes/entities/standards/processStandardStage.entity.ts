@@ -1,5 +1,12 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ProcessStandard } from './processStandard.entity';
 import { TypeStageProcess } from '../../types/type-stage.enum';
 import { ProcessStandardStageContent } from './processStandardStageContent.entity';
@@ -11,8 +18,11 @@ export class ProcessStandardStage extends AbstractEntity {
     Object.assign(this, processStandardStage);
   }
 
+  @PrimaryGeneratedColumn('uuid')
+  process_technical_standard_stage_id: string;
+
   @Column('uuid')
-  process_standard_id: string;
+  process_technical_standard_id: string;
 
   @Column()
   stage_title: string;

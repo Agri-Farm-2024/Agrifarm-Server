@@ -44,7 +44,7 @@ export class TasksService implements ITaskService {
     try {
       // check task exist
       const task = await this.taskEntity.findOneBy({
-        id: task_id,
+        task_id: task_id,
       });
       if (!task) {
         throw new BadRequestException('Task not found');
@@ -85,7 +85,7 @@ export class TasksService implements ITaskService {
         },
         select: {
           assign_by: {
-            id: true,
+            user_id: true,
             full_name: true,
             email: true,
             role: true,

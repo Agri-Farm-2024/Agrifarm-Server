@@ -1,7 +1,14 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { BookindLand } from 'src/modules/bookings/entities/bookindLand.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Land } from './land.entity';
 import { LandURLType } from '../types/land-url-type.enum';
 
@@ -11,6 +18,9 @@ export class LandURL extends AbstractEntity {
     super();
     Object.assign(this, land);
   }
+
+  @PrimaryGeneratedColumn('uuid')
+  land_url_id: string;
 
   @Column()
   string_url: string;

@@ -4,7 +4,6 @@ export enum BookingStatus {
   rejected = 'rejected',
   pending_sign = 'pending_sign',
   pending_payment = 'pending_payment',
-  availible = 'availible',
   completed = 'completed',
   expired = 'expired',
 }

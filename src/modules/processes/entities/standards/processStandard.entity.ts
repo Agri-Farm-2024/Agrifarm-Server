@@ -2,7 +2,14 @@ import e from 'express';
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { Plant } from 'src/modules/plants/entities/plant.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { StatusProcessStandard } from '../../types/status-processStandard.enum';
 import { TypeProcess } from '../../types/type-process.enum';
 import { ProcessStandardStage } from './processStandardStage.entity';
@@ -12,6 +19,10 @@ export class ProcessStandard extends AbstractEntity {
     super();
     Object.assign(this, processStandard);
   }
+
+  @PrimaryGeneratedColumn('uuid')
+  process_technical_standard_id: string;
+
   @Column('uuid')
   plant_id: string;
 

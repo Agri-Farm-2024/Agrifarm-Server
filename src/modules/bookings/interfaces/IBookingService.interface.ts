@@ -1,4 +1,5 @@
 import { Payload } from 'src/modules/auths/types/payload.type';
+import { UpdateStatusBookingDTO } from '../dto/update-status-booking.dto';
 
 export interface IBookingService {
   createBooking(createBookingDto: any, land_renter: Payload): Promise<any>;
@@ -7,5 +8,9 @@ export interface IBookingService {
 
   getListBookingStrategy(user: Payload): Promise<any>;
 
-  updateStatusBooking(bookingId: string, data: any): Promise<any>;
+  updateStatusBookingStrategy(
+    bookingId: string,
+    data: UpdateStatusBookingDTO,
+    user: Payload,
+  ): Promise<any>;
 }

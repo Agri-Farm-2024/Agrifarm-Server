@@ -1,4 +1,4 @@
-import { Entity, Column, OneToMany } from 'typeorm';
+import { Entity, Column, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { Land } from 'src/modules/lands/entities/land.entity';
 import { Request } from 'src/modules/requests/entities/request.entity';
@@ -20,6 +20,9 @@ export class User extends AbstractEntity {
     super();
     Object.assign(this, user);
   }
+
+  @PrimaryGeneratedColumn('uuid')
+  user_id: string;
 
   @Column({ unique: true })
   email: string;

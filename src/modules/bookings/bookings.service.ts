@@ -14,6 +14,7 @@ import { In, LessThanOrEqual, Not, Repository } from 'typeorm';
 import { BookingStatus } from './types/booking-status.enum';
 import { Payload } from '../auths/types/payload.type';
 import { UserRole } from '../users/types/user-role.enum';
+import { UpdateStatusBookingDTO } from './dto/update-status-booking.dto';
 
 @Injectable()
 export class BookingsService implements IBookingService {
@@ -207,7 +208,67 @@ export class BookingsService implements IBookingService {
    * @returns
    */
 
-  async updateStatusBooking(bookingId: string, data: any): Promise<any> {
-    return data;
+  async updateStatusBookingStrategy(
+    bookingId: string,
+    data: UpdateStatusBookingDTO,
+    user: Payload,
+  ): Promise<any> {
+    try {
+      // check booking exist
+      const booking_exist = await this.bookingEntity.findOne({
+        where: {
+          id: bookingId,
+        },
+      });
+      if (!booking_exist) {
+        throw new BadRequestException('Booking not found');
+      }
+      // return strategy
+      const updateStatusBookingStrategy = {
+        [BookingStatus.pending_sign]: this.updateStatusToPendingSigṇ.bind(this),
+      };
+      return await updateStatusBookingStrategy[data.status](
+        booking_exist,
+        data,
+        user,
+      );
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  private async updateStatusToPendingSigṇ(
+    booking_exist: any,
+    data: UpdateStatusBookingDTO,
+    user: Payload,
+  ): Promise<any> {
+    try {
+      // check user update is staff
+      if (user.role !== UserRole.staff) {
+        throw new BadRequestException('You are not staff');
+      }
+      // check booking status is pending
+      if (booking_exist.status !== BookingStatus.pending) {
+        throw new BadRequestException('Booking is not pending');
+      }
+      // check is schedule booking
+      if (data.is_schedule) {
+        // send mail confirm to land renter
+        booking_exist.is_schedule = true;
+      }
+      // update status booking to pending sign
+      booking_exist.status = data.status;
+      // update booking
+      await this.bookingEntity.save(booking_exist);
+      return booking_exist;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
   }
 }

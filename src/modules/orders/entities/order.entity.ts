@@ -1,7 +1,15 @@
 import e from 'express';
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { OrderDetail } from './orderDetail.entity';
 import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
 
@@ -12,15 +20,19 @@ export class Order extends AbstractEntity {
     Object.assign(this, order);
   }
 
+  @PrimaryGeneratedColumn('uuid')
+  order_id: string;
+
   @ManyToOne(() => User, (user) => user.orders_landrenter_id)
   @JoinColumn({ name: 'landrenter_id' })
   land_renter: User;
+
   @Column()
   tax: number;
-  
+
   @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.order)
   order_details_id: OrderDetail[];
 
   @OneToOne(() => Transaction, (transaction) => transaction.order_id)
-    transaction_id: Transaction;
+  transaction_id: Transaction;
 }

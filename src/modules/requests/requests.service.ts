@@ -37,7 +37,9 @@ export class RequestsService implements IRequestService {
         throw new BadRequestException('Unable to create request');
       }
       // create task for the request
-      const new_task = await this.taskService.createTask(new_request.id);
+      const new_task = await this.taskService.createTask(
+        new_request.request_id,
+      );
       if (!new_task) {
         throw new BadRequestException('Unable to create task');
       }
@@ -103,7 +105,7 @@ export class RequestsService implements IRequestService {
     try {
       const request = await this.requestEntity.findOne({
         where: {
-          id: request_id,
+          request_id: request_id,
         },
         relations: {
           task: {
@@ -113,16 +115,16 @@ export class RequestsService implements IRequestService {
         },
         select: {
           task: {
-            id: true,
+            task_id: true,
             assigned_at: true,
             assign_by: {
-              id: true,
+              user_id: true,
               email: true,
               full_name: true,
               role: true,
             },
             assign_to: {
-              id: true,
+              user_id: true,
               email: true,
               full_name: true,
               role: true,
@@ -147,7 +149,7 @@ export class RequestsService implements IRequestService {
       // check request exist
       const request = await this.requestEntity.findOne({
         where: {
-          id: request_id,
+          request_id: request_id,
         },
       });
       if (!request) {

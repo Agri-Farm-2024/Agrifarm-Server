@@ -36,11 +36,6 @@ export class PlantsController {
     return this.plantsService.createPlantSeason(CreatePlantSeasonDto);
   }
 
-  // @Get()
-  // async findAll() {
-  //   return await this.plantsService.findAll();
-  // }
-
   @ApplyPaginationMetadata
   @ApiProperty({
     type: StatusPlant,
@@ -60,11 +55,6 @@ export class PlantsController {
   ): Promise<any> {
     Logger.log('Get all plant seasons');
     return await this.plantsService.getAllPlantSeasons(pagination);
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.plantsService.findOne(+id);
   }
 
   @Patch(':id')

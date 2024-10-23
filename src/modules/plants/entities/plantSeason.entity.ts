@@ -1,5 +1,11 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Plant } from './plant.entity';
 import { PlantSeasonType } from 'src/utils/types/plantSeason-type.enum';
 
@@ -9,6 +15,9 @@ export class PlantSeason extends AbstractEntity {
     super();
     Object.assign(this, plantSeason);
   }
+
+  @PrimaryGeneratedColumn('uuid')
+  plant_season_id: string;
 
   @Column('uuid', { name: 'plant_id', nullable: true })
   plant_id: string;

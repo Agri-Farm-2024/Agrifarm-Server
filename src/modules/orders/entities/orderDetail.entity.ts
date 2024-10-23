@@ -1,5 +1,12 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Order } from './order.entity';
 import { BookindLand } from 'src/modules/bookings/entities/bookindLand.entity';
 import { Material } from 'src/modules/materials/entities/material.entity';
@@ -12,9 +19,13 @@ export class OrderDetail extends AbstractEntity {
     Object.assign(this, orderDetail);
   }
 
+  @PrimaryGeneratedColumn('uuid')
+  order_detail_id: string;
+
   @ManyToOne(() => Order, (order) => order.order_details_id)
   @JoinColumn({ name: 'order_id' })
   order: Order;
+
   @OneToOne(
     () => BookindLand,
     (bookingLand) => bookingLand.booking_order_detail,
@@ -25,17 +36,22 @@ export class OrderDetail extends AbstractEntity {
   @ManyToOne(() => Material, (material) => material.material_order_details_id)
   @JoinColumn({ name: 'material_id' })
   material_id: Material;
+
   @ManyToOne(
     () => ServiceSpecific,
     (serviceSpecific) => serviceSpecific.service_specific_order_details_id,
   )
   @JoinColumn({ name: 'service_specific_id' })
   service_specific_id: ServiceSpecific;
-  @Column()
+
+  @Column({
+    default: 1,
+  })
   quantity: number;
-  default: 1;
+
   @Column()
   total_price: number;
+
   @Column({
     type: 'enum',
     enum: TypeOrderDetail,

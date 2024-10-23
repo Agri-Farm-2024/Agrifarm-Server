@@ -1,5 +1,11 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Dinary } from './dinary.entity';
 import { DinaryStage } from './dinaryStage.entity';
 
@@ -9,6 +15,9 @@ export class DinaryImage extends AbstractEntity {
     super();
     Object.assign(this, dinaryImage);
   }
+
+  @PrimaryGeneratedColumn('uuid')
+  dinary_image_id: string;
 
   @ManyToOne(() => DinaryStage, (dinaryStage) => dinaryStage.dinaries_image, {
     nullable: true,

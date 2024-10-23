@@ -67,14 +67,6 @@ export class PlantsService implements IPlantService {
     }
   }
 
-  findAll() {
-    return `This action returns all plants`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} plant`;
-  }
-
   async updatePlant(id: string, status: StatusPlant): Promise<Plant> {
     try {
       const plant = await this.plantEntity.findOne({

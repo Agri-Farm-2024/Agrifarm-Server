@@ -1,5 +1,12 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Plant } from 'src/modules/plants/entities/plant.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import { PlantsModule } from 'src/modules/plants/plants.module';
@@ -13,6 +20,9 @@ export class ServiceSpecific extends AbstractEntity {
     super();
     Object.assign(this, serviceSpecific);
   }
+
+  @PrimaryGeneratedColumn('uuid')
+  service_specific_id: string;
 
   @Column('uuid')
   landrenter_id: string;

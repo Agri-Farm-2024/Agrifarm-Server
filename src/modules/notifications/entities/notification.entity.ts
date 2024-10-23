@@ -1,7 +1,13 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import { NotificationType } from 'src/utils/types/notification-type.enum';
-import { Entity, ManyToOne, JoinColumn, Column } from 'typeorm';
+import {
+  Entity,
+  ManyToOne,
+  JoinColumn,
+  Column,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('notifications')
 export class Notification extends AbstractEntity {
@@ -9,6 +15,9 @@ export class Notification extends AbstractEntity {
     super();
     Object.assign(this, notification);
   }
+
+  @PrimaryGeneratedColumn('uuid')
+  notification_id: string;
 
   @ManyToOne(() => User, (user) => user.notifications, {
     nullable: true,

@@ -49,7 +49,10 @@ export class ProcessesService implements IProcessesService {
           (a, b) => a.numberic_order - b.numberic_order,
         );
         for (let i = 0; i < sortedStage.length; i++) {
-          await this.createProcessStage(data.stage[i], new_process.id);
+          await this.createProcessStage(
+            data.stage[i],
+            new_process.process_technical_standard_id,
+          );
         }
       }
       return new_process;
@@ -68,7 +71,7 @@ export class ProcessesService implements IProcessesService {
     try {
       const new_process_stage = await this.processStandardStageEntity.save({
         ...data,
-        process_standard_stage_id: process_id,
+        process_standard_id: process_id,
       });
       // create process stage content
       if (data.content) {
@@ -78,7 +81,7 @@ export class ProcessesService implements IProcessesService {
         for (let i = 0; i < sortedContent.length; i++) {
           await this.createProcessStageContent(
             data.content[i],
-            new_process_stage.id,
+            new_process_stage.process_technical_standard_stage_id,
           );
         }
       }

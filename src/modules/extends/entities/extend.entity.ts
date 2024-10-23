@@ -5,9 +5,9 @@ import {
   Column,
   Entity,
   JoinColumn,
-  ManyToMany,
   ManyToOne,
   OneToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 @Entity('extends')
 export class Extend extends AbstractEntity {
@@ -15,6 +15,9 @@ export class Extend extends AbstractEntity {
     super();
     Object.assign(this, extend);
   }
+
+  @PrimaryGeneratedColumn('uuid')
+  extend_id: string;
 
   @ManyToOne(() => User, (user) => user.extend_landrenter_id, {
     nullable: true,

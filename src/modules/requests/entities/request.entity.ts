@@ -7,6 +7,7 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { RequestSupportType } from '../types/request-support-type.enum';
 import { RequestStatus } from 'src/utils/status/request-status.enum';
@@ -19,6 +20,9 @@ export class Request extends AbstractEntity {
     super();
     Object.assign(this, request);
   }
+
+  @PrimaryGeneratedColumn('uuid')
+  request_id: string;
 
   @Column({ nullable: true })
   guest_full_name: string;
