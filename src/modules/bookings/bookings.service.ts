@@ -63,7 +63,7 @@ export class BookingsService implements IBookingService {
       // create new booking
       const new_booking = await this.bookingEntity.save({
         ...createBookingDto,
-        landrenter_id: land_renter.id,
+        landrenter_id: land_renter.user_id,
         price_per_month: Math.floor(land.price_booking_per_month),
         time_end: time_end,
         staff_id: land.staff_id,
@@ -73,7 +73,7 @@ export class BookingsService implements IBookingService {
       // send notification to staff and land renter
       // create mail confirm for land renter
       // update land status to booked
-      await this.landService.updateLandStatus(land.id, LandStatus.booked);
+      await this.landService.updateLandStatus(land.land_id, LandStatus.booked);
       return new_booking;
     } catch (error) {
       if (error instanceof BadRequestException) {
@@ -167,7 +167,7 @@ export class BookingsService implements IBookingService {
       // get booking detail
       const booking = await this.bookingEntity.findOne({
         where: {
-          id: bookingId,
+          booking_id: bookingId,
         },
         relations: {
           land: true,
@@ -176,13 +176,13 @@ export class BookingsService implements IBookingService {
         },
         select: {
           land_renter: {
-            id: true,
+            user_id: true,
             full_name: true,
             email: true,
             role: true,
           },
           staff: {
-            id: true,
+            user_id: true,
             full_name: true,
             email: true,
             role: true,
@@ -217,7 +217,7 @@ export class BookingsService implements IBookingService {
       // check booking exist
       const booking_exist = await this.bookingEntity.findOne({
         where: {
-          id: bookingId,
+          booking_id: bookingId,
         },
       });
       if (!booking_exist) {

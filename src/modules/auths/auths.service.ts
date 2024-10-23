@@ -22,6 +22,7 @@ import { ConfigService } from '@nestjs/config';
 import { TokenStatus } from './types/token-status.enum';
 import { InfoToken } from './types/InfoToken.type';
 import { UserStatus } from '../users/types/user-status.enum';
+import { Payload } from './types/payload.type';
 
 @Injectable()
 export class AuthsService implements IAuthService {
@@ -90,8 +91,8 @@ export class AuthsService implements IAuthService {
 
       Logger.log(`Password match`);
       // 3. Generate a token
-      const payload = {
-        id: user.id,
+      const payload: Payload = {
+        user_id: user.user_id,
         email: user.email,
         full_name: user.full_name,
         role: user.role,

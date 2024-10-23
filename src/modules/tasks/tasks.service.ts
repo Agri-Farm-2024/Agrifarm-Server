@@ -57,7 +57,7 @@ export class TasksService implements ITaskService {
       // update task
       const updated_task = await this.taskEntity.save({
         ...task,
-        assigned_by_id: assigned_by_user.id,
+        assigned_by_id: assigned_by_user.user_id,
         assigned_to_id: assigned_to_id,
         assigned_at: new Date(),
       });

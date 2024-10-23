@@ -71,7 +71,7 @@ export class PlantsService implements IPlantService {
     try {
       const plant = await this.plantEntity.findOne({
         where: {
-          id: id,
+          plant_id: id,
         },
       });
       if (!plant) {
@@ -90,7 +90,7 @@ export class PlantsService implements IPlantService {
     try {
       const plant_season = await this.plantSeasonEntity.findOne({
         where: {
-          id: id,
+          plant_season_id: id,
         },
       });
       if (!plant_season) {
@@ -112,7 +112,9 @@ export class PlantsService implements IPlantService {
     //delete plant
     try {
       const plant = await this.plantEntity.findOne({
-        where: { id },
+        where: {
+          plant_id: id,
+        },
       });
       if (!plant) {
         throw new NotFoundException(`Plant with ID ${id} not found`);

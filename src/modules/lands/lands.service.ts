@@ -55,7 +55,7 @@ export class LandsService implements ILandService {
         for (let i = 0; i < data.sub_description.length; i++) {
           await this.createLandSubDescription(
             data.sub_description[i],
-            new_land.id,
+            new_land.land_id,
           );
         }
       }
@@ -65,7 +65,7 @@ export class LandsService implements ILandService {
           await this.createURLLand(
             data.images[i],
             LandURLType.image,
-            new_land.id,
+            new_land.land_id,
           );
         }
       }
@@ -75,7 +75,7 @@ export class LandsService implements ILandService {
           await this.createURLLand(
             data.videos[i],
             LandURLType.video,
-            new_land.id,
+            new_land.land_id,
           );
         }
       }
@@ -159,22 +159,22 @@ export class LandsService implements ILandService {
     try {
       const lands = await this.landEntity.findOne({
         where: {
-          id: id,
+          land_id: id,
         },
         relations: ['sub_description', 'url', 'staff'],
         select: {
           sub_description: {
             sub_title: true,
             sub_description: true,
-            id: true,
+            land_sub_description_id: true,
           },
           url: {
             string_url: true,
             type: true,
-            id: true,
+            land_url_id: true,
           },
           staff: {
-            id: true,
+            user_id: true,
             full_name: true,
             email: true,
             role: true,
@@ -197,7 +197,7 @@ export class LandsService implements ILandService {
     try {
       const land = await this.landEntity.findOne({
         where: {
-          id: id,
+          land_id: id,
         },
       });
       if (!land) {
@@ -221,7 +221,7 @@ export class LandsService implements ILandService {
     try {
       const land = await this.landEntity.findOne({
         where: {
-          id: id,
+          land_id: id,
         },
       });
       if (!land) {

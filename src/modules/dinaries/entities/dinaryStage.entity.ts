@@ -21,6 +21,14 @@ export class DinaryStage extends AbstractEntity {
   @PrimaryGeneratedColumn('uuid')
   dinary_stage_id: string;
 
+  @Column()
+  content: string;
+
+  @Column({
+    default: 0,
+  })
+  numbered_order: number;
+
   @ManyToOne(() => Dinary, (dinary) => dinary.dinaries_stage, {
     nullable: true,
   })
@@ -32,14 +40,6 @@ export class DinaryStage extends AbstractEntity {
   })
   @JoinColumn({ name: 'writer_id' })
   writter: User[];
-
-  @Column()
-  content: string;
-
-  @Column({
-    default: 0,
-  })
-  numbered_order: number;
 
   @OneToMany(() => DinaryImage, (dinaryImage) => dinaryImage.dinary_image_id)
   dinaries_image: DinaryImage[];

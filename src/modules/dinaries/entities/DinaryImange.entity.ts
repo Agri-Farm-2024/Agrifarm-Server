@@ -6,7 +6,6 @@ import {
   JoinColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Dinary } from './dinary.entity';
 import { DinaryStage } from './dinaryStage.entity';
 
 @Entity('dinaries_image')
@@ -23,7 +22,7 @@ export class DinaryImage extends AbstractEntity {
     nullable: true,
   })
   @JoinColumn({ name: 'dinary_stage_id' })
-  dinary_image_id: Dinary[];
+  đianry_stage: DinaryStage;
 
   @Column()
   image_link: string;
