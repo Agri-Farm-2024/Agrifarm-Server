@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Plant } from './plant.entity';
 import { PlantSeasonType } from 'src/utils/types/plantSeason-type.enum';
+import { PlantSeasonStatus } from '../types/plant-season-status.enum';
 
 @Entity('plants_season')
 export class PlantSeason extends AbstractEntity {
@@ -40,6 +41,13 @@ export class PlantSeason extends AbstractEntity {
     default: PlantSeasonType.in_season,
   })
   type: PlantSeasonType;
+
+  @Column({
+    type: 'enum',
+    enum: PlantSeasonStatus,
+    default: PlantSeasonStatus.active,
+  })
+  status: PlantSeasonStatus;
 
   @ManyToOne(() => Plant, (plant) => plant.plants_season, { nullable: true })
   @JoinColumn({ name: 'plant_id' })

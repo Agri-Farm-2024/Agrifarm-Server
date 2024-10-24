@@ -13,6 +13,7 @@ import { UserStatus } from '../types/user-status.enum';
 import { UserRole } from '../types/user-role.enum';
 import { ProcessStandard } from 'src/modules/processes/entities/standards/processStandard.entity';
 import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
+import { Report } from 'src/modules/reports/entities/report.entity';
 
 @Entity('users') // Maps this class to the 'users' table in the database
 export class User extends AbstractEntity {
@@ -97,4 +98,7 @@ export class User extends AbstractEntity {
 
   @OneToMany(() => ProcessStandard, (processStandard) => processStandard.expert)
   process_standard_by_expert: ProcessStandard[];
+
+  @OneToMany(() => Report, (report) => report.report_from)
+  reports: Report[];
 }
