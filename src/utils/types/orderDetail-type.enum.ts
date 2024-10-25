@@ -1,6 +1,5 @@
 export enum TypeOrderDetail {
-    booking = 'booking',
-    material = 'material',
-    service = 'service'
-    
+  booking = 'booking',
+  material = 'material',
+  service = 'service',
 }

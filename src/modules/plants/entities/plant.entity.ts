@@ -2,9 +2,6 @@ import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { PlantSeason } from './plantSeason.entity';
 import { StatusPlant } from '../types/plant-status.enum';
-import { ProcessStandard } from 'src/modules/processes/entities/standards/processStandard.entity';
-import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
-
 @Entity('plants')
 export class Plant extends AbstractEntity {
   constructor(plant: Partial<Plant>) {
@@ -27,13 +24,4 @@ export class Plant extends AbstractEntity {
 
   @OneToMany(() => PlantSeason, (plantSeason) => plantSeason.plant)
   plants_season: PlantSeason[];
-
-  @OneToMany(() => ServiceSpecific, (serviceSpecific) => serviceSpecific.plant)
-  service_specific: ServiceSpecific[];
-
-  @OneToMany(
-    () => ProcessStandard,
-    (processStandard) => processStandard.plant_process_id,
-  )
-  process_standard: ProcessStandard[];
 }

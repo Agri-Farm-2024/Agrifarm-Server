@@ -9,7 +9,7 @@ import { LandsService } from '../lands/lands.service';
 import { Land } from '../lands/entities/land.entity';
 import { LandStatus } from '../lands/types/land-status.enum';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BookindLand } from './entities/bookindLand.entity';
+import { BookingLand } from './entities/bookingLand.entity';
 import { In, LessThanOrEqual, Not, Repository } from 'typeorm';
 import { BookingStatus } from './types/booking-status.enum';
 import { Payload } from '../auths/types/payload.type';
@@ -19,8 +19,8 @@ import { UpdateStatusBookingDTO } from './dto/update-status-booking.dto';
 @Injectable()
 export class BookingsService implements IBookingService {
   constructor(
-    @InjectRepository(BookindLand)
-    private readonly bookingEntity: Repository<BookindLand>,
+    @InjectRepository(BookingLand)
+    private readonly bookingEntity: Repository<BookingLand>,
 
     private readonly landService: LandsService,
   ) {}

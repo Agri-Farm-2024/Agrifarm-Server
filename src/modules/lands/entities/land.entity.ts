@@ -1,5 +1,5 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import { BookindLand } from 'src/modules/bookings/entities/bookindLand.entity';
+import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import {
   Entity,
@@ -61,6 +61,6 @@ export class Land extends AbstractEntity {
   @JoinColumn({ name: 'staff_id' })
   staff: User;
 
-  @OneToMany(() => BookindLand, (bookindLand) => bookindLand.land_id)
-  booking_land: BookindLand[];
+  @OneToMany(() => BookingLand, (bookingLand) => bookingLand.land_id)
+  booking_land: BookingLand[];
 }

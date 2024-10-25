@@ -29,7 +29,7 @@ export class ProcessesService implements IProcessesService {
       //check if plant id and type process name is already exist
       const process = await this.processEntity.findOne({
         where: {
-          plant_id: data.plant_id,
+          plant_season_id: data.plant_season_id,
           type_process: data.type_process,
         },
       });
@@ -39,7 +39,7 @@ export class ProcessesService implements IProcessesService {
       //create new process
       const new_process = await this.processEntity.save({
         name: data.name,
-        plant_id: data.plant_id,
+        plant_season_id: data.plant_season_id,
         total_month: data.total_month,
         type_process: data.type_process,
       });

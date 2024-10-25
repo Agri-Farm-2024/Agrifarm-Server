@@ -8,14 +8,16 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { BookingStatus } from '../types/booking-status.enum';
+import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
 
 @Entity('bookings_land')
-export class BookindLand extends AbstractEntity {
-  constructor(bookindLand: Partial<BookindLand>) {
+export class BookingLand extends AbstractEntity {
+  constructor(bookindLand: Partial<BookingLand>) {
     super();
     Object.assign(this, bookindLand);
   }
@@ -79,9 +81,6 @@ export class BookindLand extends AbstractEntity {
   @OneToOne(() => Extend, (extend) => extend.booking_land_id)
   extend_id: Extend;
 
-  @OneToOne(() => OrderDetail, (orderDetail) => orderDetail.booking_id)
-  booking_order_detail: OrderDetail;
-
   @ManyToOne(() => User, (user) => user.booking_by_lanrenter, {
     nullable: true,
   })
@@ -99,4 +98,10 @@ export class BookindLand extends AbstractEntity {
   })
   @JoinColumn({ name: 'land_id' })
   land: Land;
+
+  @OneToMany(
+    () => ServiceSpecific,
+    (serviceSpecific) => serviceSpecific.booking_land,
+  )
+  service_specific: ServiceSpecific[];
 }

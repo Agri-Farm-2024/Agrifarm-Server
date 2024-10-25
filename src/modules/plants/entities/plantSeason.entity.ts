@@ -4,11 +4,14 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Plant } from './plant.entity';
 import { PlantSeasonType } from 'src/utils/types/plantSeason-type.enum';
 import { PlantSeasonStatus } from '../types/plant-season-status.enum';
+import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
+import { ProcessStandard } from 'src/modules/processes/entities/standards/processStandard.entity';
 
 @Entity('plants_season')
 export class PlantSeason extends AbstractEntity {
@@ -52,4 +55,16 @@ export class PlantSeason extends AbstractEntity {
   @ManyToOne(() => Plant, (plant) => plant.plants_season, { nullable: true })
   @JoinColumn({ name: 'plant_id' })
   plant: Plant;
+
+  @OneToMany(
+    () => ServiceSpecific,
+    (serviceSpecific) => serviceSpecific.plant_season,
+  )
+  service_specific: ServiceSpecific[];
+
+  @OneToMany(
+    () => ProcessStandard,
+    (processStandard) => processStandard.plant_season,
+  )
+  process_technical_standard: ProcessStandard[];
 }

@@ -4,15 +4,15 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Plant } from 'src/modules/plants/entities/plant.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import { PlantsModule } from 'src/modules/plants/plants.module';
 import { ServicePackage } from './servicePackage.entity';
-import { OrderDetail } from 'src/modules/orders/entities/orderDetail.entity';
 import { ServiceSpecificStatus } from '../types/service-specific-status.enum';
+import { PlantSeason } from 'src/modules/plants/entities/plantSeason.entity';
+import { BookingStatus } from 'src/modules/bookings/types/booking-status.enum';
+import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 
 @Entity('services_specific')
 export class ServiceSpecific extends AbstractEntity {
@@ -27,14 +27,17 @@ export class ServiceSpecific extends AbstractEntity {
   @Column('uuid')
   landrenter_id: string;
 
-  @Column()
-  acreage_land: number;
+  @Column('uuid')
+  plant_season_id: string;
 
   @Column('uuid')
-  plant_id: string;
+  booking_id: string;
 
   @Column('uuid')
   service_package_id: string;
+
+  @Column()
+  acreage_land: number;
 
   @Column()
   price_process: number;
@@ -63,13 +66,11 @@ export class ServiceSpecific extends AbstractEntity {
   @JoinColumn({ name: 'Landrenter_id' })
   land_renter: ServiceSpecific;
 
-  @ManyToOne(() => Plant, (plant) => plant.service_specific)
-  @JoinColumn({ name: 'plant_id' })
-  plant: Plant;
+  @ManyToOne(() => PlantSeason, (plantSeason) => plantSeason.service_specific)
+  @JoinColumn({ name: 'plant_season_id' })
+  plant_season: PlantSeason;
 
-  @OneToMany(
-    () => OrderDetail,
-    (orderDetail) => orderDetail.service_specific_id,
-  )
-  service_specific_order_details_id: OrderDetail[];
+  @ManyToOne(() => BookingLand, (booking) => booking.service_specific)
+  @JoinColumn({ name: 'booking_id' })
+  booking_land: BookingLand;
 }

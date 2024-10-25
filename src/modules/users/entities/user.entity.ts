@@ -6,7 +6,7 @@ import { DinaryStage } from 'src/modules/dinaries/entities/dinaryStage.entity';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { Task } from 'src/modules/tasks/entities/task.entity';
 import { Dinary } from 'src/modules/dinaries/entities/dinary.entity';
-import { BookindLand } from 'src/modules/bookings/entities/bookindLand.entity';
+import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 import { Extend } from 'src/modules/extends/entities/extend.entity';
 import { Order } from 'src/modules/orders/entities/order.entity';
 import { UserStatus } from '../types/user-status.enum';
@@ -84,11 +84,11 @@ export class User extends AbstractEntity {
   )
   service_specific: ServiceSpecific[];
 
-  @OneToMany(() => BookindLand, (bookindLand) => bookindLand.land_renter)
-  booking_by_lanrenter: BookindLand[];
+  @OneToMany(() => BookingLand, (bookingLand) => bookingLand.land_renter)
+  booking_by_lanrenter: BookingLand[];
 
-  @OneToMany(() => BookindLand, (bookindLand) => bookindLand.staff_id)
-  booking_staff_id: BookindLand[];
+  @OneToMany(() => BookingLand, (bookingLand) => bookingLand.staff_id)
+  booking_staff_id: BookingLand[];
 
   @OneToMany(() => Extend, (extend) => extend.land_renter)
   extend_landrenter_id: Extend[];

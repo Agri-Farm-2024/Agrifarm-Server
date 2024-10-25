@@ -1,5 +1,5 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import { BookindLand } from 'src/modules/bookings/entities/bookindLand.entity';
+import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import {
   Column,
@@ -27,16 +27,20 @@ export class Extend extends AbstractEntity {
 
   @Column()
   total_month: number;
+
   @Column()
   price_per_month: number;
+
   @Column()
   total_price: number;
+
   @Column()
   reason_for_reject: string;
+
   @Column()
   contract_extend_image: string;
 
-  @OneToOne(() => BookindLand, (bookindLand) => bookindLand.extend_id)
+  @OneToOne(() => BookingLand, (bookingLand) => bookingLand.extend_id)
   @JoinColumn({ name: 'booking_id' })
-  booking_land_id: BookindLand;
+  booking_land_id: BookingLand;
 }

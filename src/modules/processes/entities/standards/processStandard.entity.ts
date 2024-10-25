@@ -13,6 +13,7 @@ import {
 import { StatusProcessStandard } from '../../types/status-processStandard.enum';
 import { TypeProcess } from '../../types/type-process.enum';
 import { ProcessStandardStage } from './processStandardStage.entity';
+import { PlantSeason } from 'src/modules/plants/entities/plantSeason.entity';
 @Entity('processes_technical_standard')
 export class ProcessStandard extends AbstractEntity {
   constructor(processStandard: Partial<ProcessStandard>) {
@@ -24,7 +25,7 @@ export class ProcessStandard extends AbstractEntity {
   process_technical_standard_id: string;
 
   @Column('uuid')
-  plant_id: string;
+  plant_season_id: string;
 
   @Column('uuid', { nullable: true })
   expert_id: string;
@@ -51,9 +52,12 @@ export class ProcessStandard extends AbstractEntity {
   })
   status: StatusProcessStandard;
 
-  @ManyToOne(() => Plant, (plant) => plant.process_standard)
-  @JoinColumn({ name: 'plant_id' })
-  plant_process_id: Plant;
+  @ManyToOne(
+    () => PlantSeason,
+    (plantSeason) => plantSeason.process_technical_standard,
+  )
+  @JoinColumn({ name: 'plant_season_id' })
+  plant_season: PlantSeason;
 
   @ManyToOne(() => User, (user) => user.process_standard_by_expert)
   @JoinColumn({ name: 'expert_id' })

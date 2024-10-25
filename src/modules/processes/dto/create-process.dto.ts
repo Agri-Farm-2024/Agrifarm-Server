@@ -8,7 +8,7 @@ export class CreateProcessDto {
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsNotEmpty()
-  plant_id: string;
+  plant_season_id: string;
 
   @ApiProperty({
     description: 'the name process',
