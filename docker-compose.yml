@@ -1,10 +1,16 @@
 version: '3'
 services:
   app:
-    image: baohc1109/agri-farm-server:lastest
-    container_name: agri-farm-server:lastest
+    build: 
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    volumes:
+      - ./uploadFile:/app/dist/uploadFile  # Maps host `uploadFile` folder to container
     environment:
       - NODE_ENV=production
     restart: always
+
+volumes:
+  uploadFile:

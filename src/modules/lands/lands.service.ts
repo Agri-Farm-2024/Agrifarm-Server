@@ -9,7 +9,7 @@ import { ILandService } from './interfaces/ILandService.interface';
 import { Land } from './entities/land.entity';
 import { LoggerService } from 'src/logger/logger.service';
 import { Repository } from 'typeorm';
-import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { CreateLandSubDescriptionDTO } from './dto/create-land-sub-description.dto';
 import { LandSubDescription } from './entities/landSubDescription.entity';
 import { LandURL } from './entities/landURL.entity';

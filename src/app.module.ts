@@ -21,6 +21,9 @@ import { MaterialsModule } from './modules/materials/materials.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
 import { ExtendsModule } from './modules/extends/extends.module';
 import { ServicesModule } from './modules/servicesPackage/servicesPackage.module';
+import { UploadsModule } from './modules/uploads/uploads.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -29,6 +32,10 @@ import { ServicesModule } from './modules/servicesPackage/servicesPackage.module
       isGlobal: true,
       envFilePath:
         process.env.NODE_ENV === 'development' ? '.env.development' : '.env',
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploadFile'),
+      serveRoot: '/uploadFile',
     }),
     // Import modules
     LoggerModule,
@@ -52,6 +59,7 @@ import { ServicesModule } from './modules/servicesPackage/servicesPackage.module
     MaterialsModule,
     TransactionsModule,
     ExtendsModule,
+    UploadsModule,
   ],
 })
 export class AppModule {}

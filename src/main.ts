@@ -59,7 +59,7 @@ async function bootstrap() {
     origin: '*', // Adjust according to your client URL
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   });
+  // Run app
   await app.listen(process.env.HOST_PORT);
-  // test
 }
 bootstrap();
