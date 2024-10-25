@@ -33,15 +33,21 @@ jobs:
             # Step 4: Add environment variables
             echo ${{secrets.ENV}} > .env
 
-            # Step 5: Remove any old Docker images related to the project
-            docker rmi agri-farm-server || true
+            # Step 5: Stop the old container running
+            docker stop agri-farm-server || true
 
-            # Step 6: Build a new Docker image and tag it as the latest
+            # Step 6: Remove the old container
+            docker rm agri-farm-server || true
+
+            # Step 7: Remove the old Docker image
+            docker rmi agri-farm-server:latest || true
+
+            # Step 8: Build a new Docker image and tag it as the latest
             docker build -t agri-farm-server:latest .
 
-            # Step 7: Stop and remove the old running container
+            # Step 9: Stop and remove the old running container
             docker stop agri-farm-server || true
             docker rm agri-farm-server || true
 
-            # Step 8: Run the new Docker container using the new image
+            # Step 10: Run the new Docker container using the new image
             docker run --env-file .env -d --name agri-farm-server -p 3000:3000 agri-farm-server:latest
