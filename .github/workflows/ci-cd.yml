@@ -20,6 +20,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
+          password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             # Step 1: Navigate to the project folder
             cd /Agrifarm-Server
@@ -27,27 +28,5 @@ jobs:
             # Step 2: Pull latest changes from the Git repository
             git pull
 
-            # Step 3: Install dependencies
-            npm install
-
             # Step 4: Add environment variables
-            echo ${{secrets.ENV}} > .env
-
-            # Step 5: Stop the old container running
-            docker stop agri-farm-server || true
-
-            # Step 6: Remove the old container
-            docker rm agri-farm-server || true
-
-            # Step 7: Remove the old Docker image
-            docker rmi agri-farm-server:latest || true
-
-            # Step 8: Build a new Docker image and tag it as the latest
-            docker build -t agri-farm-server:latest .
-
-            # Step 9: Stop and remove the old running container
-            docker stop agri-farm-server || true
-            docker rm agri-farm-server || true
-
-            # Step 10: Run the new Docker container using the new image
-            docker run --env-file .env -d --name agri-farm-server -p 3000:3000 agri-farm-server:latest
+            docker-compose up --build -d
