@@ -19,12 +19,20 @@ export class Transaction extends AbstractEntity {
   @PrimaryGeneratedColumn('uuid')
   transaction_id: string;
 
+  @Column('uuid', { nullable: true })
+  order_id: string;
+
+  @Column('uuid', { nullable: true })
+  booking_id: string;
+
+  @Column('uuid', { nullable: true })
+  extend_id: string;
+
+  @Column('uuid', { nullable: true })
+  service_specific_id: string;
+
   @Column()
   transaction_code: string;
-
-  @OneToOne(() => Order, (order) => order.transaction_id)
-  @JoinColumn({ name: 'order_id' })
-  order_id: Order;
 
   @Column({
     type: 'enum',
@@ -33,10 +41,17 @@ export class Transaction extends AbstractEntity {
   })
   payment_method: PaymentMethod;
 
+  @Column()
+  expired_at: Date;
+
   @Column({
     type: 'enum',
     enum: TransactionStatus,
     default: TransactionStatus.pending,
   })
   status: TransactionStatus;
+  // Relations
+  @OneToOne(() => Order, (order) => order.transaction)
+  @JoinColumn({ name: 'order_id' })
+  order: Order;
 }

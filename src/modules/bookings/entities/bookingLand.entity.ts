@@ -96,7 +96,7 @@ export class BookingLand extends AbstractEntity {
     default: BookingStatus.pending,
   })
   status: BookingStatus;
-
+  // Relations
   @OneToOne(() => Extend, (extend) => extend.booking_land_id)
   extend_id: Extend;
 
