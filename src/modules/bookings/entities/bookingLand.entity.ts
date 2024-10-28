@@ -14,6 +14,7 @@ import {
 } from 'typeorm';
 import { BookingStatus } from '../types/booking-status.enum';
 import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
+import { BookingPaymentFrequency } from '../types/booking-payment.enum';
 
 @Entity('bookings_land')
 export class BookingLand extends AbstractEntity {
@@ -70,6 +71,24 @@ export class BookingLand extends AbstractEntity {
     nullable: true,
   })
   reason_for_reject: string;
+
+  @Column({
+    nullable: true,
+  })
+  reason_for_cancel: string;
+
+  @Column({ nullable: true })
+  expired_schedule_at: Date;
+
+  @Column({ nullable: true })
+  signed_at: Date;
+
+  @Column({
+    type: 'enum',
+    enum: BookingPaymentFrequency,
+    default: BookingPaymentFrequency.single,
+  })
+  payment_frequency: BookingPaymentFrequency;
 
   @Column({
     type: 'enum',

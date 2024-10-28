@@ -10,7 +10,6 @@ import { Land } from './entities/land.entity';
 import { LoggerService } from 'src/logger/logger.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateLandSubDescriptionDTO } from './dto/create-land-sub-description.dto';
 import { LandSubDescription } from './entities/landSubDescription.entity';
 import { LandURL } from './entities/landURL.entity';
 import { LandURLType } from './types/land-url-type.enum';
@@ -50,15 +49,6 @@ export class LandsService implements ILandService {
         acreage_land: data.acreage_land,
         price_booking_per_month: data.price_booking_per_month,
       });
-      // create sub description
-      if (data.sub_description) {
-        for (let i = 0; i < data.sub_description.length; i++) {
-          await this.createLandSubDescription(
-            data.sub_description[i],
-            new_land.land_id,
-          );
-        }
-      }
       // create url image
       if (data.images) {
         for (let i = 0; i < data.images.length; i++) {
@@ -83,27 +73,6 @@ export class LandsService implements ILandService {
       // Log the land creation
       this.loggerService.log('New land is created');
       return new_land;
-    } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
-      throw new InternalServerErrorException(error.message);
-    }
-  }
-
-  async createLandSubDescription(
-    data: CreateLandSubDescriptionDTO,
-    land_id: string,
-  ): Promise<any> {
-    try {
-      const new_land_sub_description = await this.landSubDescriptionEntity.save(
-        {
-          ...data,
-          land_id: land_id,
-        },
-      );
-
-      return new_land_sub_description;
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
@@ -145,6 +114,13 @@ export class LandsService implements ILandService {
         relations: {
           url: true,
         },
+        select: {
+          url: {
+            string_url: true,
+            type: true,
+            land_url_id: true,
+          },
+        },
       });
       return lands;
     } catch (error) {
@@ -163,11 +139,6 @@ export class LandsService implements ILandService {
         },
         relations: ['sub_description', 'url', 'staff'],
         select: {
-          sub_description: {
-            sub_title: true,
-            sub_description: true,
-            land_sub_description_id: true,
-          },
           url: {
             string_url: true,
             type: true,

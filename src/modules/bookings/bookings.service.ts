@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -15,6 +16,7 @@ import { BookingStatus } from './types/booking-status.enum';
 import { Payload } from '../auths/types/payload.type';
 import { UserRole } from '../users/types/user-role.enum';
 import { UpdateStatusBookingDTO } from './dto/update-status-booking.dto';
+import { MailService } from 'src/mails/mail.service';
 
 @Injectable()
 export class BookingsService implements IBookingService {
@@ -23,6 +25,8 @@ export class BookingsService implements IBookingService {
     private readonly bookingEntity: Repository<BookingLand>,
 
     private readonly landService: LandsService,
+
+    private readonly mailService: MailService,
   ) {}
 
   /**
@@ -106,7 +110,7 @@ export class BookingsService implements IBookingService {
     }
   }
 
-  private async getAllBooking(user: any): Promise<any> {
+  async getAllBooking(user: any): Promise<any> {
     try {
       const bookings = await this.bookingEntity.find({
         relations: {
@@ -121,7 +125,7 @@ export class BookingsService implements IBookingService {
     }
   }
 
-  private async getALLBookingByStaff(user: any): Promise<any> {
+  async getALLBookingByStaff(user: any): Promise<any> {
     try {
       const bookings = await this.bookingEntity.find({
         where: {
@@ -225,7 +229,14 @@ export class BookingsService implements IBookingService {
       }
       // return strategy
       const updateStatusBookingStrategy = {
-        [BookingStatus.pending_sign]: this.updateStatusToPendingSigṇ.bind(this),
+        [BookingStatus.pending_sign]: this.updateStatusToPendingSign.bind(this),
+        [BookingStatus.pending_contract]:
+          this.updateStatusToPendingContract.bind(this),
+        [BookingStatus.pending_payment]:
+          this.updateStatusToPendingPayment.bind(this),
+        [BookingStatus.completed]: this.updateStatusToCompleted.bind(this),
+        [BookingStatus.expired]: this.updateStatusToExpired.bind(this),
+        [BookingStatus.canceled]: this.updateStatusToCanceled.bind(this),
       };
       return await updateStatusBookingStrategy[data.status](
         booking_exist,
@@ -240,35 +251,197 @@ export class BookingsService implements IBookingService {
     }
   }
 
-  private async updateStatusToPendingSigṇ(
-    booking_exist: any,
+  /**
+   * @function updateStatusToPendingContract
+   * @param booking_exist
+   * @param data
+   * @param user
+   * @returns
+   */
+
+  async updateStatusToPendingContract(
+    booking_exist: BookingLand,
     data: UpdateStatusBookingDTO,
     user: Payload,
   ): Promise<any> {
     try {
-      // check user update is staff
-      if (user.role !== UserRole.staff) {
-        throw new BadRequestException('You are not staff');
-      }
-      // check booking status is pending
+      // Check status booking is pending
       if (booking_exist.status !== BookingStatus.pending) {
-        throw new BadRequestException('Booking is not pending');
+        throw new BadRequestException('Status booking is not pending');
       }
-      // check is schedule booking
-      if (data.is_schedule) {
-        // send mail confirm to land renter
-        booking_exist.is_schedule = true;
+      // Check user is staff
+      if (user.role !== UserRole.staff) {
+        throw new ForbiddenException('User is not staff');
       }
-      // update status booking to pending sign
-      booking_exist.status = data.status;
-      // update booking
-      await this.bookingEntity.save(booking_exist);
-      return booking_exist;
+      // get detail land
+      const land_exist: Land = await this.landService.getDetailLandById(
+        booking_exist.land_id,
+      );
+      // Check staff is match with land staff
+      if (land_exist.staff_id !== user.user_id) {
+        throw new ForbiddenException('You are not staff of this land');
+      }
+      // Check is schedule
+      if (data.is_schedule === true) {
+        // Send mail to land renter and make expred schedule after 48h
+        // await this.mailService.sendMailConfirmBooking(booking_exist);
+        const update_booking = await this.bookingEntity.save({
+          ...booking_exist,
+          status: BookingStatus.pending_contract,
+          is_schedule: data.is_schedule,
+          expired_schedule_at: new Date(
+            new Date().getTime() + 48 * 60 * 60 * 1000,
+          ),
+        });
+        return update_booking;
+      }
+      // update status booking to pending contract
+      const update_booking = await this.bookingEntity.save({
+        ...booking_exist,
+        status: BookingStatus.pending_contract,
+      });
+      return update_booking;
     } catch (error) {
-      if (error instanceof BadRequestException) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof ForbiddenException
+      ) {
         throw error;
       }
       throw new InternalServerErrorException(error.message);
     }
+  }
+
+  /**
+   * @function updateStatusToPendingSigṇ
+   * @param booking_exist
+   * @param data
+   * @param user
+   * @returns
+   */
+
+  async updateStatusToPendingSign(
+    booking_exist: BookingLand,
+    data: UpdateStatusBookingDTO,
+    user: Payload,
+  ): Promise<any> {
+    try {
+      // Check user is manager
+      if (user.role !== UserRole.manager) {
+        throw new ForbiddenException('You are not manager');
+      }
+      // Check status booking is pending contract
+      if (booking_exist.status !== BookingStatus.pending_contract) {
+        throw new BadRequestException('Status booking is not pending contract');
+      }
+      // update status booking to pending sign
+      const update_booking = await this.bookingEntity.save({
+        ...booking_exist,
+        status: BookingStatus.pending_sign,
+      });
+      return update_booking;
+    } catch (error) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof ForbiddenException
+      ) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  /**
+   * @function updateStatusToPendingSigṇ
+   * @param booking_exist
+   * @param data
+   * @param user
+   * @returns
+   */
+
+  async updateStatusToPendingPayment(
+    booking_exist: BookingLand,
+    data: UpdateStatusBookingDTO,
+    user: Payload,
+  ): Promise<any> {
+    try {
+      // Check status booking is pending
+      if (booking_exist.status !== BookingStatus.pending_sign) {
+        throw new BadRequestException('Status booking is not pending sign');
+      }
+      // Check user is staff
+      if (user.role !== UserRole.staff) {
+        throw new ForbiddenException('User is not staff');
+      }
+      // get detail land
+      const land_exist: Land = await this.landService.getDetailLandById(
+        booking_exist.land_id,
+      );
+      // Check staff is match with land staff
+      if (land_exist.staff_id !== user.user_id) {
+        throw new ForbiddenException('You are not staff of this land');
+      }
+      // Check data have contract image
+      if (!data.contract_image) {
+        throw new BadRequestException('Contract image is required');
+      }
+      // Create transaction for payment
+    } catch (error) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof ForbiddenException
+      ) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  /**
+   * @function updateStatusToCompleted
+   * @param booking_exist
+   * @param data
+   * @param user
+   * @returns
+   */
+
+  async updateStatusToCompleted(
+    booking_exist: any,
+    data: UpdateStatusBookingDTO,
+    user: Payload,
+  ): Promise<any> {
+    return 'updateStatusToPendingPayment';
+  }
+
+  /**
+   * @function updateStatusToExpired
+   * @param booking_exist
+   * @param data
+   * @param user
+   * @returns
+   */
+
+  async updateStatusToExpired(
+    booking_exist: any,
+    data: UpdateStatusBookingDTO,
+    user: Payload,
+  ): Promise<any> {
+    return 'updateStatusToPendingPayment';
+  }
+
+  /**
+   * @function updateStatusToCanceled
+   * @param booking_exist
+   * @param data
+   * @param user
+   * @returns
+   */
+
+  async updateStatusToCanceled(
+    booking_exist: any,
+    data: UpdateStatusBookingDTO,
+    user: Payload,
+  ): Promise<any> {
+    return 'updateStatusToPendingPayment';
   }
 }

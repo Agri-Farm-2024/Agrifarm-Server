@@ -8,6 +8,8 @@ services:
       - "3000:3000"
     volumes:
       - ./uploadFile:/app/dist/uploadFile  # Maps host `uploadFile` folder to container
+    env_file:
+      - .env
     environment:
       - NODE_ENV=production
     restart: always

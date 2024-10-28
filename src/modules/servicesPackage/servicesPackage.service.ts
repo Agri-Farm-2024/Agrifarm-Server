@@ -9,6 +9,8 @@ import { ServicePackage } from './entities/servicePackage.entity';
 import { Repository } from 'typeorm';
 import { ServiceSpecific } from './entities/serviceSpecific.entity';
 import { CreateServicePackageDTO } from './dto/create-service-package.dto';
+import { CreateServiceSpecificDTO } from './dto/create-service-specific.dto';
+import { PlantsService } from '../plants/plants.service';
 
 @Injectable()
 export class ServicesService implements IService {
@@ -18,6 +20,8 @@ export class ServicesService implements IService {
 
     @InjectRepository(ServiceSpecific)
     private readonly serviceSpecificEntity: Repository<ServiceSpecific>,
+
+    private readonly PlantsService: PlantsService,
   ) {}
 
   /**
@@ -61,6 +65,32 @@ export class ServicesService implements IService {
       const service_packages = await this.servicePackageEntity.find();
       return service_packages;
     } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async buyServiceSpecific(
+    createServicePackage: CreateServiceSpecificDTO,
+  ): Promise<any> {
+    try {
+      // check if the service package exists
+      const service_package = await this.servicePackageEntity.findOne({
+        where: {
+          service_package_id: createServicePackage.service_package_id,
+        },
+      });
+      if (!service_package) {
+        throw new BadRequestException('Service package does not exist');
+      }
+      // get detail plant season
+      const plant_season = await this.PlantsService.getDetailPlantSeason(
+        createServicePackage.plant_season_id,
+      );
+      //
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
       throw new InternalServerErrorException(error.message);
     }
   }

@@ -1,13 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsPositive,
-  IsUUID,
-} from 'class-validator';
-import { CreateLandSubDescriptionDTO } from './create-land-sub-description.dto';
+import { IsNotEmpty, IsNumber, IsOptional, IsPositive } from 'class-validator';
 
 export class CreateLandDto {
   @ApiProperty({
@@ -48,13 +40,6 @@ export class CreateLandDto {
   @IsNumber()
   @IsPositive()
   price_booking_per_month: number;
-
-  @ApiProperty({
-    description: 'The sub description of the land',
-    type: [CreateLandSubDescriptionDTO], // Correct way to specify array type
-  })
-  @IsOptional()
-  sub_description: CreateLandSubDescriptionDTO[];
 
   @ApiProperty({
     description: 'The image url of the land',

@@ -190,4 +190,25 @@ export class PlantsService implements IPlantService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  async getDetailPlantSeason(plant_season_id: string): Promise<any> {
+    try {
+      //get detail plant season
+      const plant_season = await this.plantSeasonEntity.findOne({
+        where: {
+          plant_season_id,
+        },
+        relations: ['plant'],
+      });
+      if (!plant_season) {
+        throw new BadRequestException('Plant season not found');
+      }
+      return;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }

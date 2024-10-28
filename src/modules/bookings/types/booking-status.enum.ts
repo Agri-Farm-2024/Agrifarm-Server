@@ -6,4 +6,5 @@ export enum BookingStatus {
   pending_payment = 'pending_payment',
   completed = 'completed',
   expired = 'expired',
+  canceled = 'canceled',
 }

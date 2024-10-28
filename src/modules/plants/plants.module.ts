@@ -10,5 +10,6 @@ import { LoggerService } from 'src/logger/logger.service';
   imports: [TypeOrmModule.forFeature([Plant, PlantSeason])],
   controllers: [PlantsController],
   providers: [PlantsService, LoggerService],
+  exports: [PlantsService],
 })
 export class PlantsModule {}

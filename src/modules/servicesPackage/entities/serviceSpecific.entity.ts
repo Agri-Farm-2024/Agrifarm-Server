@@ -11,7 +11,6 @@ import { User } from 'src/modules/users/entities/user.entity';
 import { ServicePackage } from './servicePackage.entity';
 import { ServiceSpecificStatus } from '../types/service-specific-status.enum';
 import { PlantSeason } from 'src/modules/plants/entities/plantSeason.entity';
-import { BookingStatus } from 'src/modules/bookings/types/booking-status.enum';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 
 @Entity('services_specific')
