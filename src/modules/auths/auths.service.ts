@@ -276,8 +276,10 @@ export class AuthsService implements IAuthService {
   private async generateToken(payload: any): Promise<any> {
     try {
       // Create 2 public and private keys with crypto
-      const publicKey = this.configService.get('JWT_PUBLIC_KEY');
-      const privateKey = this.configService.get('JWT_PRIVATE_KEY');
+      let publicKey = this.configService.get('JWT_PUBLIC_KEY');
+      let privateKey = this.configService.get('JWT_PRIVATE_KEY');
+      publicKey = publicKey.replace(/\\n/g, '\n');
+      privateKey = privateKey.replace(/\\n/g, '\n');
       // const { publicKey, privateKey } = generateKeyPairSync('rsa', {
       //   modulusLength: 4096,
       //   publicKeyEncoding: {

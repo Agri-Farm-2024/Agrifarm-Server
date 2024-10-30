@@ -49,8 +49,12 @@ export class AuthGuard implements CanActivate {
 
     // Validate the access token
     try {
+      // Get public key from config
+      let publicKey = this.configService.get('JWT_PUBLIC_KEY');
+      publicKey = publicKey.replace(/\\n/g, '\n');
+      // Verify access token
       const decoded = this.jwtService.verify(accessToken, {
-        secret: this.configService.get('JWT_PUBLIC_KEY'),
+        secret: publicKey,
       });
 
       if (decoded.id !== infoToken.user_id) {

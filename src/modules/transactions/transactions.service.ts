@@ -10,6 +10,10 @@ export class TransactionsService implements ITransactionService {
    */
 
   async createTransaction(data: any, user: any): Promise<any> {
-    throw new Error('Method not implemented.');
+    try {
+      throw new Error('Method not implemented.');
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 }

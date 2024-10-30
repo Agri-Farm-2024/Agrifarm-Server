@@ -34,7 +34,7 @@ import { join } from 'path';
         process.env.NODE_ENV === 'development' ? '.env.development' : '.env',
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploadFile'),
+      rootPath: join(__dirname, 'uploadFile'), // Use __dirname to point to dist/uploadFile
       serveRoot: '/uploadFile',
     }),
     // Import modules
