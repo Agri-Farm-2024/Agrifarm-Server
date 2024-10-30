@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Land } from './land.entity';
+import { Plant } from 'src/modules/plants/entities/plant.entity';
 
 @Entity('lands_type')
 export class LandType extends AbstractEntity {
@@ -27,4 +28,7 @@ export class LandType extends AbstractEntity {
 
   @OneToMany(() => Land, (land) => land.land_type)
   lands: Land[];
+
+  @OneToMany(() => Plant, (plant) => plant.land_type)
+  plants: Plant[];
 }

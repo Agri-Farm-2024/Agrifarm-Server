@@ -1,7 +1,8 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { PlantSeason } from './plantSeason.entity';
 import { StatusPlant } from '../types/plant-status.enum';
+import { LandType } from 'src/modules/lands/entities/landType.entity';
 @Entity('plants')
 export class Plant extends AbstractEntity {
   constructor(plant: Partial<Plant>) {
@@ -11,6 +12,9 @@ export class Plant extends AbstractEntity {
 
   @PrimaryGeneratedColumn('uuid')
   plant_id: string;
+
+  @Column('uuid', { name: 'land_type_id', nullable: true })
+  land_type_id: string;
 
   @Column()
   name: string;
@@ -24,4 +28,7 @@ export class Plant extends AbstractEntity {
 
   @OneToMany(() => PlantSeason, (plantSeason) => plantSeason.plant)
   plants_season: PlantSeason[];
+  @ManyToOne(()=> LandType, (landType) => landType.lands)
+  land_type: LandType;
+
 }

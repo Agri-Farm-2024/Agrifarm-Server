@@ -32,6 +32,12 @@ export class PlantSeason extends AbstractEntity {
   })
   month_start: number;
 
+  @Column({
+    type: 'int',
+    default: 1,
+  })
+  total_month: number;
+
   @Column('int')
   price_purchase_per_kg: number;
 
