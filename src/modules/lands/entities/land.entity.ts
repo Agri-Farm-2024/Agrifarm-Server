@@ -12,6 +12,7 @@ import {
 import { LandSubDescription } from './landSubDescription.entity';
 import { LandURL } from './landURL.entity';
 import { LandStatus } from '../types/land-status.enum';
+import { LandType } from './landType.entity';
 
 @Entity('lands')
 export class Land extends AbstractEntity {
@@ -38,6 +39,9 @@ export class Land extends AbstractEntity {
   @Column('uuid', { name: 'staff_id', nullable: true })
   staff_id: string;
 
+  @Column('uuid', { name: 'land_type_id', nullable: true })
+  land_type_id: string;
+
   @Column('decimal', { scale: 2 })
   price_booking_per_month: number;
 
@@ -63,4 +67,8 @@ export class Land extends AbstractEntity {
 
   @OneToMany(() => BookingLand, (bookingLand) => bookingLand.land_id)
   booking_land: BookingLand[];
+
+  @ManyToOne(() => LandType, (landType) => landType.lands)
+  @JoinColumn({ name: 'land_type_id' })
+  land_type: LandType;
 }
