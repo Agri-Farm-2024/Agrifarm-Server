@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ServiceSpecific } from './serviceSpecific.entity';
+import { ServicePackageStatus } from '../types/service-package-status.enum';
 
 @Entity('services_package')
 export class ServicePackage extends AbstractEntity {
@@ -36,6 +37,13 @@ export class ServicePackage extends AbstractEntity {
 
   @Column()
   price: number;
+
+  @Column({
+    type: 'enum',
+    enum: ServicePackageStatus,
+    default: ServicePackageStatus.active,
+  })
+  status: ServicePackageStatus;
 
   @OneToMany(
     () => ServiceSpecific,
