@@ -41,16 +41,16 @@ export class BookingsController {
   }
 
   @UseGuards(AuthGuard)
-  @Roles(UserRole.admin, UserRole.manager)
+  @Roles(UserRole.admin, UserRole.manager, UserRole.land_renter, UserRole.staff)
   @Get('/')
   async getAllBooking(@Request() request: any): Promise<any> {
     return await this.bookingsService.getListBookingStrategy(request.user);
   }
 
   @UseGuards(AuthGuard)
-  @Roles(UserRole.admin, UserRole.manager)
+  @Roles(UserRole.admin, UserRole.manager, UserRole.land_renter, UserRole.staff)
   @Put('/:booking_id')
-  async updateBooking(
+  async updateStatusBooking(
     @Param('booking_id') booking_id: string,
     @Body() data: UpdateStatusBookingDTO,
     @Request() request: any,

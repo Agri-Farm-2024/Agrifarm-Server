@@ -5,7 +5,6 @@ import { LoginDTO } from './dto/login.dto';
 import { OTPDto } from './dto/otp.dto';
 import { OTPVerifyDTO } from './dto/otp-verify.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { GetAccessTokenDto } from './dto/get-accessToken.dto';
 
 @Controller('auths')
 @ApiTags('Auths')
@@ -54,6 +53,7 @@ export class AuthsController {
   async getAccessToken(@Request() data: any) {
     const header = data.headers;
     const refreshToken = header['refresh'];
-    return await this.authsService.getAccessToken(refreshToken);
+    const user_id = header['user_id'];
+    return await this.authsService.getAccessToken(refreshToken, user_id);
   }
 }

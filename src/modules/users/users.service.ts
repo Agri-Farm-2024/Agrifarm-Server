@@ -149,11 +149,15 @@ export class UsersService implements IUserService {
 
   async findUserById(id: string): Promise<any> {
     try {
-      return await this.userEntity.findOne({
+      const user = await this.userEntity.findOne({
         where: {
           user_id: id,
         },
       });
+      if (!user) {
+        throw new BadRequestException('User not found');
+      }
+      return user;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

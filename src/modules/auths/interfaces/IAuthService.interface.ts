@@ -12,7 +12,7 @@ export interface IAuthService {
 
   verifyOTP(email: string, otp: number, type: string): Promise<any>;
 
-  getAccessToken(refreshToken: string): Promise<any>;
+  getAccessToken(refreshToken: string, user_id: string): Promise<any>;
 
   // getAccessToken(refreshToken: string): Promise<any>;
 }

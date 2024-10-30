@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { IAuthService } from './interfaces/IAuthService.interface';
 import { LoginDTO } from './dto/login.dto';
@@ -239,41 +240,62 @@ export class AuthsService implements IAuthService {
     };
   }
 
-  async getAccessToken(refreshToken: string): Promise<any> {
-    const token_exist = await this.redisService.get(`token:${refreshToken}`);
-    const token_exist_obj: InfoToken = JSON.parse(token_exist);
-
-    if (!token_exist_obj || token_exist_obj.status !== TokenStatus.valid) {
-      throw new BadRequestException('Token is invalid');
+  async getAccessToken(refreshToken: string, user_id: string): Promise<any> {
+    try {
+      // Get token from redis
+      const token_exist = await this.redisService.get(`token:${user_id}`);
+      const token_exist_obj: InfoToken[] = JSON.parse(token_exist);
+      if (!token_exist_obj) {
+        throw new UnauthorizedException('Token not found');
+      }
+      // Find refresh token in token list
+      const found: InfoToken = token_exist_obj.find(
+        (token: InfoToken) => token.refreshToken === refreshToken,
+      );
+      if (!found) {
+        throw new UnauthorizedException('Token not found');
+      }
+      // Check if token is expired
+      if (found.status !== TokenStatus.valid) {
+        throw new UnauthorizedException('Token is invalid');
+      }
+      // Get private key and public key from config
+      let privateKey = this.configService.get('JWT_PRIVATE_KEY');
+      privateKey = privateKey.replace(/\\n/g, '\n');
+      // Verify refresh token
+      const decoded = this.jwtService.verify(refreshToken, {
+        secret: privateKey,
+      });
+      // Generate a new token
+      const payload: Payload = {
+        user_id: user_id,
+        email: decoded.email,
+        full_name: decoded.full_name,
+        role: decoded.role,
+      };
+      const accessToken = await this.jwtService.sign(payload, {
+        secret: privateKey,
+        expiresIn: '1d',
+        algorithm: 'RS256',
+      });
+      return accessToken;
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
     }
-
-    const user = await this.userService.findUserById(token_exist_obj.user_id);
-
-    const payload = {
-      id: user.id,
-      email: user.email,
-      full_name: user.full_name,
-      role: user.role,
-    };
-    // generate new access token
-    const accessToken = this.jwtService.sign(payload, {
-      secret: this.configService.get('JWT_PRIVATE_KEY'),
-      expiresIn: '1d',
-      algorithm: 'RS256',
-    });
-
-    return { accessToken };
   }
 
   /**
-   *@function refreshToken
+   *@function generateToken
    * @param payload
    * @returns
    * 1. Create 2 public and private keys pair
    * 2. Create a token with the payload and the private key
    */
 
-  private async generateToken(payload: any): Promise<any> {
+  private async generateToken(payload: Payload): Promise<any> {
     try {
       // Create 2 public and private keys with crypto
       let publicKey = this.configService.get('JWT_PUBLIC_KEY');
@@ -310,14 +332,31 @@ export class AuthsService implements IAuthService {
 
       Logger.log(`Verify token: ${JSON.stringify(verifyToken)}`);
       //Save to redis
-      await this.redisService.set(
-        `token:${refreshToken}`,
-        JSON.stringify({
-          user_id: payload.id,
-          status: TokenStatus.valid,
-        }),
-      );
+      // await this.redisService.set(
+      //   `token:${refreshToken}`,
+      //   JSON.stringify({
+      //     user_id: payload.id,
+      //     status: TokenStatus.valid,
+      //   }),
+      // );
 
+      // Get token from redis
+      const token_exist = await this.redisService.get(
+        `token:${payload.user_id}`,
+      );
+      let token_exist_obj: InfoToken[] = JSON.parse(token_exist);
+      if (!token_exist_obj) {
+        token_exist_obj = [];
+      }
+      // Save to redis
+      token_exist_obj.push({
+        refreshToken,
+        status: TokenStatus.valid,
+      });
+      await this.redisService.set(
+        `token:${payload.user_id}`,
+        JSON.stringify(token_exist_obj),
+      );
       return {
         accessToken,
         refreshToken,

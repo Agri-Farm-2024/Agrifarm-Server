@@ -13,6 +13,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { LandURL } from './entities/landURL.entity';
 import { LandURLType } from './types/land-url-type.enum';
 import { LandStatus } from './types/land-status.enum';
+import { UsersService } from '../users/users.service';
+import { User } from '../users/entities/user.entity';
+import { UserRole } from '../users/types/user-role.enum';
 
 @Injectable()
 export class LandsService implements ILandService {
@@ -24,6 +27,8 @@ export class LandsService implements ILandService {
     private readonly landURLEntity: Repository<LandURL>,
 
     private readonly loggerService: LoggerService,
+
+    private readonly userService: UsersService,
   ) {}
 
   async createLand(data: CreateLandDto): Promise<any> {
@@ -133,7 +138,10 @@ export class LandsService implements ILandService {
         where: {
           land_id: id,
         },
-        relations: ['sub_description', 'url', 'staff'],
+        relations: {
+          url: true,
+          staff: true,
+        },
         select: {
           url: {
             string_url: true,
@@ -160,6 +168,13 @@ export class LandsService implements ILandService {
     }
   }
 
+  /**
+   * @function updateLand
+   * @param data
+   * @param id
+   * @returns
+   */
+
   async updateLand(data: UpdateLandDTO, id: string): Promise<any> {
     try {
       const land = await this.landEntity.findOne({
@@ -170,13 +185,39 @@ export class LandsService implements ILandService {
       if (!land) {
         throw new BadRequestException('Land not found');
       }
+      // check name if exist
+      if (data.name) {
+        const land_name = await this.landEntity.findOne({
+          where: {
+            name: data.name,
+          },
+        });
+        if (land_name && land_name.land_id !== id) {
+          throw new BadRequestException('Land name already exist');
+        }
+      }
+      // check if data have staff_id
+      if (data.staff_id) {
+        // check if staff_id is exist
+        const staff_exist: User = await this.userService.findUserById(
+          data.staff_id,
+        );
+        if (staff_exist.role !== UserRole.staff) {
+          throw new BadRequestException('User is not staff');
+        }
+      }
+      // update land
       const updated_land = await this.landEntity.save({
         ...land,
         ...data,
       });
+      // Send mail to staff
+      // Log the land update
+      this.loggerService.log('Land is updated');
 
       return updated_land;
     } catch (error) {
+      LoggerService.error(error.message);
       if (error instanceof BadRequestException) {
         throw error;
       }

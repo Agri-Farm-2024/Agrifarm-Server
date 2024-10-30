@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  Put,
 } from '@nestjs/common';
 import { LandsService } from './lands.service';
 import { CreateLandDto } from './dto/create-land.dto';
@@ -38,5 +39,10 @@ export class LandsController {
   @Get('/:land_id')
   findOne(@Param('land_id') id: string) {
     return this.landsService.getDetailLandById(id);
+  }
+
+  @Put('/:land_id')
+  update(@Param('land_id') id: string, @Body() updateLandDto: UpdateLandDTO) {
+    return this.landsService.updateLand(updateLandDto, id);
   }
 }

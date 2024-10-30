@@ -40,12 +40,17 @@ export class BookingsService implements IBookingService {
     land_renter: Payload,
   ): Promise<any> {
     try {
-      // check land status is free
+      // Get detail land
       const land: Land = await this.landService.getDetailLandById(
         createBookingDto.land_id,
       );
+      //  Check if land is free
       if (land.status !== LandStatus.free) {
         throw new BadRequestException('Land is not free to book');
+      }
+      // Check land has staff is active
+      if (!land.staff_id) {
+        throw new BadRequestException('Wait for manager assign staff to land');
       }
       // Get price per month of land
       const total_price =
@@ -118,6 +123,20 @@ export class BookingsService implements IBookingService {
           land_renter: true,
           staff: true,
         },
+        select: {
+          land_renter: {
+            user_id: true,
+            full_name: true,
+            email: true,
+            role: true,
+          },
+          staff: {
+            user_id: true,
+            full_name: true,
+            email: true,
+            role: true,
+          },
+        },
       });
       return bookings;
     } catch (error) {
@@ -136,6 +155,20 @@ export class BookingsService implements IBookingService {
           land_renter: true,
           staff: true,
         },
+        select: {
+          land_renter: {
+            user_id: true,
+            full_name: true,
+            email: true,
+            role: true,
+          },
+          staff: {
+            user_id: true,
+            full_name: true,
+            email: true,
+            role: true,
+          },
+        },
       });
       return bookings;
     } catch (error) {
@@ -151,8 +184,15 @@ export class BookingsService implements IBookingService {
         },
         relations: {
           land: true,
-          land_renter: true,
           staff: true,
+        },
+        select: {
+          staff: {
+            user_id: true,
+            full_name: true,
+            email: true,
+            role: true,
+          },
         },
       });
       return bookings;

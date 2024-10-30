@@ -1,5 +1,6 @@
+import { TokenStatus } from './token-status.enum';
+
 export interface InfoToken {
-  user_id: string;
   refreshToken: string;
-  status: string;
+  status: TokenStatus;
 }
