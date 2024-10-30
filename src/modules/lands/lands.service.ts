@@ -10,7 +10,6 @@ import { Land } from './entities/land.entity';
 import { LoggerService } from 'src/logger/logger.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LandSubDescription } from './entities/landSubDescription.entity';
 import { LandURL } from './entities/landURL.entity';
 import { LandURLType } from './types/land-url-type.enum';
 import { LandStatus } from './types/land-status.enum';
@@ -20,9 +19,6 @@ export class LandsService implements ILandService {
   constructor(
     @InjectRepository(Land)
     private readonly landEntity: Repository<Land>,
-
-    @InjectRepository(LandSubDescription)
-    private readonly landSubDescriptionEntity: Repository<LandSubDescription>,
 
     @InjectRepository(LandURL)
     private readonly landURLEntity: Repository<LandURL>,

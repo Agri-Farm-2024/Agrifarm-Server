@@ -9,7 +9,6 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { LandSubDescription } from './landSubDescription.entity';
 import { LandURL } from './landURL.entity';
 import { LandStatus } from '../types/land-status.enum';
 import { LandType } from './landType.entity';
@@ -51,12 +50,6 @@ export class Land extends AbstractEntity {
     default: LandStatus.free,
   })
   status: LandStatus;
-
-  @OneToMany(
-    () => LandSubDescription,
-    (landSubDescription) => landSubDescription.land,
-  )
-  sub_description: LandSubDescription[];
 
   @OneToMany(() => LandURL, (landURL) => landURL.land)
   url: LandURL[];
