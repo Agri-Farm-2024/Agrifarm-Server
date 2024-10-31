@@ -31,6 +31,15 @@ export class PlantsService implements IPlantService {
   ) {}
 
   async createPlant(createPlantDto: CreatePlantDto) {
+    // check if plant name is already exist
+    const plant = await this.plantEntity.findOne({
+      where: {
+        name: createPlantDto.name,
+      },
+    });
+    if (plant) {
+      throw new BadRequestException('Plant name already exist');
+    }
     //create new plant
     const new_plant = await this.plantEntity.save({
       ...createPlantDto,
@@ -43,25 +52,40 @@ export class PlantsService implements IPlantService {
 
   async createPlantSeason(data: CreatePlantSeasonDto) {
     try {
-      // check if plant_id and month_start and type is already exist
-      const plant_season = await this.plantSeasonEntity.findOne({
+      // Check for duplicate plant season with the same plant_id, month_start, and type
+      const existingSeason = await this.plantSeasonEntity.findOne({
         where: {
           plant_id: data.plant_id,
           month_start: data.month_start,
           type: data.type,
         },
       });
-      if (plant_season) {
-        throw new BadRequestException('Plant season already exist');
+      if (existingSeason) {
+        throw new BadRequestException('Plant season already exists with the same plant_id, month_start, and type');
       }
-      //create new plant season
-      const new_plant_season = await this.plantSeasonEntity.save({
-        ...data,
+  
+      // Additional check for in_season and out_season limits
+      const seasonTypeCount = await this.plantSeasonEntity.count({
+        where: {
+          plant_id: data.plant_id,
+          type: data.type,
+        },
       });
-
+  
+      if (data.type === 'in_season' && seasonTypeCount >= 1) {
+        throw new BadRequestException('Only one in-season is allowed per plant variety');
+      }
+  
+      if (data.type === 'out_season' && seasonTypeCount >= 2) {
+        throw new BadRequestException('Only two out-seasons are allowed per plant variety');
+      }
+  
+      // Create a new plant season if validations pass
+      const newPlantSeason = await this.plantSeasonEntity.save({ ...data });
+  
       // Log the plant season creation
       this.loggerService.log('New plant season is created');
-      return new_plant_season;
+      return newPlantSeason;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
@@ -77,7 +101,9 @@ export class PlantsService implements IPlantService {
       if (!plant) {
         throw new BadRequestException('Plant not found');
       }
-
+      //update plant status
+      plant.land_type_id = plant.land_type_id;
+      plant.name = plant.name;
       plant.status = status;
       return await this.plantEntity.save(plant);
     } catch (error) {
@@ -121,7 +147,7 @@ export class PlantsService implements IPlantService {
       }
 
       // Delete the plant
-      await this.plantEntity.remove(plant);
+      plant.status = StatusPlant.inactive;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

@@ -22,6 +22,14 @@ export class CreatePlantSeasonDto {
   month_start: number;
 
   @ApiProperty({
+   description: 'total month the plant will be in season',
+    example: 1,
+  })
+  @IsInt()
+  @Min(1)
+  total_month: number;
+
+  @ApiProperty({
     description: 'Price the process',
     example: 10,
   })

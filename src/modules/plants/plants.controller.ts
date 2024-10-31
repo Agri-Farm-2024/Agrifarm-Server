@@ -57,7 +57,7 @@ export class PlantsController {
     return await this.plantsService.getAllPlantSeasons(pagination);
   }
 
-  @Patch(':id')
+  @Patch('/updateplant/:id')
   async updatePlant(
     @Param('id') id: string,
     @Body() updatePlantDto: UpdatePlantDto,
@@ -73,7 +73,7 @@ export class PlantsController {
     return await this.plantsService.updatePlantSeason(id, data);
   }
 
-  @Delete('/:id')
+  @Delete('/deletePlant/:id')
   async remove(@Param('id') id: string) {
     return await this.plantsService.removePlant(id);
   }
