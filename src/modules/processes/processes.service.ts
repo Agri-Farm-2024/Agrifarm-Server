@@ -78,7 +78,8 @@ export class ProcessesService implements IProcessesService {
         ...data,
         process_standard_id: process_id,
       });
-      // create process stage content
+      // create process stage content and material
+      
       if (data.content) {
         const sortedContent = data.content.sort(
           (a, b) => a.numberic_order - b.numberic_order,
@@ -86,6 +87,12 @@ export class ProcessesService implements IProcessesService {
         for (let i = 0; i < sortedContent.length; i++) {
           await this.createProcessStageContent(
             data.content[i],
+            new_process_stage.process_technical_standard_stage_id,
+          );
+        }
+        for( let i = 0 ;i < sortedContent.length; i++){
+          await this.createProcessStageMaterial(
+            data.material[i],
             new_process_stage.process_technical_standard_stage_id,
           );
         }

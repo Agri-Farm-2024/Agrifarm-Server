@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProcessStandard } from './entities/standards/processStandard.entity';
 import { ProcessStandardStage } from './entities/standards/processStandardStage.entity';
 import { ProcessStandardStageContent } from './entities/standards/processStandardStageContent.entity';
+import { ProcessStandardStageMaterial } from './entities/standards/processStandardStageMaterial.entity';
 
 @Module({
   controllers: [ProcessesController],
@@ -15,6 +16,7 @@ import { ProcessStandardStageContent } from './entities/standards/processStandar
       ProcessStandard,
       ProcessStandardStage,
       ProcessStandardStageContent,
+      ProcessStandardStageMaterial,
     ]),
   ],
 })

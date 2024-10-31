@@ -11,10 +11,10 @@ import { ProcessStandardStage } from './processStandardStage.entity';
 @Entity('processes_technical_standard_stage_material')
 export class ProcessStandardStageMaterial extends AbstractEntity {
   constructor(
-    processStandardStageContent: Partial<ProcessStandardStageMaterial>,
+    processStandardStageMaterial: Partial<ProcessStandardStageMaterial>,
   ) {
     super();
-    Object.assign(this, processStandardStageContent);
+    Object.assign(this, processStandardStageMaterial);
   }
 
   @PrimaryGeneratedColumn('uuid')
