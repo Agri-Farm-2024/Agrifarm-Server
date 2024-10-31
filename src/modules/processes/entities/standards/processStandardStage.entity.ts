@@ -8,7 +8,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProcessStandard } from './processStandard.entity';
-import { TypeStageProcess } from '../../types/type-stage.enum';
 import { ProcessStandardStageContent } from './processStandardStageContent.entity';
 
 @Entity('processes_technical_standard_stage')
@@ -35,12 +34,6 @@ export class ProcessStandardStage extends AbstractEntity {
 
   @Column('int')
   time_end: number;
-
-  @Column({
-    type: 'enum',
-    enum: TypeStageProcess,
-  })
-  stage_type: TypeStageProcess;
 
   @ManyToOne(
     () => ProcessStandard,
