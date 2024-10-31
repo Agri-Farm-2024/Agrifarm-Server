@@ -290,4 +290,25 @@ export class LandsService implements ILandService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  //update landType
+  async updateLandType(data: any, id: string): Promise<LandType> {
+    try {
+      //check if land type is already exist
+      const land_type = await this.landTypeEntity.findOne({
+        where: {
+          land_type_id: id,
+        },
+      });
+      if (!land_type) {
+        throw new BadRequestException('Land type not found');
+      }
+      //update land type
+      land_type.name = data.name;
+      land_type.description = data.description;
+      return await this.landTypeEntity.save(land_type);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }

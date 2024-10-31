@@ -56,4 +56,9 @@ export class LandsController {
   createLandType(@Body() CreateLandTypeDto: CreateLandTypeDto) {
     return this.landsService.createLandType(CreateLandTypeDto);
   }
+
+  @Put('/updateLandType/:id')
+  updateLandType(@Param('id') id: string, @Body() updateLandTypeDto: CreateLandTypeDto) {
+    return this.landsService.updateLandType(updateLandTypeDto, id);
+  }
 }
