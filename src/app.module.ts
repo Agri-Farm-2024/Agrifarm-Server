@@ -26,6 +26,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { SocketsModule } from './modules/sockets/sockets.module';
 import { DiscordsModule } from './modules/discords/discords.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { DiscordsModule } from './modules/discords/discords.module';
       rootPath: join(__dirname, 'uploadFile'), // Use __dirname to point to dist/uploadFile
       serveRoot: '/uploadFile',
     }),
+    ScheduleModule.forRoot(),
     // Import modules
     LoggerModule,
     UsersModule,
