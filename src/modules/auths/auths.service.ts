@@ -298,10 +298,12 @@ export class AuthsService implements IAuthService {
   private async generateToken(payload: Payload): Promise<any> {
     try {
       // Create 2 public and private keys with crypto
-      let publicKey = `${this.configService.get('JWT_PUBLIC_KEY')}`;
-      let privateKey = `${this.configService.get('JWT_PRIVATE_KEY')}`;
-      publicKey = publicKey.replace(/\\n/g, '\n').trim();
-      privateKey = privateKey.replace(/\\n/g, '\n').trim();
+      const publicKey = this.configService
+        .get('JWT_PUBLIC_KEY')
+        .replace(/\\n/g, '\n');
+      const privateKey = this.configService
+        .get('JWT_PRIVATE_KEY')
+        .replace(/\\n/g, '\n');
       // const { publicKey, privateKey } = generateKeyPairSync('rsa', {
       //   modulusLength: 4096,
       //   publicKeyEncoding: {
@@ -325,8 +327,11 @@ export class AuthsService implements IAuthService {
         expiresIn: '1d',
         algorithm: 'RS256',
       });
+
+      console.log(`Access token: ${accessToken}`);
+      console.log(`Refresh token: ${refreshToken}`);
       // Verify the token with the public key
-      const verifyToken = await this.jwtService.verifyAsync(accessToken, {
+      const verifyToken = this.jwtService.verify(accessToken, {
         secret: publicKey,
       });
 

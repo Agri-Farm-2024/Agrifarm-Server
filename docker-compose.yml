@@ -12,6 +12,8 @@ services:
       - .env
     environment:
       - NODE_ENV=production
+      - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
+      - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
     restart: always
 
 volumes:
