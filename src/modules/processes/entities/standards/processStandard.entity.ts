@@ -31,17 +31,8 @@ export class ProcessStandard extends AbstractEntity {
   @Column()
   name: string;
 
-  @Column('int')
-  total_month: number;
-
   @Column(null, { nullable: true })
   reason_of_reject: string;
-
-  @Column({
-    type: 'enum',
-    enum: TypeProcess,
-  })
-  type_process: TypeProcess;
 
   @Column({
     type: 'enum',

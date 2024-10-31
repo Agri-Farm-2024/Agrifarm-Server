@@ -13,18 +13,5 @@ export class ProcessesController {
     return this.processesService.createProcessStandard(data);
   }
 
-  @Get()
-  findAll() {
-    return this.processesService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.processesService.findOne(+id);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.processesService.remove(+id);
-  }
+  
 }

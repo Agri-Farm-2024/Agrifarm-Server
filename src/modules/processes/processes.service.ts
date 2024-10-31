@@ -7,11 +7,12 @@ import { CreateProcessDto } from './dto/create-process.dto';
 import { IProcessesService } from './interfaces/IProcessesService.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProcessStandard } from './entities/standards/processStandard.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { ProcessStandardStage } from './entities/standards/processStandardStage.entity';
 import { ProcessStandardStageContent } from './entities/standards/processStandardStageContent.entity';
 import { CreateProcessStageDto } from './dto/create-process-stage.dto';
 import { CreateProcessStageContentDto } from './dto/create-process-stage-content.dto';
+import { PlantSeason } from '../plants/entities/plantSeason.entity';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -22,15 +23,26 @@ export class ProcessesService implements IProcessesService {
     private readonly processStandardStageEntity: Repository<ProcessStandardStage>,
     @InjectRepository(ProcessStandardStageContent)
     private readonly processStandardStageContentEntity: Repository<ProcessStandardStageContent>,
+   
+    
   ) {}
 
   async createProcessStandard(data: CreateProcessDto): Promise<any> {
     try {
       //check if plant id and type process name is already exist
+      // const plantSeason = await this.plantSeasonEntity.findOne({
+      //   where: { plant_season_id: data.plant_season_id },
+      // });
+  
+      // if (!plantSeason) {
+      //   throw new BadRequestException('Plant season not found');
+      // }
+  
+      // const typeProcess = plantSeason.type;
       const process = await this.processEntity.findOne({
         where: {
           plant_season_id: data.plant_season_id,
-          type_process: data.type_process,
+       
         },
       });
       if (process) {
@@ -40,8 +52,6 @@ export class ProcessesService implements IProcessesService {
       const new_process = await this.processEntity.save({
         name: data.name,
         plant_season_id: data.plant_season_id,
-        total_month: data.total_month,
-        type_process: data.type_process,
       });
       // create process stage
       if (data.stage) {
@@ -105,15 +115,12 @@ export class ProcessesService implements IProcessesService {
     }
   }
 
-  findAll() {
-    return `This action returns all processes`;
-  }
+  //Getlist Standard Process
+  async getProcessStandard(): Promise<any> {
+    try {
 
-  findOne(id: number) {
-    return `This action returns a #${id} process`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} process`;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 }

@@ -17,24 +17,7 @@ export class CreateProcessDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({
-    description: 'total month of process',
-    example: 12,
-  })
-  @IsNotEmpty()
-  @IsOptional()
-  @Max(12)
-  @Min(1)
-  total_month: number;
-
-  @ApiProperty({
-    description: 'the type of process',
-    example: TypeProcess.in_season,
-  })
-  @IsNotEmpty()
-  type_process: TypeProcess;
-
-  @ApiProperty({
+    @ApiProperty({
     description: 'the stage of process',
     type: [CreateProcessStageDto],
   })

@@ -26,6 +26,9 @@ export class ProcessStandardStageContent extends AbstractEntity {
   @Column('uuid')
   material_id: string;
 
+  @Column('int')
+  quantity: number;
+
   @ManyToOne(
     () => ProcessStandardStage,
     (processStandardStage) =>
