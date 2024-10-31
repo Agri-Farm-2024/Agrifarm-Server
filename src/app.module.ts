@@ -24,9 +24,9 @@ import { ServicesModule } from './modules/servicesPackage/servicesPackage.module
 import { UploadsModule } from './modules/uploads/uploads.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { SocketsModule } from './modules/sockets/sockets.module';
-import { DiscordsModule } from './modules/discords/discords.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SocketsModule } from './sockets/sockets.module';
+import { DiscordsModule } from './discords/discords.module';
 
 @Module({
   imports: [

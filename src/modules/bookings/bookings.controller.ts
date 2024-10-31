@@ -7,14 +7,21 @@ import {
   Get,
   Param,
   Put,
+  Query,
 } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { Roles } from 'src/common/decorations/role.decoration';
 import { UserRole } from '../users/types/user-role.enum';
 import { UpdateStatusBookingDTO } from './dto/update-status-booking.dto';
+import { BookingStatus } from './types/booking-status.enum';
+import {
+  ApplyPaginationMetadata,
+  Pagination,
+} from 'src/common/decorations/pagination.decoration';
+import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 
 @ApiTags('Booking')
 @Controller('bookings')
@@ -43,8 +50,21 @@ export class BookingsController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.admin, UserRole.manager, UserRole.land_renter, UserRole.staff)
   @Get('/')
-  async getAllBooking(@Request() request: any): Promise<any> {
-    return await this.bookingsService.getListBookingStrategy(request.user);
+  @ApplyPaginationMetadata
+  @ApiQuery({ name: 'status', required: false, enum: BookingStatus })
+  @ApiQuery({ name: 'type', required: true, enum: ['request', 'booking'] })
+  async getAllBooking(
+    @Request() request: any,
+    @Query('status') status: BookingStatus,
+    @Query('type') type: string,
+    @Pagination() pagination: PaginationParams,
+  ): Promise<any> {
+    return await this.bookingsService.getListBookingStrategy(
+      request.user,
+      status,
+      type,
+      pagination,
+    );
   }
 
   @UseGuards(AuthGuard)
