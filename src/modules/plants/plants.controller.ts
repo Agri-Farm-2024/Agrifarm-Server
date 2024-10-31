@@ -20,6 +20,7 @@ import {
 } from 'src/common/decorations/pagination.decoration';
 import { CreatePlantSeasonDto } from './dto/create-plantSeason.dto';
 import { StatusPlant } from './types/plant-status.enum';
+import { UpdatePlantSeasonDto } from './dto/update-plantSeason.dto';
 
 @ApiTags('Plants')
 @Controller('plants')
@@ -68,13 +69,19 @@ export class PlantsController {
   @Put('/updatePlantSeason/:id')
   async updatePlantSeason(
     @Param('id') id: string,
-    @Body() data: CreatePlantSeasonDto,
+    @Body() data: UpdatePlantSeasonDto,
   ) {
     return await this.plantsService.updatePlantSeason(id, data);
   }
 
-  @Delete('/deletePlant/:id')
+  @Delete('deletePlant/:id')
   async remove(@Param('id') id: string) {
     return await this.plantsService.removePlant(id);
   }
+
+  @Delete('deletePlantSeason/:id')
+  async removePlantSeason(@Param('id') id: string) {
+    return await this.plantsService.removePlantSeason(id);
+  }
+  
 }

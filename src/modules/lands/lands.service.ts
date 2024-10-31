@@ -16,12 +16,17 @@ import { LandStatus } from './types/land-status.enum';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 import { UserRole } from '../users/types/user-role.enum';
+import { LandType } from './entities/landType.entity';
+import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 
 @Injectable()
 export class LandsService implements ILandService {
   constructor(
     @InjectRepository(Land)
     private readonly landEntity: Repository<Land>,
+
+    @InjectRepository(LandType)
+    private readonly landTypeEntity: Repository<LandType>,
 
     @InjectRepository(LandURL)
     private readonly landURLEntity: Repository<LandURL>,
@@ -241,6 +246,43 @@ export class LandsService implements ILandService {
       });
 
       return updated_land;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  //getlandType
+  async getLandType(): Promise<any> {
+    try {
+      //get all land type
+      const land_types = await this.landTypeEntity.find();
+      return land_types;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  //create landType
+  async createLandType(data: any): Promise<any> {
+    try {
+      //check if land type is already exist
+      const land_type = await this.landTypeEntity.findOne({
+        where: {
+          name: data.name,
+        },
+      });
+      if (land_type) {
+        throw new BadRequestException('Land type already exist');
+      }
+      //create new land type
+      const new_land_type = await this.landTypeEntity.save({
+        name: data.name,
+      });
+
+      return new_land_type;
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;

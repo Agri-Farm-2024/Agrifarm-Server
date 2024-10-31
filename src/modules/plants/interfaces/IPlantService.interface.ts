@@ -9,6 +9,7 @@ export interface IPlantService {
   updatePlant(id: string, status: StatusPlant): Promise<any>;
 
   removePlant(id: string): Promise<any>;
+  removePlantSeason(id: string): Promise<any>;
 
   createPlantSeason(createPlantSeasonDto: any): any;
 
@@ -17,4 +18,5 @@ export interface IPlantService {
   updatePlantSeason(id: string, data: any): Promise<any>;
 
   getDetailPlantSeason(plant_season_id: string): Promise<any>;
+
 }

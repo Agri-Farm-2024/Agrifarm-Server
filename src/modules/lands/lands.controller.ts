@@ -14,11 +14,17 @@ import { CreateLandDto } from './dto/create-land.dto';
 import { UpdateLandDTO } from './dto/update-land.dto';
 import { ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { LandStatus } from './types/land-status.enum';
+import { CreateLandTypeDto } from './dto/create-landType.dto';
 
 @ApiTags('Land')
 @Controller('lands')
 export class LandsController {
   constructor(private readonly landsService: LandsService) {}
+
+  @Get('/landType')
+  async getLandType() {
+    return await this.landsService.getLandType();
+  }
 
   @Post('/createLand')
   create(@Body() createLandDto: CreateLandDto) {
@@ -44,5 +50,10 @@ export class LandsController {
   @Put('/:land_id')
   update(@Param('land_id') id: string, @Body() updateLandDto: UpdateLandDTO) {
     return this.landsService.updateLand(updateLandDto, id);
+  }
+
+  @Post('/createLandType')
+  createLandType(@Body() CreateLandTypeDto: CreateLandTypeDto) {
+    return this.landsService.createLandType(CreateLandTypeDto);
   }
 }

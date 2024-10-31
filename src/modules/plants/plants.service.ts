@@ -15,6 +15,7 @@ import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { PlantSeason } from './entities/plantSeason.entity';
 import { CreatePlantSeasonDto } from './dto/create-plantSeason.dto';
 import { StatusPlant } from './types/plant-status.enum';
+import { PlantSeasonStatus } from './types/plant-season-status.enum';
 
 @Injectable()
 export class PlantsService implements IPlantService {
@@ -112,27 +113,47 @@ export class PlantsService implements IPlantService {
   }
 
   async updatePlantSeason(id: string, data: any): Promise<PlantSeason> {
-    //update plant season
     try {
+      // Find the existing plant season by ID
       const plant_season = await this.plantSeasonEntity.findOne({
-        where: {
-          plant_season_id: id,
-        },
+        where: { plant_season_id: id },
       });
+  
       if (!plant_season) {
         throw new BadRequestException('Plant season not found');
       }
-      //update plant season
+  
+      // Check constraints based on type change
+      if (data.type !== plant_season.type) {
+        const seasonTypeCount = await this.plantSeasonEntity.count({
+          where: {
+            plant_id: plant_season.plant_id,
+            type: data.type,
+          },
+        });
+  
+        if (data.type === 'in_season' && seasonTypeCount >= 1) {
+          throw new BadRequestException('Only one in-season is allowed per plant variety');
+        }
+  
+        if (data.type === 'out_season' && seasonTypeCount >= 2) {
+          throw new BadRequestException('Only two out-seasons are allowed per plant variety');
+        }
+      }
+  
+      // Update plant season properties
       plant_season.month_start = data.month_start;
       plant_season.type = data.type;
       plant_season.price_purchase_per_kg = data.price_purchase_per_kg;
       plant_season.price_process = data.price_process;
-
+  
+      // Save the updated plant season
       return await this.plantSeasonEntity.save(plant_season);
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
   }
+  
 
   async removePlant(id: string): Promise<void> {
     //delete plant
@@ -152,6 +173,28 @@ export class PlantsService implements IPlantService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  async removePlantSeason(id: string): Promise<void> {
+    try{
+      //check plant season
+      const plant_season = await this.plantSeasonEntity.findOne({
+        where: {
+          plant_season_id: id,
+        },
+      });
+      if (!plant_season) {
+        throw new NotFoundException(`Plant season with ID ${id} not found`);
+      }
+      //delete plant season
+      plant_season.status = PlantSeasonStatus.deleted;                                                              
+
+    }catch(error){
+      throw new InternalServerErrorException(error.message);
+    }
+
+  }
+
+
 
   async getAllPlants(pagination: PaginationParams): Promise<any> {
     // check filter condition

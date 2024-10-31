@@ -17,13 +17,13 @@ export class LandType extends AbstractEntity {
     Object.assign(this, land);
   }
 
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('uuid', { name: 'land_type_id' })
   land_type_id: string;
 
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   description: String;
 
   @OneToMany(() => Land, (land) => land.land_type)
