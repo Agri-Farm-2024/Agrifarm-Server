@@ -13,6 +13,8 @@ import { ProcessStandardStageContent } from './entities/standards/processStandar
 import { CreateProcessStageDto } from './dto/create-process-stage.dto';
 import { CreateProcessStageContentDto } from './dto/create-process-stage-content.dto';
 import { PlantSeason } from '../plants/entities/plantSeason.entity';
+import { CreateProcessStageMaterialDto } from './dto/create-process-stage-material.dto';
+import { ProcessStandardStageMaterial } from './entities/standards/processStandardStageMaterial.entity';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -23,6 +25,8 @@ export class ProcessesService implements IProcessesService {
     private readonly processStandardStageEntity: Repository<ProcessStandardStage>,
     @InjectRepository(ProcessStandardStageContent)
     private readonly processStandardStageContentEntity: Repository<ProcessStandardStageContent>,
+    @InjectRepository(ProcessStandardStageMaterial)
+    private readonly processStandardStageMaterialEntity: Repository<ProcessStandardStageMaterial>,
    
     
   ) {}
@@ -30,15 +34,6 @@ export class ProcessesService implements IProcessesService {
   async createProcessStandard(data: CreateProcessDto): Promise<any> {
     try {
       //check if plant id and type process name is already exist
-      // const plantSeason = await this.plantSeasonEntity.findOne({
-      //   where: { plant_season_id: data.plant_season_id },
-      // });
-  
-      // if (!plantSeason) {
-      //   throw new BadRequestException('Plant season not found');
-      // }
-  
-      // const typeProcess = plantSeason.type;
       const process = await this.processEntity.findOne({
         where: {
           plant_season_id: data.plant_season_id,
@@ -113,6 +108,22 @@ export class ProcessesService implements IProcessesService {
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
+  }
+
+  async createProcessStageMaterial(
+    data: CreateProcessStageMaterialDto,
+    process_stage_id: string,
+  ): Promise<any> {
+    try {
+      //create process stage material
+      return await this.processStandardStageMaterialEntity.save({
+        ...data,
+        process_standard_stage_id: process_stage_id,
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+
   }
 
   //Getlist Standard Process

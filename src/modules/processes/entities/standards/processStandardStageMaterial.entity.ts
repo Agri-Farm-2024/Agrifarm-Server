@@ -9,9 +9,9 @@ import {
 import { ProcessStandardStage } from './processStandardStage.entity';
 
 @Entity('processes_technical_standard_stage_material')
-export class ProcessStandardStageContent extends AbstractEntity {
+export class ProcessStandardStageMaterial extends AbstractEntity {
   constructor(
-    processStandardStageContent: Partial<ProcessStandardStageContent>,
+    processStandardStageContent: Partial<ProcessStandardStageMaterial>,
   ) {
     super();
     Object.assign(this, processStandardStageContent);
