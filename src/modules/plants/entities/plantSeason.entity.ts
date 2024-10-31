@@ -12,6 +12,7 @@ import { PlantSeasonType } from 'src/utils/types/plantSeason-type.enum';
 import { PlantSeasonStatus } from '../types/plant-season-status.enum';
 import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
 import { ProcessStandard } from 'src/modules/processes/entities/standards/processStandard.entity';
+import { Request } from 'src/modules/requests/entities/request.entity';
 
 @Entity('plants_season')
 export class PlantSeason extends AbstractEntity {
@@ -73,4 +74,7 @@ export class PlantSeason extends AbstractEntity {
     (processStandard) => processStandard.plant_season,
   )
   process_technical_standard: ProcessStandard[];
+
+  @OneToMany(() => Request, (request) => request.plant_season)
+  requests: Request[];
 }

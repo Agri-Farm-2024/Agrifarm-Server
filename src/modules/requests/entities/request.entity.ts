@@ -13,6 +13,8 @@ import { RequestSupportType } from '../types/request-support-type.enum';
 import { RequestStatus } from 'src/utils/status/request-status.enum';
 import { RequestType } from '../types/request-type.enum';
 import { Task } from 'src/modules/tasks/entities/task.entity';
+import { Plant } from 'src/modules/plants/entities/plant.entity';
+import { PlantSeason } from 'src/modules/plants/entities/plantSeason.entity';
 
 @Entity('requests')
 export class Request extends AbstractEntity {
@@ -45,6 +47,9 @@ export class Request extends AbstractEntity {
   @Column({ nullable: true, type: 'uuid' })
   sender_id: string;
 
+  @Column({ nullable: true, type: 'uuid', name: 'plant_season_id' })
+  plant_season_id: String;
+
   @Column({
     default: RequestSupportType.direct,
     type: 'enum',
@@ -66,4 +71,8 @@ export class Request extends AbstractEntity {
 
   @OneToOne(() => Task, (task) => task.request)
   task: Task;
+
+  @ManyToOne(() => PlantSeason, (plantSeason) => plantSeason.requests)
+  @JoinColumn({ name: 'plant_season_id' })
+  plant_season: PlantSeason;
 }
