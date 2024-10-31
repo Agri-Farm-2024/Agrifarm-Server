@@ -1,10 +1,11 @@
+// uploads.controller.ts
 import {
   Controller,
   Post,
   UseInterceptors,
-  UploadedFiles,
+  UploadedFile,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadsService } from './uploads.service';
 import { ApiTags, ApiBody, ApiConsumes } from '@nestjs/swagger';
 
@@ -12,25 +13,23 @@ import { ApiTags, ApiBody, ApiConsumes } from '@nestjs/swagger';
 @Controller('upload')
 export class UploadsController {
   constructor(private readonly uploadService: UploadsService) {}
-  // upload image
+
+  // Upload single image
   @Post()
-  @UseInterceptors(FilesInterceptor('files'))
+  @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
-        files: {
-          type: 'array',
-          items: {
-            type: 'string',
-            format: 'binary',
-          },
+        file: {
+          type: 'string',
+          format: 'binary',
         },
       },
     },
   })
-  uploadFiles(@UploadedFiles() files: Express.Multer.File[]) {
-    return this.uploadService.uploadFiles(files);
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    return this.uploadService.uploadFile(file);
   }
 }

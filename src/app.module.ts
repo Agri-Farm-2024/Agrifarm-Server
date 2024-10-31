@@ -24,6 +24,8 @@ import { ServicesModule } from './modules/servicesPackage/servicesPackage.module
 import { UploadsModule } from './modules/uploads/uploads.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { SocketsModule } from './modules/sockets/sockets.module';
+import { DiscordsModule } from './modules/discords/discords.module';
 
 @Module({
   imports: [
@@ -60,6 +62,8 @@ import { join } from 'path';
     TransactionsModule,
     ExtendsModule,
     UploadsModule,
+    SocketsModule,
+    DiscordsModule,
   ],
 })
 export class AppModule {}

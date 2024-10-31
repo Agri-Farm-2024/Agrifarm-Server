@@ -1,24 +1,42 @@
-// upload.service.ts
-
-import { Injectable } from '@nestjs/common';
+// uploads.service.ts
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { join } from 'path';
 import { promises as fs } from 'fs';
 
 @Injectable()
 export class UploadsService {
-  async uploadFiles(files: Express.Multer.File[]) {
-    const uploadDir = join(__dirname, '..', '..', 'uploadFile'); // Đường dẫn thư mục tải lên
+  async uploadFile(file: Express.Multer.File): Promise<any> {
+    try {
+      console.log(file);
+      // check if the file is image
+      if (
+        !file.mimetype.includes('image') &&
+        !file.mimetype.includes('video')
+      ) {
+        throw new BadRequestException('Invalid file type');
+      }
+      // Define the upload directory
+      const uploadDir = join(__dirname, '..', '..', 'uploadFile');
 
-    // Tạo thư mục nếu nó không tồn tại
-    await fs.mkdir(uploadDir, { recursive: true });
+      // Create directory if it doesn't exist
+      await fs.mkdir(uploadDir, { recursive: true });
 
-    // Lưu từng tệp vào thư mục
-    const savedFiles = files.map(async (file) => {
+      // Save the file in the directory
       const filePath = join(uploadDir, file.originalname);
       await fs.writeFile(filePath, file.buffer);
-      return filePath; // Trả về đường dẫn tệp đã lưu
-    });
 
-    return Promise.all(savedFiles); // Trả về danh sách các đường dẫn tệp đã lưu
+      return {
+        folder_path: `/uploadFile/${file.originalname}`,
+      }; // Return the path of the saved file
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
   }
 }

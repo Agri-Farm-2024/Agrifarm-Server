@@ -34,19 +34,25 @@ export interface IBookingService {
   ): Promise<any>;
 
   updateStatusToCompleted(
-    bookingId: string,
+    booking_exist: BookingLand,
     data: UpdateStatusBookingDTO,
     user: Payload,
   ): Promise<any>;
 
   updateStatusToExpired(
-    bookingId: string,
+    booking_exist: BookingLand,
     data: UpdateStatusBookingDTO,
     user: Payload,
   ): Promise<any>;
 
   updateStatusToCanceled(
-    bookingId: string,
+    booking_exist: BookingLand,
+    data: UpdateStatusBookingDTO,
+    user: Payload,
+  ): Promise<any>;
+
+  updateStatusToRejected(
+    booking_exist: BookingLand,
     data: UpdateStatusBookingDTO,
     user: Payload,
   ): Promise<any>;

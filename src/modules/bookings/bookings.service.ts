@@ -17,6 +17,7 @@ import { Payload } from '../auths/types/payload.type';
 import { UserRole } from '../users/types/user-role.enum';
 import { UpdateStatusBookingDTO } from './dto/update-status-booking.dto';
 import { MailService } from 'src/mails/mail.service';
+import { BookingPaymentFrequency } from './types/booking-payment.enum';
 
 @Injectable()
 export class BookingsService implements IBookingService {
@@ -425,7 +426,25 @@ export class BookingsService implements IBookingService {
       if (!data.contract_image) {
         throw new BadRequestException('Contract image is required');
       }
+      // check payment frequency to create transaction
+      if (!data.payment_frequency) {
+        throw new BadRequestException('Payment frequency is required');
+      }
       // Create transaction for payment
+      if (data.payment_frequency === BookingPaymentFrequency.multiple) {
+        //
+      }
+      // Create transaction for payment
+      // Send mail to land renter
+      // Send notification to land renter
+      // update status booking to pending payment
+      const update_booking = await this.bookingEntity.save({
+        ...booking_exist,
+        status: BookingStatus.pending_payment,
+        contract_image: data.contract_image,
+        payment_frequency: data.payment_frequency,
+      });
+      return update_booking;
     } catch (error) {
       if (
         error instanceof BadRequestException ||
@@ -446,7 +465,7 @@ export class BookingsService implements IBookingService {
    */
 
   async updateStatusToCompleted(
-    booking_exist: any,
+    booking_exist: BookingLand,
     data: UpdateStatusBookingDTO,
     user: Payload,
   ): Promise<any> {
@@ -462,7 +481,7 @@ export class BookingsService implements IBookingService {
    */
 
   async updateStatusToExpired(
-    booking_exist: any,
+    booking_exist: BookingLand,
     data: UpdateStatusBookingDTO,
     user: Payload,
   ): Promise<any> {
@@ -478,10 +497,59 @@ export class BookingsService implements IBookingService {
    */
 
   async updateStatusToCanceled(
-    booking_exist: any,
+    booking_exist: BookingLand,
     data: UpdateStatusBookingDTO,
     user: Payload,
   ): Promise<any> {
     return 'updateStatusToPendingPayment';
+  }
+
+  /**
+   * @function updateStatusToRejected
+   * @param booking_exist
+   * @param data
+   * @param user
+   * @returns
+   */
+
+  async updateStatusToRejected(
+    booking_exist: BookingLand,
+    data: UpdateStatusBookingDTO,
+    user: Payload,
+  ): Promise<any> {
+    try {
+      // check status booking is pending or pending contract
+      if (
+        booking_exist.status !== BookingStatus.pending &&
+        booking_exist.status !== BookingStatus.pending_contract
+      ) {
+        throw new BadRequestException('Status booking is not pending');
+      }
+      // check user is staff or manager
+      if (user.role !== UserRole.staff && user.role !== UserRole.manager) {
+        throw new ForbiddenException('You are not staff or manager');
+      }
+      // check have reason reject
+      if (!data.reason_for_reject) {
+        throw new BadRequestException('Reason for reject is required');
+      }
+      // update status booking to rejected
+      const update_booking = await this.bookingEntity.save({
+        ...booking_exist,
+        status: BookingStatus.rejected,
+        reason_for_reject: data.reason_for_reject,
+      });
+      // Send mail to land renter
+      // Send notification to land renter
+      return update_booking;
+    } catch (error) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof ForbiddenException
+      ) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
   }
 }

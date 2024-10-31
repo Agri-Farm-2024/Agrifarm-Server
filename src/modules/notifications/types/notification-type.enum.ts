@@ -5,6 +5,6 @@ export enum NotificationType {
   material = 'material',
   dinary = 'dinary',
   process = 'process',
-  chanel = 'chanel',
+  channel = 'channel',
   report = 'report',
 }
