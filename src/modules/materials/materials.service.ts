@@ -1,21 +1,72 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateMaterialDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
+import { IMaterialService } from './interface/IMaterialService.interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Material } from './entities/material.entity';
+import { Repository } from 'typeorm';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
-export class MaterialsService {
-  
+export class MaterialsService implements IMaterialService {
+  constructor(
+    @InjectRepository(Material)
+    private readonly materialEntity: Repository<Material>,
+    private readonly loggerService: LoggerService,
+  ) {}
 
-  findAll() {
-    return `This action returns all materials`;
+  async createMaterial(createMaterialDto: CreateMaterialDto) {
+    try {
+      //check material is exist
+      const material = await this.materialEntity.findOne({
+        where: {
+          name: createMaterialDto.name,
+        },
+      });
+      if (material) {
+        throw new BadRequestException('Material name already exist');
+      }
+      //create new material
+      const new_material = await this.materialEntity.save({
+        ...createMaterialDto,
+      });
+
+      this.loggerService.log('New material is created');
+      return new_material;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} material`;
-  }
+  async updateMaterial(id: string, updateMaterialDto: UpdateMaterialDto): Promise<Material> {
+    try {
+      //check material is exist
+      const material = await this.materialEntity.findOne({
+        where: {
+          material_id: id
+        },
+      });
+      if(!material){
+        throw new BadRequestException('material not found');
+      }
+      //update material
+      material.name = material.name;
+      material.total_quantity = material.total_quantity;
+      material.price_per_piece = material.price_per_piece;
+      material.deposit_per_piece= material.deposit_per_piece;
+      material.image_material= material.image_material;
+      material.price_of_rent = material.price_of_rent;
+      material.type = material.type;
+      return await this.materialEntity.save(material);
 
-  update(id: number, updateMaterialDto: UpdateMaterialDto) {
-    return `This action updates a #${id} material`;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   remove(id: number) {

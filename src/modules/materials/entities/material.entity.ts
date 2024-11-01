@@ -2,6 +2,7 @@ import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { OrderDetail } from 'src/modules/orders/entities/orderDetail.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { MaterialType } from '../types/material-type.enum';
+import { MaterialStatus } from '../types/material-status.enum';
 
 @Entity('materials')
 export class Material extends AbstractEntity {
@@ -36,6 +37,13 @@ export class Material extends AbstractEntity {
     enum: MaterialType,
   })
   type: MaterialType;
+
+  @Column({
+    type: 'enum',
+    enum : MaterialStatus,
+    default: MaterialStatus.active
+  })
+  status: Material;
 
   @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.material_id)
   material_order_details_id: OrderDetail[];
