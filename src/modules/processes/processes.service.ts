@@ -62,11 +62,8 @@ export class ProcessesService implements IProcessesService {
         const sortedStage = data.stage.sort(
           (a, b) => a.stage_numberic_order - b.stage_numberic_order,
         );
-        for (let i = 0; i < sortedStage.length; i++) {
-          await this.createProcessStage(
-            data.stage[i],
-            new_process.process_technical_standard_id,
-          );
+        for (const stage of sortedStage) {
+          await this.createProcessStage(stage, new_process.process_technical_standard_id);
         }
       }
 
@@ -86,7 +83,7 @@ export class ProcessesService implements IProcessesService {
     try {
       const new_process_stage = await this.processStandardStageEntity.save({
         ...data,
-        process_standard_id: process_id,
+        process_technical_standard_id: process_id,
       });
       // create process stage content and material
 
@@ -94,17 +91,13 @@ export class ProcessesService implements IProcessesService {
         const sortedContent = data.content.sort(
           (a, b) => a.content_numberic_order - b.content_numberic_order,
         );
-        for (let i = 0; i < sortedContent.length; i++) {
-          await this.createProcessStageContent(
-            data.content[i],
-            new_process_stage.process_technical_standard_stage_id,
-          );
+        for (const content of sortedContent) {
+          await this.createProcessStageContent(content, new_process_stage.process_technical_standard_stage_id);
         }
-        for (let i = 0; i < sortedContent.length; i++) {
-          await this.createProcessStageMaterial(
-            data.material[i],
-            new_process_stage.process_technical_standard_stage_id,
-          );
+        if (data.material) {
+          for (const material of data.material) {
+            await this.createProcessStageMaterial(material, new_process_stage.process_technical_standard_stage_id);
+          }
         }
       }
       return new_process_stage;
@@ -145,6 +138,7 @@ export class ProcessesService implements IProcessesService {
   //Getlist Standard Process
   async getProcessStandard(): Promise<any> {
     try {
+      
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
