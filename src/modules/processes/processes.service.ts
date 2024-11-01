@@ -63,7 +63,10 @@ export class ProcessesService implements IProcessesService {
           (a, b) => a.stage_numberic_order - b.stage_numberic_order,
         );
         for (const stage of sortedStage) {
-          await this.createProcessStage(stage, new_process.process_technical_standard_id);
+          await this.createProcessStage(
+            stage,
+            new_process.process_technical_standard_id,
+          );
         }
       }
 
@@ -92,11 +95,17 @@ export class ProcessesService implements IProcessesService {
           (a, b) => a.content_numberic_order - b.content_numberic_order,
         );
         for (const content of sortedContent) {
-          await this.createProcessStageContent(content, new_process_stage.process_technical_standard_stage_id);
+          await this.createProcessStageContent(
+            content,
+            new_process_stage.process_technical_standard_stage_id,
+          );
         }
         if (data.material) {
           for (const material of data.material) {
-            await this.createProcessStageMaterial(material, new_process_stage.process_technical_standard_stage_id);
+            await this.createProcessStageMaterial(
+              material,
+              new_process_stage.process_technical_standard_stage_id,
+            );
           }
         }
       }
@@ -113,7 +122,7 @@ export class ProcessesService implements IProcessesService {
     try {
       return await this.processStandardStageContentEntity.save({
         ...data,
-        process_standard_stage_id: process_stage_id,
+        process_technical_standard_stage_id: process_stage_id,
       });
     } catch (error) {
       throw new InternalServerErrorException(error.message);
@@ -128,7 +137,7 @@ export class ProcessesService implements IProcessesService {
       //create process stage material
       return await this.processStandardStageMaterialEntity.save({
         ...data,
-        process_standard_stage_id: process_stage_id,
+        process_technical_standard_stage_id: process_stage_id,
       });
     } catch (error) {
       throw new InternalServerErrorException(error.message);
@@ -138,7 +147,6 @@ export class ProcessesService implements IProcessesService {
   //Getlist Standard Process
   async getProcessStandard(): Promise<any> {
     try {
-      
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
