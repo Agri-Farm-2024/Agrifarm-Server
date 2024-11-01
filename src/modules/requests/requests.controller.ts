@@ -32,11 +32,13 @@ export class RequestsController {
   }
 
   @Post('/createRequestProcessStandard')
-  async createRequestProcessStandard(@Body() data: CreateRequestProcessStandardDTO) {
+  async createRequestProcessStandard(
+    @Body() data: CreateRequestProcessStandardDTO,
+  ) {
     return await this.requestsService.createRequestProcessStandard(data);
   }
 
-  @Get('')
+  @Get('/getListRequest')
   @ApplyPaginationMetadata
   @ApiQuery({ name: 'status', required: false, enum: RequestStatus })
   @ApiQuery({ name: 'type', required: false, enum: RequestType })

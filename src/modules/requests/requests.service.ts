@@ -185,6 +185,8 @@ export class RequestsService implements IRequestService {
       if (!new_task) {
         throw new BadRequestException('Unable to create task');
       }
+      //create report for the request
+      
       return new_request;
     }catch (error) {
       this.loggerService.error(error.message, error.stack);

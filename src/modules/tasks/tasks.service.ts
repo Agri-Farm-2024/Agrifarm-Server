@@ -98,4 +98,19 @@ export class TasksService implements ITaskService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  // async updateTaskStatus( task_id: string, status: string): Promise<any> {
+  //   try{
+  //     const task = await this.taskEntity.findOneBy({ task_id
+  //     });
+  //     if(!task){
+  //       throw new BadRequestException('Task not found');
+  //     }
+  //     //update task status
+  //     task.status = status;
+  //     return updated_task;
+  //   }catch(error){
+  //     throw new InternalServerErrorException(error.message);
+  //   }
+  // }
 }

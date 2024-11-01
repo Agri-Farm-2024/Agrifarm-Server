@@ -10,6 +10,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { TaskStatus } from '../types/task-status.enum';
 
 @Entity('tasks')
 export class Task extends AbstractEntity {
@@ -36,6 +37,13 @@ export class Task extends AbstractEntity {
     nullable: true,
   })
   assigned_at: Date;
+
+  @Column({
+    type: 'enum',
+    enum: TaskStatus,
+    default: TaskStatus.pending,
+  })
+  status: TaskStatus;
 
   @OneToOne(() => Request, (request) => request.task)
   @JoinColumn({ name: 'request_id' })
