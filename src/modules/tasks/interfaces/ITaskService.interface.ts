@@ -10,4 +10,5 @@ export interface ITaskService {
   ): Promise<any>;
 
   getTasksByUserId(user_id: string): Promise<any>;
+  updateTaskStatus(task_id: string, status: string): Promise<any>;
 }

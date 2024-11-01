@@ -13,6 +13,7 @@ import { UsersService } from '../users/users.service';
 import { RequestsService } from '../requests/requests.service';
 import { RequestStatus } from 'src/utils/status/request-status.enum';
 import { Payload } from '../auths/types/payload.type';
+import { TaskStatus } from './types/task-status.enum';
 
 @Injectable()
 export class TasksService implements ITaskService {
@@ -60,6 +61,7 @@ export class TasksService implements ITaskService {
         assigned_by_id: assigned_by_user.user_id,
         assigned_to_id: assigned_to_id,
         assigned_at: new Date(),
+        status: TaskStatus.in_process,
       });
       // update request status to assigned
       await this.requestSerivce.updateRequestStatus(
@@ -98,19 +100,27 @@ export class TasksService implements ITaskService {
       throw new InternalServerErrorException(error.message);
     }
   }
+  //update task status
+  async updateTaskStatus(task_id: string, status: TaskStatus): Promise<any> {
+    try {
+      // check task exist
+      const task = await this.taskEntity.findOne({
+        where: {
+          task_id: task_id,
+        },
+      });
+      if (!task) {
+        throw new BadRequestException('Task not found');
+      }
+      // update task status
+      const updated_task = await this.taskEntity.save({
+        ...task,
+        status,
+      });
 
-  // async updateTaskStatus( task_id: string, status: string): Promise<any> {
-  //   try{
-  //     const task = await this.taskEntity.findOneBy({ task_id
-  //     });
-  //     if(!task){
-  //       throw new BadRequestException('Task not found');
-  //     }
-  //     //update task status
-  //     task.status = status;
-  //     return updated_task;
-  //   }catch(error){
-  //     throw new InternalServerErrorException(error.message);
-  //   }
-  // }
+      return updated_task;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }

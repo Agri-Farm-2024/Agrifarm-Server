@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -15,6 +17,9 @@ import { CreateProcessStageContentDto } from './dto/create-process-stage-content
 import { PlantSeason } from '../plants/entities/plantSeason.entity';
 import { CreateProcessStageMaterialDto } from './dto/create-process-stage-material.dto';
 import { ProcessStandardStageMaterial } from './entities/standards/processStandardStageMaterial.entity';
+import { ReportsService } from '../reports/reports.service';
+import { CreateReportProcessStandardDTO } from '../reports/dto/create-report-processStandard.dto';
+import { Payload } from '../auths/types/payload.type';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -27,17 +32,19 @@ export class ProcessesService implements IProcessesService {
     private readonly processStandardStageContentEntity: Repository<ProcessStandardStageContent>,
     @InjectRepository(ProcessStandardStageMaterial)
     private readonly processStandardStageMaterialEntity: Repository<ProcessStandardStageMaterial>,
-   
-    
+    @Inject(forwardRef(() => ReportsService))
+    private readonly reportService: ReportsService,
   ) {}
 
-  async createProcessStandard(data: CreateProcessDto): Promise<any> {
+  async createProcessStandard(
+    data: CreateProcessDto,
+    expert: Payload,
+  ): Promise<any> {
     try {
       //check if plant id and type process name is already exist
       const process = await this.processEntity.findOne({
         where: {
           plant_season_id: data.plant_season_id,
-       
         },
       });
       if (process) {
@@ -45,6 +52,8 @@ export class ProcessesService implements IProcessesService {
       }
       //create new process
       const new_process = await this.processEntity.save({
+        ...data,
+        expert_id: expert.user_id,
         name: data.name,
         plant_season_id: data.plant_season_id,
       });
@@ -60,9 +69,8 @@ export class ProcessesService implements IProcessesService {
           );
         }
       }
-      return new_process;
 
-      // 
+      return new_process;
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
@@ -81,7 +89,7 @@ export class ProcessesService implements IProcessesService {
         process_standard_id: process_id,
       });
       // create process stage content and material
-      
+
       if (data.content) {
         const sortedContent = data.content.sort(
           (a, b) => a.numberic_order - b.numberic_order,
@@ -92,7 +100,7 @@ export class ProcessesService implements IProcessesService {
             new_process_stage.process_technical_standard_stage_id,
           );
         }
-        for( let i = 0 ;i < sortedContent.length; i++){
+        for (let i = 0; i < sortedContent.length; i++) {
           await this.createProcessStageMaterial(
             data.material[i],
             new_process_stage.process_technical_standard_stage_id,
@@ -132,13 +140,11 @@ export class ProcessesService implements IProcessesService {
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
-
   }
 
   //Getlist Standard Process
   async getProcessStandard(): Promise<any> {
     try {
-
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

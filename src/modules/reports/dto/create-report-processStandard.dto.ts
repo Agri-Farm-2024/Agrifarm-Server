@@ -3,7 +3,7 @@ import { IsNotEmpty } from 'class-validator';
 
 export class CreateReportProcessStandardDTO {
   @ApiProperty({
-    description: 'the task id of report create process standard',
+    description: 'The task ID of the report creation process standard',
     example: 'e1b1b1b1-1b1b-1b1b-1b1b-1b1b1b1b1b1b',
   })
   @IsNotEmpty()
