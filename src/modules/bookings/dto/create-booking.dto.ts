@@ -42,7 +42,7 @@ export class CreateBookingDto {
     message: 'Total month must be greater than 0',
   })
   @Max(36, {
-    message: 'Total month must be less than 13',
+    message: 'Total month must be less than 36',
   })
   total_month: number;
 
