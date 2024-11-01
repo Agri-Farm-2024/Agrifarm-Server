@@ -15,6 +15,7 @@ import { TasksService } from '../tasks/tasks.service';
 import { RequestType } from './types/request-type.enum';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { RequestStatus } from 'src/utils/status/request-status.enum';
+import { CreateRequestProcessStandardDTO } from './dto/create-request-processStandard.dto';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -167,5 +168,26 @@ export class RequestsService implements IRequestService {
   }
 
   //create request for expert to create processStandard
-  async 
+  async createRequestProcessStandard(data: CreateRequestProcessStandardDTO): Promise<any> {
+    try {
+      // Create a new request
+      const new_request = await this.requestEntity.save({
+        ...data,
+        type: RequestType.process_standard,
+      });
+      if (!new_request) {
+        throw new BadRequestException('Unable to create request');
+      }
+      // create task for the request
+      const new_task = await this.taskService.createTask(
+        new_request.request_id,
+      );
+      if (!new_task) {
+        throw new BadRequestException('Unable to create task');
+      }
+      return new_request;
+    }catch (error) {
+      this.loggerService.error(error.message, error.stack);
+  }
+}
 }
