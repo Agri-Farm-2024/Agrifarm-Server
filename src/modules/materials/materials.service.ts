@@ -4,9 +4,7 @@ import { UpdateMaterialDto } from './dto/update-material.dto';
 
 @Injectable()
 export class MaterialsService {
-  create(createMaterialDto: CreateMaterialDto) {
-    return 'This action adds a new material';
-  }
+  
 
   findAll() {
     return `This action returns all materials`;
