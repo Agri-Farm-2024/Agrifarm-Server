@@ -10,5 +10,6 @@ import { LandsModule } from '../lands/lands.module';
   controllers: [BookingsController],
   providers: [BookingsService],
   imports: [TypeOrmModule.forFeature([BookingLand]), JwtModule, LandsModule],
+  exports: [BookingsService],
 })
 export class BookingsModule {}

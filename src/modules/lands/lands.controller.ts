@@ -15,6 +15,11 @@ import { UpdateLandDTO } from './dto/update-land.dto';
 import { ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { LandStatus } from './types/land-status.enum';
 import { CreateLandTypeDto } from './dto/create-landType.dto';
+import {
+  ApplyPaginationMetadata,
+  Pagination,
+} from 'src/common/decorations/pagination.decoration';
+import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 
 @ApiTags('Land')
 @Controller('lands')
@@ -38,8 +43,12 @@ export class LandsController {
     name: 'status',
   })
   @Get()
-  findAll(@Query('status') status: LandStatus) {
-    return this.landsService.findAll(status);
+  @ApplyPaginationMetadata
+  findAll(
+    @Query('status') status: LandStatus,
+    @Pagination() pagination: PaginationParams,
+  ) {
+    return this.landsService.findAll(status, pagination);
   }
 
   @Get('/:land_id')
@@ -58,7 +67,10 @@ export class LandsController {
   }
 
   @Put('/updateLandType/:id')
-  updateLandType(@Param('id') id: string, @Body() updateLandTypeDto: CreateLandTypeDto) {
+  updateLandType(
+    @Param('id') id: string,
+    @Body() updateLandTypeDto: CreateLandTypeDto,
+  ) {
     return this.landsService.updateLandType(updateLandTypeDto, id);
   }
 }
