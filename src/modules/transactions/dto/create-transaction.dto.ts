@@ -1,4 +1,6 @@
-import { IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsDate, IsOptional, IsString } from 'class-validator';
+import { IsFutureDate } from 'src/common/decorations/isFutureTime.decoration';
 
 export class CreateTransactionDTO {
   @IsString()
@@ -13,7 +15,13 @@ export class CreateTransactionDTO {
   @IsOptional()
   extend_id: string;
 
+  @IsString()
+  @IsOptional()
   service_specific_id: string;
 
+  @Type(() => Date)
+  @IsDate()
+  @IsFutureDate()
+  @IsOptional()
   expired_at: Date;
 }

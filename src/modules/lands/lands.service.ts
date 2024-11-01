@@ -108,26 +108,35 @@ export class LandsService implements ILandService {
     }
   }
 
-  async findAll(status: LandStatus): Promise<any> {
+  async findAll(
+    status: LandStatus,
+    pagination: PaginationParams,
+  ): Promise<any> {
     try {
       // filter condition
       const filter_condition: any = {};
       if (status) {
         filter_condition.status = status;
       }
-      const lands = await this.landEntity.find({
-        where: filter_condition,
-        relations: {
-          url: true,
-        },
-        select: {
-          url: {
-            string_url: true,
-            type: true,
-            land_url_id: true,
+      const [lands, total_count] = await Promise.all([
+        this.landEntity.find({
+          where: filter_condition,
+          relations: {
+            url: true,
           },
-        },
-      });
+          select: {
+            url: {
+              string_url: true,
+              type: true,
+              land_url_id: true,
+            },
+          },
+          skip: (pagination.page_index - 1) * pagination.page_size,
+        }),
+        this.landEntity.count({
+          where: filter_condition,
+        }),
+      ]);
       return lands;
     } catch (error) {
       if (error instanceof BadRequestException) {

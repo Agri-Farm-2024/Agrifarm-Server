@@ -1,9 +1,10 @@
+import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { LandStatus } from '../types/land-status.enum';
 
 export interface ILandService {
   createLand(data: any): any;
 
-  findAll(status: LandStatus): any;
+  findAll(status: LandStatus, pagination: PaginationParams): any;
 
   getDetailLandById(id: string): any;
 
