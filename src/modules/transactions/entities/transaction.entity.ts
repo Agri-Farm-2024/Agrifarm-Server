@@ -1,7 +1,6 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { Order } from 'src/modules/orders/entities/order.entity';
 import { TransactionStatus } from 'src/utils/status/transaction-status.enum';
-import { PaymentMethod } from 'src/utils/types/transaction-type.enum';
 import {
   Column,
   Entity,
@@ -9,6 +8,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { TransactionType } from '../types/transaction-type.enum';
 @Entity('transactions')
 export class Transaction extends AbstractEntity {
   constructor(transaction: Partial<Transaction>) {
@@ -31,18 +31,21 @@ export class Transaction extends AbstractEntity {
   @Column('uuid', { nullable: true })
   service_specific_id: string;
 
-  @Column()
+  @Column({ unique: true })
   transaction_code: string;
-
-  @Column({
-    type: 'enum',
-    enum: PaymentMethod,
-    default: PaymentMethod.bank,
-  })
-  payment_method: PaymentMethod;
 
   @Column()
   expired_at: Date;
+
+  @Column({
+    type: 'enum',
+    enum: TransactionType,
+    default: TransactionType.order,
+  })
+  type: TransactionType;
+
+  @Column({ type: 'int' })
+  total_price: number;
 
   @Column({
     type: 'enum',

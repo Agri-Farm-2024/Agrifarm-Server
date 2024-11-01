@@ -29,6 +29,7 @@ export class BookingsController {
   constructor(private readonly bookingsService: BookingsService) {}
 
   @UseGuards(AuthGuard)
+  @Roles(UserRole.land_renter)
   @Post()
   async createBooking(
     @Body() createBookingDto: CreateBookingDto,
