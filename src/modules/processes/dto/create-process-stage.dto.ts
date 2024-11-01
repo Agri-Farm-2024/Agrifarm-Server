@@ -31,7 +31,7 @@ export class CreateProcessStageDto {
   })
   @IsString()
   @IsNotEmpty()
-  title: string;
+  stage_title: string;
 
   @ApiProperty({
     description: 'bumberic_order of the stage',
@@ -40,7 +40,7 @@ export class CreateProcessStageDto {
   @IsNotEmpty()
   @IsOptional()
   @Min(1)
-  numberic_order: number;
+  stage_numberic_order: number;
 
   @ApiProperty({
     description: 'time start of the stage',

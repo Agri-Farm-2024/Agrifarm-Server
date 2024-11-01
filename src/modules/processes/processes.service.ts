@@ -60,7 +60,7 @@ export class ProcessesService implements IProcessesService {
       // create process stage
       if (data.stage) {
         const sortedStage = data.stage.sort(
-          (a, b) => a.numberic_order - b.numberic_order,
+          (a, b) => a.stage_numberic_order - b.stage_numberic_order,
         );
         for (let i = 0; i < sortedStage.length; i++) {
           await this.createProcessStage(
@@ -92,7 +92,7 @@ export class ProcessesService implements IProcessesService {
 
       if (data.content) {
         const sortedContent = data.content.sort(
-          (a, b) => a.numberic_order - b.numberic_order,
+          (a, b) => a.content_numberic_order - b.content_numberic_order,
         );
         for (let i = 0; i < sortedContent.length; i++) {
           await this.createProcessStageContent(

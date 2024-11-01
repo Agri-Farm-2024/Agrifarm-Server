@@ -34,7 +34,7 @@ export class CreateProcessStageContentDto {
   @IsNotEmpty()
   @IsOptional()
   @Min(1)
-  numberic_order: number;
+  content_numberic_order: number;
 
   @ApiProperty({
     description: 'the content of the stage',
