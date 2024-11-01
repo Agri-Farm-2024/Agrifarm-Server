@@ -184,9 +184,7 @@ export class BookingsService implements IBookingService {
           skip: (pagination.page_index - 1) * pagination.page_size,
         }),
         this.bookingEntity.count({
-          where: {
-            status: Not(In([BookingStatus.pending, BookingStatus.rejected])),
-          },
+          where: filter_condition,
         }),
       ]);
       // get total page

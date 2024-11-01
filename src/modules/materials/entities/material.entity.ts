@@ -1,6 +1,7 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { OrderDetail } from 'src/modules/orders/entities/orderDetail.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { MaterialType } from '../types/material-type.enum';
 
 @Entity('materials')
 export class Material extends AbstractEntity {
@@ -15,7 +16,7 @@ export class Material extends AbstractEntity {
   @Column()
   name: string;
 
-  @Column()
+  @Column('int')
   total_quantity: number;
 
   @Column()
@@ -32,9 +33,9 @@ export class Material extends AbstractEntity {
 
   @Column({
     type: 'enum',
-    enum: ['buy', 'rent'],
+    enum: MaterialType,
   })
-  type: string;
+  type: MaterialType;
 
   @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.material_id)
   material_order_details_id: OrderDetail[];
