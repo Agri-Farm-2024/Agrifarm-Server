@@ -19,6 +19,7 @@ import {
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { RequestType } from './types/request-type.enum';
 import { RequestStatus } from 'src/utils/status/request-status.enum';
+import { CreateRequestProcessStandardDTO } from './dto/create-request-processStandard.dto';
 
 @ApiTags('Request')
 @Controller('requests')
@@ -28,6 +29,11 @@ export class RequestsController {
   @Post('/createRequestViewLand')
   async createRequestViewLand(@Body() data: CreateRequestViewLandDTO) {
     return await this.requestsService.createRequestViewLand(data);
+  }
+
+  @Post('/createRequestProcessStandard')
+  async createRequestProcessStandard(@Body() data: CreateRequestProcessStandardDTO) {
+    return await this.requestsService.createRequestProcessStandard(data);
   }
 
   @Get('')

@@ -86,25 +86,14 @@
                     <!-- Body -->
                     <tr>
                         <td class="body" style="padding: 40px; text-align: left; font-size: 16px; line-height: 1.6;">
-                            Chào <strong>${fullname}</strong>, <br>
-                            Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn tại AgriFarm Experience.
-                            <br><br>
-                            Dưới đây là mật khẩu mới của bạn của bạn
+                            Xin chào, <br>
+                            Chúng tôi đã nhận được yêu cầu xác minh cho email của bạn. Vui lòng sử dụng mã OTP dưới đây để hoàn tất quá trình xác minh:
                         </td>
                     </tr>
 
                     <tr>
-                        <td style="padding: 0px 40px 0px 40px; text-align: center;">
-                            <table class="content-table">
-                                <tr>
-                                    <th>Tài khoản</th>
-                                    <td>${username}</td>
-                                </tr>
-                                <tr>
-                                    <th>Mật khẩu mới</th>
-                                    <td>${password}</td>
-                                </tr>
-                            </table>
+                        <td style="padding: 0px 40px 0px 40px; text-align: center; font-size: 24; color: #3C603C;">
+                            <p style="font-size: 48px; color: #3C603C; font-weight: bold;">${otp_code}</p>
                         </td>
                     </tr>
                     <tr>
