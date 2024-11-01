@@ -8,37 +8,37 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // Config Swagger for development
-  if (process.env.NODE_ENV === 'development') {
-    const config = new DocumentBuilder()
-      .setTitle('NestJS API')
-      .setDescription('API description')
-      .setVersion('1.0')
-      .addGlobalParameters(
-        {
-          name: 'Authorization',
-          description: 'Access token',
-          required: false,
-          in: 'header',
-          schema: {
-            type: 'string',
-          },
+  // if (process.env.NODE_ENV === 'development') {
+  const config = new DocumentBuilder()
+    .setTitle('NestJS API')
+    .setDescription('API description')
+    .setVersion('1.0')
+    .addGlobalParameters(
+      {
+        name: 'Authorization',
+        description: 'Access token',
+        required: false,
+        in: 'header',
+        schema: {
+          type: 'string',
         },
-        {
-          name: 'refresh',
-          description: 'Refresh token',
-          required: false,
-          in: 'header',
-          schema: {
-            type: 'string',
-          },
+      },
+      {
+        name: 'refresh',
+        description: 'Refresh token',
+        required: false,
+        in: 'header',
+        schema: {
+          type: 'string',
         },
-      )
-      .addTag('Agri-Farm API Swagger For DEV')
-      .build();
+      },
+    )
+    .addTag('Agri-Farm API Swagger For DEV')
+    .build();
 
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document);
-  }
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
+  // }
   // Apply Interceptors Response
   app.useGlobalInterceptors(new ResponseInterceptor());
   // Apply Filter Exception
