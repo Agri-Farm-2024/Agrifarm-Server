@@ -6,7 +6,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { CreateProcessDto } from './dto/create-process.dto';
-import { GetProcessStandardResponse, IProcessesService } from './interfaces/IProcessesService.interface';
+import { IProcessesService } from './interfaces/IProcessesService.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProcessStandard } from './entities/standards/processStandard.entity';
 import { In, Repository } from 'typeorm';
@@ -144,50 +144,52 @@ export class ProcessesService implements IProcessesService {
     }
   }
 
-  async getProcessStandard(): Promise<GetProcessStandardResponse> {
-    try {
-      // Fetch processes with related stages, materials, and content
-      const processes = await this.processEntity.find({
-        relations:{
-          process_standard_stage: {
-            process_standard_stage_content: true,
-            process_standard_stage_material: true,
-          }
-         
-        },
-      });
-  
-      // Map and structure the result as per the required output format
-      const result = processes.map(process => ({
-        plant_season_id: process.plant_season_id,
-        name: process.name,
-        stage: process.process_standard_stage.map(stage => ({
-          stage_title: stage.stage_title,
-          stage_numberic_order: stage.stage_numberic_order,
-          time_start: stage.time_start,
-          time_end: stage.time_end,
-          material: stage.process_standard_stage_material.map(mat => ({
-            material_id: mat.material_id,
-            quantity: mat.quantity,
-          })),
-          content: stage.process_standard_stage_content.map(cont => ({
-            title: cont.title,
-            content_numberic_order: cont.content_numberic_order,
-            content: cont.content,
-            time_start: cont.time_start,
-            time_end: cont.time_end,
-          })),
-        })),
-      }));
-  
-      return {
-        message: "Request processed successfully",
-        statusCode: 200,
-        status: "success",
-        metadata: result,
-      };
-    } catch (error) {
-      throw new InternalServerErrorException(error.message);
-    }
-  }
+  // async getProcessStandard(): Promise<GetProcessStandardResponse> {
+  //   try {
+  //     const processes = await this.processEntity.find({
+  //       relations: {
+  //         process_standard_stage: {
+  //           process_standard_stage_content: true,
+  //           process_standard_stage_material: true,
+  //         },
+  //       },
+  //     });
+
+  //     const result: ProcessStandard[] = processes.map(process => ({
+  //       process_technical_standard_id: process.process_technical_standard_id, // Include this
+  //       plant_season_id: process.plant_season_id,
+  //       expert_id: process.expert_id, // Include this
+  //       name: process.name,
+  //       reason_of_reject: process.reason_of_reject, // Include this
+  //       status: process.status, // Include this
+  //       stage: process.process_standard_stage.map(stage => ({
+  //         stage_title: stage.stage_title,
+  //         stage_numberic_order: stage.stage_numberic_order,
+  //         time_start: stage.time_start,
+  //         time_end: stage.time_end,
+  //         material: stage.process_standard_stage_material.map(mat => ({
+  //           material_id: mat.material_id,
+  //           quantity: mat.quantity,
+  //         })),
+  //         content: stage.process_standard_stage_content.map(cont => ({
+  //           title: cont.title,
+  //           content_numberic_order: cont.content_numberic_order,
+  //           content: cont.content,
+  //           time_start: cont.time_start,
+  //           time_end: cont.time_end,
+  //         })),
+  //       })),
+  //     }));
+
+  //     return {
+  //       message: "Request processed successfully",
+  //       statusCode: 200,
+  //       status: "success",
+  //       metadata: result,
+  //     };
+  //   } catch (error) {
+  //     console.error('Error fetching process standards:', error);
+  //     throw new InternalServerErrorException(error.message);
+  //   }
+  // }
 }
