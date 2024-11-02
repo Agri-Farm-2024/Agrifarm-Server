@@ -18,6 +18,7 @@ import { User } from '../users/entities/user.entity';
 import { UserRole } from '../users/types/user-role.enum';
 import { LandType } from './entities/landType.entity';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
+import { parseUrlLink } from 'src/utils/parse-url-link.util';
 
 @Injectable()
 export class LandsService implements ILandService {
@@ -137,7 +138,21 @@ export class LandsService implements ILandService {
           where: filter_condition,
         }),
       ]);
-      return lands;
+      // Get total_page
+      const total_page = Math.ceil(total_count / pagination.page_size);
+      // parse url link of string url
+      lands.forEach((land) => {
+        land.url.forEach((url) => {
+          url.string_url = parseUrlLink(url.string_url);
+        });
+      });
+      return {
+        lands,
+        pagination: {
+          ...pagination,
+          total_page,
+        },
+      };
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
