@@ -43,33 +43,33 @@ export class MaterialsService implements IMaterialService {
     }
   }
 
-  async updateMaterial(id: string, updateMaterialDto: UpdateMaterialDto): Promise<Material> {
+  async updateMaterial(
+    id: string,
+    updateMaterialDto: UpdateMaterialDto,
+  ): Promise<Material> {
     try {
       //check material is exist
       const material = await this.materialEntity.findOne({
         where: {
-          material_id: id
+          material_id: id,
         },
       });
-      if(!material){
+      if (!material) {
         throw new BadRequestException('material not found');
       }
       //update material
       material.name = material.name;
       material.total_quantity = material.total_quantity;
       material.price_per_piece = material.price_per_piece;
-      material.deposit_per_piece= material.deposit_per_piece;
-      material.image_material= material.image_material;
+      material.deposit_per_piece = material.deposit_per_piece;
+      material.image_material = material.image_material;
       material.price_of_rent = material.price_of_rent;
       material.type = material.type;
-      return await this.materialEntity.save(material);
+      material.status = material.status;
 
+      return await this.materialEntity.save(material);
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} material`;
   }
 }
