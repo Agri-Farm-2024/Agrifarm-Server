@@ -18,8 +18,8 @@ import {
 } from 'src/common/decorations/pagination.decoration';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { RequestType } from './types/request-type.enum';
-import { RequestStatus } from 'src/utils/status/request-status.enum';
 import { CreateRequestProcessStandardDTO } from './dto/create-request-processStandard.dto';
+import { RequestStatus } from './types/request-status.enum';
 
 @ApiTags('Request')
 @Controller('requests')

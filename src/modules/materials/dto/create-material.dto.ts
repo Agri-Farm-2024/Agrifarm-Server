@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmpty, IsNotEmpty, IsOptional } from 'class-validator';
-import { Material } from '../entities/material.entity';
+import { IsNotEmpty, IsOptional } from 'class-validator';
+
 import { MaterialType } from '../types/material-type.enum';
+import { MaterialUnit } from '../types/material-unit-enum';
 
 export class CreateMaterialDto {
   @ApiProperty({
@@ -19,10 +20,25 @@ export class CreateMaterialDto {
   total_quantity: number;
 
   @ApiProperty({
+    description: 'the description of material',
+    example: 'cuốc đất',
+  })
+  @IsOptional()
+  description: string;
+
+  @ApiProperty({
+    description: 'the unit of material',
+    example: MaterialUnit.piece,
+  })
+  @IsOptional()
+  @IsNotEmpty()
+  unit: MaterialUnit;
+
+  @ApiProperty({
     description: 'the price per piece',
     example: '100.000',
   })
-  @IsNotEmpty()
+  @IsOptional()
   price_per_piece: number;
 
   @ApiProperty({
@@ -43,7 +59,7 @@ export class CreateMaterialDto {
     description: 'the price of rent',
     example: '100.000',
   })
- @IsOptional()
+  @IsOptional()
   price_of_rent: number;
 
   @ApiProperty({

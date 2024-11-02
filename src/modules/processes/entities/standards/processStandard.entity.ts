@@ -8,10 +8,10 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { StatusProcessStandard } from '../../types/status-processStandard.enum';
-import { TypeProcess } from '../../types/type-process.enum';
+// import { TypeProcess } from '../../types/type-process.enum';
 import { ProcessStandardStage } from './processStandardStage.entity';
 import { PlantSeason } from 'src/modules/plants/entities/plantSeason.entity';
+import { ProcessTechnicalStandardStatus } from '../../types/status-processStandard.enum';
 @Entity('processes_technical_standard')
 export class ProcessStandard extends AbstractEntity {
   constructor(processStandard: Partial<ProcessStandard>) {
@@ -36,10 +36,10 @@ export class ProcessStandard extends AbstractEntity {
 
   @Column({
     type: 'enum',
-    enum: StatusProcessStandard,
-    default: StatusProcessStandard.pending,
+    enum: ProcessTechnicalStandardStatus,
+    default: ProcessTechnicalStandardStatus.pending,
   })
-  status: StatusProcessStandard;
+  status: ProcessTechnicalStandardStatus;
 
   @ManyToOne(
     () => PlantSeason,

@@ -38,8 +38,8 @@ export class CreateBookingDto {
   @IsNotEmpty({
     message: 'You must enter a total month ',
   })
-  @Min(1, {
-    message: 'Total month must be greater than 0',
+  @Min(6, {
+    message: 'Total month must be greater than 6',
   })
   @Max(36, {
     message: 'Total month must be less than 36',

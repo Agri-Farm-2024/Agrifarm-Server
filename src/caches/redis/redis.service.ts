@@ -10,6 +10,7 @@ import Redis, { Redis as RedisClient } from 'ioredis';
 @Injectable()
 export class RedisService implements OnModuleInit, OnModuleDestroy {
   private client: RedisClient;
+  private readonly logger = new Logger(RedisService.name);
 
   constructor(private readonly configService: ConfigService) {}
 
@@ -22,9 +23,9 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         db: this.configService.get('REDIS_DB'),
       });
       // [Redis Service] Connect to Redis
-      Logger.log('Connected to Redis', `Redis Service`);
+      this.logger.log('Connected to Redis initialized');
     } catch (error) {
-      Logger.error('Failed to connect to Redis', error);
+      this.logger.error('Failed to connect to Redis', error);
     }
   }
 

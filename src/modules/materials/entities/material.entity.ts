@@ -3,6 +3,7 @@ import { OrderDetail } from 'src/modules/orders/entities/orderDetail.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { MaterialType } from '../types/material-type.enum';
 import { MaterialStatus } from '../types/material-status.enum';
+import { MaterialUnit } from '../types/material-unit-enum';
 
 @Entity('materials')
 export class Material extends AbstractEntity {
@@ -20,16 +21,26 @@ export class Material extends AbstractEntity {
   @Column('int')
   total_quantity: number;
 
-  @Column()
+  @Column({ nullable: true })
+  description: string;
+
+  @Column({
+    type: 'enum',
+    enum: MaterialUnit,
+    default: MaterialUnit.bag,
+  })
+  unit: MaterialUnit;
+
+  @Column({ nullable: true })
   price_per_piece: number;
 
-  @Column()
+  @Column({ nullable: true })
   deposit_per_piece: number;
 
-  @Column()
+  @Column({ nullable: true })
   image_material: string;
 
-  @Column()
+  @Column({ nullable: true })
   price_of_rent: number;
 
   @Column({
@@ -40,8 +51,8 @@ export class Material extends AbstractEntity {
 
   @Column({
     type: 'enum',
-    enum : MaterialStatus,
-    default: MaterialStatus.active
+    enum: MaterialStatus,
+    default: MaterialStatus.available,
   })
   status: Material;
 
