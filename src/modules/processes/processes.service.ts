@@ -144,9 +144,43 @@ export class ProcessesService implements IProcessesService {
     }
   }
 
-  //Getlist Standard Process
   async getProcessStandard(): Promise<any> {
     try {
+      // Fetch processes with related stages, materials, and content
+      const processes = await this.processEntity.find({
+        relations:{
+          process_standard_stage: {
+            process_standard_stage_content: true,
+            process_standard_stage_material: true,
+          }
+         
+        },
+      });
+  
+      // Map and structure the result as per the required output format
+      const result = processes.map(process => ({
+        plant_season_id: process.plant_season_id,
+        name: process.name,
+        stage: process.process_standard_stage.map(stage => ({
+          stage_title: stage.stage_title,
+          stage_numberic_order: stage.stage_numberic_order,
+          time_start: stage.time_start,
+          time_end: stage.time_end,
+          material: stage.process_standard_stage_material.map(mat => ({
+            material_id: mat.material_id,
+            quantity: mat.quantity,
+          })),
+          content: stage.process_standard_stage_content.map(cont => ({
+            title: cont.title,
+            content_numberic_order: cont.content_numberic_order,
+            content: cont.content,
+            time_start: cont.time_start,
+            time_end: cont.time_end,
+          })),
+        })),
+      }));
+  
+      return result;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

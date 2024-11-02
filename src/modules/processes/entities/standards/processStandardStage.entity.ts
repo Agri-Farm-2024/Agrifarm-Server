@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { ProcessStandard } from './processStandard.entity';
 import { ProcessStandardStageContent } from './processStandardStageContent.entity';
+import { ProcessStandardStageMaterial } from './processStandardStageMaterial.entity';
 
 @Entity('processes_technical_standard_stage')
 export class ProcessStandardStage extends AbstractEntity {
@@ -48,4 +49,11 @@ export class ProcessStandardStage extends AbstractEntity {
       processStandardStageContent.process_standard_stage_content,
   )
   process_standard_stage_content: ProcessStandardStageContent[];
+
+  @OneToMany(
+    () => ProcessStandardStageMaterial,
+    (processStandardStageMaterial) =>
+      processStandardStageMaterial.process_standard_stage_material,
+  )
+  process_standard_stage_material: ProcessStandardStageMaterial[];
 }
