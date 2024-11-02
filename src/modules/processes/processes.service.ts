@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { CreateProcessDto } from './dto/create-process.dto';
 import { IProcessesService } from './interfaces/IProcessesService.interface';
@@ -20,18 +21,26 @@ import { ProcessStandardStageMaterial } from './entities/standards/processStanda
 import { ReportsService } from '../reports/reports.service';
 import { CreateReportProcessStandardDTO } from '../reports/dto/create-report-processStandard.dto';
 import { Payload } from '../auths/types/payload.type';
+import { PaginationParams } from 'src/common/decorations/types/pagination.type';
+import { ProcessTechnicalStandardStatus } from './types/status-processStandard.enum';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
+  private readonly logger = new Logger(ProcessesService.name);
+
   constructor(
     @InjectRepository(ProcessStandard)
-    private readonly processEntity: Repository<ProcessStandard>,
+    private readonly processStandardRepo: Repository<ProcessStandard>,
+
     @InjectRepository(ProcessStandardStage)
     private readonly processStandardStageEntity: Repository<ProcessStandardStage>,
+
     @InjectRepository(ProcessStandardStageContent)
     private readonly processStandardStageContentEntity: Repository<ProcessStandardStageContent>,
+
     @InjectRepository(ProcessStandardStageMaterial)
     private readonly processStandardStageMaterialEntity: Repository<ProcessStandardStageMaterial>,
+
     @Inject(forwardRef(() => ReportsService))
     private readonly reportService: ReportsService,
   ) {}
@@ -42,7 +51,7 @@ export class ProcessesService implements IProcessesService {
   ): Promise<any> {
     try {
       //check if plant id and type process name is already exist
-      const process = await this.processEntity.findOne({
+      const process = await this.processStandardRepo.findOne({
         where: {
           plant_season_id: data.plant_season_id,
         },
@@ -51,7 +60,7 @@ export class ProcessesService implements IProcessesService {
         throw new BadRequestException('plant season for process is exist');
       }
       //create new process
-      const new_process = await this.processEntity.save({
+      const new_process = await this.processStandardRepo.save({
         ...data,
         expert_id: expert.user_id,
         name: data.name,
@@ -144,52 +153,71 @@ export class ProcessesService implements IProcessesService {
     }
   }
 
-  // async getProcessStandard(): Promise<GetProcessStandardResponse> {
-  //   try {
-  //     const processes = await this.processEntity.find({
-  //       relations: {
-  //         process_standard_stage: {
-  //           process_standard_stage_content: true,
-  //           process_standard_stage_material: true,
-  //         },
-  //       },
-  //     });
+  async getListProcessStandard(
+    pagination: PaginationParams,
+    status: ProcessTechnicalStandardStatus,
+    plant_id: string,
+  ): Promise<any> {
+    try {
+      // filter conditon by status and plant id
+      const filter_condition: any = {};
+      if (status) {
+        filter_condition.status = status;
+      }
+      if (plant_id) {
+        filter_condition.plant_season = {
+          plant_id: plant_id,
+        };
+      }
 
-  //     const result: ProcessStandard[] = processes.map(process => ({
-  //       process_technical_standard_id: process.process_technical_standard_id, // Include this
-  //       plant_season_id: process.plant_season_id,
-  //       expert_id: process.expert_id, // Include this
-  //       name: process.name,
-  //       reason_of_reject: process.reason_of_reject, // Include this
-  //       status: process.status, // Include this
-  //       stage: process.process_standard_stage.map(stage => ({
-  //         stage_title: stage.stage_title,
-  //         stage_numberic_order: stage.stage_numberic_order,
-  //         time_start: stage.time_start,
-  //         time_end: stage.time_end,
-  //         material: stage.process_standard_stage_material.map(mat => ({
-  //           material_id: mat.material_id,
-  //           quantity: mat.quantity,
-  //         })),
-  //         content: stage.process_standard_stage_content.map(cont => ({
-  //           title: cont.title,
-  //           content_numberic_order: cont.content_numberic_order,
-  //           content: cont.content,
-  //           time_start: cont.time_start,
-  //           time_end: cont.time_end,
-  //         })),
-  //       })),
-  //     }));
-
-  //     return {
-  //       message: "Request processed successfully",
-  //       statusCode: 200,
-  //       status: "success",
-  //       metadata: result,
-  //     };
-  //   } catch (error) {
-  //     console.error('Error fetching process standards:', error);
-  //     throw new InternalServerErrorException(error.message);
-  //   }
-  // }
+      const [process_technical_standard, total_count] = await Promise.all([
+        this.processStandardRepo.find({
+          where: filter_condition,
+          relations: {
+            plant_season: {
+              plant: true,
+            },
+            process_standard_stage: {
+              process_standard_stage_content: true,
+              process_standard_stage_material: true,
+            },
+            expert: true,
+          },
+          order: {
+            process_standard_stage: {
+              stage_numberic_order: 'ASC',
+              process_standard_stage_content: {
+                content_numberic_order: 'ASC',
+              },
+            },
+          },
+          select: {
+            expert: {
+              full_name: true,
+              email: true,
+              role: true,
+              user_id: true,
+            },
+          },
+          take: pagination.page_size,
+          skip: (pagination.page_index - 1) * pagination.page_size,
+        }),
+        this.processStandardRepo.count({
+          where: filter_condition,
+        }),
+      ]);
+      // get total page
+      const total_page = Math.ceil(total_count / pagination.page_size);
+      return {
+        process_technical_standard,
+        pagination: {
+          ...pagination,
+          total_page,
+        },
+      };
+    } catch (error) {
+      console.error('Error fetching process standards:', error);
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }

@@ -40,7 +40,7 @@ export class ProcessStandardStage extends AbstractEntity {
     () => ProcessStandard,
     (processStandard) => processStandard.process_standard_stage,
   )
-  @JoinColumn({ name: 'process_standard_id' })
+  @JoinColumn({ name: 'process_technical_standard_id' })
   process_standard_stage: ProcessStandard;
 
   @OneToMany(
