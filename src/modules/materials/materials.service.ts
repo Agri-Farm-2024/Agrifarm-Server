@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  Inject,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -9,9 +8,9 @@ import { UpdateMaterialDto } from './dto/update-material.dto';
 import { IMaterialService } from './interface/IMaterialService.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Material } from './entities/material.entity';
-import { Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { LoggerService } from 'src/logger/logger.service';
-import { Pagination } from 'src/common/decorations/pagination.decoration';
+// import { Pagination } from 'src/common/decorations/pagination.decoration';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 
 @Injectable()
@@ -82,9 +81,7 @@ export class MaterialsService implements IMaterialService {
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
         }),
-        this.materialEntity.count({
-          
-        }),
+        this.materialEntity.count({}),
       ]);
 
       // get total page

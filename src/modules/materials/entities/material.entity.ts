@@ -21,23 +21,26 @@ export class Material extends AbstractEntity {
   @Column('int')
   total_quantity: number;
 
+  @Column({ nullable: true })
+  description: string;
+
   @Column({
     type: 'enum',
     enum: MaterialUnit,
-
+    default: MaterialUnit.bag,
   })
   unit: MaterialUnit;
 
-  @Column( { nullable: true })
+  @Column({ nullable: true })
   price_per_piece: number;
 
-  @Column( { nullable: true })
+  @Column({ nullable: true })
   deposit_per_piece: number;
 
-  @Column( { nullable: true })
+  @Column({ nullable: true })
   image_material: string;
 
-  @Column( { nullable: true })
+  @Column({ nullable: true })
   price_of_rent: number;
 
   @Column({
@@ -49,7 +52,7 @@ export class Material extends AbstractEntity {
   @Column({
     type: 'enum',
     enum: MaterialStatus,
-    default: MaterialStatus.active,
+    default: MaterialStatus.available,
   })
   status: Material;
 
