@@ -17,6 +17,8 @@ export class CreateProcessDto {
   @IsNotEmpty()
   name: string;
 
+  
+
     @ApiProperty({
     description: 'the stage of process',
     type: [CreateProcessStageDto],
