@@ -28,5 +28,11 @@ jobs:
             # Step 2: Pull latest changes from the Git repository
             git pull
 
-            # Step 4: Add environment variables
+            # Step 3: Stop docker containers
+            docker-compose down
+
+            # Step 4: Remove docker images
+            docker rmi -f agrifarm-server-app
+
+            # Step 5: Rebuild and start docker containers
             docker-compose up --build -d

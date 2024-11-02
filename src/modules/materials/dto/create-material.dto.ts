@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmpty, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 import { MaterialType } from '../types/material-type.enum';
 import { MaterialUnit } from '../types/material-unit-enum';
