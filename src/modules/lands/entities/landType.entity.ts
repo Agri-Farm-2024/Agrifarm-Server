@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Land } from './land.entity';
 import { Plant } from 'src/modules/plants/entities/plant.entity';
+import { LandTypeStatus } from '../types/landType-status.enum';
 
 @Entity('lands_type')
 export class LandType extends AbstractEntity {
@@ -25,6 +26,13 @@ export class LandType extends AbstractEntity {
 
   @Column({ nullable: true })
   description: String;
+
+  @Column({
+    type: 'enum',
+    enum: LandTypeStatus,
+    default: LandTypeStatus.active,
+  })
+  status: LandTypeStatus;
 
   @OneToMany(() => Land, (land) => land.land_type)
   lands: Land[];
