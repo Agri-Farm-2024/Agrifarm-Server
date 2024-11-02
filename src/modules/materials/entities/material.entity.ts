@@ -40,8 +40,8 @@ export class Material extends AbstractEntity {
 
   @Column({
     type: 'enum',
-    enum : MaterialStatus,
-    default: MaterialStatus.active
+    enum: MaterialStatus,
+    default: MaterialStatus.active,
   })
   status: Material;
 

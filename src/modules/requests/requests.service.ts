@@ -14,8 +14,8 @@ import { LoggerService } from 'src/logger/logger.service';
 import { TasksService } from '../tasks/tasks.service';
 import { RequestType } from './types/request-type.enum';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
-import { RequestStatus } from 'src/utils/status/request-status.enum';
 import { CreateRequestProcessStandardDTO } from './dto/create-request-processStandard.dto';
+import { RequestStatus } from './types/request-status.enum';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -168,7 +168,9 @@ export class RequestsService implements IRequestService {
   }
 
   //create request for expert to create processStandard
-  async createRequestProcessStandard(data: CreateRequestProcessStandardDTO): Promise<any> {
+  async createRequestProcessStandard(
+    data: CreateRequestProcessStandardDTO,
+  ): Promise<any> {
     try {
       // Create a new request
       const new_request = await this.requestEntity.save({
@@ -186,10 +188,10 @@ export class RequestsService implements IRequestService {
         throw new BadRequestException('Unable to create task');
       }
       //create report for the request
-      
+
       return new_request;
-    }catch (error) {
+    } catch (error) {
       this.loggerService.error(error.message, error.stack);
+    }
   }
-}
 }

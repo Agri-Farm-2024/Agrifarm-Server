@@ -80,7 +80,7 @@ export class BookingsService implements IBookingService {
         time_end: time_end,
         staff_id: land.staff_id,
         total_price: total_price,
-        price_deposit: total_price * 0.1,
+        price_deposit: land.price_booking_per_month * 2,
       });
       // send notification to staff and land renter
       // create mail confirm for land renter

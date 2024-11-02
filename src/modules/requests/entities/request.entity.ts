@@ -10,11 +10,11 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { RequestSupportType } from '../types/request-support-type.enum';
-import { RequestStatus } from 'src/utils/status/request-status.enum';
 import { RequestType } from '../types/request-type.enum';
 import { Task } from 'src/modules/tasks/entities/task.entity';
 import { Plant } from 'src/modules/plants/entities/plant.entity';
 import { PlantSeason } from 'src/modules/plants/entities/plantSeason.entity';
+import { RequestStatus } from '../types/request-status.enum';
 
 @Entity('requests')
 export class Request extends AbstractEntity {
@@ -48,7 +48,7 @@ export class Request extends AbstractEntity {
   sender_id: string;
 
   @Column({ nullable: true, type: 'uuid', name: 'plant_season_id' })
-  plant_season_id: String;
+  plant_season_id: string;
 
   @Column({
     default: RequestSupportType.direct,

@@ -27,6 +27,7 @@ import { join } from 'path';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SocketsModule } from './sockets/sockets.module';
 import { DiscordsModule } from './discords/discords.module';
+import { SchedulesModule } from './schedules/schedules.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { DiscordsModule } from './discords/discords.module';
     ExtendsModule,
     UploadsModule,
     SocketsModule,
+    SchedulesModule,
     // DiscordsModule,
   ],
 })
