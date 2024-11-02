@@ -1,7 +1,6 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { Extend } from 'src/modules/extends/entities/extend.entity';
 import { Land } from 'src/modules/lands/entities/land.entity';
-import { OrderDetail } from 'src/modules/orders/entities/orderDetail.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import {
   Column,
@@ -47,10 +46,16 @@ export class BookingLand extends AbstractEntity {
   })
   total_month: number;
 
-  @Column()
+  @Column({
+    type: 'int',
+    default: 1,
+  })
   price_per_month: number;
 
-  @Column()
+  @Column({
+    type: 'int',
+    default: 0,
+  })
   price_deposit: number;
 
   @Column({ type: 'bigint' })

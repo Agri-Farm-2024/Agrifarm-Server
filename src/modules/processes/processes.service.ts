@@ -48,7 +48,7 @@ export class ProcessesService implements IProcessesService {
         },
       });
       if (process) {
-        throw new BadRequestException('Process name already exist');
+        throw new BadRequestException('plant season for process is exist');
       }
       //create new process
       const new_process = await this.processEntity.save({

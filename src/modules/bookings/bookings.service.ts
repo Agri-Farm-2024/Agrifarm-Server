@@ -19,6 +19,7 @@ import { UpdateStatusBookingDTO } from './dto/update-status-booking.dto';
 import { MailService } from 'src/mails/mail.service';
 import { BookingPaymentFrequency } from './types/booking-payment.enum';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
+import { parseUrlLink } from 'src/utils/parse-url-link.util';
 
 @Injectable()
 export class BookingsService implements IBookingService {
@@ -187,6 +188,12 @@ export class BookingsService implements IBookingService {
           where: filter_condition,
         }),
       ]);
+      // Parse contract image to url link
+      bookings.forEach((booking) => {
+        booking.contract_image = booking.contract_image
+          ? parseUrlLink(booking.contract_image)
+          : null;
+      });
       // get total page
       const total_page = Math.ceil(total_count / pagination.page_size);
       return {
@@ -271,6 +278,12 @@ export class BookingsService implements IBookingService {
           },
         }),
       ]);
+      // Parse contract image to url link
+      bookings.forEach((booking) => {
+        booking.contract_image = booking.contract_image
+          ? parseUrlLink(booking.contract_image)
+          : null;
+      });
       // Get total page
       const total_page = Math.ceil(total_count / pagination.page_size);
       return {
@@ -334,6 +347,12 @@ export class BookingsService implements IBookingService {
           },
         }),
       ]);
+      // Parse contract image to url link
+      bookings.forEach((booking) => {
+        booking.contract_image = booking.contract_image
+          ? parseUrlLink(booking.contract_image)
+          : null;
+      });
       // Get total page
       const total_page = Math.ceil(total_count / pagination.page_size);
       return {

@@ -65,7 +65,7 @@ import { DiscordsModule } from './discords/discords.module';
     ExtendsModule,
     UploadsModule,
     SocketsModule,
-    DiscordsModule,
+    // DiscordsModule,
   ],
 })
 export class AppModule {}

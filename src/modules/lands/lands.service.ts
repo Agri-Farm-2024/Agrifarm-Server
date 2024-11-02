@@ -18,6 +18,8 @@ import { User } from '../users/entities/user.entity';
 import { UserRole } from '../users/types/user-role.enum';
 import { LandType } from './entities/landType.entity';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
+import { LandTypeStatus } from './types/landType-status.enum';
+import { parseUrlLink } from 'src/utils/parse-url-link.util';
 
 @Injectable()
 export class LandsService implements ILandService {
@@ -137,7 +139,21 @@ export class LandsService implements ILandService {
           where: filter_condition,
         }),
       ]);
-      return lands;
+      // Get total_page
+      const total_page = Math.ceil(total_count / pagination.page_size);
+      // parse url link of string url
+      lands.forEach((land) => {
+        land.url.forEach((url) => {
+          url.string_url = parseUrlLink(url.string_url);
+        });
+      });
+      return {
+        lands,
+        pagination: {
+          ...pagination,
+          total_page,
+        },
+      };
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
@@ -315,6 +331,28 @@ export class LandsService implements ILandService {
       //update land type
       land_type.name = data.name;
       land_type.description = data.description;
+      return await this.landTypeEntity.save(land_type);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  //delete landType
+  async deleteLandType(id: string): Promise<any> {
+    try {
+      //check if land type is already exist
+      const land_type = await this.landTypeEntity.findOne({
+        where: {
+          land_type_id: id,
+        },
+      });
+      if (!land_type) {
+        throw new BadRequestException('Land type not found');
+      }
+      //delete land type
+      land_type.status = LandTypeStatus.inactive;
+
+      this.loggerService.log('Land type is deleted');
       return await this.landTypeEntity.save(land_type);
     } catch (error) {
       throw new InternalServerErrorException(error.message);
