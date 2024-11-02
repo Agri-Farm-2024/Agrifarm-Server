@@ -135,7 +135,7 @@ export class PlantsService implements IPlantService {
           where: {
             plant_id: plant_season.plant_id,
             type: data.type,
-            month_start: plant_season.month_start,
+            month_start: plant_season.month_start, // check for month_start
           },
         });
 
