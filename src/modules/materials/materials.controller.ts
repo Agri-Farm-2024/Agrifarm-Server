@@ -34,4 +34,9 @@ export class MaterialsController {
   ) {
     return this.materialsService.updateMaterial(id, updateMaterialDto);
   }
+
+  @Get('getMaterials')
+  getMaterials() {
+    return this.materialsService.getMaterials();
+  } 
 }

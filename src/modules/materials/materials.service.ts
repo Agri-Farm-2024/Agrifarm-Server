@@ -71,4 +71,14 @@ export class MaterialsService implements IMaterialService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  //Get ALL materials
+  async getMaterials(): Promise<Material[]> {
+    try {
+      return await this.materialEntity.find();
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+  
 }
