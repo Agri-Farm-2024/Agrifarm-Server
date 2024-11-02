@@ -1,5 +1,5 @@
 export enum TemplateMailEnum {
   otpForgotPassword = 'otpForgotPassword',
-  otpRegister = 'otpRegister',
-  welcome = 'welcome',
+  otpVerifyMail = 'otpVerifyMail',
+  registerWelcome = 'registerWelcome',
 }

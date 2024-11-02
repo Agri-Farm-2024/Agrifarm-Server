@@ -35,5 +35,5 @@ export class ProcessStandardStageMaterial extends AbstractEntity {
       processStandardStage.process_standard_stage_content,
   )
   @JoinColumn({ name: 'process_standard_stage_id' })
-  process_standard_stage_content: ProcessStandardStage;
+  process_standard_stage_material: ProcessStandardStage;
 }

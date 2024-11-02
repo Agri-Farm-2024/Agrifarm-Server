@@ -58,14 +58,13 @@ export class MaterialsService implements IMaterialService {
         throw new BadRequestException('material not found');
       }
       //update material
-      material.name = material.name;
-      material.total_quantity = material.total_quantity;
-      material.price_per_piece = material.price_per_piece;
-      material.deposit_per_piece = material.deposit_per_piece;
-      material.image_material = material.image_material;
-      material.price_of_rent = material.price_of_rent;
-      material.type = material.type;
-      material.status = material.status;
+      material.name = updateMaterialDto.name;
+      material.total_quantity = updateMaterialDto.total_quantity;
+      material.price_per_piece = updateMaterialDto.price_per_piece;
+      material.deposit_per_piece = updateMaterialDto.deposit_per_piece;
+      material.image_material = updateMaterialDto.image_material;
+      material.price_of_rent = updateMaterialDto.price_of_rent;
+      material.type = updateMaterialDto.type;
 
       return await this.materialEntity.save(material);
     } catch (error) {
