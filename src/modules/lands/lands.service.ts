@@ -18,6 +18,7 @@ import { User } from '../users/entities/user.entity';
 import { UserRole } from '../users/types/user-role.enum';
 import { LandType } from './entities/landType.entity';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
+import { LandTypeStatus } from './types/landType-status.enum';
 
 @Injectable()
 export class LandsService implements ILandService {
@@ -315,6 +316,28 @@ export class LandsService implements ILandService {
       //update land type
       land_type.name = data.name;
       land_type.description = data.description;
+      return await this.landTypeEntity.save(land_type);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  //delete landType
+  async deleteLandType(id: string): Promise<any> {
+    try {
+      //check if land type is already exist
+      const land_type = await this.landTypeEntity.findOne({
+        where: {
+          land_type_id: id,
+        },
+      });
+      if (!land_type) {
+        throw new BadRequestException('Land type not found');
+      }
+      //delete land type
+      land_type.status = LandTypeStatus.inactive;
+
+      this.loggerService.log('Land type is deleted');
       return await this.landTypeEntity.save(land_type);
     } catch (error) {
       throw new InternalServerErrorException(error.message);
