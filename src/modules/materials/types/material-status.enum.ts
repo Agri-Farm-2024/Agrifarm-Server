@@ -1,4 +1,6 @@
 export enum MaterialStatus {
   active = 'active',
-  refill = 'refill',
+  available = 'available',
+  low = 'low',
+  out_of_stock = 'out_of_stock',
 }
