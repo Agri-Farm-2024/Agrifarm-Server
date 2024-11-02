@@ -35,9 +35,7 @@ export class UsersService implements IUserService {
           email: email,
         },
       });
-      if (!user) {
-        throw new BadRequestException('User not found');
-      }
+
       return user;
     } catch (error) {
       if (error instanceof BadRequestException) {
@@ -80,9 +78,9 @@ export class UsersService implements IUserService {
     this.mailService.sendMail(
       new_user.email,
       SubjectMailEnum.welcome,
-      TemplateMailEnum.welcome,
+      TemplateMailEnum.registerWelcome,
       {
-        name: new_user.full_name,
+        full_name: new_user.full_name,
       },
     );
     return new_user;

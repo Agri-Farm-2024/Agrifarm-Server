@@ -189,11 +189,11 @@ export class BookingsService implements IBookingService {
         }),
       ]);
       // Parse contract image to url link
-      bookings.forEach((booking) => {
-        booking.contract_image = booking.contract_image
-          ? parseUrlLink(booking.contract_image)
-          : null;
-      });
+      // bookings.forEach((booking) => {
+      //   booking.contract_image = booking.contract_image
+      //     ? parseUrlLink(booking.contract_image)
+      //     : null;
+      // });
       // get total page
       const total_page = Math.ceil(total_count / pagination.page_size);
       return {
@@ -279,11 +279,11 @@ export class BookingsService implements IBookingService {
         }),
       ]);
       // Parse contract image to url link
-      bookings.forEach((booking) => {
-        booking.contract_image = booking.contract_image
-          ? parseUrlLink(booking.contract_image)
-          : null;
-      });
+      // bookings.forEach((booking) => {
+      //   booking.contract_image = booking.contract_image
+      //     ? parseUrlLink(booking.contract_image)
+      //     : null;
+      // });
       // Get total page
       const total_page = Math.ceil(total_count / pagination.page_size);
       return {
@@ -348,11 +348,11 @@ export class BookingsService implements IBookingService {
         }),
       ]);
       // Parse contract image to url link
-      bookings.forEach((booking) => {
-        booking.contract_image = booking.contract_image
-          ? parseUrlLink(booking.contract_image)
-          : null;
-      });
+      // bookings.forEach((booking) => {
+      //   booking.contract_image = booking.contract_image
+      //     ? parseUrlLink(booking.contract_image)
+      //     : null;
+      // });
       // Get total page
       const total_page = Math.ceil(total_count / pagination.page_size);
       return {

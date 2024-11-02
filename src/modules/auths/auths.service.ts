@@ -71,6 +71,10 @@ export class AuthsService implements IAuthService {
       // 1. Find the user by email
       const user = await this.userService.findUserByEmail(data.email);
 
+      if (!user) {
+        throw new BadRequestException(`Email is not exist`);
+      }
+
       if (user.status !== UserStatus.active) {
         throw new BadRequestException('User is not active');
       }
@@ -170,7 +174,7 @@ export class AuthsService implements IAuthService {
     await this.mailService.sendMail(
       email,
       SubjectMailEnum.otpRegister,
-      TemplateMailEnum.otpRegister,
+      TemplateMailEnum.otpVerifyMail,
       { otp: otp },
     );
     // save otp to redis with expired time 5 minutes

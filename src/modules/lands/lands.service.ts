@@ -141,12 +141,12 @@ export class LandsService implements ILandService {
       ]);
       // Get total_page
       const total_page = Math.ceil(total_count / pagination.page_size);
-      // parse url link of string url
-      lands.forEach((land) => {
-        land.url.forEach((url) => {
-          url.string_url = parseUrlLink(url.string_url);
-        });
-      });
+      // // parse url link of string url
+      // lands.forEach((land) => {
+      //   land.url.forEach((url) => {
+      //     url.string_url = parseUrlLink(url.string_url);
+      //   });
+      // });
       return {
         lands,
         pagination: {
