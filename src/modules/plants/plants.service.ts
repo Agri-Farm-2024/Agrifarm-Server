@@ -161,7 +161,9 @@ export class PlantsService implements IPlantService {
       });
 
       if (duplicateSeason) {
-        throw new BadRequestException('A season already exists at month_start.');
+        throw new BadRequestException(
+          'A season already exists at month_start.',
+        );
       }
 
       // Update plant season properties
@@ -191,6 +193,7 @@ export class PlantsService implements IPlantService {
 
       // Delete the plant
       plant.status = StatusPlant.inactive;
+      this.plantEntity.save(plant);
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
@@ -209,6 +212,7 @@ export class PlantsService implements IPlantService {
       }
       //delete plant season
       plant_season.status = PlantSeasonStatus.deleted;
+      this.plantSeasonEntity.save(plant_season);
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
