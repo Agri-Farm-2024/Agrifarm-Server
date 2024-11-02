@@ -135,7 +135,6 @@ export class PlantsService implements IPlantService {
           where: {
             plant_id: plant_season.plant_id,
             type: data.type,
-            month_start: plant_season.month_start, // check for month_start
           },
         });
 
@@ -150,6 +149,19 @@ export class PlantsService implements IPlantService {
             'Only two out-seasons are allowed per plant variety',
           );
         }
+      }
+      // Check for duplicates of plant_id, type, and month_start
+      const duplicateSeason = await this.plantSeasonEntity.findOne({
+        where: {
+          plant_id: plant_season.plant_id,
+
+          month_start: data.month_start,
+          // Exclude the current record being updated
+        },
+      });
+
+      if (duplicateSeason) {
+        throw new BadRequestException('A season already exists at month_start.');
       }
 
       // Update plant season properties
