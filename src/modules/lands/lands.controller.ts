@@ -73,4 +73,8 @@ export class LandsController {
   ) {
     return this.landsService.updateLandType(updateLandTypeDto, id);
   }
+  @Delete('/deleteLandType/:id')
+  deleteLandType(@Param('id') id: string) {
+    return this.landsService.deleteLandType(id);
+  }
 }

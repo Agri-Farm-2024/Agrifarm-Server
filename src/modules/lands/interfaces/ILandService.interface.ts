@@ -12,4 +12,5 @@ export interface ILandService {
   getLandType(): any;
   createLandType(data: any): any;
   updateLandType(data: any, id: string): any;
+  deleteLandType( id: string): any;
 }
