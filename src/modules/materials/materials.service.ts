@@ -9,8 +9,10 @@ import { UpdateMaterialDto } from './dto/update-material.dto';
 import { IMaterialService } from './interface/IMaterialService.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Material } from './entities/material.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { LoggerService } from 'src/logger/logger.service';
+import { Pagination } from 'src/common/decorations/pagination.decoration';
+import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 
 @Injectable()
 export class MaterialsService implements IMaterialService {
@@ -73,12 +75,29 @@ export class MaterialsService implements IMaterialService {
   }
 
   //Get ALL materials
-  async getMaterials(): Promise<Material[]> {
+  async getMaterials(pagination: PaginationParams): Promise<any> {
     try {
-      return await this.materialEntity.find();
+      const [materials, total_count] = await Promise.all([
+        this.materialEntity.find({
+          skip: (pagination.page_index - 1) * pagination.page_size,
+          take: pagination.page_size,
+        }),
+        this.materialEntity.count({
+          
+        }),
+      ]);
+
+      // get total page
+      const total_page = Math.ceil(total_count / pagination.page_size);
+      return {
+        materials,
+        pagination: {
+          ...pagination,
+          total_page,
+        },
+      };
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
   }
-  
 }

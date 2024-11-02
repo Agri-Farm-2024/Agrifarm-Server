@@ -14,6 +14,8 @@ import { UpdateMaterialDto } from './dto/update-material.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/common/decorations/role.decoration';
 import { UserRole } from '../users/types/user-role.enum';
+import { Pagination } from 'src/common/decorations/pagination.decoration';
+import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 
 @ApiTags('Material')
 @Controller('materials')
@@ -36,7 +38,7 @@ export class MaterialsController {
   }
 
   @Get('getMaterials')
-  getMaterials() {
-    return this.materialsService.getMaterials();
-  } 
+  getMaterials(@Pagination() pagination: PaginationParams): Promise<any> {
+    return this.materialsService.getMaterials(pagination);
+  }
 }
