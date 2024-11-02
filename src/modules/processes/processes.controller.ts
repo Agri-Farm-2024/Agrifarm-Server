@@ -16,6 +16,7 @@ import { Role } from 'discord.js';
 import { Roles } from 'src/common/decorations/role.decoration';
 import exp from 'constants';
 import { UserRole } from '../users/types/user-role.enum';
+import { GetProcessStandardResponse } from './interfaces/IProcessesService.interface';
 
 @ApiTags('Process')
 @Controller('processes')
@@ -30,5 +31,11 @@ export class ProcessesController {
     @Request() request: any,
   ): Promise<any> {
     return this.processesService.createProcessStandard(data, request.user);
+  }
+
+  // @Roles(UserRole.expert, UserRole.manager)
+  @Get('/getProcessStandard')
+  getProcessStandard(): Promise<GetProcessStandardResponse> {
+    return this.processesService.getProcessStandard();
   }
 }

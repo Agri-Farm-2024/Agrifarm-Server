@@ -6,7 +6,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { CreateProcessDto } from './dto/create-process.dto';
-import { IProcessesService } from './interfaces/IProcessesService.interface';
+import { GetProcessStandardResponse, IProcessesService } from './interfaces/IProcessesService.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProcessStandard } from './entities/standards/processStandard.entity';
 import { In, Repository } from 'typeorm';
@@ -144,7 +144,7 @@ export class ProcessesService implements IProcessesService {
     }
   }
 
-  async getProcessStandard(): Promise<any> {
+  async getProcessStandard(): Promise<GetProcessStandardResponse> {
     try {
       // Fetch processes with related stages, materials, and content
       const processes = await this.processEntity.find({
@@ -180,7 +180,12 @@ export class ProcessesService implements IProcessesService {
         })),
       }));
   
-      return result;
+      return {
+        message: "Request processed successfully",
+        statusCode: 200,
+        status: "success",
+        metadata: result,
+      };
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
