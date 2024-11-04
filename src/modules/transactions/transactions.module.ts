@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { TransactionsController } from './transactions.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -8,7 +8,10 @@ import { BookingsModule } from '../bookings/bookings.module';
 @Module({
   controllers: [TransactionsController],
   providers: [TransactionsService],
-  imports: [TypeOrmModule.forFeature([Transaction]), BookingsModule],
+  imports: [
+    TypeOrmModule.forFeature([Transaction]),
+    forwardRef(() => BookingsModule),
+  ],
   exports: [TransactionsService],
 })
 export class TransactionsModule {}

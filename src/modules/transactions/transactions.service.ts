@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -22,6 +24,7 @@ export class TransactionsService implements ITransactionService {
     @InjectRepository(Transaction)
     private readonly transactionRepository: Repository<Transaction>,
 
+    @Inject(forwardRef(() => BookingsService))
     private readonly bookingService: BookingsService,
   ) {}
   /**

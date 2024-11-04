@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -20,6 +22,7 @@ import { MailService } from 'src/mails/mail.service';
 import { BookingPaymentFrequency } from './types/booking-payment.enum';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { Transaction } from '../transactions/entities/transaction.entity';
+import { TransactionsService } from '../transactions/transactions.service';
 
 @Injectable()
 export class BookingsService implements IBookingService {
@@ -30,6 +33,9 @@ export class BookingsService implements IBookingService {
     private readonly landService: LandsService,
 
     private readonly mailService: MailService,
+
+    @Inject(forwardRef(() => TransactionsService))
+    private readonly transactionService: TransactionsService,
   ) {}
 
   /**
@@ -594,6 +600,9 @@ export class BookingsService implements IBookingService {
         //
       }
       // Create transaction for payment
+      await this.transactionService.createTransactionPaymentBookingLand(
+        booking_exist.booking_id,
+      );
       // Send mail to land renter
       // Send notification to land renter
       // update status booking to pending payment
