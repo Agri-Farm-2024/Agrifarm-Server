@@ -23,6 +23,7 @@ import { ReportsService } from '../reports/reports.service';
 import { Payload } from '../auths/types/payload.type';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { ProcessTechnicalStandardStatus } from './types/status-processStandard.enum';
+import { UpdateProcessStandardDto } from './dto/update-processStandardStatus.dto';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -33,13 +34,13 @@ export class ProcessesService implements IProcessesService {
     private readonly processStandardRepo: Repository<ProcessStandard>,
 
     @InjectRepository(ProcessStandardStage)
-    private readonly processStandardStageEntity: Repository<ProcessStandardStage>,
+    private readonly processStandardStageRepo: Repository<ProcessStandardStage>,
 
     @InjectRepository(ProcessStandardStageContent)
-    private readonly processStandardStageContentEntity: Repository<ProcessStandardStageContent>,
+    private readonly processStandardStageContentRepo: Repository<ProcessStandardStageContent>,
 
     @InjectRepository(ProcessStandardStageMaterial)
-    private readonly processStandardStageMaterialEntity: Repository<ProcessStandardStageMaterial>,
+    private readonly processStandardStageMaterialRepo: Repository<ProcessStandardStageMaterial>,
 
     @Inject(forwardRef(() => ReportsService))
     private readonly reportService: ReportsService,
@@ -93,7 +94,7 @@ export class ProcessesService implements IProcessesService {
     process_id: string,
   ): Promise<any> {
     try {
-      const new_process_stage = await this.processStandardStageEntity.save({
+      const new_process_stage = await this.processStandardStageRepo.save({
         ...data,
         process_technical_standard_id: process_id,
       });
@@ -129,7 +130,7 @@ export class ProcessesService implements IProcessesService {
     process_stage_id: string,
   ): Promise<any> {
     try {
-      return await this.processStandardStageContentEntity.save({
+      return await this.processStandardStageContentRepo.save({
         ...data,
         process_technical_standard_stage_id: process_stage_id,
       });
@@ -144,7 +145,7 @@ export class ProcessesService implements IProcessesService {
   ): Promise<any> {
     try {
       //create process stage material
-      return await this.processStandardStageMaterialEntity.save({
+      return await this.processStandardStageMaterialRepo.save({
         ...data,
         process_technical_standard_stage_id: process_stage_id,
       });
@@ -219,5 +220,50 @@ export class ProcessesService implements IProcessesService {
       console.error('Error fetching process standards:', error);
       throw new InternalServerErrorException(error.message);
     }
+  }
+
+  //update status of process
+
+  async updateProcessStandardStatus( id: string, updateDto: UpdateProcessStandardDto): Promise<any> {
+    try{
+      const process = await this.processStandardRepo.findOne({
+        where: {
+          process_technical_standard_id: id,
+        },
+      });
+      if (!process) {
+        throw new BadRequestException('process not found');
+      }
+      const reason = process.reason_of_reject = updateDto.reason_of_reject;
+      if(!reason){
+        process.status = ProcessTechnicalStandardStatus.accepted;
+
+      }else{
+        process.status = ProcessTechnicalStandardStatus.rejected,
+        process.reason_of_reject = updateDto.reason_of_reject;
+      }
+
+      return await this.processStandardRepo.save(process);
+    }catch(error){
+      throw new InternalServerErrorException(error.message);
+
+    }
+  }
+
+  //delete process
+  async removeProcessStandard(id: string): Promise<any> {
+    try {
+      const process = await this.processStandardRepo.findOne({
+        where: {
+          process_technical_standard_id: id,
+        },
+      });
+      if (!process) {
+        throw new BadRequestException('process not found');
+      }
+     process.status = ProcessTechnicalStandardStatus.in_active;
+     return await this.processStandardRepo.save(process);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
   }
 }

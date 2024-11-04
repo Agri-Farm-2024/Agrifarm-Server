@@ -6,6 +6,8 @@ import {
   UseGuards,
   Request,
   Query,
+  Put,
+  Param,
 } from '@nestjs/common';
 import { ProcessesService } from './processes.service';
 import { CreateProcessDto } from './dto/create-process.dto';
@@ -19,6 +21,7 @@ import {
 } from 'src/common/decorations/pagination.decoration';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { ProcessTechnicalStandardStatus } from './types/status-processStandard.enum';
+import { UpdateProcessStandardDto } from './dto/update-processStandardStatus.dto';
 
 @ApiTags('Process')
 @Controller('processes')
@@ -56,5 +59,13 @@ export class ProcessesController {
       status,
       plant_id,
     );
+  }
+
+  @Put('/updateProcessStandardStatus/:id')
+  updateProcessStandardStatus(
+    @Body() data: UpdateProcessStandardDto,
+    @Param('id') id: string,
+  ): Promise<any> {
+    return this.processesService.updateProcessStandardStatus(id, data);
   }
 }
