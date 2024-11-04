@@ -19,6 +19,7 @@ import { UpdateStatusBookingDTO } from './dto/update-status-booking.dto';
 import { MailService } from 'src/mails/mail.service';
 import { BookingPaymentFrequency } from './types/booking-payment.enum';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
+import { Transaction } from '../transactions/entities/transaction.entity';
 
 @Injectable()
 export class BookingsService implements IBookingService {
@@ -435,9 +436,6 @@ export class BookingsService implements IBookingService {
           this.updateStatusToPendingContract.bind(this),
         [BookingStatus.pending_payment]:
           this.updateStatusToPendingPayment.bind(this),
-        [BookingStatus.completed]: this.updateStatusToCompleted.bind(this),
-        [BookingStatus.expired]: this.updateStatusToExpired.bind(this),
-        [BookingStatus.canceled]: this.updateStatusToCanceled.bind(this),
         [BookingStatus.rejected]: this.updateStatusToRejected.bind(this),
       };
       return await updateStatusBookingStrategy[data.status](
@@ -626,12 +624,19 @@ export class BookingsService implements IBookingService {
    * @returns
    */
 
-  async updateStatusToCompleted(
-    booking_exist: BookingLand,
-    data: UpdateStatusBookingDTO,
-    user: Payload,
-  ): Promise<any> {
-    return 'updateStatusToPendingPayment';
+  async updateStatusToCompleted(booking_id: string): Promise<any> {
+    try {
+      // update status booking to completed
+      const update_booking = await this.bookingEntity.save({
+        booking_id: booking_id,
+        status: BookingStatus.completed,
+      });
+      // Send mail to land renter
+      // Send notification to land renter
+      return update_booking;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   /**

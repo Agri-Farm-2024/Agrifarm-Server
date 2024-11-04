@@ -40,11 +40,7 @@ export interface IBookingService {
     user: Payload,
   ): Promise<any>;
 
-  updateStatusToCompleted(
-    booking_exist: BookingLand,
-    data: UpdateStatusBookingDTO,
-    user: Payload,
-  ): Promise<any>;
+  updateStatusToCompleted(booking_id: string): Promise<any>;
 
   updateStatusToExpired(
     booking_exist: BookingLand,

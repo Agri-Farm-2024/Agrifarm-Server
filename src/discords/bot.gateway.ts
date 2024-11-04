@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectDiscordClient, Once } from '@discord-nestjs/core';
 import { Client, Message } from 'discord.js';
 import { ConfigService } from '@nestjs/config';
+import { TransactionsService } from 'src/modules/transactions/transactions.service';
 
 @Injectable()
 export class BotGateway {
@@ -12,6 +13,8 @@ export class BotGateway {
     private readonly client: Client,
 
     private readonly configService: ConfigService,
+
+    private readonly transactionService: TransactionsService,
   ) {}
 
   @Once('ready')
@@ -47,9 +50,7 @@ export class BotGateway {
           } else if (price === 'tăng') {
             let transaction_code = message.content.split('\n')[1];
             transaction_code = transaction_code.split(':')[1].trim();
-            /**
-             * 1. Condition user send by momo
-             */
+            // Condition user send by momo
             if (transaction_code.includes('MB')) {
               transaction_code = transaction_code.split(' ')[2].trim();
               // make transacition_code to 6 characters E4RDDT-
@@ -57,9 +58,11 @@ export class BotGateway {
               global.logger.info(
                 `Payment by condition user send by momo includes MB ${transaction_code}`,
               );
-              // await PaymentService.handleSuccessDepositPaymentBank(
-              //     transaction_code
-              // )
+              // call service
+              await this.transactionService.handleTransactionPayment(
+                transaction_code,
+                +price,
+              );
               return;
             }
             /**
@@ -71,9 +74,11 @@ export class BotGateway {
               global.logger.info(
                 `Payment by condition user send by momo ${transaction_code}`,
               );
-              // await PaymentService.handleSuccessDepositPaymentBank(
-              //     transaction_code
-              // )
+              // call service
+              await this.transactionService.handleTransactionPayment(
+                transaction_code,
+                +price,
+              );
               return;
             }
             /**
@@ -85,9 +90,11 @@ export class BotGateway {
               global.logger.info(
                 `Payment by condition user send by vcb ${transaction_code}`,
               );
-              // await PaymentService.handleSuccessDepositPaymentBank(
-              //     transaction_code
-              // )
+              // call service
+              await this.transactionService.handleTransactionPayment(
+                transaction_code,
+                +price,
+              );
               return;
             }
             /**
@@ -98,7 +105,11 @@ export class BotGateway {
             global.logger.info(
               `Payment by condition normal case ${transaction_code}`,
             );
-            // await PaymentService.handleSuccessDepositPaymentBank(transaction_code)
+            // call service
+            await this.transactionService.handleTransactionPayment(
+              transaction_code,
+              +price,
+            );
             return;
           }
         }

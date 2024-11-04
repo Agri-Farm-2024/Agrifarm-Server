@@ -14,6 +14,7 @@ import { BookingPaymentFrequency } from '../bookings/types/booking-payment.enum'
 import { TransactionStatus } from './types/transaction-status.enum';
 import { TransactionType } from './types/transaction-type.enum';
 import { TransactionPurpose } from './types/transaction-purpose.enum';
+import { ServiceSpecific } from '../servicesPackage/entities/serviceSpecific.entity';
 
 @Injectable()
 export class TransactionsService implements ITransactionService {
@@ -140,18 +141,21 @@ export class TransactionsService implements ITransactionService {
       if (total_price !== transaction.total_price) {
         throw new BadRequestException('Total price is not valid');
       }
+      // update transaction status
+      transaction.status = TransactionStatus.succeed;
+      await this.transactionRepository.save(transaction);
 
       // create strategy payment
-      const transactionStrategy = {
-        [TransactionPurpose.booking]: this.handlePaymentBookingLand,
-      };
+      // const transactionStrategy = {
+      //   [TransactionPurpose.booking_land]: this.
+      // };
 
-      if (!transactionStrategy[transaction.purpose]) {
-        throw new BadRequestException('Transaction purpose is not valid');
-      }
+      // if (!transactionStrategy[transaction.purpose]) {
+      //   throw new BadRequestException('Transaction purpose is not valid');
+      // }
 
-      // handle payment
-      return transactionStrategy[transaction.purpose](transaction);
+      // // handle payment
+      // return transactionStrategy[transaction.purpose](transaction);
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
@@ -162,10 +166,11 @@ export class TransactionsService implements ITransactionService {
 
   async handlePaymentBookingLand(transaction: Transaction): Promise<any> {
     try {
-      // get booking by id
-      const booking = await this.bookingService.getBookingDetail(
+      const update_booking = await this.bookingService.updateStatusToCompleted(
         transaction.booking_id,
       );
+      // send order to land renter
+      return update_booking;
     } catch (error) {}
   }
 

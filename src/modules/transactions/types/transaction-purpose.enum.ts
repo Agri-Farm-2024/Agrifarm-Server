@@ -1,6 +1,6 @@
 export enum TransactionPurpose {
   order = 'order',
-  booking = 'booking',
+  booking_land = 'booking_land',
   extend = 'extend',
   service = 'service',
 }

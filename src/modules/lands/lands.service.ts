@@ -70,7 +70,7 @@ export class LandsService implements ILandService {
       }
       // create url video
       if (data.videos) {
-        for (let i = 0; i < data.images.length; i++) {
+        for (let i = 0; i < data.videos.length; i++) {
           await this.createURLLand(
             data.videos[i],
             LandURLType.video,
