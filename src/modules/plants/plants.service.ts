@@ -113,6 +113,7 @@ export class PlantsService implements IPlantService {
       const plant_name = await this.plantEntity.findOne({
         where: {
           name: updateData.name,
+          status: updateData.status,
         },
       });
       if (plant_name) {
