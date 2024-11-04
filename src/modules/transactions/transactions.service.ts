@@ -160,7 +160,14 @@ export class TransactionsService implements ITransactionService {
     }
   }
 
-  async handlePaymentBookingLand(transaction: Transaction): Promise<any> {}
+  async handlePaymentBookingLand(transaction: Transaction): Promise<any> {
+    try {
+      // get booking by id
+      const booking = await this.bookingService.getBookingDetail(
+        transaction.booking_id,
+      );
+    } catch (error) {}
+  }
 
   private getTotalPriceBooking(booking: BookingLand): number {
     const total_price_booking: number =

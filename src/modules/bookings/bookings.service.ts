@@ -222,7 +222,9 @@ export class BookingsService implements IBookingService {
        * 1. type = booking: Get all booking by staff and status except pending
        * 2. type = request: Get all booking by staff and status
        */
-      let filter_condition: any = {};
+      let filter_condition: any = {
+        staff_id: user.user_id,
+      };
       // 1, Get all booking by staff and status except pending
       if (type === 'booking') {
         filter_condition = status
@@ -237,7 +239,7 @@ export class BookingsService implements IBookingService {
       if (type === 'request') {
         if (status === BookingStatus.pending_contract) {
           filter_condition = {
-            status: Not([BookingStatus.pending, BookingStatus.rejected]),
+            status: Not(In[(BookingStatus.pending, BookingStatus.rejected)]),
           };
         } else {
           filter_condition = status
@@ -250,10 +252,7 @@ export class BookingsService implements IBookingService {
       // Get list booking by staff
       const [bookings, total_count] = await Promise.all([
         this.bookingEntity.find({
-          where: {
-            staff_id: user.user_id,
-            ...filter_condition,
-          },
+          where: filter_condition,
           relations: {
             land: true,
             land_renter: true,
@@ -277,10 +276,7 @@ export class BookingsService implements IBookingService {
           skip: (pagination.page_index - 1) * pagination.page_size,
         }),
         this.bookingEntity.count({
-          where: {
-            staff_id: user.user_id,
-            ...filter_condition,
-          },
+          where: filter_condition,
         }),
       ]);
       // Get total page
