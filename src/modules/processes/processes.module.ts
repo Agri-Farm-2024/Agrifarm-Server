@@ -9,6 +9,10 @@ import { ProcessStandardStageContent } from './entities/standards/processStandar
 import { ProcessStandardStageMaterial } from './entities/standards/processStandardStageMaterial.entity';
 import { ReportsModule } from '../reports/reports.module';
 import { JwtModule } from '@nestjs/jwt';
+import { ProcessSpecific } from './entities/specifics/processSpecific.entity';
+import { ProcessSpecificStage } from './entities/specifics/processSpecificStage.entity';
+import { ProcessSpecificStageContent } from './entities/specifics/processSpecificStageContent.entity';
+import { ProcessSpecificStageMaterial } from './entities/specifics/processSpecificStageMaterial.entity';
 
 @Module({
   controllers: [ProcessesController],
@@ -19,6 +23,11 @@ import { JwtModule } from '@nestjs/jwt';
       ProcessStandardStage,
       ProcessStandardStageContent,
       ProcessStandardStageMaterial,
+      ProcessSpecific,
+      ProcessSpecificStage,
+      ProcessSpecificStageContent,
+      ProcessSpecificStageMaterial,
+
     ]),
     forwardRef(() => ReportsModule),
     JwtModule
