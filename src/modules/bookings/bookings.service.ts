@@ -239,7 +239,7 @@ export class BookingsService implements IBookingService {
       if (type === 'request') {
         if (status === BookingStatus.pending_contract) {
           filter_condition = {
-            status: Not(In[(BookingStatus.pending, BookingStatus.rejected)]),
+            status: Not(In([BookingStatus.pending, BookingStatus.rejected])),
           };
         } else {
           filter_condition = status
