@@ -16,4 +16,6 @@ export interface IProcessesService {
     id: string,
     updateDto: UpdateProcessStandardDto,
   ): Promise<any>;
+
+  removeProcessStandard(id: string): Promise<any>;
 }

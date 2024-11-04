@@ -63,7 +63,7 @@ export class PlantsController {
     @Param('id') id: string,
     @Body() updatePlantDto: UpdatePlantDto,
   ) {
-    return await this.plantsService.updatePlant(id, updatePlantDto.status);
+    return await this.plantsService.updatePlant(id,updatePlantDto);
   }
 
   @Put('/updatePlantSeason/:id')

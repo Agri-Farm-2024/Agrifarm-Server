@@ -8,6 +8,7 @@ import {
   Query,
   Put,
   Param,
+  Delete,
 } from '@nestjs/common';
 import { ProcessesService } from './processes.service';
 import { CreateProcessDto } from './dto/create-process.dto';
@@ -63,9 +64,14 @@ export class ProcessesController {
 
   @Put('/updateProcessStandardStatus/:id')
   updateProcessStandardStatus(
-    @Body() data: UpdateProcessStandardDto,
+    @Body() data : UpdateProcessStandardDto,
     @Param('id') id: string,
   ): Promise<any> {
     return this.processesService.updateProcessStandardStatus(id, data);
+  }
+
+  @Delete('/deleteProcessStandard/:id')
+  async removeProcessStandard(@Param('id') id: string): Promise<any> {
+    return this.processesService.removeProcessStandard(id);
   }
 }

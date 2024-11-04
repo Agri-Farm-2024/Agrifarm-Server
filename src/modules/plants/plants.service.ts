@@ -16,6 +16,7 @@ import { PlantSeason } from './entities/plantSeason.entity';
 import { CreatePlantSeasonDto } from './dto/create-plantSeason.dto';
 import { StatusPlant } from './types/plant-status.enum';
 import { PlantSeasonStatus } from './types/plant-season-status.enum';
+import { UpdatePlantDto } from './dto/update-plant.dto';
 
 @Injectable()
 export class PlantsService implements IPlantService {
@@ -98,7 +99,7 @@ export class PlantsService implements IPlantService {
     }
   }
 
-  async updatePlant(id: string, status: StatusPlant): Promise<Plant> {
+  async updatePlant(id: string, updateData: UpdatePlantDto): Promise<Plant> {
     try {
       const plant = await this.plantEntity.findOne({
         where: {
@@ -108,10 +109,21 @@ export class PlantsService implements IPlantService {
       if (!plant) {
         throw new BadRequestException('Plant not found');
       }
-      //update plant status
-      plant.land_type_id = plant.land_type_id;
-      plant.name = plant.name;
-      plant.status = status;
+      //check dupplicate plant name
+      const plant_name = await this.plantEntity.findOne({
+        where: {
+          name: updateData.name,
+        },
+      });
+      if (plant_name) {
+        throw new BadRequestException('Plant name already exist');
+      }
+
+      // Update plant fields
+      plant.land_type_id = updateData.land_type_id ?? plant.land_type_id;
+      plant.name = updateData.name ?? plant.name;
+      plant.status = updateData.status;
+
       return await this.plantEntity.save(plant);
     } catch (error) {
       throw new InternalServerErrorException(error.message);
