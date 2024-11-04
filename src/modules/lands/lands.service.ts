@@ -8,7 +8,7 @@ import { UpdateLandDTO } from './dto/update-land.dto';
 import { ILandService } from './interfaces/ILandService.interface';
 import { Land } from './entities/land.entity';
 import { LoggerService } from 'src/logger/logger.service';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LandURL } from './entities/landURL.entity';
 import { LandURLType } from './types/land-url-type.enum';
@@ -20,6 +20,7 @@ import { LandType } from './entities/landType.entity';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { LandTypeStatus } from './types/landType-status.enum';
 import { parseUrlLink } from 'src/utils/parse-url-link.util';
+import { Payload } from '../auths/types/payload.type';
 
 @Injectable()
 export class LandsService implements ILandService {
@@ -110,13 +111,22 @@ export class LandsService implements ILandService {
     }
   }
 
-  async findAll(
+  /**
+   * @function getListByLandrenter
+   * @param status
+   * @param pagination
+   * @returns
+   */
+
+  async getListByLandrenter(
     status: LandStatus,
     pagination: PaginationParams,
   ): Promise<any> {
     try {
       // filter condition
-      const filter_condition: any = {};
+      const filter_condition: any = {
+        staff_id: Not(IsNull()),
+      };
       if (status) {
         filter_condition.status = status;
       }
@@ -134,6 +144,7 @@ export class LandsService implements ILandService {
             },
           },
           skip: (pagination.page_index - 1) * pagination.page_size,
+          take: pagination.page_size,
         }),
         this.landEntity.count({
           where: filter_condition,
@@ -141,12 +152,66 @@ export class LandsService implements ILandService {
       ]);
       // Get total_page
       const total_page = Math.ceil(total_count / pagination.page_size);
-      // // parse url link of string url
-      // lands.forEach((land) => {
-      //   land.url.forEach((url) => {
-      //     url.string_url = parseUrlLink(url.string_url);
-      //   });
-      // });
+      return {
+        lands,
+        pagination: {
+          ...pagination,
+          total_page,
+        },
+      };
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  /**
+   * @function getListLandByStaff
+   * @param status
+   * @param pagination
+   * @returns
+   */
+
+  async getListLandByStaff(
+    status: LandStatus,
+    pagination: PaginationParams,
+    user: Payload,
+  ): Promise<any> {
+    try {
+      // filter condition
+      const filter_condition: any = {};
+      // check status
+      if (status) {
+        filter_condition.status = status;
+      }
+      // check user is staff
+      if (user.role === UserRole.staff) {
+        filter_condition.staff_id = user.user_id;
+      }
+      const [lands, total_count] = await Promise.all([
+        this.landEntity.find({
+          where: filter_condition,
+          relations: {
+            url: true,
+          },
+          select: {
+            url: {
+              string_url: true,
+              type: true,
+              land_url_id: true,
+            },
+          },
+          skip: (pagination.page_index - 1) * pagination.page_size,
+          take: pagination.page_size,
+        }),
+        this.landEntity.count({
+          where: filter_condition,
+        }),
+      ]);
+      // Get total_page
+      const total_page = Math.ceil(total_count / pagination.page_size);
       return {
         lands,
         pagination: {

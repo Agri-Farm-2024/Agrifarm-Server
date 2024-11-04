@@ -3,16 +3,17 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Query,
   Put,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { LandsService } from './lands.service';
 import { CreateLandDto } from './dto/create-land.dto';
 import { UpdateLandDTO } from './dto/update-land.dto';
-import { ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { LandStatus } from './types/land-status.enum';
 import { CreateLandTypeDto } from './dto/create-landType.dto';
 import {
@@ -20,6 +21,7 @@ import {
   Pagination,
 } from 'src/common/decorations/pagination.decoration';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 
 @ApiTags('Land')
 @Controller('lands')
@@ -36,19 +38,37 @@ export class LandsController {
     return this.landsService.createLand(createLandDto);
   }
 
+  @Get()
+  @ApplyPaginationMetadata
   @ApiQuery({
     enum: LandStatus,
     description: 'Get all lands by status',
     required: false,
     name: 'status',
   })
-  @Get()
-  @ApplyPaginationMetadata
-  findAll(
+  getListByLandrenter(
     @Query('status') status: LandStatus,
     @Pagination() pagination: PaginationParams,
   ) {
-    return this.landsService.findAll(status, pagination);
+    return this.landsService.getListByLandrenter(status, pagination);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/getListByStaff')
+  @ApplyPaginationMetadata
+  @ApiQuery({
+    enum: LandStatus,
+    description: 'Get all lands by status',
+    required: false,
+    name: 'status',
+  })
+  getListByStaff(
+    @Query('status') status: LandStatus,
+    @Pagination() pagination: PaginationParams,
+    @Request() req: any,
+  ) {
+    const user = req['user'];
+    return this.landsService.getListLandByStaff(status, pagination, user);
   }
 
   @Get('/:land_id')

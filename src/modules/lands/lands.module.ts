@@ -7,6 +7,7 @@ import { LoggerModule } from 'src/logger/logger.module';
 import { LandURL } from './entities/landURL.entity';
 import { LandType } from './entities/landType.entity';
 import { UsersModule } from '../users/users.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   controllers: [LandsController],
@@ -15,6 +16,7 @@ import { UsersModule } from '../users/users.module';
     TypeOrmModule.forFeature([Land, LandURL, LandType]),
     LoggerModule,
     UsersModule,
+    JwtModule,
   ],
   exports: [LandsService],
 })
