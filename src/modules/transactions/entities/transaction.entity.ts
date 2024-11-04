@@ -58,7 +58,7 @@ export class Transaction extends AbstractEntity {
   @Column({
     type: 'enum',
     enum: TransactionStatus,
-    default: TransactionStatus.pending,
+    default: TransactionStatus.approved,
   })
   status: TransactionStatus;
   // Relations

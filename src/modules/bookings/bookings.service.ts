@@ -19,7 +19,6 @@ import { UpdateStatusBookingDTO } from './dto/update-status-booking.dto';
 import { MailService } from 'src/mails/mail.service';
 import { BookingPaymentFrequency } from './types/booking-payment.enum';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
-import { parseUrlLink } from 'src/utils/parse-url-link.util';
 
 @Injectable()
 export class BookingsService implements IBookingService {
@@ -236,11 +235,17 @@ export class BookingsService implements IBookingService {
       }
       // 2. Get all booking by staff and status
       if (type === 'request') {
-        filter_condition = status
-          ? {
-              status: status,
-            }
-          : {};
+        if (status === BookingStatus.pending_contract) {
+          filter_condition = {
+            status: Not([BookingStatus.pending, BookingStatus.rejected]),
+          };
+        } else {
+          filter_condition = status
+            ? {
+                status: status,
+              }
+            : {};
+        }
       }
       // Get list booking by staff
       const [bookings, total_count] = await Promise.all([
@@ -278,12 +283,6 @@ export class BookingsService implements IBookingService {
           },
         }),
       ]);
-      // Parse contract image to url link
-      // bookings.forEach((booking) => {
-      //   booking.contract_image = booking.contract_image
-      //     ? parseUrlLink(booking.contract_image)
-      //     : null;
-      // });
       // Get total page
       const total_page = Math.ceil(total_count / pagination.page_size);
       return {
