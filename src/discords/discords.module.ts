@@ -8,7 +8,7 @@ import { TransactionsModule } from 'src/modules/transactions/transactions.module
 @Module({
   imports: [
     DiscordModule.forRootAsync({
-      imports: [ConfigModule, TransactionsModule],
+      imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         token: configService.get<string>('DISCORD_TOKEN'),
         discordClientOptions: {
