@@ -2,6 +2,7 @@ import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -19,7 +20,7 @@ export class Plant extends AbstractEntity {
   @PrimaryGeneratedColumn('uuid')
   plant_id: string;
 
-  @Column('uuid', { name: 'land_type_id', nullable: true })
+  @Column('uuid', { nullable: true })
   land_type_id: string;
 
   @Column()
@@ -34,6 +35,8 @@ export class Plant extends AbstractEntity {
 
   @OneToMany(() => PlantSeason, (plantSeason) => plantSeason.plant)
   plants_season: PlantSeason[];
+
   @ManyToOne(() => LandType, (landType) => landType.lands)
+  @JoinColumn({ name: 'land_type_id' })
   land_type: LandType;
 }

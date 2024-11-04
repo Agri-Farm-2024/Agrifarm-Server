@@ -179,7 +179,7 @@ export class PlantsService implements IPlantService {
     }
   }
 
-  async removePlant(id: string): Promise<void> {
+  async removePlant(id: string): Promise<any> {
     //delete plant
     try {
       const plant = await this.plantEntity.findOne({
@@ -193,7 +193,8 @@ export class PlantsService implements IPlantService {
 
       // Delete the plant
       plant.status = StatusPlant.inactive;
-      this.plantEntity.save(plant);
+      const update_plant = await this.plantEntity.save(plant);
+      return update_plant;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
@@ -231,6 +232,15 @@ export class PlantsService implements IPlantService {
     const filter = { ...filter_search };
     const [plants, total_count] = await Promise.all([
       this.plantEntity.find({
+        relations: {
+          land_type: true,
+        },
+        select: {
+          land_type: {
+            name: true,
+            description: true,
+          },
+        },
         skip: (pagination.page_index - 1) * pagination.page_size,
         take: pagination.page_size,
         where: filter,

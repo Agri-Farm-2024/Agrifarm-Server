@@ -1,12 +1,5 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Land } from './land.entity';
 import { Plant } from 'src/modules/plants/entities/plant.entity';
 import { LandTypeStatus } from '../types/landType-status.enum';
@@ -25,7 +18,7 @@ export class LandType extends AbstractEntity {
   name: string;
 
   @Column({ nullable: true })
-  description: String;
+  description: string;
 
   @Column({
     type: 'enum',
