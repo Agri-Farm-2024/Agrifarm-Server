@@ -21,6 +21,7 @@ import { TransactionsModule } from 'src/modules/transactions/transactions.module
       }),
       inject: [ConfigService],
     }),
+    TransactionsModule,
   ],
   providers: [BotGateway],
 })
