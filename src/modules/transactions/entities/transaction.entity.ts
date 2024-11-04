@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { TransactionType } from '../types/transaction-type.enum';
 import { TransactionStatus } from '../types/transaction-status.enum';
+import { TransactionPurpose } from '../types/transaction-purpose.enum';
 @Entity('transactions')
 export class Transaction extends AbstractEntity {
   constructor(transaction: Partial<Transaction>) {
@@ -39,8 +40,15 @@ export class Transaction extends AbstractEntity {
 
   @Column({
     type: 'enum',
+    enum: TransactionPurpose,
+    default: TransactionPurpose.order,
+  })
+  purpose: TransactionPurpose;
+
+  @Column({
+    type: 'enum',
     enum: TransactionType,
-    default: TransactionType.order,
+    default: TransactionType.payment,
   })
   type: TransactionType;
 
