@@ -28,11 +28,8 @@ jobs:
             # Step 2: Pull latest changes from the Git repository
             git pull
 
-            # Step 3: Stop docker containers
-            docker-compose down
-
-            # Step 4: Remove docker images
-            docker rmi -f agrifarm-server-app
+            # Step 3: Stop docker containers and remove image
+            docker-compose down --rmi all
 
             # Step 5: Rebuild and start docker containers
             docker-compose up --build -d
