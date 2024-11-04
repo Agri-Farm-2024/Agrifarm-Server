@@ -609,6 +609,7 @@ export class BookingsService implements IBookingService {
         status: BookingStatus.pending_payment,
         contract_image: data.contract_image,
         payment_frequency: data.payment_frequency,
+        signed_at: new Date(),
       });
       return update_booking;
     } catch (error) {

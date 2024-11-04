@@ -1,6 +1,5 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { Order } from 'src/modules/orders/entities/order.entity';
-import { TransactionStatus } from 'src/utils/status/transaction-status.enum';
 import {
   Column,
   Entity,
@@ -9,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { TransactionType } from '../types/transaction-type.enum';
+import { TransactionStatus } from '../types/transaction-status.enum';
 @Entity('transactions')
 export class Transaction extends AbstractEntity {
   constructor(transaction: Partial<Transaction>) {

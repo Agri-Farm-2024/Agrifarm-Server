@@ -23,7 +23,7 @@ export class Plant extends AbstractEntity {
   @Column('uuid', { nullable: true })
   land_type_id: string;
 
-  @Column()
+  @Column({ unique: true })
   name: string;
 
   @Column({
