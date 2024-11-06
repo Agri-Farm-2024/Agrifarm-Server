@@ -67,7 +67,7 @@ import { SchedulesModule } from './schedules/schedules.module';
     UploadsModule,
     SocketsModule,
     SchedulesModule,
-    DiscordsModule,
+    // DiscordsModule,
   ],
 })
 export class AppModule {}

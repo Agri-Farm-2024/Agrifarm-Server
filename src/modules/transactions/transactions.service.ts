@@ -75,6 +75,7 @@ export class TransactionsService implements ITransactionService {
           booking_id,
           transaction_code,
           total_price,
+          purpose: TransactionPurpose.booking_land,
           expired_at: new Date(new Date().setDate(new Date().getDate() + 1)),
         });
         return new_transaction;
@@ -87,6 +88,7 @@ export class TransactionsService implements ITransactionService {
           bookging_id: booking_id,
           transaction_code: transaction_code,
           total_price: (total_price * 2) / 3,
+          purpose: TransactionPurpose.booking_land,
           expired_at: new Date(new Date().setDate(new Date().getDate() + 1)),
           status: TransactionStatus.approved,
         });
@@ -149,16 +151,16 @@ export class TransactionsService implements ITransactionService {
       await this.transactionRepository.save(transaction);
 
       // create strategy payment
-      // const transactionStrategy = {
-      //   [TransactionPurpose.booking_land]: this.
-      // };
+      const transactionStrategy = {
+        [TransactionPurpose.booking_land]: this.handlePaymentBookingLand,
+      };
 
-      // if (!transactionStrategy[transaction.purpose]) {
-      //   throw new BadRequestException('Transaction purpose is not valid');
-      // }
+      if (!transactionStrategy[transaction.purpose]) {
+        throw new BadRequestException('Transaction purpose is not valid');
+      }
 
-      // // handle payment
-      // return transactionStrategy[transaction.purpose](transaction);
+      // handle payment
+      return transactionStrategy[transaction.purpose](transaction);
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
