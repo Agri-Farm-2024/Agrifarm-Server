@@ -4,12 +4,15 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { TransactionType } from '../types/transaction-type.enum';
 import { TransactionStatus } from '../types/transaction-status.enum';
 import { TransactionPurpose } from '../types/transaction-purpose.enum';
+import { User } from 'src/modules/users/entities/user.entity';
+import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 @Entity('transactions')
 export class Transaction extends AbstractEntity {
   constructor(transaction: Partial<Transaction>) {
@@ -21,10 +24,16 @@ export class Transaction extends AbstractEntity {
   transaction_id: string;
 
   @Column('uuid', { nullable: true })
+  user_id: string;
+
+  @Column('uuid', { nullable: true })
   order_id: string;
 
   @Column('uuid', { nullable: true })
-  booking_id: string;
+  booking_land_id: string;
+
+  @Column('uuid', { nullable: true })
+  booking_material_id: string;
 
   @Column('uuid', { nullable: true })
   extend_id: string;
@@ -35,7 +44,10 @@ export class Transaction extends AbstractEntity {
   @Column({ unique: true })
   transaction_code: string;
 
-  @Column()
+  @Column({
+    // default after 24 hours
+    default: () => 'CURRENT_TIMESTAMP + INTERVAL 1 DAY',
+  })
   expired_at: Date;
 
   @Column({
@@ -65,4 +77,12 @@ export class Transaction extends AbstractEntity {
   @OneToOne(() => Order, (order) => order.transaction)
   @JoinColumn({ name: 'order_id' })
   order: Order;
+
+  @ManyToOne(() => User, (user) => user.transactions)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @ManyToOne(() => BookingLand, (bookingLand) => bookingLand.transactions)
+  @JoinColumn({ name: 'booking_land_id' })
+  booking_land: BookingLand;
 }

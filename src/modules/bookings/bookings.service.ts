@@ -597,12 +597,8 @@ export class BookingsService implements IBookingService {
       }
       // Create transaction for payment
       if (data.payment_frequency === BookingPaymentFrequency.multiple) {
-        //
+        // create multiple transaction
       }
-      // Create transaction for payment
-      await this.transactionService.createTransactionPaymentBookingLand(
-        booking_exist.booking_id,
-      );
       // Send mail to land renter
       // Send notification to land renter
       // update status booking to pending payment
@@ -727,5 +723,14 @@ export class BookingsService implements IBookingService {
       }
       throw new InternalServerErrorException(error.message);
     }
+  }
+
+  private getTotalPriceBooking(booking: BookingLand): number {
+    const total_price_booking: number =
+      (booking.time_end.getMonth() - booking.time_start.getMonth() + 1) *
+        booking.price_per_month +
+      booking.price_deposit;
+    const total_price = total_price_booking + booking.price_deposit;
+    return total_price;
   }
 }

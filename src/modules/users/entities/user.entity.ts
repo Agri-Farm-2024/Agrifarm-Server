@@ -14,6 +14,7 @@ import { UserRole } from '../types/user-role.enum';
 import { ProcessStandard } from 'src/modules/processes/entities/standards/processStandard.entity';
 import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
 import { Report } from 'src/modules/reports/entities/report.entity';
+import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
 
 @Entity('users') // Maps this class to the 'users' table in the database
 export class User extends AbstractEntity {
@@ -56,7 +57,7 @@ export class User extends AbstractEntity {
     default: UserRole.land_renter,
   })
   role: UserRole;
-
+  // Relations
   @OneToMany(() => Land, (land) => land.staff)
   land_by_staff: Land[];
 
@@ -101,4 +102,7 @@ export class User extends AbstractEntity {
 
   @OneToMany(() => Report, (report) => report.report_from)
   reports: Report[];
+
+  @OneToMany(() => Transaction, (transaction) => transaction.user)
+  transactions: Transaction[];
 }

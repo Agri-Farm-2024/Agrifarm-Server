@@ -14,9 +14,9 @@ import { BookingsService } from '../bookings/bookings.service';
 import { BookingLand } from '../bookings/entities/bookingLand.entity';
 import { BookingPaymentFrequency } from '../bookings/types/booking-payment.enum';
 import { TransactionStatus } from './types/transaction-status.enum';
-import { TransactionType } from './types/transaction-type.enum';
 import { TransactionPurpose } from './types/transaction-purpose.enum';
-import { ServiceSpecific } from '../servicesPackage/entities/serviceSpecific.entity';
+import { Payload } from '../auths/types/payload.type';
+import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 
 @Injectable()
 export class TransactionsService implements ITransactionService {
@@ -172,12 +172,26 @@ export class TransactionsService implements ITransactionService {
   async handlePaymentBookingLand(transaction: Transaction): Promise<any> {
     try {
       const update_booking = await this.bookingService.updateStatusToCompleted(
-        transaction.booking_id,
+        transaction.booking_land_id,
       );
       // send order to land renter
       return update_booking;
     } catch (error) {}
   }
+
+  async getListTransactionByLandrenter(
+    user: Payload,
+    pagination: PaginationParams,
+  ): Promise<any> {
+    // try {
+    //   const transactions = await this.transactionRepository.find({
+    //     where: {
+    //     }
+    //   })
+    // } catch (error) {}
+  }
+
+  async getDetailTransaction(transaction_id: string): Promise<any> {}
 
   private getTotalPriceBooking(booking: BookingLand): number {
     const total_price_booking: number =

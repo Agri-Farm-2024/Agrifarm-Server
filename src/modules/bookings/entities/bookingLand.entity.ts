@@ -14,6 +14,7 @@ import {
 import { BookingStatus } from '../types/booking-status.enum';
 import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
 import { BookingPaymentFrequency } from '../types/booking-payment.enum';
+import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
 
 @Entity('bookings_land')
 export class BookingLand extends AbstractEntity {
@@ -128,4 +129,7 @@ export class BookingLand extends AbstractEntity {
     (serviceSpecific) => serviceSpecific.booking_land,
   )
   service_specific: ServiceSpecific[];
+
+  @OneToMany(() => Transaction, (transaction) => transaction.booking_land)
+  transactions: Transaction[];
 }

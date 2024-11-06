@@ -9,7 +9,7 @@ export class CreateTransactionDTO {
 
   @IsString()
   @IsOptional()
-  booking_id: string;
+  booking_: string;
 
   @IsString()
   @IsOptional()
@@ -22,6 +22,5 @@ export class CreateTransactionDTO {
   @Type(() => Date)
   @IsDate()
   @IsFutureDate()
-  @IsOptional()
   expired_at: Date;
 }
