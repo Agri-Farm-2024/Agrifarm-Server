@@ -36,7 +36,7 @@ export class ServicePackage extends AbstractEntity {
   purchase: boolean;
 
   @Column()
-  price_of_acreage_land: number;
+  price: number;
 
   @Column({
     type: 'enum',

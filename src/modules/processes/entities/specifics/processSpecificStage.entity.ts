@@ -27,7 +27,7 @@ export class ProcessSpecificStage extends AbstractEntity {
   process_technical_specific_id: string;
 
   @Column()
-  title: string;
+  stage_title: string;
 
   @Column('int')
   numberic_order: number;

@@ -32,7 +32,7 @@ export class ProcessSpecificStageContent extends AbstractEntity {
   content: string;
 
   @Column('int')
-  numberic_order: number;
+  content_numberic_order: number;
 
   @Column()
   time_start: Date;

@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { ProcessesService } from './processes.service';
 import { CreateProcessDto } from './dto/create-process.dto';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { Roles } from 'src/common/decorations/role.decoration';
 import { UserRole } from '../users/types/user-role.enum';
@@ -23,6 +23,7 @@ import {
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { ProcessTechnicalStandardStatus } from './types/status-processStandard.enum';
 import { UpdateProcessStandardDto } from './dto/update-processStandardStatus.dto';
+import { createProcessSpecificDTO } from './dto/create-process-specific.dto';
 
 @ApiTags('Process')
 @Controller('processes')
@@ -37,6 +38,20 @@ export class ProcessesController {
     @Request() request: any,
   ): Promise<any> {
     return this.processesService.createProcessStandard(data, request.user);
+  }
+
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.expert)
+  @Post('/createProcessSpecific')
+  createProcessSpecific(
+    @Body() data: createProcessSpecificDTO,
+    @Request() request: any,
+  ): Promise<any> {
+    const user = request['user'];
+    return this.processesService.createProcessSpecific(
+      data.service_specific_id,
+      user,
+    );
   }
 
   @ApiQuery({
@@ -64,7 +79,7 @@ export class ProcessesController {
 
   @Put('/updateProcessStandardStatus/:id')
   updateProcessStandardStatus(
-    @Body() data : UpdateProcessStandardDto,
+    @Body() data: UpdateProcessStandardDto,
     @Param('id') id: string,
   ): Promise<any> {
     return this.processesService.updateProcessStandardStatus(id, data);

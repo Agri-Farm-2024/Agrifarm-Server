@@ -6,9 +6,7 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
-  Timestamp,
 } from 'typeorm';
 import { ProcessStandard } from '../standards/processStandard.entity';
 import { ProcessSpecificStage } from './processSpecificStage.entity';
@@ -27,7 +25,7 @@ export class ProcessSpecific extends AbstractEntity {
   @Column('uuid')
   process_technical_standard_id: string;
 
-  @Column('uuid',)
+  @Column('uuid')
   service_specific_id: string;
 
   @Column('uuid', { nullable: true })
@@ -45,6 +43,7 @@ export class ProcessSpecific extends AbstractEntity {
   @Column()
   qr_url: string;
 
+  // Relation
   @ManyToOne(
     () => ProcessStandard,
     (processStandard) => processStandard.process_technical_standard,
@@ -61,6 +60,4 @@ export class ProcessSpecific extends AbstractEntity {
   @OneToOne(() => ServiceSpecific)
   @JoinColumn({ name: 'service_specific_id' })
   service_specific: ServiceSpecific;
-
-
 }

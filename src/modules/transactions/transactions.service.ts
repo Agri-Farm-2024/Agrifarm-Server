@@ -44,6 +44,19 @@ export class TransactionsService implements ITransactionService {
       if (transaction_exist) {
         return this.createTransaction(transactionDTO);
       }
+      // create new transaction
+      if (!transactionDTO.expired_at) {
+        // set expired at 1 day
+        transactionDTO.expired_at = new Date(
+          new Date().setDate(new Date().getDate() + 1),
+        );
+      }
+      // create new transaction
+      const new_transaction = await this.transactionRepository.save({
+        ...transactionDTO,
+        transaction_code: transactionCode,
+      });
+      return new_transaction;
     } catch (error) {
       throw new Error(error.message);
     }

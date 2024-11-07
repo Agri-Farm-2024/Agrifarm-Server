@@ -6,4 +6,6 @@ export class CreateServiceSpecificDTO {
   service_package_id: string;
 
   acreage_land: number;
+
+  time_start: Date;
 }

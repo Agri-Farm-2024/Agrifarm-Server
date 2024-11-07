@@ -5,7 +5,6 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
-  Param,
 } from '@nestjs/common';
 import { CreateProcessDto } from './dto/create-process.dto';
 import { IProcessesService } from './interfaces/IProcessesService.interface';
@@ -30,6 +29,8 @@ import { ProcessSpecific } from './entities/specifics/processSpecific.entity';
 import { ProcessSpecificStage } from './entities/specifics/processSpecificStage.entity';
 import { ProcessSpecificStageContent } from './entities/specifics/processSpecificStageContent.entity';
 import { ProcessSpecificStageMaterial } from './entities/specifics/processSpecificStageMaterial.entity';
+import { ServicesService } from '../servicesPackage/servicesPackage.service';
+import { getTimeByPlusDays } from 'src/utils/time.utl';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -62,6 +63,8 @@ export class ProcessesService implements IProcessesService {
 
     @Inject(forwardRef(() => ReportsService))
     private readonly reportService: ReportsService,
+
+    private readonly servicePackageService: ServicesService,
   ) {}
 
   async createProcessStandard(
@@ -287,100 +290,94 @@ export class ProcessesService implements IProcessesService {
     }
   }
 
-  // create process sepecific
-  // async createProcessSpecific(serviceSpecific: ServiceSpecific): Promise<any> {
-  //   try {
-  //     const timeStart = serviceSpecific.time_start;
-  //     const plantSeasonId = serviceSpecific.plant_season_id;
-      
-  //     // Retrieve process standard by plant season ID
-  //     const processStandard = await this.processStandardRepo.findOne({
-  //       where: { plant_season_id: plantSeasonId },
-  //       relations: {
-  //         process_standard_stage: {
-  //           process_standard_stage_content: true,
-  //           process_standard_stage_material: true,
-  //         },
-  //       },
-  //     });
-  //     if (!processStandard) {
-  //       throw new BadRequestException('Process standard not found');
-  //     }
-  
-  //     // Create ProcessSpecific entity
-  //     const processSpecific = new ProcessSpecific({
-  //       process_technical_standard_id: processStandard.process_technical_standard_id,
-  //       service_specific_id: serviceSpecific.service_specific_id,
-  //       expert_id: processStandard.expert_id,
-  //       name: processStandard.name,
-  //       time_start: timeStart,
-  //       time_end: serviceSpecific.time_end,
-  //       qr_url: 'generate qr',
-  //     });
-  //     const createdProcessSpecific = await this.processSpecificRepo.save(processSpecific);
-  
-  //     // Create stages based on process standard stages
-  //     const processSpecificStages = processStandard.process_standard_stage.map(stage => {
-  //       const time_start_stage = stage.time_start;
-  //       const stageTimeStart = new Date(timeStart);
-  //       stageTimeStart.setDate(timeStart.getDate() + stage.time_start - 1); // Calculate stage time_start
-  
-  //       const stageTimeEnd = new Date(timeStart);
-  //       stageTimeEnd.setDate(timeStart.getDate() + stage.time_end - 1); // Calculate stage time_end
-  
-  //       const processSpecificStage = new ProcessSpecificStage({
-  //         process_technical_specific_id: createdProcessSpecific.process_technical_specific_id,
-  //         title: stage.stage_title,
-  //         numberic_order: stage.stage_numberic_order,
-  //         time_start: stageTimeStart,
-  //         time_end: stageTimeEnd,
-  //       });
-  
-  //       // Map contents for this stage
-  //       processSpecificStage.process_technical_specific_stage_content = stage.process_standard_stage_content.map(content => {
-  //         const contentTimeStart = new Date();
-  //         contentTimeStart.setDate(timeStart.getDate() + content.time_start - 1);
-  
-  //         const contentTimeEnd = new Date(timeStart);
-  //         contentTimeEnd.setDate(timeStart.getDate() + content.time_end - 1);
-  
-  //         return new ProcessSpecificStageContent({
-  //           process_technical_specific_stage_id: processSpecificStage.process_technical_specific_stage_id,
-  //           title: content.title,
-  //           content: content.content,
-  //           numberic_order: content.content_numberic_order,
-  //           time_start: contentTimeStart,
-  //           time_end: contentTimeEnd,
-  //         });
-  //       });
-  
-  //       // Map materials for this stage
-  //       processSpecificStage.process_technical_specific_stage_material = stage.process_standard_stage_material.map(material => {
-  //         const materialTimeStart = new Date(timeStart);
-  //         materialTimeStart.setDate(timeStart.getDate() + material.time_start - 1);
-  
-  //         const materialTimeEnd = new Date(timeStart);
-  //         materialTimeEnd.setDate(timeStart.getDate() + material.time_end - 1);
-  
-  //         return new ProcessSpecificStageMaterial({
-  //           process_technical_specific_stage_id: processSpecificStage.process_technical_specific_stage_id,
-  //           title: material.title,
-  //           content: material.content,
-  //           numberic_order: material.numberic_order,
-  //           time_start: materialTimeStart,
-  //           time_end: materialTimeEnd,
-  //         });
-  //       });
-  
-  //       return processSpecificStage;
-  //     });
-  
-  //     // Save each stage and its associated contents and materials
-  //     for (const stage of processSpecificStages) {
-  //       const savedStage = await this.processSpecificStageRepo.save(stage);
-  
-  //       // Save contents and materials for the saved stage
-  //       if (stage.process_technical_specific
-  
-  }
+  /**
+   * @function createProcessSpecific
+   */
 
+  async createProcessSpecific(
+    service_specific_id: string,
+    user: Payload,
+  ): Promise<any> {
+    try {
+      // get detail of service specific
+      const service_specific: ServiceSpecific =
+        await this.servicePackageService.getDetailServiceSpecific(
+          service_specific_id,
+        );
+      // get detail of process standard
+      const process_technical_standard = await this.processStandardRepo.findOne(
+        {
+          where: {
+            plant_season_id: service_specific.plant_season_id,
+          },
+          relations: {
+            process_standard_stage: {
+              process_standard_stage_content: true,
+              process_standard_stage_material: true,
+            },
+          },
+        },
+      );
+      // create new process specific
+      const process_technical_specific = await this.processSpecificRepo.save({
+        process_technical_standard_id:
+          process_technical_standard.process_technical_standard_id,
+        service_specific_id,
+        expert_id: user.user_id,
+        time_start: service_specific.time_start,
+        time_end: service_specific.time_end,
+        qr_url: '',
+      });
+      // create process specific stage
+      for (const stage of process_technical_standard.process_standard_stage) {
+        // create process specific stage
+        const process_specific_stage = await this.processSpecificStageRepo.save(
+          {
+            process_technical_specific_id:
+              process_technical_specific.process_technical_specific_id,
+            stage_numberic_order: stage.stage_numberic_order,
+            stage_title: stage.stage_title,
+            time_start: getTimeByPlusDays(
+              service_specific.time_start,
+              stage.time_start,
+            ),
+            time_end: getTimeByPlusDays(
+              service_specific.time_start,
+              stage.time_end,
+            ),
+          },
+        );
+        // create process specific stage content
+        for (const content of stage.process_standard_stage_content) {
+          await this.processSpecificStageContentRepo.save({
+            process_technical_specific_stage_id:
+              process_specific_stage.process_technical_specific_stage_id,
+            content_numberic_order: content.content_numberic_order,
+            title: content.title,
+            content: content.content,
+            time_start: getTimeByPlusDays(
+              service_specific.time_start,
+              content.time_start,
+            ),
+            time_end: getTimeByPlusDays(
+              service_specific.time_start,
+              content.time_end,
+            ),
+          });
+        }
+        // create process specific stage material
+        for (const material of stage.process_standard_stage_material) {
+          await this.processSpecificStageMaterialRepo.save({
+            process_technical_specific_stage_id:
+              process_specific_stage.process_technical_specific_stage_id,
+            material_id: material.material_id,
+            quantity: material.quantity,
+          });
+        }
+      }
+      return process_technical_specific;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+}
