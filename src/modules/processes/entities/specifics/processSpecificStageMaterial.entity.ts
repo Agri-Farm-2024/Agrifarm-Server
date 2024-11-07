@@ -10,6 +10,7 @@ import {
   Timestamp,
 } from 'typeorm';
 import { ProcessSpecificStage } from './processSpecificStage.entity';
+import { Material } from 'src/modules/materials/entities/material.entity';
 
 @Entity('processes_technical_specific_stage_material')
 export class ProcessSpecificStageMaterial extends AbstractEntity {
@@ -48,4 +49,11 @@ export class ProcessSpecificStageMaterial extends AbstractEntity {
   )
   @JoinColumn({ name: 'process_technical_specific_stage_id' })
   process_technical_specific_stage: ProcessSpecificStage;
+
+  @OneToMany(
+    () => Material,
+    (material) => material.process_specific_stage_material,
+  )
+  @JoinColumn({ name: 'material_id' })
+  materialSpecific: Material;
 }

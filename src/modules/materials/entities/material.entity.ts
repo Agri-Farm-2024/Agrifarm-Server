@@ -4,6 +4,8 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { MaterialType } from '../types/material-type.enum';
 import { MaterialStatus } from '../types/material-status.enum';
 import { MaterialUnit } from '../types/material-unit-enum';
+import { ProcessStandardStageMaterial } from 'src/modules/processes/entities/standards/processStandardStageMaterial.entity';
+import { ProcessSpecificStageMaterial } from 'src/modules/processes/entities/specifics/processSpecificStageMaterial.entity';
 
 @Entity('materials')
 export class Material extends AbstractEntity {
@@ -58,4 +60,17 @@ export class Material extends AbstractEntity {
 
   @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.material_id)
   material_order_details_id: OrderDetail[];
+
+  @OneToMany(
+    () => ProcessStandardStageMaterial,
+    (processStandardStageMaterial) => processStandardStageMaterial.material,
+  )
+  material_process_standard_stage_material: ProcessStandardStageMaterial[];
+
+  @OneToMany(
+    () => ProcessSpecificStageMaterial,
+    (processSpecificSTageMaterial) =>
+      processSpecificSTageMaterial.materialSpecific,
+  )
+  process_specific_stage_material: ProcessSpecificStageMaterial[];
 }

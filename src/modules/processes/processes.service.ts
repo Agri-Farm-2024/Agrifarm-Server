@@ -201,7 +201,9 @@ export class ProcessesService implements IProcessesService {
             },
             process_standard_stage: {
               process_standard_stage_content: true,
-              process_standard_stage_material: true,
+              process_standard_stage_material: {
+                material: true,
+              },
             },
             expert: true,
           },
