@@ -1,9 +1,8 @@
 // notification.gateway.ts
+import { Logger } from '@nestjs/common';
 import {
   WebSocketGateway,
   WebSocketServer,
-  SubscribeMessage,
-  ConnectedSocket,
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
@@ -26,11 +25,16 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(`Client disconnected: ${client.id}`);
   }
 
-  sendNotification(userId: string, message: string) {
+  sendEventByUserId(userId: string, message: any, event: string) {
     // Broadcast message to the specific user
     const client = this.clients[userId];
     if (client) {
-      client.emit('notification', { message });
+      client.emit(`${event}`, { message });
     }
+  }
+
+  sendEventToGroup(groupId: string, message: any, event: string) {
+    // Broadcast message to the group
+    this.server.to(groupId).emit(`${event}`, { message });
   }
 }

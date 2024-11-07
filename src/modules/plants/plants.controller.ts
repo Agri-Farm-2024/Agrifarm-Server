@@ -8,11 +8,12 @@ import {
   Delete,
   Logger,
   Put,
+  Query,
 } from '@nestjs/common';
 import { PlantsService } from './plants.service';
 import { CreatePlantDto } from './dto/create-plant.dto';
 import { UpdatePlantDto } from './dto/update-plant.dto';
-import { ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import {
   ApplyPaginationMetadata,
@@ -50,12 +51,28 @@ export class PlantsController {
   }
 
   @ApplyPaginationMetadata
+  @ApiQuery({
+    name: 'time_start',
+    required: false,
+    description: 'Filter plant seasons by time_start',
+  })
+  @ApiQuery({
+    name: 'total_month',
+    required: false,
+    description: 'Filter plant seasons by total_months',
+  })
   @Get('/plantSeasons')
   async getAllPlantSeasons(
     @Pagination() pagination: PaginationParams,
+    @Query('time_start') time_start: number,
+    @Query('total_month') total_month: number,
   ): Promise<any> {
     Logger.log('Get all plant seasons');
-    return await this.plantsService.getAllPlantSeasons(pagination);
+    return await this.plantsService.getAllPlantSeasons(
+      pagination,
+      time_start,
+      total_month,
+    );
   }
 
   @Patch('/updateplant/:id')
@@ -63,7 +80,7 @@ export class PlantsController {
     @Param('id') id: string,
     @Body() updatePlantDto: UpdatePlantDto,
   ) {
-    return await this.plantsService.updatePlant(id,updatePlantDto);
+    return await this.plantsService.updatePlant(id, updatePlantDto);
   }
 
   @Put('/updatePlantSeason/:id')
@@ -83,5 +100,4 @@ export class PlantsController {
   async removePlantSeason(@Param('id') id: string) {
     return await this.plantsService.removePlantSeason(id);
   }
-  
 }

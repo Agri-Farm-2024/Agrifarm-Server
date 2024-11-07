@@ -8,7 +8,7 @@ import {
 import { CreatePlantDto } from './dto/create-plant.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoggerService } from 'src/logger/logger.service';
-import { Like, Repository } from 'typeorm';
+import { LessThan, LessThanOrEqual, Like, Repository } from 'typeorm';
 import { Plant } from './entities/plant.entity';
 import { IPlantService } from './interfaces/IPlantService.interface';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
@@ -287,11 +287,25 @@ export class PlantsService implements IPlantService {
     };
   }
 
-  async getAllPlantSeasons(pagination: PaginationParams): Promise<any> {
+  async getAllPlantSeasons(
+    pagination: PaginationParams,
+    time_start: number,
+    total_month: number,
+  ): Promise<any> {
     try {
+      // filter condition
+      const filter: any = {};
+      if (time_start) {
+        filter.month_start = time_start;
+      }
+      // check total month < total_month
+      if (total_month) {
+        filter.total_month = LessThanOrEqual(total_month);
+      }
       //get all plant season
       const [plant_seasons, total_count] = await Promise.all([
         this.plantSeasonEntity.find({
+          where: filter,
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
           relations: ['plant'],
@@ -301,7 +315,7 @@ export class PlantsService implements IPlantService {
             },
           },
         }),
-        this.plantSeasonEntity.count({}),
+        this.plantSeasonEntity.count({ where: filter }),
       ]);
 
       // get total page
