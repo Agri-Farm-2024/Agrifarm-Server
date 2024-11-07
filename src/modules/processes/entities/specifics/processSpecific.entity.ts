@@ -12,6 +12,7 @@ import {
 } from 'typeorm';
 import { ProcessStandard } from '../standards/processStandard.entity';
 import { ProcessSpecificStage } from './processSpecificStage.entity';
+import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
 
 @Entity('processes_technical_specific')
 export class ProcessSpecific extends AbstractEntity {
@@ -25,6 +26,9 @@ export class ProcessSpecific extends AbstractEntity {
 
   @Column('uuid')
   process_technical_standard_id: string;
+
+  @Column('uuid',)
+  service_specific_id: string;
 
   @Column('uuid', { nullable: true })
   expert_id: string;
@@ -53,4 +57,10 @@ export class ProcessSpecific extends AbstractEntity {
     (processSpecificStage) => processSpecificStage.process_technical_specific,
   )
   process_technical_specific_stage: ProcessSpecificStage[];
+
+  @OneToOne(() => ServiceSpecific)
+  @JoinColumn({ name: 'service_specific_id' })
+  service_specific: ServiceSpecific;
+
+
 }

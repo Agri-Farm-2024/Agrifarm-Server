@@ -26,6 +26,7 @@ import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { ProcessTechnicalStandardStatus } from './types/status-processStandard.enum';
 import { UpdateProcessStandardDto } from './dto/update-processStandardStatus.dto';
 import { ServiceSpecific } from '../servicesPackage/entities/serviceSpecific.entity';
+import { ProcessSpecific } from './entities/specifics/processSpecific.entity';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -279,15 +280,25 @@ export class ProcessesService implements IProcessesService {
       const plant_season_id = serviceSpecfic.plant_season_id;
 
       //take process standard by plant season id
-      const process = await this.processStandardRepo.findOne({
+      const processStandard = await this.processStandardRepo.findOne({
         where: {
           plant_season_id: plant_season_id,
         },
+        relations: {
+          process_standard_stage: {
+            process_standard_stage_content: true,
+            process_standard_stage_material: true,
+          },
+        },
       });
-      if (!process) {
+      if (!processStandard) {
         throw new BadRequestException('process not found');
       }
-      //create process specific
+
+      const processSpecific = new ProcessSpecific({
+        process_technical_specific_id: processStandard.process_technical_standard_id,
+        
+      })
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
