@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GatewayIntentBits } from 'discord.js';
 import { BotGateway } from './bot.gateway';
 import { TransactionsModule } from 'src/modules/transactions/transactions.module';
+import { LoggerModule } from 'src/logger/logger.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { TransactionsModule } from 'src/modules/transactions/transactions.module
       inject: [ConfigService],
     }),
     TransactionsModule,
+    LoggerModule,
   ],
   providers: [BotGateway],
 })
