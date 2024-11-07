@@ -14,14 +14,14 @@ import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
-  // @UseGuards(AuthGuard)
-  // @ApplyPaginationMetadata
-  // @Get('/getListTransactionByUser')
-  // getListTransactionByLandrenter(
-  //   @Request() req: any,
-  //   @Pagination() pagination: PaginationParams,
-  // ) {
-  //   const user: Payload = req['user'];
-  //   return this.transactionsService.getListTransactionByUser(user, pagination);
-  // }
+  @UseGuards(AuthGuard)
+  @ApplyPaginationMetadata
+  @Get('/getListTransactionByUser')
+  getListTransactionByLandrenter(
+    @Request() req: any,
+    @Pagination() pagination: PaginationParams,
+  ) {
+    const user: Payload = req['user'];
+    return this.transactionsService.getListTransactionByUser(user, pagination);
+  }
 }

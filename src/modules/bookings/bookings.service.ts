@@ -5,6 +5,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { IBookingService } from './interfaces/IBookingService.interface';
@@ -23,9 +24,11 @@ import { BookingPaymentFrequency } from './types/booking-payment.enum';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { Transaction } from '../transactions/entities/transaction.entity';
 import { TransactionsService } from '../transactions/transactions.service';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class BookingsService implements IBookingService {
+  private readonly logger = new Logger(BookingsService.name);
   constructor(
     @InjectRepository(BookingLand)
     private readonly bookingEntity: Repository<BookingLand>,
@@ -33,6 +36,8 @@ export class BookingsService implements IBookingService {
     private readonly landService: LandsService,
 
     private readonly mailService: MailService,
+
+    private readonly loggerService: LoggerService,
 
     @Inject(forwardRef(() => TransactionsService))
     private readonly transactionService: TransactionsService,
@@ -631,15 +636,30 @@ export class BookingsService implements IBookingService {
 
   async updateStatusToCompleted(booking_id: string): Promise<any> {
     try {
+      // get detail booking
+      const booking_exist = await this.bookingEntity.findOne({
+        where: {
+          booking_id: booking_id,
+        },
+      });
+      if (!booking_exist) {
+        throw new BadRequestException('Booking not found');
+      }
+      // check status booking is pending payment
+      if (booking_exist.status !== BookingStatus.pending_payment) {
+        throw new BadRequestException('Status booking is not pending payment');
+      }
       // update status booking to completed
       const update_booking = await this.bookingEntity.save({
-        booking_id: booking_id,
+        ...booking_exist,
         status: BookingStatus.completed,
       });
+      this.loggerService.log(`Booking ${booking_id} is completed`);
       // Send mail to land renter
       // Send notification to land renter
       return update_booking;
     } catch (error) {
+      this.logger.error(error.message);
       throw new InternalServerErrorException(error.message);
     }
   }

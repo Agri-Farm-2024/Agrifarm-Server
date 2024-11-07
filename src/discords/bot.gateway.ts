@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectDiscordClient, Once } from '@discord-nestjs/core';
+import { InjectDiscordClient, On, Once } from '@discord-nestjs/core';
 import { Client, Message } from 'discord.js';
 import { ConfigService } from '@nestjs/config';
 import { TransactionsService } from 'src/modules/transactions/transactions.service';
@@ -20,7 +20,7 @@ export class BotGateway {
     private readonly loggerService: LoggerService,
   ) {}
 
-  @Once('ready')
+  @On('ready')
   onReady() {
     this.logger.log(`Bot ${this.client.user.tag} was started!`);
 
@@ -30,7 +30,8 @@ export class BotGateway {
         // Check if the message is sent in the payment channel
         if (
           message.channelId ===
-          this.configService.get('DISCORD_PAYMENT_CHANNEL_ID')
+            this.configService.get('DISCORD_PAYMENT_CHANNEL_ID') &&
+          message.author.id !== '1302050576833450016'
         ) {
           let price = message.content.split('\n')[0].split(' ')[6];
           price = price.replace(/,/g, '');

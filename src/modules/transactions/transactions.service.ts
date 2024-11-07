@@ -17,6 +17,7 @@ import { TransactionStatus } from './types/transaction-status.enum';
 import { TransactionPurpose } from './types/transaction-purpose.enum';
 import { Payload } from '../auths/types/payload.type';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
+import { parsePaymentLink } from 'src/utils/payment-link.util';
 
 @Injectable()
 export class TransactionsService implements ITransactionService {
@@ -35,10 +36,7 @@ export class TransactionsService implements ITransactionService {
   async createTransaction(transactionDTO: CreateTransactionDTO): Promise<any> {
     try {
       // Generate transaction code 6 digits uppercase
-      const transactionCode = Math.random()
-        .toString(36)
-        .substring(2, 8)
-        .toUpperCase();
+      const transactionCode = this.generateTransactionCode();
       // check is duplicate transaction code
       const transaction_exist = await this.transactionRepository.findOne({
         where: { transaction_code: transactionCode },
@@ -149,18 +147,13 @@ export class TransactionsService implements ITransactionService {
       // update transaction status
       transaction.status = TransactionStatus.succeed;
       await this.transactionRepository.save(transaction);
-
-      // create strategy payment
-      const transactionStrategy = {
-        [TransactionPurpose.booking_land]: this.handlePaymentBookingLand,
-      };
-
-      if (!transactionStrategy[transaction.purpose]) {
-        throw new BadRequestException('Transaction purpose is not valid');
+      // handle business logic
+      switch (transaction.purpose) {
+        case TransactionPurpose.booking_land:
+          return this.handlePaymentBookingLand(transaction);
+        default:
+          return;
       }
-
-      // handle payment
-      return transactionStrategy[transaction.purpose](transaction);
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
@@ -179,16 +172,45 @@ export class TransactionsService implements ITransactionService {
     } catch (error) {}
   }
 
-  async getListTransactionByLandrenter(
+  async getListTransactionByUser(
     user: Payload,
     pagination: PaginationParams,
   ): Promise<any> {
-    // try {
-    //   const transactions = await this.transactionRepository.find({
-    //     where: {
-    //     }
-    //   })
-    // } catch (error) {}
+    try {
+      // get list transaction by user
+      const [transactions, total_count] = await Promise.all([
+        this.transactionRepository.find({
+          where: {
+            user_id: user.user_id,
+          },
+          take: pagination.page_size,
+          skip: (pagination.page_index - 1) * pagination.page_size,
+        }),
+        this.transactionRepository.count({
+          where: {
+            user_id: user.user_id,
+          },
+        }),
+      ]);
+      // add payment link to transaction
+      transactions.forEach((transaction: any) => {
+        transaction.payment_link = parsePaymentLink(
+          transaction.total_price,
+          transaction.transaction_code,
+        );
+      });
+      // get total page
+      const total_page = Math.ceil(total_count / pagination.page_size);
+      return {
+        transactions,
+        pagination: {
+          ...pagination,
+          total_page,
+        },
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   async getDetailTransaction(transaction_id: string): Promise<any> {}

@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { LandsModule } from '../lands/lands.module';
 import { TransactionsModule } from '../transactions/transactions.module';
+import { LoggerModule } from 'src/logger/logger.module';
 
 @Module({
   controllers: [BookingsController],
@@ -15,6 +16,7 @@ import { TransactionsModule } from '../transactions/transactions.module';
     JwtModule,
     LandsModule,
     forwardRef(() => TransactionsModule),
+    LoggerModule,
   ],
   exports: [BookingsService],
 })
