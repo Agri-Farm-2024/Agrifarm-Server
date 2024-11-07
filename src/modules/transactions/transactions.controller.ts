@@ -1,4 +1,4 @@
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Request, UseGuards } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
@@ -23,5 +23,10 @@ export class TransactionsController {
   ) {
     const user: Payload = req['user'];
     return this.transactionsService.getListTransactionByUser(user, pagination);
+  }
+
+  @Get('/:transaction_id')
+  getDetailTransaction(@Param('transaction_id') transaction_id: string) {
+    return this.transactionsService.getDetailTransaction(transaction_id);
   }
 }

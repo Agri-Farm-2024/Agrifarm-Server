@@ -226,7 +226,27 @@ export class TransactionsService implements ITransactionService {
     }
   }
 
-  async getDetailTransaction(transaction_id: string): Promise<any> {}
+  async getDetailTransaction(transaction_id: string): Promise<any> {
+    try {
+      // get transaction by id
+      const transaction = await this.transactionRepository.findOne({
+        where: { transaction_id },
+        relations: {
+          booking_land: true,
+          extend: true,
+        },
+      });
+      if (!transaction) {
+        throw new BadRequestException('Transaction not found');
+      }
+      return transaction;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 
   private getTotalPriceBooking(booking: BookingLand): number {
     const total_price_booking: number =

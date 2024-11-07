@@ -1,11 +1,13 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
+import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -39,8 +41,11 @@ export class Extend extends AbstractEntity {
 
   @Column()
   contract_extend_image: string;
-
+  // relation
   @OneToOne(() => BookingLand, (bookingLand) => bookingLand.extend_id)
   @JoinColumn({ name: 'booking_id' })
   booking_land_id: BookingLand;
+
+  @OneToMany(() => Transaction, (transaction) => transaction.extend)
+  transactions: Transaction[];
 }

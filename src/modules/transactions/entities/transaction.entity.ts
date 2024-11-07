@@ -13,6 +13,7 @@ import { TransactionStatus } from '../types/transaction-status.enum';
 import { TransactionPurpose } from '../types/transaction-purpose.enum';
 import { User } from 'src/modules/users/entities/user.entity';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
+import { Extend } from 'src/modules/extends/entities/extend.entity';
 @Entity('transactions')
 export class Transaction extends AbstractEntity {
   constructor(transaction: Partial<Transaction>) {
@@ -85,4 +86,16 @@ export class Transaction extends AbstractEntity {
   @ManyToOne(() => BookingLand, (bookingLand) => bookingLand.transactions)
   @JoinColumn({ name: 'booking_land_id' })
   booking_land: BookingLand;
+
+  // @ManyToOne(() => BookingLand, (bookingLand) => bookingLand.transactions)
+  // @JoinColumn({ name: 'booking_land_id' })
+  // booking_material: BookingLand;
+
+  // @ManyToOne(() => Order, (bookingLand) => bookingLand.transactions)
+  // @JoinColumn({ name: 'booking_land_id' })
+  // order: BookingLand;
+
+  @ManyToOne(() => Extend, (extend) => extend.transactions)
+  @JoinColumn({ name: 'extend_id' })
+  extend: BookingLand;
 }
