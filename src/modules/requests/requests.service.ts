@@ -175,7 +175,7 @@ export class RequestsService implements IRequestService {
       // Create a new request
       const new_request = await this.requestEntity.save({
         ...data,
-        type: RequestType.process_standard,
+        type: RequestType.create_process_standard,
       });
       if (!new_request) {
         throw new BadRequestException('Unable to create request');
@@ -187,8 +187,6 @@ export class RequestsService implements IRequestService {
       if (!new_task) {
         throw new BadRequestException('Unable to create task');
       }
-      //create report for the request
-
       return new_request;
     } catch (error) {
       this.loggerService.error(error.message, error.stack);
