@@ -42,7 +42,7 @@ export class ServiceSpecific extends AbstractEntity {
   price_process: number;
 
   @Column()
-  total_price: number;
+  price_package: number;
 
   @Column()
   time_start: Date;
