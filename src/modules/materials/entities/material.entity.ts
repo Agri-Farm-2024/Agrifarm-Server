@@ -36,6 +36,9 @@ export class Material extends AbstractEntity {
   @Column({ nullable: true })
   price_per_piece: number;
 
+  @Column({default: 0})
+  quantity_of_rented: number;
+
   @Column({ nullable: true })
   deposit_per_piece: number;
 
@@ -58,7 +61,7 @@ export class Material extends AbstractEntity {
   })
   status: Material;
 
-  @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.material_id)
+  @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.material_oder)
   material_order_details_id: OrderDetail[];
 
   @OneToMany(

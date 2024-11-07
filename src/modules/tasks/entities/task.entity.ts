@@ -38,13 +38,6 @@ export class Task extends AbstractEntity {
   })
   assigned_at: Date;
 
-  @Column({
-    type: 'enum',
-    enum: TaskStatus,
-    default: TaskStatus.pending,
-  })
-  status: TaskStatus;
-
   @OneToOne(() => Request, (request) => request.task)
   @JoinColumn({ name: 'request_id' })
   request: Request;

@@ -22,13 +22,15 @@ export class Order extends AbstractEntity {
 
   @PrimaryGeneratedColumn('uuid')
   order_id: string;
+ 
+  @Column('uuid',{name: 'landrenter_id'})
+  landrenter_id: string;
+
 
   @ManyToOne(() => User, (user) => user.orders_landrenter_id)
   @JoinColumn({ name: 'landrenter_id' })
   land_renter: User;
 
-  @Column()
-  tax: number;
 
   @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.order)
   order_details_id: OrderDetail[];

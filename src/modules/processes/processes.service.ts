@@ -285,7 +285,11 @@ export class ProcessesService implements IProcessesService {
       if (!process) {
         throw new BadRequestException('process not found');
       }
-      process.status = ProcessTechnicalStandardStatus.in_active;
+      if (process.status === ProcessTechnicalStandardStatus.in_active) {
+        throw new BadRequestException('process is in active');
+      } else {
+        process.status = ProcessTechnicalStandardStatus.in_active;
+      }
       return await this.processStandardRepo.save(process);
     } catch (error) {
       throw new InternalServerErrorException(error.message);

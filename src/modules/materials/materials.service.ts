@@ -12,12 +12,20 @@ import { Repository } from 'typeorm';
 import { LoggerService } from 'src/logger/logger.service';
 
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
+import { Order } from '../orders/entities/order.entity';
+import { OrderDetail } from '../orders/entities/orderDetail.entity';
+import { Payload } from '../auths/types/payload.type';
+import { OrdersService } from '../orders/orders.service';
 
 @Injectable()
 export class MaterialsService implements IMaterialService {
   constructor(
     @InjectRepository(Material)
     private readonly materialEntity: Repository<Material>,
+
+    //call service order
+    private readonly orderServicce: OrdersService,
+
     private readonly loggerService: LoggerService,
   ) {}
 
@@ -93,6 +101,73 @@ export class MaterialsService implements IMaterialService {
           total_page,
         },
       };
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  // Buy material
+
+  async buyMaterial(
+    materials: { material_id: string; quantity: number }[],
+    user: Payload,
+  ): Promise<any> {
+    try {
+      // Create a new order for the transaction
+      const newOrder = await this.orderServicce.createOrder({
+        landrenter_id: user.user_id,
+      });
+      this.loggerService.log('New order is created');
+
+      // Initialize total order price
+      let totalOrderPrice = 0;
+      const orderDetails = [];
+
+      // Loop through each material in the array
+      for (const item of materials) {
+        const { material_id, quantity } = item;
+
+        // Check if the material exists
+        const material = await this.materialEntity.findOne({
+          where: { material_id },
+        });
+        if (!material) {
+          throw new BadRequestException(
+            `Material with ID ${material_id} not found`,
+          );
+        }
+
+        // Check if there is enough quantity
+        if (material.total_quantity < quantity) {
+          throw new BadRequestException(
+            `Not enough quantity for material ${material_id}`,
+          );
+        }
+
+        // Calculate the total price for the current material
+        const totalPrice = material.price_per_piece * quantity;
+        totalOrderPrice += totalPrice;
+        // Add material data to order details array
+        orderDetails.push({
+          material_id,
+          quantity,
+          price: totalPrice,
+        });
+
+        // Update material quantity
+        material.total_quantity -= quantity;
+        await this.materialEntity.save(material);
+        this.loggerService.log(`Material ${material_id} quantity updated`);
+      }
+      const new_order_detail = await this.orderServicce.createOrderDetail({
+        order_id: newOrder.order_id,
+        materials: orderDetails,
+        total_price: totalOrderPrice,
+      });
+      this.loggerService.log('New order detail is created');
+
+      // Return the complete order with total price and details
+      return  new_order_detail;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

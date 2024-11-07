@@ -61,7 +61,6 @@ export class TasksService implements ITaskService {
         assigned_by_id: assigned_by_user.user_id,
         assigned_to_id: assigned_to_id,
         assigned_at: new Date(),
-        status: TaskStatus.in_process,
       });
       // update request status to assigned
       await this.requestSerivce.updateRequestStatus(
