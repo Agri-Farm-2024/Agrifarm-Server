@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProcessStandardStage } from './processStandardStage.entity';
+import { Material } from 'src/modules/materials/entities/material.entity';
 
 @Entity('processes_technical_standard_stage_material')
 export class ProcessStandardStageMaterial extends AbstractEntity {
@@ -36,4 +37,8 @@ export class ProcessStandardStageMaterial extends AbstractEntity {
   )
   @JoinColumn({ name: 'process_technical_standard_stage_id' })
   process_standard_stage_material: ProcessStandardStage;
+
+  @ManyToOne(() => Material, (material) => material.material_process_standard_stage_material)
+  @JoinColumn({name: 'material_id'})
+  material: Material;
 }
