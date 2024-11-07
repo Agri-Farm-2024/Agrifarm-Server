@@ -17,6 +17,8 @@ import { CreatePlantSeasonDto } from './dto/create-plantSeason.dto';
 import { StatusPlant } from './types/plant-status.enum';
 import { PlantSeasonStatus } from './types/plant-season-status.enum';
 import { UpdatePlantDto } from './dto/update-plant.dto';
+import { Not } from 'typeorm';
+import { UpdatePlantSeasonDto } from './dto/update-plantSeason.dto';
 
 @Injectable()
 export class PlantsService implements IPlantService {
@@ -131,7 +133,10 @@ export class PlantsService implements IPlantService {
     }
   }
 
-  async updatePlantSeason(id: string, data: any): Promise<PlantSeason> {
+  async updatePlantSeason(
+    id: string,
+    data: UpdatePlantSeasonDto,
+  ): Promise<PlantSeason> {
     try {
       // Find the existing plant season by ID
       const plant_season = await this.plantSeasonEntity.findOne({
@@ -163,28 +168,28 @@ export class PlantsService implements IPlantService {
           );
         }
       }
-      // Check for duplicates of plant_id, type, and month_start
+
+      // Kiểm tra trùng lặp của plant_id và month_start, loại trừ plant season hiện tại
       const duplicateSeason = await this.plantSeasonEntity.findOne({
         where: {
           plant_id: plant_season.plant_id,
-
           month_start: data.month_start,
-          // Exclude the current record being updated
+          plant_season_id: Not(id),
         },
       });
 
       if (duplicateSeason) {
         throw new BadRequestException(
-          'A season already exists at month_start.',
+          'A season with a similar month_start already exists for this cultivar.',
         );
       }
 
-      // Update plant season properties
+      // Cập nhật các thuộc tính của plant season
       plant_season.month_start = data.month_start;
+      plant_season.total_month = data.total_month;
       plant_season.type = data.type;
       plant_season.price_purchase_per_kg = data.price_purchase_per_kg;
       plant_season.price_process = data.price_process;
-
       // Save the updated plant season
       return await this.plantSeasonEntity.save(plant_season);
     } catch (error) {
@@ -205,7 +210,11 @@ export class PlantsService implements IPlantService {
       }
 
       // Delete the plant
-      plant.status = StatusPlant.inactive;
+      if (plant.status == 'active') {
+        plant.status = StatusPlant.inactive;
+      } else {
+        throw new BadRequestException('plant was inactive');
+      }
       const update_plant = await this.plantEntity.save(plant);
       return update_plant;
     } catch (error) {
@@ -225,7 +234,11 @@ export class PlantsService implements IPlantService {
         throw new NotFoundException(`Plant season with ID ${id} not found`);
       }
       //delete plant season
-      plant_season.status = PlantSeasonStatus.deleted;
+      if (plant_season.status == 'active') {
+        plant_season.status = PlantSeasonStatus.deleted;
+      } else {
+        throw new BadRequestException('plant_seaon was deleted');
+      }
       this.plantSeasonEntity.save(plant_season);
     } catch (error) {
       throw new InternalServerErrorException(error.message);

@@ -5,6 +5,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  Param,
 } from '@nestjs/common';
 import { CreateProcessDto } from './dto/create-process.dto';
 import { IProcessesService } from './interfaces/IProcessesService.interface';
@@ -24,6 +25,7 @@ import { Payload } from '../auths/types/payload.type';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { ProcessTechnicalStandardStatus } from './types/status-processStandard.enum';
 import { UpdateProcessStandardDto } from './dto/update-processStandardStatus.dto';
+import { ServiceSpecific } from '../servicesPackage/entities/serviceSpecific.entity';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -224,8 +226,11 @@ export class ProcessesService implements IProcessesService {
 
   //update status of process
 
-  async updateProcessStandardStatus( id: string, updateDto: UpdateProcessStandardDto): Promise<any> {
-    try{
+  async updateProcessStandardStatus(
+    id: string,
+    updateDto: UpdateProcessStandardDto,
+  ): Promise<any> {
+    try {
       const process = await this.processStandardRepo.findOne({
         where: {
           process_technical_standard_id: id,
@@ -234,19 +239,17 @@ export class ProcessesService implements IProcessesService {
       if (!process) {
         throw new BadRequestException('process not found');
       }
-      const reason = process.reason_of_reject = updateDto.reason_of_reject;
-      if(!reason){
+      const reason = (process.reason_of_reject = updateDto.reason_of_reject);
+      if (!reason) {
         process.status = ProcessTechnicalStandardStatus.accepted;
-
-      }else{
-        process.status = ProcessTechnicalStandardStatus.rejected,
-        process.reason_of_reject = updateDto.reason_of_reject;
+      } else {
+        (process.status = ProcessTechnicalStandardStatus.rejected),
+          (process.reason_of_reject = updateDto.reason_of_reject);
       }
 
       return await this.processStandardRepo.save(process);
-    }catch(error){
+    } catch (error) {
       throw new InternalServerErrorException(error.message);
-
     }
   }
 
@@ -261,10 +264,32 @@ export class ProcessesService implements IProcessesService {
       if (!process) {
         throw new BadRequestException('process not found');
       }
-     process.status = ProcessTechnicalStandardStatus.in_active;
-     return await this.processStandardRepo.save(process);
+      process.status = ProcessTechnicalStandardStatus.in_active;
+      return await this.processStandardRepo.save(process);
     } catch (error) {
       throw new InternalServerErrorException(error.message);
+    }
   }
-}
+
+  // create process sepecific
+  async createProcessSpecific(serviceSpecfic: ServiceSpecific): Promise<any> {
+    try {
+      const time_start = serviceSpecfic.time_start;
+
+      const plant_season_id = serviceSpecfic.plant_season_id;
+
+      //take process standard by plant season id
+      const process = await this.processStandardRepo.findOne({
+        where: {
+          plant_season_id: plant_season_id,
+        },
+      });
+      if (!process) {
+        throw new BadRequestException('process not found');
+      }
+      //create process specific
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }
