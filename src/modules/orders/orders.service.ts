@@ -20,7 +20,6 @@ export class OrdersService implements IOrdersService {
     private readonly orderDetailRepo: Repository<OrderDetail>,
 
     private readonly loggerService: LoggerService,
-
   ) {}
   async createOrder(createOrderDto: CreateOrderDto): Promise<Order> {
     const newOrder = this.orderRepo.create(createOrderDto);
@@ -32,7 +31,7 @@ export class OrdersService implements IOrdersService {
     const newOrderDetail = this.orderDetailRepo.create(data);
     return await this.orderDetailRepo.save(newOrderDetail);
   }
-  
+
   findAll() {
     return `This action returns all orders`;
   }

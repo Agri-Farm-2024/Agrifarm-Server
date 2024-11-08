@@ -167,7 +167,7 @@ export class MaterialsService implements IMaterialService {
       this.loggerService.log('New order detail is created');
 
       // Return the complete order with total price and details
-      return  new_order_detail;
+      return new_order_detail;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

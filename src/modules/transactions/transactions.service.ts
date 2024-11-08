@@ -234,7 +234,7 @@ export class TransactionsService implements ITransactionService {
   async getDetailTransaction(transaction_id: string): Promise<any> {
     try {
       // get transaction by id
-      const transaction = await this.transactionRepository.findOne({
+      const transaction: any = await this.transactionRepository.findOne({
         where: { transaction_id },
         relations: {
           booking_land: {
@@ -254,6 +254,13 @@ export class TransactionsService implements ITransactionService {
       if (!transaction) {
         throw new BadRequestException('Transaction not found');
       }
+      // add payment link to transaction
+
+      transaction.payment_link = parsePaymentLink(
+        transaction.total_price,
+        transaction.transaction_code,
+      );
+
       return transaction;
     } catch (error) {
       if (error instanceof BadRequestException) {
