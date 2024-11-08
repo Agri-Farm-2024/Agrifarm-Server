@@ -155,13 +155,12 @@ export class RequestsService implements IRequestService {
       if (!requestProcess) {
         throw new BadRequestException('Request not found');
       }
-      
+
       return requestProcess;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
   }
-  
 
   async updateRequestStatus(
     request_id: string,

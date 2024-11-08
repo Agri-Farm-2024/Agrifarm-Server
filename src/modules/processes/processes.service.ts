@@ -33,6 +33,8 @@ import { ServicesService } from '../servicesPackage/servicesPackage.service';
 import { getTimeByPlusDays } from 'src/utils/time.utl';
 import { RequestsService } from '../requests/requests.service';
 import { request } from 'http';
+import { Request } from '../requests/entities/request.entity';
+import { RequestStatus } from '../requests/types/request-status.enum';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -251,42 +253,63 @@ export class ProcessesService implements IProcessesService {
 
   //update status of process
 
-  // async updateProcessStandardStatus(
-  //   id: string,
-  //   updateDto: UpdateProcessStandardDto,
-  // ): Promise<any> {
-  //   try {
-  //     const process = await this.processStandardRepo.findOne({
-  //       where: {
-  //         process_technical_standard_id: id,
-  //       },
-  //     });
-  //     if (!process) {
-  //       throw new BadRequestException('process not found');
-  //     }
-  //     const reason = (process.reason_of_reject = updateDto.reason_of_reject);
-  //     if (!reason) {
-  //       process.status = ProcessTechnicalStandardStatus.accepted;
-  //       const requestProces =
-  //         await this.requestService.getDetailRequestPrcocessStandard(
-  //           process.plant_season_id,
-  //         );
-  //       if (requestProces) {
-          
-          
-            
-  //         }
-  //       }
-  //     } else {
-  //       (process.status = ProcessTechnicalStandardStatus.rejected),
-  //         (process.reason_of_reject = updateDto.reason_of_reject);
-  //     }
-
-  //     return await this.processStandardRepo.save(process);
-  //   } catch (error) {
-  //     throw new InternalServerErrorException(error.message);
-  //   }
-  // }
+  async updateProcessStandardStatus(
+    id: string,
+    updateDto: UpdateProcessStandardDto,
+  ): Promise<any> {
+    try {
+      // get process standard by id
+      const process_standard = await this.processStandardRepo.findOne({
+        where: {
+          process_technical_standard_id: id,
+        },
+      });
+      if (!process_standard) {
+        throw new BadRequestException('Process standard not found!');
+      }
+      // get request by plant season id
+      const request_create_process_standard: Request =
+        await this.requestService.getDetailRequestPrcocessStandard(
+          process_standard.plant_season_id,
+        );
+      // check reason of reject to update status
+      if (!updateDto.reason_of_reject) {
+        // update status to accepted
+        await this.processStandardRepo.update(
+          { process_technical_standard_id: id },
+          {
+            status: ProcessTechnicalStandardStatus.accepted,
+          },
+        );
+        // update request to completed
+        await this.requestService.updateRequestStatus(
+          request_create_process_standard.request_id,
+          RequestStatus.completed,
+        );
+        return `Process standard ${id} is accepted`;
+      } else {
+        // update status to rejected
+        await this.processStandardRepo.update(
+          { process_technical_standard_id: id },
+          {
+            status: ProcessTechnicalStandardStatus.rejected,
+            reason_of_reject: updateDto.reason_of_reject,
+          },
+        );
+        // update request to rejected
+        await this.requestService.updateRequestStatus(
+          request_create_process_standard.request_id,
+          RequestStatus.rejected,
+        );
+        return `Process standard ${id} is rejected`;
+      }
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 
   //delete process
   async removeProcessStandard(id: string): Promise<any> {

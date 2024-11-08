@@ -104,7 +104,7 @@ export class ServicesService implements IService {
           plant_season.total_month,
         ),
       });
-      // create transaction
+      // create transaction DTO and create transaction
       const transactionData: Partial<CreateTransactionDTO> = {
         service_specific_id: new_service_specific.service_specific_id,
         total_price:
