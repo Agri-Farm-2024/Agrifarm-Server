@@ -114,7 +114,7 @@ export class MaterialsService implements IMaterialService {
   ): Promise<any> {
     try {
       // Create a new order for the transaction
-      const newOrder = await this.orderServicce.createOrder({
+      const newOrder: Order = await this.orderServicce.createOrder({
         landrenter_id: user.user_id,
       });
       this.loggerService.log('New order is created');
