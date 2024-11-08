@@ -22,7 +22,7 @@ import { MailService } from './mail.service';
           },
         },
         defaults: {
-          from: '"No Reply" <noreply@example.com>',
+          from: '"Agri-Farm<baohc110902@gmail.com>',
         },
         template: {
           dir: join(__dirname, 'templates'),

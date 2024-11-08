@@ -77,7 +77,7 @@ export class UsersService implements IUserService {
     // Send a welcome email
     this.mailService.sendMail(
       new_user.email,
-      SubjectMailEnum.welcome,
+      SubjectMailEnum.registerWelcome,
       TemplateMailEnum.registerWelcome,
       {
         full_name: new_user.full_name,

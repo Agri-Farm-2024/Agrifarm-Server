@@ -193,6 +193,11 @@ export class TransactionsService implements ITransactionService {
       // get list transaction by user
       const [transactions, total_count] = await Promise.all([
         this.transactionRepository.find({
+          relations: {
+            booking_land: {
+              land: true,
+            },
+          },
           where: {
             user_id: user.user_id,
           },
@@ -232,8 +237,18 @@ export class TransactionsService implements ITransactionService {
       const transaction = await this.transactionRepository.findOne({
         where: { transaction_id },
         relations: {
-          booking_land: true,
+          booking_land: {
+            land: true,
+          },
+          user: true,
           extend: true,
+        },
+        select: {
+          user: {
+            full_name: true,
+            email: true,
+            user_id: true,
+          },
         },
       });
       if (!transaction) {

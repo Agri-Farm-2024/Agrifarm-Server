@@ -173,7 +173,7 @@ export class AuthsService implements IAuthService {
     // send otp
     await this.mailService.sendMail(
       email,
-      SubjectMailEnum.otpRegister,
+      SubjectMailEnum.otpVerifyMail,
       TemplateMailEnum.otpVerifyMail,
       { otp: otp },
     );
