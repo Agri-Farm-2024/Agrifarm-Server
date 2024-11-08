@@ -7,12 +7,17 @@ import { LoggerService } from 'src/logger/logger.service';
 import { OrdersService } from '../orders/orders.service';
 import { OrdersModule } from '../orders/orders.module';
 import { LoggerModule } from 'src/logger/logger.module';
+import { TransactionsModule } from '../transactions/transactions.module';
 
 @Module({
   controllers: [MaterialsController],
   providers: [MaterialsService],
-  imports: [TypeOrmModule.forFeature([Material]),LoggerModule,OrdersModule],
-
+  imports: [
+    TypeOrmModule.forFeature([Material]),
+    LoggerModule,
+    OrdersModule,
+    TransactionsModule,
+  ],
   exports: [MaterialsService],
 })
 export class MaterialsModule {}

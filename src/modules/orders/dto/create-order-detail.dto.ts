@@ -1,16 +1,15 @@
-import { IsArray, IsNumber, IsUUID } from 'class-validator';
+import { IsArray, IsNumber, IsString, IsUUID } from 'class-validator';
 
 export class CreateOrderDetailDto {
   @IsUUID()
   order_id: string;
 
-  @IsArray()
-  materials: {
-    material_id: string;
-    quantity: number;
-    price: number;
-  }[];
+  @IsString()
+  material_id: string;
 
   @IsNumber()
-  total_price: number;
+  price_per_iteam: number;
+
+  @IsNumber()
+  quantity: number;
 }

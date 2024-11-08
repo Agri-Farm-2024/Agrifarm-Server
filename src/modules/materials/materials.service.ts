@@ -16,6 +16,10 @@ import { Order } from '../orders/entities/order.entity';
 import { OrderDetail } from '../orders/entities/orderDetail.entity';
 import { Payload } from '../auths/types/payload.type';
 import { OrdersService } from '../orders/orders.service';
+import { MaterialType } from './types/material-type.enum';
+import { TransactionsService } from '../transactions/transactions.service';
+import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
+import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
 
 @Injectable()
 export class MaterialsService implements IMaterialService {
@@ -27,6 +31,8 @@ export class MaterialsService implements IMaterialService {
     private readonly orderServicce: OrdersService,
 
     private readonly loggerService: LoggerService,
+
+    private readonly transactionService: TransactionsService,
   ) {}
 
   async createMaterial(createMaterialDto: CreateMaterialDto) {
@@ -117,12 +123,8 @@ export class MaterialsService implements IMaterialService {
       const newOrder: Order = await this.orderServicce.createOrder({
         landrenter_id: user.user_id,
       });
-      this.loggerService.log('New order is created');
-
-      // Initialize total order price
-      let totalOrderPrice = 0;
-      const orderDetails = [];
-
+      // Caculate total_price for transaction
+      let total_price = 0;
       // Loop through each material in the array
       for (const item of materials) {
         const { material_id, quantity } = item;
@@ -136,39 +138,54 @@ export class MaterialsService implements IMaterialService {
             `Material with ID ${material_id} not found`,
           );
         }
+        // check material is for buy
+        if (material.type !== MaterialType.buy) {
+          throw new BadRequestException(
+            `Material with ID ${material_id} is not for buy`,
+          );
+        }
 
         // Check if there is enough quantity
         if (material.total_quantity < quantity) {
           throw new BadRequestException(
-            `Not enough quantity for material ${material_id}`,
+            `Not enough quantity for material ${material.name}`,
           );
         }
-
-        // Calculate the total price for the current material
-        const totalPrice = material.price_per_piece * quantity;
-        totalOrderPrice += totalPrice;
-        // Add material data to order details array
-        orderDetails.push({
-          material_id,
-          quantity,
-          price: totalPrice,
+        // Create order detail
+        await this.orderServicce.createOrderDetail({
+          material_id: material_id,
+          order_id: newOrder.order_id,
+          quantity: quantity,
+          price_per_iteam: material.price_per_piece,
         });
-
-        // Update material quantity
-        material.total_quantity -= quantity;
-        await this.materialEntity.save(material);
-        this.loggerService.log(`Material ${material_id} quantity updated`);
+        // Update the quantity of the material
+        await this.materialEntity.update(
+          {
+            material_id,
+          },
+          {
+            total_quantity: material.total_quantity - quantity,
+          },
+        );
+        // Calculate the total price
+        total_price += material.price_per_piece * quantity;
       }
-      const new_order_detail = await this.orderServicce.createOrderDetail({
+      // create transaction
+      // create transaction DTO and create transaction
+      const transactionData: Partial<CreateTransactionDTO> = {
         order_id: newOrder.order_id,
-        materials: orderDetails,
-        total_price: totalOrderPrice,
-      });
-      this.loggerService.log('New order detail is created');
+        total_price: total_price,
+        purpose: TransactionPurpose.order,
+      };
 
-      // Return the complete order with total price and details
-      return new_order_detail;
+      const transaction = await this.transactionService.createTransaction(
+        transactionData as CreateTransactionDTO,
+      );
+      return transaction;
     } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
       throw new InternalServerErrorException(error.message);
     }
   }
