@@ -77,13 +77,13 @@ export class ProcessesController {
     );
   }
 
-  @Put('/updateProcessStandardStatus/:id')
-  updateProcessStandardStatus(
-    @Body() data: UpdateProcessStandardDto,
-    @Param('id') id: string,
-  ): Promise<any> {
-    return this.processesService.updateProcessStandardStatus(id, data);
-  }
+  // @Put('/updateProcessStandardStatus/:id')
+  // updateProcessStandardStatus(
+  //   @Body() data: UpdateProcessStandardDto,
+  //   @Param('id') id: string,
+  // ): Promise<any> {
+  //   return this.processesService.updateProcessStandardStatus(id, data);
+  // }
 
   @Delete('/deleteProcessStandard/:id')
   async removeProcessStandard(@Param('id') id: string): Promise<any> {

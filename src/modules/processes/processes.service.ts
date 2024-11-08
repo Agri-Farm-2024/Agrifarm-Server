@@ -31,6 +31,8 @@ import { ProcessSpecificStageContent } from './entities/specifics/processSpecifi
 import { ProcessSpecificStageMaterial } from './entities/specifics/processSpecificStageMaterial.entity';
 import { ServicesService } from '../servicesPackage/servicesPackage.service';
 import { getTimeByPlusDays } from 'src/utils/time.utl';
+import { RequestsService } from '../requests/requests.service';
+import { request } from 'http';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -65,6 +67,8 @@ export class ProcessesService implements IProcessesService {
     private readonly reportService: ReportsService,
 
     private readonly servicePackageService: ServicesService,
+
+    private readonly requestService: RequestsService,
   ) {}
 
   async createProcessStandard(
@@ -247,32 +251,42 @@ export class ProcessesService implements IProcessesService {
 
   //update status of process
 
-  async updateProcessStandardStatus(
-    id: string,
-    updateDto: UpdateProcessStandardDto,
-  ): Promise<any> {
-    try {
-      const process = await this.processStandardRepo.findOne({
-        where: {
-          process_technical_standard_id: id,
-        },
-      });
-      if (!process) {
-        throw new BadRequestException('process not found');
-      }
-      const reason = (process.reason_of_reject = updateDto.reason_of_reject);
-      if (!reason) {
-        process.status = ProcessTechnicalStandardStatus.accepted;
-      } else {
-        (process.status = ProcessTechnicalStandardStatus.rejected),
-          (process.reason_of_reject = updateDto.reason_of_reject);
-      }
+  // async updateProcessStandardStatus(
+  //   id: string,
+  //   updateDto: UpdateProcessStandardDto,
+  // ): Promise<any> {
+  //   try {
+  //     const process = await this.processStandardRepo.findOne({
+  //       where: {
+  //         process_technical_standard_id: id,
+  //       },
+  //     });
+  //     if (!process) {
+  //       throw new BadRequestException('process not found');
+  //     }
+  //     const reason = (process.reason_of_reject = updateDto.reason_of_reject);
+  //     if (!reason) {
+  //       process.status = ProcessTechnicalStandardStatus.accepted;
+  //       const requestProces =
+  //         await this.requestService.getDetailRequestPrcocessStandard(
+  //           process.plant_season_id,
+  //         );
+  //       if (requestProces) {
+          
+          
+            
+  //         }
+  //       }
+  //     } else {
+  //       (process.status = ProcessTechnicalStandardStatus.rejected),
+  //         (process.reason_of_reject = updateDto.reason_of_reject);
+  //     }
 
-      return await this.processStandardRepo.save(process);
-    } catch (error) {
-      throw new InternalServerErrorException(error.message);
-    }
-  }
+  //     return await this.processStandardRepo.save(process);
+  //   } catch (error) {
+  //     throw new InternalServerErrorException(error.message);
+  //   }
+  // }
 
   //delete process
   async removeProcessStandard(id: string): Promise<any> {

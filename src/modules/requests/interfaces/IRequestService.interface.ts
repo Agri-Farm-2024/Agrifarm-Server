@@ -17,4 +17,5 @@ export interface IRequestService {
   createRequestProcessStandard(
     data: CreateRequestProcessStandardDTO,
   ): Promise<any>;
+  getDetailRequestPrcocessStandard(plant_season_id: string): Promise<any>;
 }

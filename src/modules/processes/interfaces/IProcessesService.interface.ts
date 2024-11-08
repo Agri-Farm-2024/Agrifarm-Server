@@ -12,10 +12,10 @@ export interface IProcessesService {
     plant_id: string,
   ): Promise<any>;
 
-  updateProcessStandardStatus(
-    id: string,
-    updateDto: UpdateProcessStandardDto,
-  ): Promise<any>;
+  // updateProcessStandardStatus(
+  //   id: string,
+  //   updateDto: UpdateProcessStandardDto,
+  // ): Promise<any>;
 
   removeProcessStandard(id: string): Promise<any>;
 }

@@ -142,6 +142,27 @@ export class RequestsService implements IRequestService {
     }
   }
 
+  async getDetailRequestPrcocessStandard(
+    plant_season_id: string,
+  ): Promise<any> {
+    try {
+      const requestProcess = await this.requestEntity.findOne({
+        where: {
+          plant_season_id: plant_season_id,
+          type: RequestType.create_process_standard,
+        },
+      });
+      if (!requestProcess) {
+        throw new BadRequestException('Request not found');
+      }
+      
+      return requestProcess;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+  
+
   async updateRequestStatus(
     request_id: string,
     status: RequestStatus,

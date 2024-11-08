@@ -14,6 +14,7 @@ import { ProcessSpecificStage } from './entities/specifics/processSpecificStage.
 import { ProcessSpecificStageContent } from './entities/specifics/processSpecificStageContent.entity';
 import { ProcessSpecificStageMaterial } from './entities/specifics/processSpecificStageMaterial.entity';
 import { ServicesModule } from '../servicesPackage/servicesPackage.module';
+import { RequestsModule } from '../requests/requests.module';
 
 @Module({
   controllers: [ProcessesController],
@@ -32,6 +33,7 @@ import { ServicesModule } from '../servicesPackage/servicesPackage.module';
     forwardRef(() => ReportsModule),
     JwtModule,
     ServicesModule,
+    RequestsModule,
   ],
   exports: [ProcessesService],
 })

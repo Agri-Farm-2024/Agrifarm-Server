@@ -57,4 +57,13 @@ export class RequestsController {
   ): Promise<any> {
     return await this.requestsService.getDetailRequest(request_id);
   }
+
+  @Get('/getDetailRequestPrcocessStandard/:plant_season_id')
+  async getDetailRequestPrcocessStandard(
+    @Param('plant_season_id') plant_season_id: string,
+  ): Promise<any> {
+    return await this.requestsService.getDetailRequestPrcocessStandard(
+      plant_season_id,
+    );
+  }
 }
