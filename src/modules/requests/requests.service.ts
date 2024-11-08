@@ -192,6 +192,19 @@ export class RequestsService implements IRequestService {
     data: CreateRequestProcessStandardDTO,
   ): Promise<any> {
     try {
+      //check if request have plant_season_id
+      const request_exist_plantseaosn = await this.requestEntity.findOne({
+        where: {
+          plant_season_id: data.plant_season_id,
+          type: RequestType.create_process_standard,
+        },
+      });
+      if (request_exist_plantseaosn) {
+        throw new BadRequestException(
+          'Request create this plant season already exist',
+        );
+      }
+
       // Create a new request
       const new_request = await this.requestEntity.save({
         ...data,

@@ -334,6 +334,36 @@ export class ProcessesService implements IProcessesService {
   }
 
   /**
+   * @function updateProcessStandard
+   */
+  async updateProcessStandard(
+    process_technical_standard_id: string,
+    data: CreateProcessDto,
+  ): Promise<any> {
+    try {
+      // get process standard by id
+      const process_standard = await this.processStandardRepo.findOne({
+        where: {
+          process_technical_standard_id,
+        },
+      });
+      if (!process_standard) {
+        throw new BadRequestException('Process standard not found!');
+      }
+      // Update only the fields that exist in CreateProcessDto
+      const updatedProcessStandard = this.processStandardRepo.save({
+        ...process_standard,
+        plant_season_id: data.plant_season_id,
+        name: data.name,
+        stage: data.stage,
+      });
+      return updatedProcessStandard;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  /**
    * @function createProcessSpecific
    */
 

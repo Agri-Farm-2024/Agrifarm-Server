@@ -85,6 +85,14 @@ export class ProcessesController {
     return this.processesService.updateProcessStandardStatus(id, data);
   }
 
+  @Put('/updateProcessStanrd/:id')
+  updateProcessStandard(
+    @Body() data: CreateProcessDto,
+    @Param('id') id: string,
+  ): Promise<any> {
+    return this.processesService.updateProcessStandard(id, data);
+  }
+
   @Delete('/deleteProcessStandard/:id')
   async removeProcessStandard(@Param('id') id: string): Promise<any> {
     return this.processesService.removeProcessStandard(id);
