@@ -23,7 +23,7 @@ import { ReportsService } from '../reports/reports.service';
 import { Payload } from '../auths/types/payload.type';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { ProcessTechnicalStandardStatus } from './types/status-processStandard.enum';
-import { UpdateProcessStandardDto } from './dto/update-processStandardStatus.dto';
+
 import { ServiceSpecific } from '../servicesPackage/entities/serviceSpecific.entity';
 import { ProcessSpecific } from './entities/specifics/processSpecific.entity';
 import { ProcessSpecificStage } from './entities/specifics/processSpecificStage.entity';
@@ -35,6 +35,8 @@ import { RequestsService } from '../requests/requests.service';
 import { request } from 'http';
 import { Request } from '../requests/entities/request.entity';
 import { RequestStatus } from '../requests/types/request-status.enum';
+import { UpdateProcessStandardDto } from './dto/update-processStandardStatus.dto';
+import { UpdateProcessStandardsDto } from './dto/update-process-standard.dto';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -338,7 +340,7 @@ export class ProcessesService implements IProcessesService {
    */
   async updateProcessStandard(
     process_technical_standard_id: string,
-    data: CreateProcessDto,
+    data: UpdateProcessStandardsDto,
   ): Promise<any> {
     try {
       // get process standard by id
@@ -350,15 +352,121 @@ export class ProcessesService implements IProcessesService {
       if (!process_standard) {
         throw new BadRequestException('Process standard not found!');
       }
-      // Update only the fields that exist in CreateProcessDto
-      const updatedProcessStandard = this.processStandardRepo.save({
-        ...process_standard,
-        plant_season_id: data.plant_season_id,
+      //check if process standard is in active
+      if (
+        process_standard.status === ProcessTechnicalStandardStatus.in_active
+      ) {
+        throw new BadRequestException('Process standard is in active');
+      }
+
+      const data_process_standard = {
         name: data.name,
-        stage: data.stage,
+      };
+      const update_process_standard = await this.processStandardRepo.save({
+        ...process_standard,
+        ...data_process_standard,
       });
-      return updatedProcessStandard;
+
+      //update process stage
+      if (data.stage) {
+        for (const stage of data.stage) {
+          //delete stage
+          if (stage.is_deleted) {
+            await this.processStandardStageRepo.delete(
+              stage.process_technical_standard_stage_id,
+            );
+          }
+          if (!stage.process_technical_standard_stage_id) {
+            //create new stage
+            await this.processStandardStageRepo.save({
+              process_technical_standard_id: process_technical_standard_id,
+              stage_title: stage.stage_title,
+              stage_numberic_order: stage.stage_numberic_order,
+              time_start: stage.time_start,
+              time_end: stage.time_end,
+            });
+          } else {
+            //update stage
+            await this.processStandardStageRepo.update(
+              stage.process_technical_standard_stage_id,
+              {
+                stage_title: stage.stage_title,
+                stage_numberic_order: stage.stage_numberic_order,
+                time_start: stage.time_start,
+                time_end: stage.time_end,
+              },
+            );
+          }
+          if (stage.content) {
+            for (const content of stage.content) {
+              //delete content
+              if (content.is_deleted) {
+                await this.processStandardStageContentRepo.delete(
+                  content.process_technical_standard_stage_content_id,
+                );
+              }
+              if (!content.process_technical_standard_stage_content_id) {
+                //create new content
+                await this.processStandardStageContentRepo.save({
+                  process_technical_standard_stage_id: stage.process_technical_standard_stage_id,
+                  title: content.title,
+                  content: content.content,
+                  content_numberic_order: content.content_numberic_order,
+                  time_start: content.time_start,
+                  time_end: content.time_end,
+                });
+              } else {
+                //update content
+                await this.processStandardStageContentRepo.update(
+                  content.process_technical_standard_stage_content_id,
+                  {
+                    title: content.title,
+                    content: content.content,
+                    content_numberic_order: content.content_numberic_order,
+                    time_start: content.time_start,
+                    time_end: content.time_end,
+                  },
+                );
+              }
+            }
+          }
+
+          // Loop for material
+          if (stage.material) {
+            for (const material of stage.material) {
+              //delete material
+              if (material.is_deleted) {
+                await this.processStandardStageMaterialRepo.delete(
+                  material.process_technical_standard_stage_material_id,
+                );
+              }
+
+              if (!material.process_technical_standard_stage_material_id) {
+                //create new material
+                await this.processStandardStageMaterialRepo.save({
+                  process_technical_standard_stage_id: stage.process_technical_standard_stage_id,
+                  material_id: material.material_id,
+                  quantity: material.quantity,
+                });
+              } else {
+                //update material
+                await this.processStandardStageMaterialRepo.update(
+                  material.process_technical_standard_stage_material_id,
+                  {
+                    material_id: material.material_id,
+                    quantity: material.quantity,
+                  },
+                );
+              }
+            }
+          }
+        }
+      }
+      return update_process_standard;
     } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
       throw new InternalServerErrorException(error.message);
     }
   }

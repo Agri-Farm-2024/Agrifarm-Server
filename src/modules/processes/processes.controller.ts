@@ -24,6 +24,7 @@ import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { ProcessTechnicalStandardStatus } from './types/status-processStandard.enum';
 import { UpdateProcessStandardDto } from './dto/update-processStandardStatus.dto';
 import { createProcessSpecificDTO } from './dto/create-process-specific.dto';
+import { UpdateProcessStandardsDto } from './dto/update-process-standard.dto';
 
 @ApiTags('Process')
 @Controller('processes')
@@ -87,7 +88,7 @@ export class ProcessesController {
 
   @Put('/updateProcessStanrd/:id')
   updateProcessStandard(
-    @Body() data: CreateProcessDto,
+    @Body() data: UpdateProcessStandardsDto,
     @Param('id') id: string,
   ): Promise<any> {
     return this.processesService.updateProcessStandard(id, data);
