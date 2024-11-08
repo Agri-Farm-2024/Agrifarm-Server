@@ -39,6 +39,13 @@ export class TasksController {
   }
 
   @UseGuards(AuthGuard)
+  @Roles(UserRole.admin, UserRole.manager, UserRole.staff)
+  @Put('/start/:task_id')
+  startTask(@Param('task_id') task_id: string, @Request() request: any) {
+    return this.tasksService.startTask(task_id, request.user);
+  }
+
+  @UseGuards(AuthGuard)
   @Get('/getByUser')
   getTasksByUserId(@Request() request: any) {
     return this.tasksService.getTasksByUserId(request.user.id);

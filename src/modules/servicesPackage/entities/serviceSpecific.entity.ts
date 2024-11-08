@@ -5,13 +5,14 @@ import {
   ManyToOne,
   JoinColumn,
   PrimaryGeneratedColumn,
+  OneToMany,
 } from 'typeorm';
-import { Plant } from 'src/modules/plants/entities/plant.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import { ServicePackage } from './servicePackage.entity';
 import { ServiceSpecificStatus } from '../types/service-specific-status.enum';
 import { PlantSeason } from 'src/modules/plants/entities/plantSeason.entity';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
+import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
 
 @Entity('services_specific')
 export class ServiceSpecific extends AbstractEntity {
@@ -56,7 +57,7 @@ export class ServiceSpecific extends AbstractEntity {
     default: ServiceSpecificStatus.pending_payment,
   })
   status: ServiceSpecificStatus;
-
+  // Relation
   @ManyToOne(() => ServicePackage, (service) => service.service_specific)
   @JoinColumn({ name: 'service_id' })
   service_package: ServicePackage;
@@ -72,4 +73,7 @@ export class ServiceSpecific extends AbstractEntity {
   @ManyToOne(() => BookingLand, (booking) => booking.service_specific)
   @JoinColumn({ name: 'booking_id' })
   booking_land: BookingLand;
+
+  @OneToMany(() => Transaction, (transaction) => transaction.service_specific)
+  transactions: Transaction[];
 }

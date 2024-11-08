@@ -16,6 +16,7 @@ import { getTimeByPlusDays } from 'src/utils/time.utl';
 import { TransactionsService } from '../transactions/transactions.service';
 import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
 import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
+import { ServiceSpecificStatus } from './types/service-specific-status.enum';
 
 @Injectable()
 export class ServicesService implements IService {
@@ -113,10 +114,10 @@ export class ServicesService implements IService {
         purpose: TransactionPurpose.service,
       };
 
-      await this.transactionService.createTransaction(
+      const transaction = await this.transactionService.createTransaction(
         transactionData as CreateTransactionDTO,
       );
-      return new_service_specific;
+      return transaction;
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;

@@ -19,6 +19,7 @@ export class ReportsService implements IReportService {
   constructor(
     @InjectRepository(Report)
     private readonly reportEntity: Repository<Report>,
+
     @Inject(forwardRef(() => TasksService))
     private readonly taskService: TasksService,
   ) {}
@@ -33,8 +34,8 @@ export class ReportsService implements IReportService {
       throw new BadRequestException('Unable to create report');
     }
 
-    // Update Task status to completed
-    await this.taskService.updateTaskStatus(data.task_id, TaskStatus.completed);
+    // // Update Task status to completed
+    // await this.taskService.updateTaskStatus(data.task_id, TaskStatus.completed);
 
     // Return the newly created report
     return saved_report;

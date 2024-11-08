@@ -185,6 +185,11 @@ export class TransactionsService implements ITransactionService {
     } catch (error) {}
   }
 
+  async handlePaymentService(transaction: Transaction): Promise<any> {
+    try {
+    } catch (error) {}
+  }
+
   async getListTransactionByUser(
     user: Payload,
     pagination: PaginationParams,

@@ -19,11 +19,8 @@ export class Notification extends AbstractEntity {
   @PrimaryGeneratedColumn('uuid')
   notification_id: string;
 
-  @ManyToOne(() => User, (user) => user.notifications, {
-    nullable: true,
-  })
-  @JoinColumn({ name: 'user_id' })
-  user: User;
+  @Column('uuid')
+  user_id: string;
 
   @Column()
   title: string;
@@ -31,8 +28,8 @@ export class Notification extends AbstractEntity {
   @Column()
   content: string;
 
-  @Column()
-  component_id: number;
+  @Column('uuid')
+  component_id: string;
 
   @Column({
     type: 'enum',
@@ -41,6 +38,13 @@ export class Notification extends AbstractEntity {
   })
   type: NotificationType;
 
-  @Column()
+  @Column({ default: false })
   is_seen: boolean;
+
+  // Relations
+  @ManyToOne(() => User, (user) => user.notifications, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }
