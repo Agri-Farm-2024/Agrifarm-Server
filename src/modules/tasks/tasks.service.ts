@@ -77,10 +77,15 @@ export class TasksService implements ITaskService {
     }
   }
 
-  async getTasksByUserId(user_id: string): Promise<any> {
+  async getTasksByUserId(user_id: string, status: RequestStatus): Promise<any> {
     try {
+      const filter = { assigned_to_id: user_id };
+      if (status) {
+        filter['request'] = { status: status };
+      }
+
       const tasks = await this.taskEntity.find({
-        where: { assigned_to_id: user_id },
+        where: filter,
         relations: {
           request: true,
           assign_by: true,

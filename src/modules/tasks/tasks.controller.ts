@@ -10,13 +10,15 @@ import {
   Request,
   UseGuards,
   Logger,
+  Query,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AssignTaskDto } from './dto/assign-task.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { Roles } from 'src/common/decorations/role.decoration';
 import { UserRole } from '../users/types/user-role.enum';
+import { RequestStatus } from '../requests/types/request-status.enum';
 
 @ApiTags('Task')
 @Controller('tasks')
@@ -46,8 +48,17 @@ export class TasksController {
   }
 
   @UseGuards(AuthGuard)
+  @ApiQuery({
+    name: 'status',
+    enum: RequestStatus,
+    required: false,
+  })
   @Get('/getByUser')
-  getTasksByUserId(@Request() request: any) {
-    return this.tasksService.getTasksByUserId(request.user.id);
+  async getTasksByUserId(
+    @Request() request: any,
+    @Query('status') status: RequestStatus,
+  ) {
+    const user = request['user'];
+    return await this.tasksService.getTasksByUserId(user.user_id, status);
   }
 }
