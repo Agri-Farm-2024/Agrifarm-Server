@@ -14,7 +14,7 @@ import { Land } from '../lands/entities/land.entity';
 import { LandStatus } from '../lands/types/land-status.enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BookingLand } from './entities/bookingLand.entity';
-import { In, LessThanOrEqual, Not, Repository } from 'typeorm';
+import { In, LessThanOrEqual, MoreThanOrEqual, Not, Repository } from 'typeorm';
 import { BookingStatus } from './types/booking-status.enum';
 import { Payload } from '../auths/types/payload.type';
 import { UserRole } from '../users/types/user-role.enum';
@@ -31,7 +31,7 @@ export class BookingsService implements IBookingService {
   private readonly logger = new Logger(BookingsService.name);
   constructor(
     @InjectRepository(BookingLand)
-    private readonly bookingEntity: Repository<BookingLand>,
+    private readonly bookingRepository: Repository<BookingLand>,
 
     private readonly landService: LandsService,
 
@@ -54,13 +54,44 @@ export class BookingsService implements IBookingService {
     land_renter: Payload,
   ): Promise<any> {
     try {
+      // create time end booking equal time_start + total_month
+      const time_end = new Date(createBookingDto.time_start);
+      time_end.setMonth(time_end.getMonth() + createBookingDto.total_month);
       // Get detail land
       const land: Land = await this.landService.getDetailLandById(
         createBookingDto.land_id,
       );
-      //  Check if land is free
-      if (land.status !== LandStatus.free) {
-        throw new BadRequestException('Land is not free to book');
+      //  Check if exist booking of land in time land
+      const booking_land_exist = await this.bookingRepository.find({
+        where: [
+          {
+            land_id: createBookingDto.land_id,
+            status: BookingStatus.completed,
+            time_start: MoreThanOrEqual(createBookingDto.time_start),
+            time_end: LessThanOrEqual(time_end),
+          },
+          {
+            land_id: createBookingDto.land_id,
+            status: BookingStatus.completed,
+            time_start: LessThanOrEqual(createBookingDto.time_start),
+            time_end: MoreThanOrEqual(time_end),
+          },
+          {
+            land_id: createBookingDto.land_id,
+            status: BookingStatus.completed,
+            time_start: LessThanOrEqual(createBookingDto.time_start),
+            time_end: MoreThanOrEqual(createBookingDto.time_start),
+          },
+          {
+            land_id: createBookingDto.land_id,
+            status: BookingStatus.completed,
+            time_start: LessThanOrEqual(time_end),
+            time_end: MoreThanOrEqual(time_end),
+          },
+        ],
+      });
+      if (booking_land_exist.length > 0) {
+        throw new BadRequestException('Land is already booked in this time');
       }
       // Check land has staff is active
       if (!land.staff_id) {
@@ -69,11 +100,8 @@ export class BookingsService implements IBookingService {
       // Get price per month of land
       const total_price =
         land.price_booking_per_month * createBookingDto.total_month;
-      // create time end booking equal time_start + total_month
-      const time_end = new Date(createBookingDto.time_start);
-      time_end.setMonth(time_end.getMonth() + createBookingDto.total_month);
       // check if already have booking in this time and status != pending and != reject
-      const booking_exist = await this.bookingEntity.find({
+      const booking_exist = await this.bookingRepository.find({
         where: {
           land_id: createBookingDto.land_id,
           status: Not(In([BookingStatus.pending, BookingStatus.rejected])),
@@ -84,7 +112,7 @@ export class BookingsService implements IBookingService {
         throw new BadRequestException('Land is already booked');
       }
       // create new booking
-      const new_booking = await this.bookingEntity.save({
+      const new_booking = await this.bookingRepository.save({
         ...createBookingDto,
         landrenter_id: land_renter.user_id,
         price_per_month: Math.floor(land.price_booking_per_month),
@@ -171,7 +199,7 @@ export class BookingsService implements IBookingService {
 
       // get list booking by manager except pending and rejected
       const [bookings, total_count] = await Promise.all([
-        this.bookingEntity.find({
+        this.bookingRepository.find({
           where: filter_condition,
           relations: {
             land: true,
@@ -195,7 +223,7 @@ export class BookingsService implements IBookingService {
           take: pagination.page_size,
           skip: (pagination.page_index - 1) * pagination.page_size,
         }),
-        this.bookingEntity.count({
+        this.bookingRepository.count({
           where: filter_condition,
         }),
       ]);
@@ -263,7 +291,7 @@ export class BookingsService implements IBookingService {
       }
       // Get list booking by staff
       const [bookings, total_count] = await Promise.all([
-        this.bookingEntity.find({
+        this.bookingRepository.find({
           where: filter_condition,
           relations: {
             land: true,
@@ -287,7 +315,7 @@ export class BookingsService implements IBookingService {
           take: pagination.page_size,
           skip: (pagination.page_index - 1) * pagination.page_size,
         }),
-        this.bookingEntity.count({
+        this.bookingRepository.count({
           where: filter_condition,
         }),
       ]);
@@ -320,7 +348,7 @@ export class BookingsService implements IBookingService {
         : {};
       // Get list booking by land renter
       const [bookings, total_count] = await Promise.all([
-        this.bookingEntity.find({
+        this.bookingRepository.find({
           where: {
             landrenter_id: user.user_id,
             ...filter_condition,
@@ -347,7 +375,7 @@ export class BookingsService implements IBookingService {
           take: pagination.page_size,
           skip: (pagination.page_index - 1) * pagination.page_size,
         }),
-        this.bookingEntity.count({
+        this.bookingRepository.count({
           where: {
             landrenter_id: user.user_id,
             ...filter_condition,
@@ -382,7 +410,7 @@ export class BookingsService implements IBookingService {
   async getBookingDetail(bookingId: string): Promise<any> {
     try {
       // get booking detail
-      const booking = await this.bookingEntity.findOne({
+      const booking = await this.bookingRepository.findOne({
         where: {
           booking_id: bookingId,
         },
@@ -432,7 +460,7 @@ export class BookingsService implements IBookingService {
   ): Promise<any> {
     try {
       // check booking exist
-      const booking_exist = await this.bookingEntity.findOne({
+      const booking_exist = await this.bookingRepository.findOne({
         where: {
           booking_id: bookingId,
         },
@@ -496,7 +524,7 @@ export class BookingsService implements IBookingService {
       if (data.is_schedule === true) {
         // Send mail to land renter and make expred schedule after 48h
         // await this.mailService.sendMailConfirmBooking(booking_exist);
-        const update_booking = await this.bookingEntity.save({
+        const update_booking = await this.bookingRepository.save({
           ...booking_exist,
           status: BookingStatus.pending_contract,
           is_schedule: data.is_schedule,
@@ -507,7 +535,7 @@ export class BookingsService implements IBookingService {
         return update_booking;
       }
       // update status booking to pending contract
-      const update_booking = await this.bookingEntity.save({
+      const update_booking = await this.bookingRepository.save({
         ...booking_exist,
         status: BookingStatus.pending_contract,
       });
@@ -546,7 +574,7 @@ export class BookingsService implements IBookingService {
         throw new BadRequestException('Status booking is not pending contract');
       }
       // update status booking to pending sign
-      const update_booking = await this.bookingEntity.save({
+      const update_booking = await this.bookingRepository.save({
         ...booking_exist,
         status: BookingStatus.pending_sign,
       });
@@ -607,7 +635,7 @@ export class BookingsService implements IBookingService {
       // Send mail to land renter
       // Send notification to land renter
       // update status booking to pending payment
-      const update_booking = await this.bookingEntity.save({
+      const update_booking = await this.bookingRepository.save({
         ...booking_exist,
         status: BookingStatus.pending_payment,
         contract_image: data.contract_image,
@@ -637,7 +665,7 @@ export class BookingsService implements IBookingService {
   async updateStatusToCompleted(booking_id: string): Promise<any> {
     try {
       // get detail booking
-      const booking_exist = await this.bookingEntity.findOne({
+      const booking_exist = await this.bookingRepository.findOne({
         where: {
           booking_id: booking_id,
         },
@@ -650,7 +678,7 @@ export class BookingsService implements IBookingService {
         throw new BadRequestException('Status booking is not pending payment');
       }
       // update status booking to completed
-      const update_booking = await this.bookingEntity.save({
+      const update_booking = await this.bookingRepository.save({
         ...booking_exist,
         status: BookingStatus.completed,
       });
@@ -726,7 +754,7 @@ export class BookingsService implements IBookingService {
         throw new BadRequestException('Reason for reject is required');
       }
       // update status booking to rejected
-      const update_booking = await this.bookingEntity.save({
+      const update_booking = await this.bookingRepository.save({
         ...booking_exist,
         status: BookingStatus.rejected,
         reason_for_reject: data.reason_for_reject,
