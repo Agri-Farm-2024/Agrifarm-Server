@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -19,6 +21,8 @@ import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto
 import { ServiceSpecificStatus } from './types/service-specific-status.enum';
 import { PlantSeasonStatus } from '../plants/types/plant-season-status.enum';
 import { ProcessTechnicalStandardStatus } from '../processes/types/status-processStandard.enum';
+import { Transaction } from '../transactions/entities/transaction.entity';
+import { ProcessesService } from '../processes/processes.service';
 import { ServicePackageStatus } from './types/service-package-status.enum';
 
 @Injectable()
@@ -33,6 +37,9 @@ export class ServicesService implements IService {
     private readonly PlantsService: PlantsService,
 
     private readonly transactionService: TransactionsService,
+
+    @Inject(forwardRef(() => ProcessesService))
+    private readonly processService: ProcessesService,
   ) {}
 
   /**
@@ -158,6 +165,41 @@ export class ServicesService implements IService {
       }
 
       return service_specific;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async handlePaymentServiceSpecificSuccess(
+    transaction: Transaction,
+  ): Promise<any> {
+    try {
+      // get detail service specific
+      const service_specific = await this.serviceSpecificRepo.findOne({
+        where: {
+          service_specific_id: transaction.service_specific_id,
+        },
+      });
+      if (!service_specific) {
+        throw new BadRequestException('Service specific does not exist');
+      }
+      // update service specific status
+      await this.serviceSpecificRepo.update(
+        {
+          service_specific_id: transaction.service_specific_id,
+        },
+        {
+          status: ServiceSpecificStatus.used,
+        },
+      );
+      // create process specific
+      await this.processService.createProcessSpecific(service_specific);
+      // send email to user
+      // send notification to user
+      return transaction;
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;

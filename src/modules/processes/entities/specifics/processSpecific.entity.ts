@@ -40,7 +40,7 @@ export class ProcessSpecific extends AbstractEntity {
   @Column()
   time_end: Date;
 
-  @Column()
+  @Column({ nullable: true })
   qr_url: string;
 
   // Relation

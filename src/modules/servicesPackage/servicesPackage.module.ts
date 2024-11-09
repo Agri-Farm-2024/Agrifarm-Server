@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ServicesService } from './servicesPackage.service';
 import { ServiceSpecific } from './entities/serviceSpecific.entity';
 import { ServicesController } from './servicesPackage.controller';
@@ -7,6 +7,7 @@ import { ServicePackage } from './entities/servicePackage.entity';
 import { LoggerModule } from 'src/logger/logger.module';
 import { PlantsModule } from '../plants/plants.module';
 import { TransactionsModule } from '../transactions/transactions.module';
+import { ProcessesModule } from '../processes/processes.module';
 
 @Module({
   controllers: [ServicesController],
@@ -15,7 +16,8 @@ import { TransactionsModule } from '../transactions/transactions.module';
     TypeOrmModule.forFeature([ServiceSpecific, ServicePackage]),
     LoggerModule,
     PlantsModule,
-    TransactionsModule,
+    forwardRef(() => TransactionsModule),
+    forwardRef(() => ProcessesModule),
   ],
   exports: [ServicesService],
 })

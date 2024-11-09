@@ -215,6 +215,7 @@ export class LandsService implements ILandService {
         relations: {
           url: true,
           staff: true,
+          booking_land: true,
         },
         select: {
           url: {
