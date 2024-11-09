@@ -19,6 +19,7 @@ import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto
 import { ServiceSpecificStatus } from './types/service-specific-status.enum';
 import { PlantSeasonStatus } from '../plants/types/plant-season-status.enum';
 import { ProcessTechnicalStandardStatus } from '../processes/types/status-processStandard.enum';
+import { ServicePackageStatus } from './types/service-package-status.enum';
 
 @Injectable()
 export class ServicesService implements IService {
@@ -157,6 +158,29 @@ export class ServicesService implements IService {
       }
 
       return service_specific;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  //delete service package
+  async deleteServicePackage(service_package_id: string): Promise<any> {
+    try {
+      // check if the service package exists
+      const service_package = await this.servicePackageRepo.findOne({
+        where: {
+          service_package_id,
+        },
+      });
+      if (!service_package) {
+        throw new BadRequestException('Service package does not exist');
+      }
+      service_package.status = ServicePackageStatus.inactive;
+      await this.servicePackageRepo.save(service_package);
+      return 'Delete service package successfully';
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;

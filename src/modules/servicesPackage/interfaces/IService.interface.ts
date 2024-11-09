@@ -11,4 +11,8 @@ export interface IService {
   buyServiceSpecific(
     createServicePackage: CreateServiceSpecificDTO,
   ): Promise<any>;
+
+  getDetailServiceSpecific(service_specific_id: string): Promise<any>
+
+  deleteServicePackage(service_package_id: string): Promise<any>
 }

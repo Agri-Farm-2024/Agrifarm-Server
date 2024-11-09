@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete } from '@nestjs/common';
 import { ServicesService } from './servicesPackage.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateServicePackageDTO } from './dto/create-service-package.dto';
@@ -22,5 +22,10 @@ export class ServicesController {
   @Post('/buyServiceSpecific')
   async buyServiceSpecific(@Body() data: CreateServiceSpecificDTO) {
     return this.servicesService.buyServiceSpecific(data);
+  }
+
+  @Delete('/deleteServicePackage/:id')
+  async deleteServicePackage(id: string) {
+    return this.servicesService.deleteServicePackage(id);
   }
 }
