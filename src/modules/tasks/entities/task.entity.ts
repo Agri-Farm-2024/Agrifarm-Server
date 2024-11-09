@@ -1,4 +1,3 @@
-import { request } from 'http';
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { Request } from 'src/modules/requests/entities/request.entity';
 import { User } from 'src/modules/users/entities/user.entity';
@@ -10,7 +9,6 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { TaskStatus } from '../types/task-status.enum';
 
 @Entity('tasks')
 export class Task extends AbstractEntity {

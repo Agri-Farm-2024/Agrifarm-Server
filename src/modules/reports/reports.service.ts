@@ -4,14 +4,12 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
-import { CreateReportDto } from './dto/create-report.dto';
-import { UpdateReportDto } from './dto/update-report.dto';
+
 import { CreateReportProcessStandardDTO } from './dto/create-report-processStandard.dto';
 import { IReportService } from './interfaces/IReportService.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TasksService } from '../tasks/tasks.service';
-import { TaskStatus } from '../tasks/types/task-status.enum';
 import { Report } from './entities/report.entity';
 
 @Injectable()

@@ -5,5 +5,4 @@ export enum RequestStatus {
   pending_approval = 'pending_approval',
   rejected = 'rejected',
   completed = 'completed',
-  approved = 'approved',
 }

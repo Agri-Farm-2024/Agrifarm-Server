@@ -13,7 +13,6 @@ import { ITaskService } from './interfaces/ITaskService.interface';
 import { UsersService } from '../users/users.service';
 import { RequestsService } from '../requests/requests.service';
 import { Payload } from '../auths/types/payload.type';
-import { TaskStatus } from './types/task-status.enum';
 import { RequestStatus } from '../requests/types/request-status.enum';
 
 @Injectable()
