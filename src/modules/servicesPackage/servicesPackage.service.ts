@@ -24,6 +24,8 @@ import { ProcessTechnicalStandardStatus } from '../processes/types/status-proces
 import { Transaction } from '../transactions/entities/transaction.entity';
 import { ProcessesService } from '../processes/processes.service';
 import { ServicePackageStatus } from './types/service-package-status.enum';
+import { BookingsService } from '../bookings/bookings.service';
+import { BookingLand } from '../bookings/entities/bookingLand.entity';
 
 @Injectable()
 export class ServicesService implements IService {
@@ -40,6 +42,8 @@ export class ServicesService implements IService {
 
     @Inject(forwardRef(() => ProcessesService))
     private readonly processService: ProcessesService,
+
+    private readonly bookingLandService: BookingsService,
   ) {}
 
   /**
@@ -91,6 +95,17 @@ export class ServicesService implements IService {
     createServicePackage: CreateServiceSpecificDTO,
   ): Promise<any> {
     try {
+      // get booking detail
+      const booking_detail: BookingLand =
+        await this.bookingLandService.getBookingDetail(
+          createServicePackage.booking_id,
+        );
+
+      if (
+        createServicePackage.acreage_land > booking_detail.land.acreage_land
+      ) {
+        throw new BadRequestException('Acreage land is not enough');
+      }
       // check if the service package exists
       const service_package = await this.servicePackageRepo.findOne({
         where: {
@@ -105,6 +120,7 @@ export class ServicesService implements IService {
         await this.PlantsService.getDetailPlantSeason(
           createServicePackage.plant_season_id,
         );
+
       // check if the plant season is active
       if (plant_season.status !== PlantSeasonStatus.active) {
         throw new BadRequestException('Plant season is not applying');
@@ -122,6 +138,19 @@ export class ServicesService implements IService {
           'Process standard is not accepted for this plant season',
         );
       }
+      // // check time is valid
+      // const total_month_booking =
+      //   new Date(booking_detail.time_end).getMonth() -
+      //   new Date(booking_detail.time_start).getMonth() +
+      //   (new Date(booking_detail.time_end).getDay() -
+      //     new Date(booking_detail.time_start).getDay()) /
+      //     30;
+
+      // if (total_month_booking < plant_season.total_month) {
+      //   throw new BadRequestException(
+      //     'The time of booking is not enough for this plant season',
+      //   );
+      // }
       // create a new service specific
       const new_service_specific = await this.serviceSpecificRepo.save({
         ...createServicePackage,

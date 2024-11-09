@@ -340,7 +340,7 @@ export class PlantsService implements IPlantService {
       //get detail plant season
       const plant_season = await this.plantSeasonEntity.findOne({
         where: {
-          plant_season_id,
+          plant_season_id: plant_season_id,
         },
         relations: {
           plant: true,
@@ -350,7 +350,7 @@ export class PlantsService implements IPlantService {
       if (!plant_season) {
         throw new BadRequestException('Plant season not found');
       }
-      return;
+      return plant_season;
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;

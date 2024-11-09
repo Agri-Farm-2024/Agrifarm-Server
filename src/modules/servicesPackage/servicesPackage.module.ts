@@ -8,6 +8,7 @@ import { LoggerModule } from 'src/logger/logger.module';
 import { PlantsModule } from '../plants/plants.module';
 import { TransactionsModule } from '../transactions/transactions.module';
 import { ProcessesModule } from '../processes/processes.module';
+import { BookingsModule } from '../bookings/bookings.module';
 
 @Module({
   controllers: [ServicesController],
@@ -18,6 +19,7 @@ import { ProcessesModule } from '../processes/processes.module';
     PlantsModule,
     forwardRef(() => TransactionsModule),
     forwardRef(() => ProcessesModule),
+    BookingsModule,
   ],
   exports: [ServicesService],
 })
