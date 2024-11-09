@@ -408,7 +408,8 @@ export class ProcessesService implements IProcessesService {
               if (!content.process_technical_standard_stage_content_id) {
                 //create new content
                 await this.processStandardStageContentRepo.save({
-                  process_technical_standard_stage_id: stage.process_technical_standard_stage_id,
+                  process_technical_standard_stage_id:
+                    stage.process_technical_standard_stage_id,
                   title: content.title,
                   content: content.content,
                   content_numberic_order: content.content_numberic_order,
@@ -444,7 +445,8 @@ export class ProcessesService implements IProcessesService {
               if (!material.process_technical_standard_stage_material_id) {
                 //create new material
                 await this.processStandardStageMaterialRepo.save({
-                  process_technical_standard_stage_id: stage.process_technical_standard_stage_id,
+                  process_technical_standard_stage_id:
+                    stage.process_technical_standard_stage_id,
                   material_id: material.material_id,
                   quantity: material.quantity,
                 });
@@ -475,16 +477,8 @@ export class ProcessesService implements IProcessesService {
    * @function createProcessSpecific
    */
 
-  async createProcessSpecific(
-    service_specific_id: string,
-    user: Payload,
-  ): Promise<any> {
+  async createProcessSpecific(service_specific: ServiceSpecific): Promise<any> {
     try {
-      // get detail of service specific
-      const service_specific: ServiceSpecific =
-        await this.servicePackageService.getDetailServiceSpecific(
-          service_specific_id,
-        );
       // get detail of process standard
       const process_technical_standard = await this.processStandardRepo.findOne(
         {
@@ -503,8 +497,7 @@ export class ProcessesService implements IProcessesService {
       const process_technical_specific = await this.processSpecificRepo.save({
         process_technical_standard_id:
           process_technical_standard.process_technical_standard_id,
-        service_specific_id,
-        expert_id: user.user_id,
+        service_specific_id: service_specific.service_specific_id,
         time_start: service_specific.time_start,
         time_end: service_specific.time_end,
         qr_url: '',

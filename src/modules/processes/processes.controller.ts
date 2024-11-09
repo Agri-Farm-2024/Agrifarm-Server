@@ -41,20 +41,6 @@ export class ProcessesController {
     return this.processesService.createProcessStandard(data, request.user);
   }
 
-  @UseGuards(AuthGuard)
-  @Roles(UserRole.expert)
-  @Post('/createProcessSpecific')
-  createProcessSpecific(
-    @Body() data: createProcessSpecificDTO,
-    @Request() request: any,
-  ): Promise<any> {
-    const user = request['user'];
-    return this.processesService.createProcessSpecific(
-      data.service_specific_id,
-      user,
-    );
-  }
-
   @ApiQuery({
     name: 'status',
     required: false,

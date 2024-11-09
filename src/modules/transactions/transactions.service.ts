@@ -18,6 +18,7 @@ import { TransactionPurpose } from './types/transaction-purpose.enum';
 import { Payload } from '../auths/types/payload.type';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { parsePaymentLink } from 'src/utils/payment-link.util';
+import { ServicesService } from '../servicesPackage/servicesPackage.service';
 
 @Injectable()
 export class TransactionsService implements ITransactionService {
@@ -27,6 +28,9 @@ export class TransactionsService implements ITransactionService {
 
     @Inject(forwardRef(() => BookingsService))
     private readonly bookingService: BookingsService,
+
+    @Inject(forwardRef(() => ServicesService))
+    private readonly servicePackageService: ServicesService,
   ) {}
   /**
    * @function createTransaction
@@ -164,6 +168,10 @@ export class TransactionsService implements ITransactionService {
       switch (transaction.purpose) {
         case TransactionPurpose.booking_land:
           return this.handlePaymentBookingLand(transaction);
+        case TransactionPurpose.service:
+          return this.servicePackageService.handlePaymentServiceSpecificSuccess(
+            transaction,
+          );
         default:
           return;
       }
@@ -182,11 +190,6 @@ export class TransactionsService implements ITransactionService {
       );
       // send order to land renter
       return update_booking;
-    } catch (error) {}
-  }
-
-  async handlePaymentService(transaction: Transaction): Promise<any> {
-    try {
     } catch (error) {}
   }
 
