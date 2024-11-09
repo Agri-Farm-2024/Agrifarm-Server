@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Plant } from './plant.entity';
@@ -69,11 +70,11 @@ export class PlantSeason extends AbstractEntity {
   )
   service_specific: ServiceSpecific[];
 
-  @OneToMany(
+  @OneToOne(
     () => ProcessStandard,
     (processStandard) => processStandard.plant_season,
   )
-  process_technical_standard: ProcessStandard[];
+  process_technical_standard: ProcessStandard;
 
   @OneToMany(() => Request, (request) => request.plant_season)
   requests: Request[];

@@ -308,7 +308,10 @@ export class PlantsService implements IPlantService {
           where: filter,
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
-          relations: ['plant'],
+          relations: {
+            plant: true,
+            process_technical_standard: true,
+          },
           select: {
             plant: {
               name: true,
@@ -341,6 +344,7 @@ export class PlantsService implements IPlantService {
         },
         relations: {
           plant: true,
+          process_technical_standard: true,
         },
       });
       if (!plant_season) {

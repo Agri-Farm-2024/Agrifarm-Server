@@ -6,6 +6,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 // import { TypeProcess } from '../../types/type-process.enum';
@@ -42,7 +43,7 @@ export class ProcessStandard extends AbstractEntity {
   })
   status: ProcessTechnicalStandardStatus;
 
-  @ManyToOne(
+  @OneToOne(
     () => PlantSeason,
     (plantSeason) => plantSeason.process_technical_standard,
   )
@@ -59,6 +60,9 @@ export class ProcessStandard extends AbstractEntity {
   )
   process_standard_stage: ProcessStandardStage[];
 
-  @OneToMany(() => ProcessSpecific, (processSpecific) => processSpecific.process_technical_standard)
+  @OneToMany(
+    () => ProcessSpecific,
+    (processSpecific) => processSpecific.process_technical_standard,
+  )
   process_technical_standard: ProcessSpecific[];
 }

@@ -17,6 +17,8 @@ import { TransactionsService } from '../transactions/transactions.service';
 import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
 import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
 import { ServiceSpecificStatus } from './types/service-specific-status.enum';
+import { PlantSeasonStatus } from '../plants/types/plant-season-status.enum';
+import { ProcessTechnicalStandardStatus } from '../processes/types/status-processStandard.enum';
 
 @Injectable()
 export class ServicesService implements IService {
@@ -95,6 +97,23 @@ export class ServicesService implements IService {
         await this.PlantsService.getDetailPlantSeason(
           createServicePackage.plant_season_id,
         );
+      // check if the plant season is active
+      if (plant_season.status !== PlantSeasonStatus.active) {
+        throw new BadRequestException('Plant season is not applying');
+      }
+      if (!plant_season.process_technical_standard) {
+        throw new BadRequestException(
+          'Plant season does not have a technical standard process',
+        );
+      }
+      if (
+        plant_season.process_technical_standard.status !==
+        ProcessTechnicalStandardStatus.accepted
+      ) {
+        throw new BadRequestException(
+          'Process standard is not accepted for this plant season',
+        );
+      }
       // create a new service specific
       const new_service_specific = await this.serviceSpecificRepo.save({
         ...createServicePackage,
