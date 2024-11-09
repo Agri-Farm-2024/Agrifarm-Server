@@ -309,13 +309,10 @@ export class PlantsService implements IPlantService {
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
           relations: {
-            plant: true,
-            process_technical_standard: true,
-          },
-          select: {
             plant: {
-              name: true,
+              land_type: true,
             },
+            process_technical_standard: true,
           },
         }),
         this.plantSeasonEntity.count({ where: filter }),
