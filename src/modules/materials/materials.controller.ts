@@ -40,14 +40,14 @@ export class MaterialsController {
 
   @Post('/createMaterial')
   @UseGuards(AuthGuard)
-  @Roles(UserRole.staff)
+  @Roles(UserRole.manager)
   create(@Body() createMaterialDto: CreateMaterialDto) {
     return this.materialsService.createMaterial(createMaterialDto);
   }
 
   @Put('/updateMaterial/:id')
   @UseGuards(AuthGuard)
-  @Roles(UserRole.staff)
+  @Roles(UserRole.manager)
   update(
     @Param('id') id: string,
     @Body() updateMaterialDto: UpdateMaterialDto,
