@@ -629,20 +629,21 @@ export class BookingsService implements IBookingService {
         throw new BadRequestException('Payment frequency is required');
       }
       // Create transaction for payment
-      if (data.payment_frequency === BookingPaymentFrequency.multiple) {
-        // create multiple transaction
-      }
+      const transaction =
+        await this.transactionService.createTransactionPaymentBookingLand(
+          booking_exist.booking_id,
+        );
       // Send mail to land renter
       // Send notification to land renter
       // update status booking to pending payment
-      const update_booking = await this.bookingRepository.save({
+      await this.bookingRepository.save({
         ...booking_exist,
         status: BookingStatus.pending_payment,
         contract_image: data.contract_image,
         payment_frequency: data.payment_frequency,
         signed_at: new Date(),
       });
-      return update_booking;
+      return transaction;
     } catch (error) {
       if (
         error instanceof BadRequestException ||
