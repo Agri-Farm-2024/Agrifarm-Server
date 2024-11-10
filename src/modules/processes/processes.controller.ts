@@ -115,11 +115,15 @@ export class ProcessesController {
     );
   }
 
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.expert)
   @Put('/updateProcessSpecific/:id')
   updateProcessSpecific(
     @Body() data: UPdateProcessSpecificDto,
     @Param('id') id: string,
+    @Request() req: any,
   ): Promise<any> {
-    return this.processesService.updateProcessSpecific(id, data);
+    const user = req['user'];
+    return this.processesService.updateProcessSpecific(id, data, user);
   }
 }

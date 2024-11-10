@@ -61,7 +61,7 @@ export class Material extends AbstractEntity {
     enum: MaterialStatus,
     default: MaterialStatus.available,
   })
-  status: Material;
+  status: MaterialStatus;
 
   @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.material_oder)
   material_order_details_id: OrderDetail[];

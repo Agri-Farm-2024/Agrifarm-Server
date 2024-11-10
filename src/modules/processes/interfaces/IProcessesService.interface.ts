@@ -32,5 +32,6 @@ export interface IProcessesService {
   updateProcessSpecific(
     process_technical_specific_id: string,
     data: UPdateProcessSpecificDto,
-  ): Promise<any>;
+    user: Payload,
+  ): Promise<any>
 }

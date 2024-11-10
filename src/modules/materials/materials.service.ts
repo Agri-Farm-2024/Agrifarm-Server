@@ -10,7 +10,7 @@ import { UpdateMaterialDto } from './dto/update-material.dto';
 import { IMaterialService } from './interface/IMaterialService.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Material } from './entities/material.entity';
-import { Repository } from 'typeorm';
+import { Like, Not, Repository } from 'typeorm';
 import { LoggerService } from 'src/logger/logger.service';
 
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
@@ -22,6 +22,7 @@ import { TransactionsService } from '../transactions/transactions.service';
 import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
 import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
 import { BuyMaterialDTO } from './dto/buy-material.dto';
+import { MaterialStatus } from './types/material-status.enum';
 
 @Injectable()
 export class MaterialsService implements IMaterialService {
@@ -43,12 +44,13 @@ export class MaterialsService implements IMaterialService {
       //check material is exist
       const material = await this.materialEntity.findOne({
         where: {
-          name: createMaterialDto.name,
+          name: Like(createMaterialDto.name),
         },
       });
       if (material) {
         throw new BadRequestException('Material name already exist');
       }
+
       //create new material
       const new_material = await this.materialEntity.save({
         ...createMaterialDto,
@@ -67,26 +69,39 @@ export class MaterialsService implements IMaterialService {
   ): Promise<Material> {
     try {
       //check material is exist
-      const material = await this.materialEntity.findOne({
+      const material_exist = await this.materialEntity.findOne({
         where: {
           material_id: id,
         },
       });
-      if (!material) {
+      if (!material_exist) {
         throw new BadRequestException('material not found');
       }
-      //update material
-      material.name = updateMaterialDto.name;
-      material.total_quantity = updateMaterialDto.total_quantity;
-      material.price_per_piece = updateMaterialDto.price_per_piece;
-      material.unit = updateMaterialDto.unit;
-      material.description = updateMaterialDto.description;
-      material.deposit_per_piece = updateMaterialDto.deposit_per_piece;
-      material.image_material = updateMaterialDto.image_material;
-      material.price_of_rent = updateMaterialDto.price_of_rent;
-      material.type = updateMaterialDto.type;
+      //check name of material is duplicate
+      const material_name = await this.materialEntity.findOne({
+        where: {
+          name: Like(updateMaterialDto.name),
+          material_id: Not(id),
+        },
+      });
+      if (material_name) {
+        throw new BadRequestException('Material name already exist');
+      }
 
-      return await this.materialEntity.save(material);
+      if (updateMaterialDto.total_quantity === 0) {
+        material_exist.status = MaterialStatus.out_of_stock;
+      }
+
+      if (material_exist.status === MaterialStatus.out_of_stock) {
+        if (updateMaterialDto.total_quantity > 0) {
+          material_exist.status = MaterialStatus.available;
+        }
+      }
+
+      return await this.materialEntity.save({
+        ...material_exist,
+        ...updateMaterialDto,
+      });
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

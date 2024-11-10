@@ -645,8 +645,10 @@ export class ProcessesService implements IProcessesService {
   async updateProcessSpecific(
     process_technical_specific_id: string,
     data: UPdateProcessSpecificDto,
+    user: Payload,
   ): Promise<any> {
     try {
+      const filter_condition: any = {};
       const process_specific = await this.processSpecificRepo.findOne({
         where: {
           process_technical_specific_id,
@@ -658,6 +660,9 @@ export class ProcessesService implements IProcessesService {
       //check if process  is in active
       if (process_specific.status === ProcessSpecificStatus.pending) {
         throw new BadRequestException('Process standard is in active');
+      }
+      if (user.role === UserRole.expert) {
+        filter_condition.expert_id = user.user_id;
       }
       //update process Specific
       const data_process_specific = {

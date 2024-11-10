@@ -3,13 +3,25 @@ import { IsNotEmpty, IsOptional } from 'class-validator';
 
 import { MaterialType } from '../types/material-type.enum';
 import { MaterialUnit } from '../types/material-unit-enum';
+import { Transform } from 'class-transformer';
 
 export class CreateMaterialDto {
   @ApiProperty({
-    description: 'the name of material',
+    description: 'The name of material',
     example: 'cuốc',
   })
-  @IsNotEmpty()
+  @IsNotEmpty({
+    message: 'Material name is required and should not be empty',
+  })
+  @Transform(
+    ({ value }) => {
+      if (typeof value === 'string') {
+        return value.trim().toLowerCase();
+      }
+      return value;
+    },
+    { toClassOnly: true },
+  )
   name: string;
 
   @ApiProperty({
@@ -30,7 +42,6 @@ export class CreateMaterialDto {
     description: 'the unit of material',
     example: MaterialUnit.piece,
   })
-  
   @IsNotEmpty()
   unit: MaterialUnit;
 
