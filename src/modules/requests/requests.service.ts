@@ -2,11 +2,10 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  Logger,
 } from '@nestjs/common';
 import { IRequestService } from './interfaces/IRequestService.interface';
 import { CreateRequestViewLandDTO } from './dto/create-request-view-land.dto';
-import { Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Request } from './entities/request.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MailService } from 'src/mails/mail.service';

@@ -164,8 +164,11 @@ export class TasksService implements ITaskService {
         throw new ForbiddenException('Task not assigned to you');
       }
       // check request status
-      if (task.request.status !== RequestStatus.in_progress) {
-        throw new BadRequestException('Request not in progress');
+      if (
+        task.request.status !== RequestStatus.in_progress &&
+        task.request.status !== RequestStatus.rejected
+      ) {
+        throw new BadRequestException('Request not in progress or rejected');
       }
       // update request status
       const updated_request = await this.requestSerivce.updateRequestStatus(
