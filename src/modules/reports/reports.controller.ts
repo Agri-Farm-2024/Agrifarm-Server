@@ -6,21 +6,33 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { ReportsService } from './reports.service';
-import { CreateReportDto } from './dto/create-report.dto';
-import { UpdateReportDto } from './dto/update-report.dto';
+import { CreateReportDTO } from './dto/create-report.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateReportProcessStandardDTO } from './dto/create-report-processStandard.dto';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 
 @ApiTags('Report')
 @Controller('reports')
 export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
-  @Post()
-  create(@Body() data: CreateReportProcessStandardDTO) {
-    return this.reportsService.createReportProcessStandard(data);
+  @UseGuards(AuthGuard)
+  @Post('/:task_id')
+  create(
+    @Body() data: CreateReportDTO,
+    @Param('task_id') task_id: string,
+    @Request() req: any,
+  ) {
+    const user = req['user'];
+    return this.reportsService.createReport(data, task_id, user);
   }
 
+  @Post('/createReportProcessStandard')
+  createReportProcessStandard(@Body() data: CreateReportProcessStandardDTO) {
+    return this.reportsService.createReportProcessStandard(data);
+  }
 }

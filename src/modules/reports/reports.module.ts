@@ -4,8 +4,8 @@ import { ReportsController } from './reports.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Report } from './entities/report.entity';
 import { ReportURL } from './entities/reportURL.entity';
-import { TasksService } from '../tasks/tasks.service';
 import { TasksModule } from '../tasks/tasks.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   controllers: [ReportsController],
@@ -13,6 +13,8 @@ import { TasksModule } from '../tasks/tasks.module';
   imports: [
     TypeOrmModule.forFeature([Report, ReportURL]),
     forwardRef(() => TasksModule),
+    JwtModule,
+    TasksModule,
   ],
   exports: [ReportsService],
 })

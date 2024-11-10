@@ -186,4 +186,27 @@ export class TasksService implements ITaskService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  async getDetailTask(task_id: string): Promise<any> {
+    try {
+      const task = await this.taskEntity.findOne({
+        where: { task_id: task_id },
+        relations: {
+          request: {
+            plant_season: {
+              plant: true,
+            },
+          },
+          assign_by: true,
+          assign_to: true,
+        },
+      });
+      if (!task) {
+        throw new BadRequestException('Task not found');
+      }
+      return task;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }

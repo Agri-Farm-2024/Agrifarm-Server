@@ -1,4 +1,5 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
+import { Report } from 'src/modules/reports/entities/report.entity';
 import { Request } from 'src/modules/requests/entities/request.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import {
@@ -47,4 +48,7 @@ export class Task extends AbstractEntity {
   @ManyToOne(() => User, (user) => user.task_assigned_to)
   @JoinColumn({ name: 'assigned_to_id' })
   assign_to: User;
+
+  @OneToOne(() => Report, (report) => report.task)
+  report: Report;
 }
