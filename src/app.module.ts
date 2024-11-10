@@ -27,7 +27,7 @@ import { join } from 'path';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SocketsModule } from './sockets/sockets.module';
 import { DiscordsModule } from './discords/discords.module';
-import { SchedulesModule } from './schedules/schedules.module';
+import { CronsModule } from './crons/crons.module';
 
 @Module({
   imports: [
@@ -66,7 +66,8 @@ import { SchedulesModule } from './schedules/schedules.module';
     ExtendsModule,
     UploadsModule,
     SocketsModule,
-    SchedulesModule,
+    ScheduleModule.forRoot(),
+    CronsModule,
     // DiscordsModule,
   ],
 })

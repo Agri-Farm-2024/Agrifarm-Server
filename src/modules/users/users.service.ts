@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Like, Repository } from 'typeorm';
@@ -17,9 +18,11 @@ import { SubjectMailEnum } from 'src/mails/types/subject.type';
 import { TemplateMailEnum } from 'src/mails/types/template.type';
 import { UserStatus } from './types/user-status.enum';
 import { UserRole } from './types/user-role.enum';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class UsersService implements IUserService {
+  private readonly logger = new Logger(UsersService.name);
   constructor(
     @InjectRepository(User)
     private readonly userEntity: Repository<User>,
