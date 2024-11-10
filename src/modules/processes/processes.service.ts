@@ -39,6 +39,7 @@ import { UpdateProcessStandardDto } from './dto/update-processStandardStatus.dto
 import { UpdateProcessStandardsDto } from './dto/update-process-standard.dto';
 import { ProcessSpecificStatus } from './types/processSpecific-status.enum';
 import { UPdateProcessSpecificDto } from './dto/update-process-specific.dto';
+import { UserRole } from '../users/types/user-role.enum';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -563,6 +564,7 @@ export class ProcessesService implements IProcessesService {
     pagination: PaginationParams,
     status: ProcessSpecificStatus,
     plant_id: string,
+    user: Payload,
   ): Promise<any> {
     try {
       // filter conditon by status and plant id
@@ -573,6 +575,14 @@ export class ProcessesService implements IProcessesService {
       if (plant_id) {
         filter_condition.plant_season = {
           plant_id: plant_id,
+        };
+      }
+      if (user.role === UserRole.expert) {
+        filter_condition.expert_id = user.user_id;
+      }
+      if (user.role === UserRole.land_renter) {
+        filter_condition.service_specific = {
+          landrenter_id: user.user_id,
         };
       }
 
@@ -591,6 +601,7 @@ export class ProcessesService implements IProcessesService {
                 materialSpecific: true,
               },
             },
+            service_specific: true,
           },
           order: {
             process_technical_specific_stage: {

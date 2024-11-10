@@ -70,5 +70,4 @@ export class ProcessSpecific extends AbstractEntity {
   @ManyToOne(() => User, (user) => user.expert_process_technical_specific)
   @JoinColumn({ name: 'expert_id' })
   expert: User;
-
 }

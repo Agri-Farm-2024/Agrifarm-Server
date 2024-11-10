@@ -97,16 +97,21 @@ export class ProcessesController {
     required: false,
   })
   @ApplyPaginationMetadata
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.expert, UserRole.land_renter)
   @Get('/getListProcessSpecific')
   getListProcessSpecific(
     @Pagination() pagination: PaginationParams,
     @Query('status') status: ProcessSpecificStatus,
     @Query('plant_id') plant_id: string,
+    @Request() req: any,
   ): Promise<any> {
+    const user = req['user'];
     return this.processesService.getListProcessSpecific(
       pagination,
       status,
       plant_id,
+      user,
     );
   }
 
