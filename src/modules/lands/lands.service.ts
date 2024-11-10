@@ -388,8 +388,8 @@ export class LandsService implements ILandService {
       //create new land type
       const new_land_type = await this.landTypeRepo.save({
         name: data.name,
+        description: data.description,
       });
-
       return new_land_type;
     } catch (error) {
       if (error instanceof BadRequestException) {

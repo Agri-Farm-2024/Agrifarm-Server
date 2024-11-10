@@ -8,12 +8,14 @@ import { OrdersService } from '../orders/orders.service';
 import { OrdersModule } from '../orders/orders.module';
 import { LoggerModule } from 'src/logger/logger.module';
 import { TransactionsModule } from '../transactions/transactions.module';
+import { BookingMaterial } from './entities/booking-material.entity';
+import { BookingMaterialDetail } from './entities/booking-material-detail.entity';
 
 @Module({
   controllers: [MaterialsController],
   providers: [MaterialsService],
   imports: [
-    TypeOrmModule.forFeature([Material]),
+    TypeOrmModule.forFeature([Material, BookingMaterial, BookingMaterialDetail]),
     LoggerModule,
     OrdersModule,
     TransactionsModule,

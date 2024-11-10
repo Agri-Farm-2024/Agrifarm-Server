@@ -1,11 +1,12 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { OrderDetail } from 'src/modules/orders/entities/orderDetail.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { MaterialType } from '../types/material-type.enum';
 import { MaterialStatus } from '../types/material-status.enum';
 import { MaterialUnit } from '../types/material-unit-enum';
 import { ProcessStandardStageMaterial } from 'src/modules/processes/entities/standards/processStandardStageMaterial.entity';
 import { ProcessSpecificStageMaterial } from 'src/modules/processes/entities/specifics/processSpecificStageMaterial.entity';
+import { BookingMaterialDetail } from './booking-material-detail.entity';
 
 @Entity('materials')
 export class Material extends AbstractEntity {
@@ -76,4 +77,7 @@ export class Material extends AbstractEntity {
       processSpecificSTageMaterial.materialSpecific,
   )
   process_specific_stage_material: ProcessSpecificStageMaterial[];
+
+  @ManyToOne(() => BookingMaterialDetail, (bookingMaterialDetail) => bookingMaterialDetail.material)
+  material_booking_detail: BookingMaterialDetail[];
 }
