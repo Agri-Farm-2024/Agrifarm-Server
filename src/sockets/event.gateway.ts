@@ -7,6 +7,7 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { SocketEvent } from './types/socket-event.enum';
 
 @WebSocketGateway()
 export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -25,7 +26,7 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(`Client disconnected: ${client.id}`);
   }
 
-  sendEventByUserId(userId: string, message: any, event: string) {
+  sendEventToUserId(userId: string, message: any, event: SocketEvent) {
     // Broadcast message to the specific user
     const client = this.clients[userId];
     if (client) {
@@ -33,7 +34,7 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  sendEventToGroup(groupId: string, message: any, event: string) {
+  sendEventToGroup(groupId: string, message: any, event: SocketEvent) {
     // Broadcast message to the group
     this.server.to(groupId).emit(`${event}`, { message });
   }

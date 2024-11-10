@@ -3,6 +3,7 @@ import { CreateRequestViewLandDTO } from '../dto/create-request-view-land.dto';
 import { RequestType } from '../types/request-type.enum';
 import { CreateRequestProcessStandardDTO } from '../dto/create-request-processStandard.dto';
 import { RequestStatus } from '../types/request-status.enum';
+import { UpdateStatusTaskDTO } from '../dto/update-status-task.dto';
 
 export interface IRequestService {
   createRequestViewLand(data: CreateRequestViewLandDTO): Promise<any>;
@@ -14,8 +15,12 @@ export interface IRequestService {
   ): Promise<any>;
 
   getDetailRequest(request_id: string): Promise<any>;
+
   createRequestProcessStandard(
     data: CreateRequestProcessStandardDTO,
   ): Promise<any>;
+
   getDetailRequestPrcocessStandard(plant_season_id: string): Promise<any>;
+
+  confirmRequest(request_id: string, data: UpdateStatusTaskDTO): Promise<any>;
 }

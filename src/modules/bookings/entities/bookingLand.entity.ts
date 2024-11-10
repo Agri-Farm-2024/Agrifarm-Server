@@ -16,6 +16,7 @@ import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpe
 import { BookingPaymentFrequency } from '../types/booking-payment.enum';
 import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
 import { BookingMaterial } from 'src/modules/materials/entities/booking-material.entity';
+import { Request } from 'src/modules/requests/entities/request.entity';
 
 @Entity('bookings_land')
 export class BookingLand extends AbstractEntity {
@@ -137,4 +138,7 @@ export class BookingLand extends AbstractEntity {
     (bookingMaterial) => bookingMaterial.booking,
   )
   land_booking_materials: BookingMaterial[];
+
+  @OneToMany(() => Request, (request) => request.booking_land)
+  requests: Request[];
 }

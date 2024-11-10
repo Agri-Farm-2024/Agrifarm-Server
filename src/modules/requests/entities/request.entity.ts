@@ -5,16 +5,15 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { RequestSupportType } from '../types/request-support-type.enum';
 import { RequestType } from '../types/request-type.enum';
 import { Task } from 'src/modules/tasks/entities/task.entity';
-import { Plant } from 'src/modules/plants/entities/plant.entity';
 import { PlantSeason } from 'src/modules/plants/entities/plantSeason.entity';
 import { RequestStatus } from '../types/request-status.enum';
+import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 
 @Entity('requests')
 export class Request extends AbstractEntity {
@@ -47,8 +46,11 @@ export class Request extends AbstractEntity {
   @Column({ nullable: true, type: 'uuid' })
   sender_id: string;
 
-  @Column({ nullable: true, type: 'uuid', name: 'plant_season_id' })
+  @Column({ nullable: true, type: 'uuid' })
   plant_season_id: string;
+
+  @Column({ nullable: true, type: 'uuid' })
+  booking_land_id: string;
 
   @Column({
     default: RequestSupportType.direct,
@@ -62,7 +64,7 @@ export class Request extends AbstractEntity {
 
   @Column({ default: RequestStatus.pending, type: 'enum', enum: RequestStatus })
   status: RequestStatus;
-
+  // Relations
   @ManyToOne(() => User, (user) => user.request, {
     nullable: true,
   })
@@ -75,4 +77,8 @@ export class Request extends AbstractEntity {
   @ManyToOne(() => PlantSeason, (plantSeason) => plantSeason.requests)
   @JoinColumn({ name: 'plant_season_id' })
   plant_season: PlantSeason;
+
+  @ManyToOne(() => BookingLand, (booking) => booking.requests)
+  @JoinColumn({ name: 'booking_land_id' })
+  booking_land: BookingLand;
 }

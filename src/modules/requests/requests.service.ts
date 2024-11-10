@@ -22,6 +22,7 @@ export class RequestsService implements IRequestService {
   constructor(
     @InjectRepository(Request)
     private readonly requestEntity: Repository<Request>,
+
     private readonly mailService: MailService,
     private readonly loggerService: LoggerService,
     private readonly taskService: TasksService,
@@ -272,5 +273,28 @@ export class RequestsService implements IRequestService {
 
       throw new InternalServerErrorException(error.message);
     }
+  }
+
+  async createRequestReportLand(booking_id: string): Promise<any> {
+    try {
+      // Create a new request
+      const new_request = await this.requestEntity.save({
+        booking_land_id: booking_id,
+        type: RequestType.report_land,
+      });
+      if (!new_request) {
+        throw new BadRequestException('Unable to create request');
+      }
+      // create task for the request
+      const new_task = await this.taskService.createTask(
+        new_request.request_id,
+      );
+      if (!new_task) {
+        throw new BadRequestException('Unable to create task');
+      }
+      // send noti to manager
+      // send mail to user
+      return new_request;
+    } catch (error) {}
   }
 }

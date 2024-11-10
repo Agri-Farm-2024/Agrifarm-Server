@@ -5,4 +5,5 @@ export enum RequestType {
   product_puchase_harvest = 'product_puchase_harvest',
   technical_support = 'technical_support',
   create_process_standard = 'create_process_standard',
+  report_land = 'report_land',
 }
