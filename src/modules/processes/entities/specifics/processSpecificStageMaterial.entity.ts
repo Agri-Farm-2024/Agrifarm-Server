@@ -50,7 +50,7 @@ export class ProcessSpecificStageMaterial extends AbstractEntity {
   @JoinColumn({ name: 'process_technical_specific_stage_id' })
   process_technical_specific_stage: ProcessSpecificStage;
 
-  @OneToMany(
+  @ManyToOne(
     () => Material,
     (material) => material.process_specific_stage_material,
   )

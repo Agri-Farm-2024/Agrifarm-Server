@@ -86,8 +86,17 @@ export class ProcessesController {
     return this.processesService.removeProcessStandard(id);
   }
 
-  @Get('/getListProcessSpecific')
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: ProcessSpecificStatus,
+  })
+  @ApiQuery({
+    name: 'plant_id',
+    required: false,
+  })
   @ApplyPaginationMetadata
+  @Get('/getListProcessSpecific')
   getListProcessSpecific(
     @Pagination() pagination: PaginationParams,
     @Query('status') status: ProcessSpecificStatus,

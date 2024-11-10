@@ -580,11 +580,10 @@ export class ProcessesService implements IProcessesService {
           where: filter_condition,
           relations: {
             process_technical_standard: {
-              plant_season: {
-                plant: true,
-              },
-              expert: true,
+            plant_season: {
+              plant: true,
             },
+          },
             process_technical_specific_stage: {
               process_technical_specific_stage_content: true,
               process_technical_specific_stage_material: {
@@ -624,8 +623,7 @@ export class ProcessesService implements IProcessesService {
           total_page,
         },
       };
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error fetching process standards:', error);
       throw new InternalServerErrorException(error.message);
     }
