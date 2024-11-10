@@ -11,6 +11,7 @@ import {
 import { ProcessStandard } from '../standards/processStandard.entity';
 import { ProcessSpecificStage } from './processSpecificStage.entity';
 import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
+import { ProcessSpecificStatus } from '../../types/processSpecific-status.enum';
 
 @Entity('processes_technical_specific')
 export class ProcessSpecific extends AbstractEntity {
@@ -39,6 +40,13 @@ export class ProcessSpecific extends AbstractEntity {
 
   @Column({ nullable: true })
   qr_url: string;
+
+  @Column({
+    type: 'enum',
+    enum: ProcessSpecificStatus,
+    default: ProcessSpecificStatus.pending,
+  })
+  status: ProcessSpecificStatus;
 
   // Relation
   @ManyToOne(
