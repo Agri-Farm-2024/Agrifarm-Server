@@ -25,6 +25,7 @@ import { ProcessTechnicalStandardStatus } from './types/status-processStandard.e
 import { UpdateProcessStandardDto } from './dto/update-processStandardStatus.dto';
 import { createProcessSpecificDTO } from './dto/create-process-specific.dto';
 import { UpdateProcessStandardsDto } from './dto/update-process-standard.dto';
+import { ProcessSpecificStatus } from './types/processSpecific-status.enum';
 
 @ApiTags('Process')
 @Controller('processes')
@@ -83,5 +84,19 @@ export class ProcessesController {
   @Delete('/deleteProcessStandard/:id')
   async removeProcessStandard(@Param('id') id: string): Promise<any> {
     return this.processesService.removeProcessStandard(id);
+  }
+
+  @Get('/getListProcessSpecific')
+  @ApplyPaginationMetadata
+  getListProcessSpecific(
+    @Pagination() pagination: PaginationParams,
+    @Query('status') status: ProcessSpecificStatus,
+    @Query('plant_id') plant_id: string,
+  ): Promise<any> {
+    return this.processesService.getListProcessSpecific(
+      pagination,
+      status,
+      plant_id,
+    );
   }
 }

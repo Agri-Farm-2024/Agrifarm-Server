@@ -12,6 +12,7 @@ import { ProcessStandard } from '../standards/processStandard.entity';
 import { ProcessSpecificStage } from './processSpecificStage.entity';
 import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
 import { ProcessSpecificStatus } from '../../types/processSpecific-status.enum';
+import { User } from 'src/modules/users/entities/user.entity';
 
 @Entity('processes_technical_specific')
 export class ProcessSpecific extends AbstractEntity {
@@ -65,4 +66,9 @@ export class ProcessSpecific extends AbstractEntity {
   @OneToOne(() => ServiceSpecific)
   @JoinColumn({ name: 'service_specific_id' })
   service_specific: ServiceSpecific;
+
+  @ManyToOne(() => User, (user) => user.expert_process_technical_specific)
+  @JoinColumn({ name: 'expert_id' })
+  expert: User;
+
 }

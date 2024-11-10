@@ -2,6 +2,7 @@ import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { CreateProcessDto } from '../dto/create-process.dto';
 import { ProcessTechnicalStandardStatus } from '../types/status-processStandard.enum';
 import { UpdateProcessStandardDto } from '../dto/update-processStandardStatus.dto';
+import { ProcessSpecificStatus } from '../types/processSpecific-status.enum';
 
 export interface IProcessesService {
   createProcessStandard(data: CreateProcessDto, expert: any): Promise<any>;
@@ -18,4 +19,10 @@ export interface IProcessesService {
   ): Promise<any>;
 
   removeProcessStandard(id: string): Promise<any>;
+
+  getListProcessSpecific(
+    pagination: PaginationParams,
+    status: ProcessSpecificStatus,
+    plant_id: string,
+  ): Promise<any>
 }

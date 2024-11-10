@@ -16,6 +16,7 @@ import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpe
 import { Report } from 'src/modules/reports/entities/report.entity';
 import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
 import { BookingMaterial } from 'src/modules/materials/entities/booking-material.entity';
+import { ProcessSpecific } from 'src/modules/processes/entities/specifics/processSpecific.entity';
 
 @Entity('users') // Maps this class to the 'users' table in the database
 export class User extends AbstractEntity {
@@ -112,4 +113,7 @@ export class User extends AbstractEntity {
 
   @OneToMany(()=> BookingMaterial, (bookingMaterial) => bookingMaterial.landrenter)
   landrenter_booking_materials: BookingMaterial[];
+
+  @OneToMany(() => ProcessSpecific, (processSpecific) => processSpecific.expert)
+  expert_process_technical_specific: ProcessSpecific[];
 }

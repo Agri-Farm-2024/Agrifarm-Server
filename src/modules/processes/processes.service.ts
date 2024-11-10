@@ -37,6 +37,7 @@ import { Request } from '../requests/entities/request.entity';
 import { RequestStatus } from '../requests/types/request-status.enum';
 import { UpdateProcessStandardDto } from './dto/update-processStandardStatus.dto';
 import { UpdateProcessStandardsDto } from './dto/update-process-standard.dto';
+import { ProcessSpecificStatus } from './types/processSpecific-status.enum';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -552,6 +553,80 @@ export class ProcessesService implements IProcessesService {
       }
       return process_technical_specific;
     } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  //getlist process specific by status and plant id
+  async getListProcessSpecific(
+    pagination: PaginationParams,
+    status: ProcessSpecificStatus,
+    plant_id: string,
+  ): Promise<any> {
+    try {
+      // filter conditon by status and plant id
+      const filter_condition: any = {};
+      if (status) {
+        filter_condition.status = status;
+      }
+      if (plant_id) {
+        filter_condition.plant_season = {
+          plant_id: plant_id,
+        };
+      }
+
+      const [process_technical_specific, total_count] = await Promise.all([
+        this.processSpecificRepo.find({
+          where: filter_condition,
+          relations: {
+            process_technical_standard: {
+              plant_season: {
+                plant: true,
+              },
+              expert: true,
+            },
+            process_technical_specific_stage: {
+              process_technical_specific_stage_content: true,
+              process_technical_specific_stage_material: {
+                materialSpecific: true,
+              },
+            },
+          },
+          order: {
+            process_technical_specific_stage: {
+              stage_numberic_order: 'ASC',
+              process_technical_specific_stage_content: {
+                content_numberic_order: 'ASC',
+              },
+            },
+          },
+          select: {
+            expert: {
+              full_name: true,
+              email: true,
+              role: true,
+              user_id: true,
+            },
+          },
+          take: pagination.page_size,
+          skip: (pagination.page_index - 1) * pagination.page_size,
+        }),
+        this.processSpecificRepo.count({
+          where: filter_condition,
+        }),
+      ]);
+      // get total page
+      const total_page = Math.ceil(total_count / pagination.page_size);
+      return {
+        process_technical_specific,
+        pagination: {
+          ...pagination,
+          total_page,
+        },
+      };
+    }
+    catch (error) {
+      console.error('Error fetching process standards:', error);
       throw new InternalServerErrorException(error.message);
     }
   }
