@@ -168,7 +168,7 @@ export class TasksService implements ITaskService {
       }
       // check request status
       if (task.request.status !== RequestStatus.in_progress) {
-        throw new BadRequestException('Request not in progress or rejected');
+        throw new BadRequestException('Request not in progress');
       }
       // update request status
       const updated_request = await this.requestSerivce.updateRequestStatus(
