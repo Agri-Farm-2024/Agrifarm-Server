@@ -46,6 +46,7 @@ export class MaterialsController {
   }
 
   @Put('/updateMaterial/:id')
+  @UseGuards(AuthGuard)
   @Roles(UserRole.staff)
   update(
     @Param('id') id: string,
