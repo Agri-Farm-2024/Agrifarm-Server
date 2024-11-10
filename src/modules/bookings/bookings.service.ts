@@ -628,11 +628,14 @@ export class BookingsService implements IBookingService {
       if (!data.payment_frequency) {
         throw new BadRequestException('Payment frequency is required');
       }
-      // Create transaction for payment
-      const transaction =
-        await this.transactionService.createTransactionPaymentBookingLand(
-          booking_exist.booking_id,
-        );
+      // check time for payment
+      if (data.payment_frequency === BookingPaymentFrequency.multiple) {
+        if (booking_exist.total_month < 12) {
+          throw new BadRequestException(
+            'Can not payment multiple time with total month < 12',
+          );
+        }
+      }
       // Send mail to land renter
       // Send notification to land renter
       // update status booking to pending payment
@@ -643,6 +646,11 @@ export class BookingsService implements IBookingService {
         payment_frequency: data.payment_frequency,
         signed_at: new Date(),
       });
+      // Create transaction for payment
+      const transaction =
+        await this.transactionService.createTransactionPaymentBookingLand(
+          booking_exist.booking_id,
+        );
       return transaction;
     } catch (error) {
       if (

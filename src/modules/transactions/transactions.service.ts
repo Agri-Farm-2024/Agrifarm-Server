@@ -91,11 +91,12 @@ export class TransactionsService implements ITransactionService {
       if (booking.payment_frequency === BookingPaymentFrequency.single) {
         // Create transaction expired 1 day
         const new_transaction = this.transactionRepository.save({
-          booking_id,
+          booking_land_id: booking_id,
           transaction_code,
           total_price,
           purpose: TransactionPurpose.booking_land,
           expired_at: new Date(new Date().setDate(new Date().getDate() + 1)),
+          user_id: booking.landrenter_id,
         });
         return new_transaction;
       }
@@ -104,12 +105,13 @@ export class TransactionsService implements ITransactionService {
       if (booking.payment_frequency === BookingPaymentFrequency.multiple) {
         // create 1st transaction expired after 1 days
         const first_transaction = this.transactionRepository.save({
-          bookging_id: booking_id,
+          booking_land_id: booking_id,
           transaction_code: transaction_code,
-          total_price: (total_price * 2) / 3,
+          total_price: Math.ceil((total_price * 2) / 3),
           purpose: TransactionPurpose.booking_land,
           expired_at: new Date(new Date().setDate(new Date().getDate() + 1)),
           status: TransactionStatus.approved,
+          user_id: booking.landrenter_id,
         });
         // create 2st transaction expired after 10 days before booking end
         // generate new transaction code 6 digits uppercase
@@ -122,16 +124,17 @@ export class TransactionsService implements ITransactionService {
           return this.createTransactionPaymentBookingLand(booking_id);
         }
         // create 2nd transaction
-        const second_transaction = this.transactionRepository.save({
-          booking_id,
+        await this.transactionRepository.save({
+          booking_land_id: booking_id,
           transaction_code: transaction_code_2,
-          total_price: total_price / 3,
+          total_price: Math.ceil(total_price / 3),
           expired_at: new Date(
             new Date().setDate(booking.time_end.getDate() - 10),
           ),
           status: TransactionStatus.pending,
+          user_id: booking.landrenter_id,
         });
-        return [first_transaction, second_transaction];
+        return first_transaction;
       }
     } catch (error) {}
   }
@@ -283,10 +286,9 @@ export class TransactionsService implements ITransactionService {
   }
 
   private getTotalPriceBooking(booking: BookingLand): number {
+    // check payment frequency
     const total_price_booking: number =
-      (booking.time_end.getMonth() - booking.time_start.getMonth() + 1) *
-        booking.price_per_month +
-      booking.price_deposit;
+      booking.total_month * booking.price_per_month;
     const total_price = total_price_booking + booking.price_deposit;
     return total_price;
   }
