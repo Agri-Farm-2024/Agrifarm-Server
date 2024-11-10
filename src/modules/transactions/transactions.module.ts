@@ -6,6 +6,8 @@ import { Transaction } from './entities/transaction.entity';
 import { BookingsModule } from '../bookings/bookings.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ServicesModule } from '../servicesPackage/servicesPackage.module';
+import { OrdersModule } from '../orders/orders.module';
+import { MaterialsModule } from '../materials/materials.module';
 
 @Module({
   controllers: [TransactionsController],
@@ -14,6 +16,7 @@ import { ServicesModule } from '../servicesPackage/servicesPackage.module';
     TypeOrmModule.forFeature([Transaction]),
     forwardRef(() => BookingsModule),
     forwardRef(() => ServicesModule),
+    forwardRef(() => OrdersModule),
     JwtModule,
   ],
   exports: [TransactionsService],

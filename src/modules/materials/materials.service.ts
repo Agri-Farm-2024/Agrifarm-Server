@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -13,13 +15,13 @@ import { LoggerService } from 'src/logger/logger.service';
 
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { Order } from '../orders/entities/order.entity';
-import { OrderDetail } from '../orders/entities/orderDetail.entity';
 import { Payload } from '../auths/types/payload.type';
 import { OrdersService } from '../orders/orders.service';
 import { MaterialType } from './types/material-type.enum';
 import { TransactionsService } from '../transactions/transactions.service';
 import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
 import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
+import { BuyMaterialDTO } from './dto/buy-material.dto';
 
 @Injectable()
 export class MaterialsService implements IMaterialService {
@@ -27,11 +29,12 @@ export class MaterialsService implements IMaterialService {
     @InjectRepository(Material)
     private readonly materialEntity: Repository<Material>,
 
-    //call service order
-    private readonly orderServicce: OrdersService,
+    @Inject(forwardRef(() => OrdersService))
+    private readonly orderService: OrdersService,
 
     private readonly loggerService: LoggerService,
 
+    @Inject(forwardRef(() => TransactionsService))
     private readonly transactionService: TransactionsService,
   ) {}
 
@@ -114,13 +117,10 @@ export class MaterialsService implements IMaterialService {
 
   // Buy material
 
-  async buyMaterial(
-    materials: { material_id: string; quantity: number }[],
-    user: Payload,
-  ): Promise<any> {
+  async buyMaterial(materials: BuyMaterialDTO[], user: Payload): Promise<any> {
     try {
       // Create a new order for the transaction
-      const newOrder: Order = await this.orderServicce.createOrder({
+      const newOrder: Order = await this.orderService.createOrder({
         landrenter_id: user.user_id,
       });
       // Caculate total_price for transaction
@@ -134,12 +134,16 @@ export class MaterialsService implements IMaterialService {
           where: { material_id },
         });
         if (!material) {
+          // handle delete order
+          await this.orderService.deleteOrder(newOrder.order_id);
           throw new BadRequestException(
             `Material with ID ${material_id} not found`,
           );
         }
         // check material is for buy
         if (material.type !== MaterialType.buy) {
+          await this.orderService.deleteOrder(newOrder.order_id);
+
           throw new BadRequestException(
             `Material with ID ${material_id} is not for buy`,
           );
@@ -147,12 +151,14 @@ export class MaterialsService implements IMaterialService {
 
         // Check if there is enough quantity
         if (material.total_quantity < quantity) {
+          await this.orderService.deleteOrder(newOrder.order_id);
+
           throw new BadRequestException(
             `Not enough quantity for material ${material.name}`,
           );
         }
         // Create order detail
-        await this.orderServicce.createOrderDetail({
+        await this.orderService.createOrderDetail({
           material_id: material_id,
           order_id: newOrder.order_id,
           quantity: quantity,
@@ -176,12 +182,41 @@ export class MaterialsService implements IMaterialService {
         order_id: newOrder.order_id,
         total_price: total_price,
         purpose: TransactionPurpose.order,
+        user_id: user.user_id,
       };
 
       const transaction = await this.transactionService.createTransaction(
         transactionData as CreateTransactionDTO,
       );
       return transaction;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async handleCancelOrder(material: string, quantity: number): Promise<any> {
+    try {
+      // update quantity material
+      const materialEntity = await this.materialEntity.findOne({
+        where: {
+          material_id: material,
+        },
+      });
+      if (!materialEntity) {
+        throw new BadRequestException('Material not found');
+      }
+      await this.materialEntity.update(
+        {
+          material_id: material,
+        },
+        {
+          total_quantity: materialEntity.total_quantity + quantity,
+        },
+      );
+      return `Material ${materialEntity.name} is updated`;
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;

@@ -19,6 +19,7 @@ import { Payload } from '../auths/types/payload.type';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { parsePaymentLink } from 'src/utils/payment-link.util';
 import { ServicesService } from '../servicesPackage/servicesPackage.service';
+import { OrdersService } from '../orders/orders.service';
 
 @Injectable()
 export class TransactionsService implements ITransactionService {
@@ -31,6 +32,9 @@ export class TransactionsService implements ITransactionService {
 
     @Inject(forwardRef(() => ServicesService))
     private readonly servicePackageService: ServicesService,
+
+    @Inject(forwardRef(() => OrdersService))
+    private readonly orderService: OrdersService,
   ) {}
   /**
    * @function createTransaction
@@ -311,6 +315,8 @@ export class TransactionsService implements ITransactionService {
           return await this.servicePackageService.cancelServiceSpecific(
             transaction.service_specific_id,
           );
+        case TransactionPurpose.order:
+          return await this.orderService.cancelOrder(transaction.order_id);
         default:
           return `Can't cancel transaction with purpose ${transaction.purpose}`;
       }

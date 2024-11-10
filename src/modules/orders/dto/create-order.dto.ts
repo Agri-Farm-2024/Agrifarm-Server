@@ -1,9 +1,7 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateOrderDto {
-    @ApiProperty({
-        description: 'The id of the land renter',
-        
-    })
-    landrenter_id: string;
+  @IsString()
+  @IsNotEmpty()
+  landrenter_id: string;
 }

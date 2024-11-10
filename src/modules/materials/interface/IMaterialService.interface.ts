@@ -6,6 +6,4 @@ export interface IMaterialService {
   updateMaterial(id: string, updateMaterialDto: any): any;
 
   getMaterials(pagination: PaginationParams): any;
-
-  
 }

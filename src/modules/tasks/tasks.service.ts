@@ -99,6 +99,7 @@ export class TasksService implements ITaskService {
             full_name: true,
             email: true,
             role: true,
+            avatar_url: true,
           },
         },
         order: { created_at: 'DESC' },

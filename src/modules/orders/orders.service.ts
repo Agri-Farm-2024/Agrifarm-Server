@@ -1,14 +1,18 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 import { IOrdersService } from './interfaces/IOrderService.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from './entities/order.entity';
 import { Repository } from 'typeorm';
 import { LoggerService } from 'src/logger/logger.service';
 import { OrderDetail } from './entities/orderDetail.entity';
-import { Material } from '../materials/entities/material.entity';
 import { CreateOrderDetailDto } from './dto/create-order-detail.dto';
+import { MaterialsService } from '../materials/materials.service';
 
 @Injectable()
 export class OrdersService implements IOrdersService {
@@ -20,7 +24,11 @@ export class OrdersService implements IOrdersService {
     private readonly orderDetailRepo: Repository<OrderDetail>,
 
     private readonly loggerService: LoggerService,
+
+    @Inject(forwardRef(() => MaterialsService))
+    private readonly materialService: MaterialsService,
   ) {}
+
   async createOrder(createOrderDto: CreateOrderDto): Promise<Order> {
     const newOrder = this.orderRepo.create(createOrderDto);
     return await this.orderRepo.save(newOrder);
@@ -32,19 +40,48 @@ export class OrdersService implements IOrdersService {
     return await this.orderDetailRepo.save(newOrderDetail);
   }
 
-  findAll() {
-    return `This action returns all orders`;
+  async deleteOrder(order_id: string) {
+    try {
+      // get order detail
+      const orderDetail = await this.orderDetailRepo.find({
+        where: {
+          order_id,
+        },
+      });
+      // delete order detail
+      for (let i = 0; i < orderDetail.length; i++) {
+        await this.orderDetailRepo.delete(orderDetail[i].order_detail_id);
+      }
+      // delete order
+      await this.orderRepo.delete(order_id);
+      return 'Order is deleted';
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
-  }
-
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+  async cancelOrder(order_id: string) {
+    try {
+      // get list order detail
+      const orderDetail = await this.orderDetailRepo.find({
+        where: {
+          order_id,
+        },
+      });
+      // update quantity material
+      for (let i = 0; i < orderDetail.length; i++) {
+        await this.materialService.handleCancelOrder(
+          orderDetail[i].material_id,
+          orderDetail[i].quantity,
+        );
+        // delete order detail
+        await this.orderDetailRepo.delete(orderDetail[i].order_detail_id);
+      }
+      // delete order
+      await this.orderRepo.delete(order_id);
+      return 'Order is canceled';
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 }

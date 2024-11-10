@@ -275,9 +275,10 @@ export class ServicesService implements IService {
       if (!service_specific) {
         throw new BadRequestException('Service specific does not exist');
       }
-      // update status
-      service_specific.status = ServiceSpecificStatus.canceled;
-      await this.serviceSpecificRepo.save(service_specific);
+      // delete service specific
+      await this.serviceSpecificRepo.delete(
+        service_specific.service_specific_id,
+      );
       return 'Cancel service specific successfully';
     } catch (error) {
       if (error instanceof BadRequestException) {
