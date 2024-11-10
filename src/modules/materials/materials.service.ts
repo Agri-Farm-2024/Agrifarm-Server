@@ -79,6 +79,8 @@ export class MaterialsService implements IMaterialService {
       material.name = updateMaterialDto.name;
       material.total_quantity = updateMaterialDto.total_quantity;
       material.price_per_piece = updateMaterialDto.price_per_piece;
+      material.unit = updateMaterialDto.unit;
+      material.description = updateMaterialDto.description;
       material.deposit_per_piece = updateMaterialDto.deposit_per_piece;
       material.image_material = updateMaterialDto.image_material;
       material.price_of_rent = updateMaterialDto.price_of_rent;
