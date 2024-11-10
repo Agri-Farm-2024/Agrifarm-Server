@@ -290,4 +290,35 @@ export class TransactionsService implements ITransactionService {
   private generateTransactionCode(): string {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
   }
+
+  async cancelTransaction(transaction_id: string): Promise<any> {
+    try {
+      // get detail transaction
+      const transaction = await this.transactionRepository.findOne({
+        where: { transaction_id },
+      });
+      // check transaction exist
+      if (!transaction) {
+        throw new BadRequestException('Transaction not found');
+      }
+      // check transaction status
+      if (transaction.status !== TransactionStatus.approved) {
+        throw new BadRequestException('Transaction is not approved');
+      }
+      // check purpose transaction
+      switch (transaction.purpose) {
+        case TransactionPurpose.service:
+          return await this.servicePackageService.cancelServiceSpecific(
+            transaction.service_specific_id,
+          );
+        default:
+          return `Can't cancel transaction with purpose ${transaction.purpose}`;
+      }
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }

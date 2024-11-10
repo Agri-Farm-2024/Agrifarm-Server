@@ -263,4 +263,27 @@ export class ServicesService implements IService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  async cancelServiceSpecific(service_specific_id: string): Promise<any> {
+    try {
+      // get detail
+      const service_specific = await this.serviceSpecificRepo.findOne({
+        where: {
+          service_specific_id,
+        },
+      });
+      if (!service_specific) {
+        throw new BadRequestException('Service specific does not exist');
+      }
+      // update status
+      service_specific.status = ServiceSpecificStatus.canceled;
+      await this.serviceSpecificRepo.save(service_specific);
+      return 'Cancel service specific successfully';
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }

@@ -1,4 +1,11 @@
-import { Controller, Get, Param, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
@@ -28,5 +35,10 @@ export class TransactionsController {
   @Get('/:transaction_id')
   getDetailTransaction(@Param('transaction_id') transaction_id: string) {
     return this.transactionsService.getDetailTransaction(transaction_id);
+  }
+
+  @Delete('/:transaction_id')
+  cancelTransaction(@Param('transaction_id') transaction_id: string) {
+    return this.transactionsService.cancelTransaction(transaction_id);
   }
 }
