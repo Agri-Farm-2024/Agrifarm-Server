@@ -41,10 +41,17 @@ export class TasksController {
   }
 
   @UseGuards(AuthGuard)
-  @Roles(UserRole.admin, UserRole.manager, UserRole.staff)
-  @Put('/start/:task_id')
+  @Roles(UserRole.staff, UserRole.expert)
+  @Patch('/start/:task_id')
   startTask(@Param('task_id') task_id: string, @Request() request: any) {
     return this.tasksService.startTask(task_id, request.user);
+  }
+
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.staff, UserRole.expert)
+  @Patch('/pendingApprove/:task_id')
+  approveTask(@Param('task_id') task_id: string, @Request() request: any) {
+    return this.tasksService.approveTask(task_id, request.user);
   }
 
   @UseGuards(AuthGuard)

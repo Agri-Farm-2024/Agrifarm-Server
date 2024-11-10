@@ -113,8 +113,11 @@ export class TasksService implements ITaskService {
   async startTask(task_id: string, user: Payload): Promise<any> {
     try {
       // check task exist
-      const task = await this.taskEntity.findOneBy({
-        task_id: task_id,
+      const task = await this.taskEntity.findOne({
+        where: { task_id: task_id },
+        relations: {
+          request: true,
+        },
       });
       if (!task) {
         throw new BadRequestException('Task not found');
@@ -123,10 +126,51 @@ export class TasksService implements ITaskService {
       if (task.assigned_to_id !== user.user_id) {
         throw new ForbiddenException('Task not assigned to you');
       }
+      // check request status
+      if (task.request.status !== RequestStatus.assigned) {
+        throw new BadRequestException('Request not assigned');
+      }
       // update request status
       const updated_request = await this.requestSerivce.updateRequestStatus(
         task.request_id,
         RequestStatus.in_progress,
+      );
+      return updated_request;
+    } catch (error) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof ForbiddenException
+      ) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async approveTask(task_id: string, user: Payload): Promise<any> {
+    try {
+      // check task exist
+      const task = await this.taskEntity.findOne({
+        where: { task_id: task_id },
+        relations: {
+          request: true,
+        },
+      });
+      if (!task) {
+        throw new BadRequestException('Task not found');
+      }
+      // check user is assigned to task
+      if (task.assigned_to_id !== user.user_id) {
+        throw new ForbiddenException('Task not assigned to you');
+      }
+      // check request status
+      if (task.request.status !== RequestStatus.in_progress) {
+        throw new BadRequestException('Request not in progress');
+      }
+      // update request status
+      const updated_request = await this.requestSerivce.updateRequestStatus(
+        task.request_id,
+        RequestStatus.pending_approval,
       );
       return updated_request;
     } catch (error) {

@@ -7,7 +7,6 @@ import { BookingsModule } from '../bookings/bookings.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ServicesModule } from '../servicesPackage/servicesPackage.module';
 import { OrdersModule } from '../orders/orders.module';
-import { MaterialsModule } from '../materials/materials.module';
 
 @Module({
   controllers: [TransactionsController],
