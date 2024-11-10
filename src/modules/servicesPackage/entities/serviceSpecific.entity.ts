@@ -6,6 +6,7 @@ import {
   JoinColumn,
   PrimaryGeneratedColumn,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
 import { User } from 'src/modules/users/entities/user.entity';
 import { ServicePackage } from './servicePackage.entity';
@@ -74,6 +75,6 @@ export class ServiceSpecific extends AbstractEntity {
   @JoinColumn({ name: 'booking_id' })
   booking_land: BookingLand;
 
-  @OneToMany(() => Transaction, (transaction) => transaction.service_specific)
-  transactions: Transaction[];
+  @OneToOne(() => Transaction, (transaction) => transaction.service_specific)
+  transaction: Transaction;
 }

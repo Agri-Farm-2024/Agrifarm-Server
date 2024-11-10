@@ -88,9 +88,9 @@ export class Transaction extends AbstractEntity {
   @JoinColumn({ name: 'booking_land_id' })
   booking_land: BookingLand;
 
-  @ManyToOne(
+  @OneToOne(
     () => ServiceSpecific,
-    (serviceSpecific) => serviceSpecific.transactions,
+    (serviceSpecific) => serviceSpecific.transaction,
   )
   @JoinColumn({ name: 'service_specific_id' })
   service_specific: ServiceSpecific;
