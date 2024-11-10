@@ -27,6 +27,7 @@ import { ServicePackageStatus } from './types/service-package-status.enum';
 import { BookingsService } from '../bookings/bookings.service';
 import { BookingLand } from '../bookings/entities/bookingLand.entity';
 import { Payload } from '../auths/types/payload.type';
+import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 
 @Injectable()
 export class ServicesService implements IService {
@@ -87,6 +88,46 @@ export class ServicesService implements IService {
     try {
       const service_packages = await this.servicePackageRepo.find();
       return service_packages;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  /**
+   * @function getListServiceSpecific
+   * @returns
+   */
+  async getListServiceSpecific(
+    pagination: PaginationParams,
+    user: Payload,
+    status: ServiceSpecificStatus,
+  ): Promise<any> {
+    try {
+      const filter: any = {
+        landrenter_id: user.user_id,
+      };
+      if (status) {
+        filter.status = status;
+      }
+      const [services, total_count] = await Promise.all([
+        this.servicePackageRepo.find({
+          where: filter,
+          skip: (pagination.page_index - 1) * pagination.page_size,
+          take: pagination.page_size,
+        }),
+        this.servicePackageRepo.count({
+          where: filter,
+        }),
+      ]);
+      // total page
+      const total_page = Math.ceil(total_count / pagination.page_size);
+      return {
+        services,
+        pagination: {
+          ...pagination,
+          total_page,
+        },
+      };
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

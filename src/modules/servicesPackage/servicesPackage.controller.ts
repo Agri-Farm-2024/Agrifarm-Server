@@ -6,14 +6,21 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { ServicesService } from './servicesPackage.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CreateServicePackageDTO } from './dto/create-service-package.dto';
 import { CreateServiceSpecificDTO } from './dto/create-service-specific.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { Roles } from 'src/common/decorations/role.decoration';
 import { UserRole } from '../users/types/user-role.enum';
+import {
+  ApplyPaginationMetadata,
+  Pagination,
+} from 'src/common/decorations/pagination.decoration';
+import { PaginationParams } from 'src/common/decorations/types/pagination.type';
+import { ServiceSpecificStatus } from './types/service-specific-status.enum';
 
 @ApiTags('Service')
 @Controller('services')
@@ -28,6 +35,27 @@ export class ServicesController {
   @Get('/getListServicePackages')
   async getListServicePackages() {
     return this.servicesService.getListServicePackages();
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/getListServiceSpecific')
+  @ApplyPaginationMetadata
+  @ApiQuery({
+    name: 'status',
+    enum: ServiceSpecificStatus,
+    required: false,
+  })
+  async getListServiceSpecific(
+    @Pagination() pagination: PaginationParams,
+    @Request() req: any,
+    @Query('status') status: ServiceSpecificStatus,
+  ) {
+    const user = req['user'];
+    return this.servicesService.getListServiceSpecific(
+      pagination,
+      user,
+      status,
+    );
   }
 
   @UseGuards(AuthGuard)
