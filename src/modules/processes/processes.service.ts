@@ -501,6 +501,7 @@ export class ProcessesService implements IProcessesService {
         time_start: service_specific.time_start,
         time_end: service_specific.time_end,
         qr_url: '',
+        expert_id: process_technical_standard.expert_id,
       });
       // create process specific stage
       for (const stage of process_technical_standard.process_standard_stage) {
