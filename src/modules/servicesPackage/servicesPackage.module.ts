@@ -9,6 +9,7 @@ import { PlantsModule } from '../plants/plants.module';
 import { TransactionsModule } from '../transactions/transactions.module';
 import { ProcessesModule } from '../processes/processes.module';
 import { BookingsModule } from '../bookings/bookings.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   controllers: [ServicesController],
@@ -20,6 +21,7 @@ import { BookingsModule } from '../bookings/bookings.module';
     forwardRef(() => TransactionsModule),
     forwardRef(() => ProcessesModule),
     BookingsModule,
+    JwtModule,
   ],
   exports: [ServicesService],
 })

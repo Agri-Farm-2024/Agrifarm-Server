@@ -1,8 +1,19 @@
-import { Controller, Get, Post, Body, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Delete,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { ServicesService } from './servicesPackage.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateServicePackageDTO } from './dto/create-service-package.dto';
 import { CreateServiceSpecificDTO } from './dto/create-service-specific.dto';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { Roles } from 'src/common/decorations/role.decoration';
+import { UserRole } from '../users/types/user-role.enum';
 
 @ApiTags('Service')
 @Controller('services')
@@ -19,9 +30,15 @@ export class ServicesController {
     return this.servicesService.getListServicePackages();
   }
 
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.land_renter)
   @Post('/buyServiceSpecific')
-  async buyServiceSpecific(@Body() data: CreateServiceSpecificDTO) {
-    return this.servicesService.buyServiceSpecific(data);
+  async buyServiceSpecific(
+    @Body() data: CreateServiceSpecificDTO,
+    @Request() req: any,
+  ) {
+    const user = req['user'];
+    return this.servicesService.buyServiceSpecific(data, user);
   }
 
   @Delete('/deleteServicePackage/:id')

@@ -26,6 +26,7 @@ import { ProcessesService } from '../processes/processes.service';
 import { ServicePackageStatus } from './types/service-package-status.enum';
 import { BookingsService } from '../bookings/bookings.service';
 import { BookingLand } from '../bookings/entities/bookingLand.entity';
+import { Payload } from '../auths/types/payload.type';
 
 @Injectable()
 export class ServicesService implements IService {
@@ -93,6 +94,7 @@ export class ServicesService implements IService {
 
   async buyServiceSpecific(
     createServicePackage: CreateServiceSpecificDTO,
+    user: Payload,
   ): Promise<any> {
     try {
       // get booking detail
@@ -160,6 +162,7 @@ export class ServicesService implements IService {
           createServicePackage.time_start,
           plant_season.total_month,
         ),
+        landrenter_id: user.user_id,
       });
       // create transaction DTO and create transaction
       const transactionData: Partial<CreateTransactionDTO> = {
@@ -168,6 +171,7 @@ export class ServicesService implements IService {
           new_service_specific.price_package +
           new_service_specific.price_process,
         purpose: TransactionPurpose.service,
+        user_id: user.user_id,
       };
 
       const transaction = await this.transactionService.createTransaction(

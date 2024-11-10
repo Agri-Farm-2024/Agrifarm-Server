@@ -22,6 +22,9 @@ export class CreateTransactionDTO {
   @IsOptional()
   service_specific_id: string;
 
+  @IsNotEmpty()
+  user_id: string;
+
   @Type(() => Date)
   @IsDate()
   @IsFutureDate()
