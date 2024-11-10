@@ -630,19 +630,138 @@ export class ProcessesService implements IProcessesService {
     }
   }
 
-  // //update process specific
-  // async updateProcessSpecific(
-  //   process_technical_specific_id: string,
-  //   data: UPdateProcessSpecificDto,
-  // ): Promise<any> {
-  //   try {
+  //update process specific
+  async updateProcessSpecific(
+    process_technical_specific_id: string,
+    data: UPdateProcessSpecificDto,
+  ): Promise<any> {
+    try {
+      const process_specific = await this.processSpecificRepo.findOne({
+        where: {
+          process_technical_specific_id,
+        },
+      });
+      if (!process_specific) {
+        throw new BadRequestException('Process standard not found!');
+      }
+      //check if process  is in active
+      if (process_specific.status === ProcessSpecificStatus.pending) {
+        throw new BadRequestException('Process standard is in active');
+      }
+      //update process Specific
+      const data_process_specific = {
+        time_start: data.time_start,
+        time_end: data.time_end,
+        qr_url: data.qr_url,
+      };
+      const update_process_specific = await this.processSpecificRepo.save({
+        ...process_specific,
+        ...data_process_specific,
+      });
+      // update process specific stage
 
+      if (data.stage) {
+        for (const stage of data.stage) {
+          //delete stage
+          if (stage.is_deleted) {
+            await this.processSpecificStageRepo.delete(
+              stage.process_technical_specific_stage_id,
+            );
+          }
+          if (!stage.process_technical_specific_stage_id) {
+            //create new stage
+            await this.processSpecificStageRepo.save({
+              process_technical_specific_id: process_technical_specific_id,
+              stage_title: stage.stage_title,
+              stage_numberic_order: stage.stage_numberic_order,
+              time_start: stage.time_start,
+              time_end: stage.time_end,
+            });
+          } else {
+            //update stage
+            await this.processSpecificStageRepo.update(
+              stage.process_technical_specific_stage_id,
+              {
+                stage_title: stage.stage_title,
+                stage_numberic_order: stage.stage_numberic_order,
+                time_start: stage.time_start,
+                time_end: stage.time_end,
+              },
+            );
+          }
+          if (stage.content) {
+            for (const content of stage.content) {
+              //delete content
+              if (content.is_deleted) {
+                await this.processSpecificStageContentRepo.delete(
+                  content.process_technical_specific_stage_content_id,
+                );
+              }
+              if (!content.process_technical_specific_stage_content_id) {
+                //create new content
+                await this.processSpecificStageContentRepo.save({
+                  process_technical_specific_stage_id:
+                    stage.process_technical_specific_stage_id,
+                  title: content.title,
+                  content: content.content,
+                  content_numberic_order: content.content_numberic_order,
+                  time_start: content.time_start,
+                  time_end: content.time_end,
+                });
+              } else {
+                //update content
+                await this.processSpecificStageContentRepo.update(
+                  content.process_technical_specific_stage_content_id,
+                  {
+                    title: content.title,
+                    content: content.content,
+                    content_numberic_order: content.content_numberic_order,
+                    time_start: content.time_start,
+                    time_end: content.time_end,
+                  },
+                );
+              }
+            }
+          }
 
-  //   } catch (error) {
-  //     if (error instanceof BadRequestException) {
-  //       throw error;
-  //     }
-  //     throw new InternalServerErrorException(error.message);
-  //   }
-  // }
+          // Loop for material
+          if (stage.material) {
+            for (const material of stage.material) {
+              //delete material
+              if (material.is_deleted) {
+                await this.processSpecificStageMaterialRepo.delete(
+                  material.process_technical_specific_stage_material_id,
+                );
+              }
+
+              if (!material.process_technical_specific_stage_material_id) {
+                //create new material
+                await this.processSpecificStageMaterialRepo.save({
+                  process_technical_specific_stage_id:
+                    stage.process_technical_specific_stage_id,
+                  material_id: material.material_id,
+                  quantity: material.quantity,
+                });
+              } else {
+                //update material
+                await this.processSpecificStageMaterialRepo.update(
+                  material.process_technical_specific_stage_material_id,
+                  {
+                    material_id: material.material_id,
+                    quantity: material.quantity,
+                  },
+                );
+              }
+            }
+          }
+        }
+      }
+      return update_process_specific;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }
