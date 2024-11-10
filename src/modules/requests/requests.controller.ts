@@ -67,11 +67,11 @@ export class RequestsController {
     );
   }
 
-  // @Patch('/updateRequest/:request_id')
+  // @Patch('/updateStatusTask/:request_id')
   // async updateRequest(
   //   @Param('request_id') request_id: string,
   //   @Body() data: any,
   // ): Promise<any> {
-  //   return await this.requestsService.updateRequest(request_id, data);
+  //   return await this.requestsService.updateStatusTask(request_id, data);
   // }
 }
