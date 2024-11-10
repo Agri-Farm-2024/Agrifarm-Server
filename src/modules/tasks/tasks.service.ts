@@ -86,7 +86,11 @@ export class TasksService implements ITaskService {
       const tasks = await this.taskEntity.find({
         where: filter,
         relations: {
-          request: true,
+          request: {
+            plant_season: {
+              plant: true,
+            },
+          },
           assign_by: true,
         },
         select: {
