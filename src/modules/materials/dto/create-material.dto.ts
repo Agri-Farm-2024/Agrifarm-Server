@@ -30,7 +30,7 @@ export class CreateMaterialDto {
     description: 'the unit of material',
     example: MaterialUnit.piece,
   })
-  @IsOptional()
+  
   @IsNotEmpty()
   unit: MaterialUnit;
 
@@ -66,6 +66,6 @@ export class CreateMaterialDto {
     description: 'the type of material',
     example: MaterialType.buy,
   })
-  @IsNotEmpty()
+  @IsOptional()
   type: MaterialType;
 }

@@ -49,9 +49,10 @@ export class Material extends AbstractEntity {
   @Column({ nullable: true })
   price_of_rent: number;
 
-  @Column({
+  @Column({ 
     type: 'enum',
     enum: MaterialType,
+    default: MaterialType.buy,
   })
   type: MaterialType;
 

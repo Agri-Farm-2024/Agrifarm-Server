@@ -38,6 +38,7 @@ import { RequestStatus } from '../requests/types/request-status.enum';
 import { UpdateProcessStandardDto } from './dto/update-processStandardStatus.dto';
 import { UpdateProcessStandardsDto } from './dto/update-process-standard.dto';
 import { ProcessSpecificStatus } from './types/processSpecific-status.enum';
+import { UPdateProcessSpecificDto } from './dto/update-process-specific.dto';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -580,10 +581,10 @@ export class ProcessesService implements IProcessesService {
           where: filter_condition,
           relations: {
             process_technical_standard: {
-            plant_season: {
-              plant: true,
+              plant_season: {
+                plant: true,
+              },
             },
-          },
             process_technical_specific_stage: {
               process_technical_specific_stage_content: true,
               process_technical_specific_stage_material: {
@@ -629,6 +630,19 @@ export class ProcessesService implements IProcessesService {
     }
   }
 
-  //update process specific
-  
+  // //update process specific
+  // async updateProcessSpecific(
+  //   process_technical_specific_id: string,
+  //   data: UPdateProcessSpecificDto,
+  // ): Promise<any> {
+  //   try {
+
+
+  //   } catch (error) {
+  //     if (error instanceof BadRequestException) {
+  //       throw error;
+  //     }
+  //     throw new InternalServerErrorException(error.message);
+  //   }
+  // }
 }
