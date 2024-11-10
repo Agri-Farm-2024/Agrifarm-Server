@@ -32,9 +32,6 @@ export class ProcessSpecific extends AbstractEntity {
   expert_id: string;
 
   @Column()
-  name: string;
-
-  @Column()
   time_start: Date;
 
   @Column()
