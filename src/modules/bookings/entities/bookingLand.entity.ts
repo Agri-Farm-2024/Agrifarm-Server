@@ -107,9 +107,7 @@ export class BookingLand extends AbstractEntity {
   @OneToOne(() => Extend, (extend) => extend.booking_land_id)
   extend_id: Extend;
 
-  @ManyToOne(() => User, (user) => user.booking_by_lanrenter, {
-    nullable: true,
-  })
+  @ManyToOne(() => User, (user) => user.booking_by_lanrenter)
   @JoinColumn({ name: 'landrenter_id' })
   land_renter: User;
 
@@ -134,6 +132,9 @@ export class BookingLand extends AbstractEntity {
   @OneToMany(() => Transaction, (transaction) => transaction.booking_land)
   transactions: Transaction[];
 
-  @OneToMany(() => BookingMaterial, (bookingMaterial) => bookingMaterial.booking)
+  @OneToMany(
+    () => BookingMaterial,
+    (bookingMaterial) => bookingMaterial.booking,
+  )
   land_booking_materials: BookingMaterial[];
 }

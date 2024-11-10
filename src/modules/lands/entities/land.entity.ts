@@ -58,7 +58,7 @@ export class Land extends AbstractEntity {
   @JoinColumn({ name: 'staff_id' })
   staff: User;
 
-  @OneToMany(() => BookingLand, (bookingLand) => bookingLand.land_id)
+  @OneToMany(() => BookingLand, (bookingLand) => bookingLand.land)
   booking_land: BookingLand[];
 
   @ManyToOne(() => LandType, (landType) => landType.lands)
