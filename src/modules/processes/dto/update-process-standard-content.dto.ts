@@ -35,6 +35,7 @@ export class UpdateProcessStandardStageContentDto {
   })
   @IsNotEmpty()
   title: string;
+  
   @ApiProperty({
     description: 'the numberic_order of the stage content',
     example: 1,

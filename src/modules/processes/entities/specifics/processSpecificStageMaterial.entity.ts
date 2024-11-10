@@ -27,20 +27,11 @@ export class ProcessSpecificStageMaterial extends AbstractEntity {
   @Column('uuid')
   process_technical_specific_stage_id: string;
 
-  @Column()
-  title: string;
-
-  @Column()
-  content: string;
+  @Column('uuid')
+  material_id: string;
 
   @Column('int')
-  numberic_order: number;
-
-  @Column()
-  time_start: Date;
-
-  @Column()
-  time_end: Date;
+  quantity: number;
 
   @ManyToOne(
     () => ProcessSpecificStage,
