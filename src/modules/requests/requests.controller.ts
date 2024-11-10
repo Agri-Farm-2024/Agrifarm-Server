@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   Logger,
+  UseGuards,
 } from '@nestjs/common';
 import { RequestsService } from './requests.service';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
@@ -20,6 +21,10 @@ import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { RequestType } from './types/request-type.enum';
 import { CreateRequestProcessStandardDTO } from './dto/create-request-processStandard.dto';
 import { RequestStatus } from './types/request-status.enum';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { Roles } from 'src/common/decorations/role.decoration';
+import { UserRole } from '../users/types/user-role.enum';
+import { UpdateStatusTaskDTO } from './dto/update-status-task.dto';
 
 @ApiTags('Request')
 @Controller('requests')
@@ -67,11 +72,13 @@ export class RequestsController {
     );
   }
 
-  // @Patch('/updateStatusTask/:request_id')
-  // async updateRequest(
-  //   @Param('request_id') request_id: string,
-  //   @Body() data: any,
-  // ): Promise<any> {
-  //   return await this.requestsService.updateStatusTask(request_id, data);
-  // }
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.manager, UserRole.staff)
+  @Patch('/confirmRequest/:request_id')
+  async updateRequest(
+    @Param('request_id') request_id: string,
+    @Body() data: UpdateStatusTaskDTO,
+  ): Promise<any> {
+    return await this.requestsService.confirmRequest(request_id, data);
+  }
 }

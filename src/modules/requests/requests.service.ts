@@ -15,6 +15,7 @@ import { RequestType } from './types/request-type.enum';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { CreateRequestProcessStandardDTO } from './dto/create-request-processStandard.dto';
 import { RequestStatus } from './types/request-status.enum';
+import { UpdateStatusTaskDTO } from './dto/update-status-task.dto';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -222,6 +223,54 @@ export class RequestsService implements IRequestService {
       return new_request;
     } catch (error) {
       this.loggerService.error(error.message, error.stack);
+    }
+  }
+
+  async confirmRequest(
+    request_id: string,
+    data: UpdateStatusTaskDTO,
+  ): Promise<any> {
+    try {
+      // check request exist
+      const request = await this.requestEntity.findOne({
+        where: {
+          request_id: request_id,
+        },
+      });
+      if (!request) {
+        throw new BadRequestException('Request not found');
+      }
+      // check status is valid
+      if (
+        data.status !== RequestStatus.completed &&
+        data.status !== RequestStatus.rejected
+      ) {
+        throw new BadRequestException('Invalid status to update');
+      }
+
+      // check default status of request
+      if (request.status !== RequestStatus.pending_approval) {
+        throw new BadRequestException('Request is not pending approval');
+      } else {
+        if (data.status === RequestStatus.rejected) {
+          // check is reason provided
+          if (!data.reason_for_reject) {
+            throw new BadRequestException('Reason is required');
+          }
+        }
+        // update request status
+        const updated_request = await this.requestEntity.save({
+          ...request,
+          status: RequestStatus.completed,
+        });
+        return updated_request;
+      }
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException(error.message);
     }
   }
 }
