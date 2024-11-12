@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsOptional, IsPositive } from 'class-validator';
 
 export class CreateLandDto {
@@ -7,6 +8,15 @@ export class CreateLandDto {
     example: 'Land 1',
   })
   @IsNotEmpty()
+  @Transform(
+    ({ value }) => {
+      if (typeof value === 'string') {
+        return value.trim().toLowerCase();
+      }
+      return value;
+    },
+    { toClassOnly: true },
+  )
   name: string;
 
   @ApiProperty({

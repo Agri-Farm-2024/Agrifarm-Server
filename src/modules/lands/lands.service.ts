@@ -8,7 +8,7 @@ import { UpdateLandDTO } from './dto/update-land.dto';
 import { ILandService } from './interfaces/ILandService.interface';
 import { Land } from './entities/land.entity';
 import { LoggerService } from 'src/logger/logger.service';
-import { IsNull, Not, Repository } from 'typeorm';
+import { IsNull, Like, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LandURL } from './entities/landURL.entity';
 import { LandURLType } from './types/land-url-type.enum';
@@ -19,7 +19,6 @@ import { UserRole } from '../users/types/user-role.enum';
 import { LandType } from './entities/landType.entity';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { LandTypeStatus } from './types/landType-status.enum';
-import { parseUrlLink } from 'src/utils/parse-url-link.util';
 import { Payload } from '../auths/types/payload.type';
 
 @Injectable()
@@ -102,6 +101,7 @@ export class LandsService implements ILandService {
     pagination: PaginationParams,
   ): Promise<any> {
     try {
+      console.log(pagination);
       // filter condition
       const filter_condition: any = {
         staff_id: Not(IsNull()),
@@ -109,6 +109,16 @@ export class LandsService implements ILandService {
       if (status) {
         filter_condition.status = status;
       }
+      if (pagination.search) {
+        for (let i = 0; i < pagination.search.length; i++) {
+          const search = pagination.search[i];
+          filter_condition[search.field] = Like(search.value);
+          if (!search.value) {
+            delete filter_condition[search.field];
+          }
+        }
+      }
+
       const [lands, total_count] = await Promise.all([
         this.landRepo.find({
           where: filter_condition,

@@ -24,7 +24,6 @@ export const Pagination = createParamDecorator(
     if (query.page_index) {
       pagination.page_index = parseInt(query.page_index);
     }
-
     if (query.search) {
       const searchArray = query.search.toString().split(',');
       pagination.search = searchArray.map((searchItem) => {
@@ -36,7 +35,6 @@ export const Pagination = createParamDecorator(
         };
       });
     }
-
     return pagination;
   },
 );
