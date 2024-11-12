@@ -1,26 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsOptional,
-  Min,
-  Validate,
-  ValidationArguments,
-  ValidatorConstraint,
-  ValidatorConstraintInterface,
-} from 'class-validator';
+import { IsNotEmpty, IsOptional, Min, Validate } from 'class-validator';
 import { UpdateProcessSpecificStageContentDto } from './update-process-specific-content.dto';
 import { UpdateProcessSpecificStageMaterialDto } from './update-process-specific-material.dto';
-@ValidatorConstraint({ name: 'isTimeEndGreaterThanStart', async: false })
-export class IsTimeEndGreaterThanStart implements ValidatorConstraintInterface {
-  validate(time_end: Date, args: ValidationArguments) {
-    const object = args.object as any;
-    return time_end > object.time_start; // time_end must be greater than time_start
-  }
-
-  defaultMessage(args: ValidationArguments) {
-    return 'time_end must be greater than time_start';
-  }
-}
+import { IsTimeEndGreaterThanStart } from 'src/common/decorations/isTimeEndGreaterThanStart.decoration';
 
 export class UpdateProcessSpecificStageDto {
   @ApiProperty({

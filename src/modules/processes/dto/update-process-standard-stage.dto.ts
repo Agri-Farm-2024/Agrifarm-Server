@@ -2,31 +2,14 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsString,
   IsNotEmpty,
-  Max,
   Min,
   IsOptional,
   Validate,
-  ValidatorConstraint,
-  ValidatorConstraintInterface,
-  ValidationArguments,
 } from 'class-validator';
-import { time } from 'console';
-import { CreateProcessStageContentDto } from './create-process-stage-content.dto';
-import { CreateProcessStageMaterialDto } from './create-process-stage-material.dto';
 import { UpdateProcessStandardStageContentDto } from './update-process-standard-content.dto';
 import { UpdateProcessStandardStageMaterialDto } from './update-process-standard-material.dto';
+import { IsTimeEndGreaterThanStart } from 'src/common/decorations/isTimeEndGreaterThanStart.decoration';
 
-@ValidatorConstraint({ name: 'isTimeEndGreaterThanStart', async: false })
-export class IsTimeEndGreaterThanStart implements ValidatorConstraintInterface {
-  validate(time_end: number, args: ValidationArguments) {
-    const object = args.object as any;
-    return time_end > object.time_start; // time_end must be greater than time_start
-  }
-
-  defaultMessage(args: ValidationArguments) {
-    return 'time_end must be greater than time_start';
-  }
-}
 export class UpdateProcessStandardStageDto {
   @ApiProperty({
     description: 'the uuid of the stage',

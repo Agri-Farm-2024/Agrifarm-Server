@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, Min } from 'class-validator';
 
 export class CreateServiceSpecificDTO {
   @ApiProperty({
@@ -30,11 +30,14 @@ export class CreateServiceSpecificDTO {
   service_package_id: string;
 
   @ApiProperty({
-    example: 1,
+    example: 1000,
     description: 'The acreage of the plant',
   })
   @IsNotEmpty({
     message: 'acreage_plant is required',
+  })
+  @Min(1000, {
+    message: 'acreage_plant must be greater than or equal to 1000',
   })
   acreage_land: number;
 

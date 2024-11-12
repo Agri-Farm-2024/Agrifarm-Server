@@ -1,9 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional } from 'class-validator';
-
 import { MaterialType } from '../types/material-type.enum';
 import { MaterialUnit } from '../types/material-unit-enum';
-import { Transform } from 'class-transformer';
+import { ToLowerCase } from 'src/common/decorations/makeLowerCaseText.decoration';
 
 export class CreateMaterialDto {
   @ApiProperty({
@@ -13,15 +12,7 @@ export class CreateMaterialDto {
   @IsNotEmpty({
     message: 'Material name is required and should not be empty',
   })
-  @Transform(
-    ({ value }) => {
-      if (typeof value === 'string') {
-        return value.trim().toLowerCase();
-      }
-      return value;
-    },
-    { toClassOnly: true },
-  )
+  @ToLowerCase()
   name: string;
 
   @ApiProperty({

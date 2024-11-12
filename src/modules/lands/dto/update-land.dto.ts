@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsOptional, IsPositive, IsString } from 'class-validator';
 import { LandURLType } from '../types/land-url-type.enum';
-import { Transform } from 'class-transformer';
+import { ToLowerCase } from 'src/common/decorations/makeLowerCaseText.decoration';
 
 class UpdateLandURLDTO {
   @ApiProperty({
@@ -10,6 +10,7 @@ class UpdateLandURLDTO {
   })
   @IsString()
   @IsOptional()
+  @ToLowerCase()
   land_url_id: string;
 
   @ApiProperty({
@@ -34,15 +35,7 @@ export class UpdateLandDTO {
     example: 'Land 1',
   })
   @IsOptional()
-  @Transform(
-    ({ value }) => {
-      if (typeof value === 'string') {
-        return value.trim().toLowerCase();
-      }
-      return value;
-    },
-    { toClassOnly: true },
-  )
+  @ToLowerCase()
   name: string;
 
   @ApiProperty({

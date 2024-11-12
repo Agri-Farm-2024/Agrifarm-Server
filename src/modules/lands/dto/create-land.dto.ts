@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsOptional, IsPositive } from 'class-validator';
+import { ToLowerCase } from 'src/common/decorations/makeLowerCaseText.decoration';
 
 export class CreateLandDto {
   @ApiProperty({
@@ -8,15 +8,7 @@ export class CreateLandDto {
     example: 'Land 1',
   })
   @IsNotEmpty()
-  @Transform(
-    ({ value }) => {
-      if (typeof value === 'string') {
-        return value.trim().toLowerCase();
-      }
-      return value;
-    },
-    { toClassOnly: true },
-  )
+  @ToLowerCase()
   name: string;
 
   @ApiProperty({

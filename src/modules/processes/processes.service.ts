@@ -335,7 +335,10 @@ export class ProcessesService implements IProcessesService {
 
   /**
    * @function updateProcessStandard
+   * @param process_technical_standard_id : string
+   * @param data : UpdateProcessStandardsDto
    */
+
   async updateProcessStandard(
     process_technical_standard_id: string,
     data: UpdateProcessStandardsDto,
@@ -362,12 +365,14 @@ export class ProcessesService implements IProcessesService {
       //update process stage
       if (data.stage) {
         for (let i = 0; i < data.stage.length; i++) {
-          //delete stage
+          // Check is deleted stage
           if (data.stage[i].is_deleted) {
+            // Delete stage
             await this.processStandardStageRepo.delete(
               data.stage[i].process_technical_standard_stage_id,
             );
           }
+          // Check is exist id for stage
           if (!data.stage[i].process_technical_standard_stage_id) {
             //create new stage
             await this.processStandardStageRepo.save({
@@ -467,6 +472,8 @@ export class ProcessesService implements IProcessesService {
 
   /**
    * @function createProcessSpecific
+   * @param service_specific : ServiceSpecific
+   * @description create process specific
    */
 
   async createProcessSpecific(service_specific: ServiceSpecific): Promise<any> {

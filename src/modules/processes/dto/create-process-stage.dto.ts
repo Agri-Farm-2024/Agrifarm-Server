@@ -5,23 +5,11 @@ import {
   Min,
   IsOptional,
   Validate,
-  ValidatorConstraint,
-  ValidatorConstraintInterface,
-  ValidationArguments,
 } from 'class-validator';
 import { CreateProcessStageContentDto } from './create-process-stage-content.dto';
 import { CreateProcessStageMaterialDto } from './create-process-stage-material.dto';
-@ValidatorConstraint({ name: 'isTimeEndGreaterThanStart', async: false })
-export class IsTimeEndGreaterThanStart implements ValidatorConstraintInterface {
-  validate(time_end: number, args: ValidationArguments) {
-    const object = args.object as any;
-    return time_end > object.time_start; // time_end must be greater than time_start
-  }
+import { IsTimeEndGreaterThanStart } from 'src/common/decorations/isTimeEndGreaterThanStart.decoration';
 
-  defaultMessage(args: ValidationArguments) {
-    return 'time_end must be greater than time_start';
-  }
-}
 export class CreateProcessStageDto {
   @ApiProperty({
     description: 'the title of the stage',
@@ -58,6 +46,7 @@ export class CreateProcessStageDto {
     message: 'time_end must be greater than time_start',
   })
   time_end: number;
+
   @ApiProperty({
     description: 'the material of the stage',
     type: [CreateProcessStageMaterialDto],

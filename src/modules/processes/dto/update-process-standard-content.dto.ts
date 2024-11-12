@@ -1,25 +1,6 @@
-import { APP_FILTER } from '@nestjs/core';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsOptional,
-  Min,
-  Validate,
-  ValidationArguments,
-  ValidatorConstraint,
-  ValidatorConstraintInterface,
-} from 'class-validator';
-@ValidatorConstraint({ name: 'isTimeEndGreaterThanStart', async: false })
-export class IsTimeEndGreaterThanStart implements ValidatorConstraintInterface {
-  validate(time_end: number, args: ValidationArguments) {
-    const object = args.object as any;
-    return time_end > object.time_start; // time_end must be greater than time_start
-  }
-
-  defaultMessage(args: ValidationArguments) {
-    return 'time_end must be greater than time_start';
-  }
-}
+import { IsNotEmpty, IsOptional, Min, Validate } from 'class-validator';
+import { IsTimeEndGreaterThanStart } from 'src/common/decorations/isTimeEndGreaterThanStart.decoration';
 
 export class UpdateProcessStandardStageContentDto {
   @ApiProperty({
@@ -35,7 +16,7 @@ export class UpdateProcessStandardStageContentDto {
   })
   @IsNotEmpty()
   title: string;
-  
+
   @ApiProperty({
     description: 'the numberic_order of the stage content',
     example: 1,
