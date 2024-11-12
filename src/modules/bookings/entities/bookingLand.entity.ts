@@ -67,8 +67,8 @@ export class BookingLand extends AbstractEntity {
   @Column()
   purpose_rental: string;
 
-  @Column({ default: false })
-  is_schedule: boolean;
+  // @Column({ default: false })
+  // is_schedule: boolean;
 
   @Column({
     nullable: true,

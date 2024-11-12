@@ -520,20 +520,7 @@ export class BookingsService implements IBookingService {
       if (land_exist.staff_id !== user.user_id) {
         throw new ForbiddenException('You are not staff of this land');
       }
-      // Check is schedule
-      if (data.is_schedule === true) {
-        // Send mail to land renter and make expred schedule after 48h
-        // await this.mailService.sendMailConfirmBooking(booking_exist);
-        const update_booking = await this.bookingRepository.save({
-          ...booking_exist,
-          status: BookingStatus.pending_contract,
-          is_schedule: data.is_schedule,
-          expired_schedule_at: new Date(
-            new Date().getTime() + 48 * 60 * 60 * 1000,
-          ),
-        });
-        return update_booking;
-      }
+
       // update status booking to pending contract
       const update_booking = await this.bookingRepository.save({
         ...booking_exist,
@@ -573,10 +560,14 @@ export class BookingsService implements IBookingService {
       if (booking_exist.status !== BookingStatus.pending_contract) {
         throw new BadRequestException('Status booking is not pending contract');
       }
-      // update status booking to pending sign
+      // Send mail to land renter and make expred schedule after 48h
+      // await this.mailService.sendMailConfirmBooking(booking_exist);
       const update_booking = await this.bookingRepository.save({
         ...booking_exist,
-        status: BookingStatus.pending_sign,
+        status: BookingStatus.pending_contract,
+        expired_schedule_at: new Date(
+          new Date().getTime() + 48 * 60 * 60 * 1000,
+        ),
       });
       return update_booking;
     } catch (error) {

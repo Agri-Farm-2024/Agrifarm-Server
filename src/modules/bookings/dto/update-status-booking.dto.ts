@@ -5,13 +5,6 @@ import { BookingPaymentFrequency } from '../types/booking-payment.enum';
 
 export class UpdateStatusBookingDTO {
   @ApiProperty({
-    type: 'boolean',
-    description: 'is schedule booking',
-  })
-  @IsOptional()
-  is_schedule: boolean;
-
-  @ApiProperty({
     type: 'string',
     description: 'contract image of booking',
   })
