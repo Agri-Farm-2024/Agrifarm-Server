@@ -74,7 +74,7 @@ export class ProcessesController {
     return this.processesService.updateProcessStandardStatus(id, data);
   }
 
-  @Put('/updateProcessStanrd/:id')
+  @Put('/updateProcessStandard/:id')
   updateProcessStandard(
     @Body() data: UpdateProcessStandardsDto,
     @Param('id') id: string,
