@@ -33,12 +33,12 @@ export class AuthGuard implements CanActivate {
     }
     accessToken = accessToken?.split(' ')[1];
 
-    // Get refresh token from request headers
-    const refreshToken = request.headers['refresh'];
+    // // Get refresh token from request headers
+    // const refreshToken = request.headers['refresh'];
 
-    if (!refreshToken) {
-      throw new UnauthorizedException('Refresh token is missing');
-    }
+    // if (!refreshToken) {
+    //   throw new UnauthorizedException('Refresh token is missing');
+    // }
 
     // Validate the access token
     try {
@@ -50,25 +50,25 @@ export class AuthGuard implements CanActivate {
         secret: publicKey,
       });
       Logger.log(decoded, 'Decoded');
-      // Check if token is exist
-      const token_exist = await this.redisSerivce.get(
-        `token:${decoded.user_id}`,
-      );
-      if (!token_exist) {
-        throw new UnauthorizedException('Token is not exist');
-      }
-      const token_exist_json = JSON.parse(token_exist);
-      // Find refresh token in token list
-      const found = token_exist_json.find(
-        (token: InfoToken) => token.refreshToken === refreshToken,
-      );
-      if (!found) {
-        throw new UnauthorizedException('Token not found');
-      }
-      // Check if token is expired
-      if (found.status !== TokenStatus.valid) {
-        throw new UnauthorizedException('Token is invalid');
-      }
+      // // Check if token is exist
+      // const token_exist = await this.redisSerivce.get(
+      //   `token:${decoded.user_id}`,
+      // );
+      // if (!token_exist) {
+      //   throw new UnauthorizedException('Token is not exist');
+      // }
+      // const token_exist_json = JSON.parse(token_exist);
+      // // Find refresh token in token list
+      // const found = token_exist_json.find(
+      //   (token: InfoToken) => token.refreshToken === refreshToken,
+      // );
+      // if (!found) {
+      //   throw new UnauthorizedException('Token not found');
+      // }
+      // // Check if token is expired
+      // if (found.status !== TokenStatus.valid) {
+      //   throw new UnauthorizedException('Token is invalid');
+      // }
       // add decoded to request
       request['user'] = decoded;
       // Check roles if defined

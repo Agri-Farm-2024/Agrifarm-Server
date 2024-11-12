@@ -53,7 +53,7 @@ export class AuthsController {
   async getAccessToken(@Request() data: any) {
     const header = data.headers;
     const refreshToken = header['refresh'];
-    const user_id = header['user_id'];
-    return await this.authsService.getAccessToken(refreshToken, user_id);
+    // const user_id = header['user_id'];
+    return await this.authsService.getAccessToken(refreshToken);
   }
 }

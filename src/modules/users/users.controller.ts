@@ -35,7 +35,7 @@ export class UsersController {
     return await this.usersService.create(createUserDto);
   }
 
-  // @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   // @Roles(UserRole.admin)
   @ApplyPaginationMetadata
   @ApiQuery({ name: 'role', required: false, enum: UserRole })

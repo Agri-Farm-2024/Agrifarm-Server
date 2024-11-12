@@ -11,29 +11,17 @@ async function bootstrap() {
   // if (process.env.NODE_ENV === 'development') {
   const config = new DocumentBuilder()
     .setTitle('NestJS API')
-    .setDescription('API description')
-    .setVersion('1.0')
-    .addGlobalParameters(
-      {
-        name: 'Authorization',
-        description: 'Access token',
-        required: false,
-        in: 'header',
-        schema: {
-          type: 'string',
-        },
-      },
-      {
-        name: 'refresh',
-        description: 'Refresh token',
-        required: false,
-        in: 'header',
-        schema: {
-          type: 'string',
-        },
-      },
-    )
-    .addTag('Agri-Farm API Swagger For DEV')
+    .setVersion('0.0.1')
+    .setDescription('The NestJS API description')
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      in: 'header',
+      name: 'Authorization',
+      description: 'Enter your Bearer token',
+    })
+    .addSecurityRequirements('bearer')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

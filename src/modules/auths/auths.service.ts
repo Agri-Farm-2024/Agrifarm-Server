@@ -244,25 +244,25 @@ export class AuthsService implements IAuthService {
     };
   }
 
-  async getAccessToken(refreshToken: string, user_id: string): Promise<any> {
+  async getAccessToken(refreshToken: string): Promise<any> {
     try {
-      // Get token from redis
-      const token_exist = await this.redisService.get(`token:${user_id}`);
-      const token_exist_obj: InfoToken[] = JSON.parse(token_exist);
-      if (!token_exist_obj) {
-        throw new UnauthorizedException('Token not found');
-      }
-      // Find refresh token in token list
-      const found: InfoToken = token_exist_obj.find(
-        (token: InfoToken) => token.refreshToken === refreshToken,
-      );
-      if (!found) {
-        throw new UnauthorizedException('Token not found');
-      }
-      // Check if token is expired
-      if (found.status !== TokenStatus.valid) {
-        throw new UnauthorizedException('Token is invalid');
-      }
+      // // Get token from redis
+      // const token_exist = await this.redisService.get(`token:${user_id}`);
+      // const token_exist_obj: InfoToken[] = JSON.parse(token_exist);
+      // if (!token_exist_obj) {
+      //   throw new UnauthorizedException('Token not found');
+      // }
+      // // Find refresh token in token list
+      // const found: InfoToken = token_exist_obj.find(
+      //   (token: InfoToken) => token.refreshToken === refreshToken,
+      // );
+      // if (!found) {
+      //   throw new UnauthorizedException('Token not found');
+      // }
+      // // Check if token is expired
+      // if (found.status !== TokenStatus.valid) {
+      //   throw new UnauthorizedException('Token is invalid');
+      // }
       // Get private key and public key from config
       let privateKey = this.configService.get('JWT_PRIVATE_KEY');
       privateKey = privateKey.replace(/\\n/g, '\n');
@@ -272,7 +272,7 @@ export class AuthsService implements IAuthService {
       });
       // Generate a new token
       const payload: Payload = {
-        user_id: user_id,
+        user_id: decoded.user_id,
         email: decoded.email,
         full_name: decoded.full_name,
         role: decoded.role,
@@ -350,22 +350,22 @@ export class AuthsService implements IAuthService {
       // );
 
       // Get token from redis
-      const token_exist = await this.redisService.get(
-        `token:${payload.user_id}`,
-      );
-      let token_exist_obj: InfoToken[] = JSON.parse(token_exist);
-      if (!token_exist_obj) {
-        token_exist_obj = [];
-      }
-      // Save to redis
-      token_exist_obj.push({
-        refreshToken,
-        status: TokenStatus.valid,
-      });
-      await this.redisService.set(
-        `token:${payload.user_id}`,
-        JSON.stringify(token_exist_obj),
-      );
+      // const token_exist = await this.redisService.get(
+      //   `token:${payload.user_id}`,
+      // );
+      // let token_exist_obj: InfoToken[] = JSON.parse(token_exist);
+      // if (!token_exist_obj) {
+      //   token_exist_obj = [];
+      // }
+      // // Save to redis
+      // token_exist_obj.push({
+      //   refreshToken,
+      //   status: TokenStatus.valid,
+      // });
+      // await this.redisService.set(
+      //   `token:${payload.user_id}`,
+      //   JSON.stringify(token_exist_obj),
+      // );
       return {
         accessToken,
         refreshToken,
