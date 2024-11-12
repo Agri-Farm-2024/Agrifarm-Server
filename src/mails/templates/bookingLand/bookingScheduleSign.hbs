@@ -73,7 +73,7 @@
       <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <tr>
               <td align="center" style="padding: 20px;">
-                  <table class="content" width="700" border="0" cellspacing="0" cellpadding="0"
+                  <table class="content" width=700" border="0" cellspacing="0" cellpadding="0"
                       style="border-collapse: collapse; border: 1px solid #cccccc;">
                       <!-- Header -->
                       <tr>
@@ -86,24 +86,39 @@
                       <!-- Body -->
                       <tr>
                           <td class="body" style="padding: 40px; text-align: left; font-size: 16px; line-height: 1.6;">
-                              Chào <strong>${{full_name}}</strong>, <br>
-                              Chào mừng bạn đến với AgriFarm Experience: Dịch Vụ Quản Lý Thuê Đất và Hỗ Trợ Canh Tác Toàn
-                              Diện
-                              <br><br>
+                              Chào <strong>${{fullname}}</strong>, <br>
+                              Cảm ơn bạn đã quan tâm đến việc thuê đất tại AgriFarm. Chúng tôi đã lên lịch cho buổi tham quan khu đất của bạn với các thông tin chi tiết như sau
                           </td>
                       </tr>
-
-                      <tr>
-                          <td class="body" style="padding: 40px; text-align: left; font-size: 16px; line-height: 1.6;">
-                              Xác nhận thông tin thuê đất của bạn:
-                              
-                              <br><br>
-                          </td>
-                      </tr>
-                    
   
                       <tr>
-                          <td class="body" style="padding: 20px 40px; text-align: left; font-size: 16px;">
+                          <td style="padding: 0px 40px 0px 40px; text-align: center;">
+                            <table class="content-table">
+                                <tr>
+                                    <th>Thời gian</th>
+                                    <td>${{}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Địa điểm:</th>
+                                    <td>${location}</td>
+                                </tr>
+                                <tr>
+                                    <th>Người hướng dẫn</th>
+                                    <td>${staff_fullname}</td>
+                                </tr>
+                                <tr>
+                                    <th>Số điện thoại</th>
+                                    <td>${staff_phone}</td>
+                                </tr>
+                                <tr>
+                                    <th>Email</th>
+                                    <td>${staff_email}</td>
+                                </tr>
+                            </table>
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="body" style="padding: 20px 40px; text-align: left; font-size: 16px; ">
                               Cảm ơn quý khách đã sử dụng dịch vụ tại AgriFarm Experience.
                               <br><br>
                               Trân trọng.
@@ -112,10 +127,10 @@
                               <br><br>
                               AgriFarm Experience: Dịch Vụ Quản Lý Thuê Đất và Hỗ Trợ Canh Tác Toàn Diện.
                               <br><br>
-                              <div>
+                              <div >
                                   <p>📩 Email: <a href="mailto:agrifarm@gmail.com">agrifarm@gmail.com</a></p>
                                   <p>📞 Số điện thoại: <a href="tel:099995050">099995050</a></p>
-                                  <p>📍 Địa chỉ: 123 Biên Hoà, Đồng Nai </p>
+                                  <p>📍 Địa chỉ: 123 Biên Hoà, Đồng Nai</p>
                               </div>
                           </td>
                       </tr>
@@ -130,4 +145,5 @@
           </tr>
       </table>
   </body>
+  
   </html>

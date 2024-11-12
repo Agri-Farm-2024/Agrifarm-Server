@@ -32,7 +32,6 @@ import { ProcessSpecificStageMaterial } from './entities/specifics/processSpecif
 import { ServicesService } from '../servicesPackage/servicesPackage.service';
 import { getTimeByPlusDays } from 'src/utils/time.utl';
 import { RequestsService } from '../requests/requests.service';
-import { request } from 'http';
 import { Request } from '../requests/entities/request.entity';
 import { RequestStatus } from '../requests/types/request-status.enum';
 import { UpdateProcessStandardDto } from './dto/update-processStandardStatus.dto';
@@ -101,12 +100,10 @@ export class ProcessesService implements IProcessesService {
       });
       // create process stage
       if (data.stage) {
-        const sortedStage = data.stage.sort(
-          (a, b) => a.stage_numberic_order - b.stage_numberic_order,
-        );
-        for (const stage of sortedStage) {
+        for (let i = 0; i < data.stage.length; i++) {
+          data.stage[i].stage_numberic_order = i + 1;
           await this.createProcessStage(
-            stage,
+            data.stage[i],
             new_process.process_technical_standard_id,
           );
         }
@@ -133,12 +130,10 @@ export class ProcessesService implements IProcessesService {
       // create process stage content and material
 
       if (data.content) {
-        const sortedContent = data.content.sort(
-          (a, b) => a.content_numberic_order - b.content_numberic_order,
-        );
-        for (const content of sortedContent) {
+        for (let i = 0; i < data.content.length; i++) {
+          data.content[i].content_numberic_order = i + 1;
           await this.createProcessStageContent(
-            content,
+            data.content[i],
             new_process_stage.process_technical_standard_stage_id,
           );
         }
@@ -355,12 +350,6 @@ export class ProcessesService implements IProcessesService {
       if (!process_standard) {
         throw new BadRequestException('Process standard not found!');
       }
-      //check if process standard is in active
-      if (
-        process_standard.status === ProcessTechnicalStandardStatus.in_active
-      ) {
-        throw new BadRequestException('Process standard is in active');
-      }
 
       const data_process_standard = {
         name: data.name,
@@ -372,36 +361,36 @@ export class ProcessesService implements IProcessesService {
 
       //update process stage
       if (data.stage) {
-        for (const stage of data.stage) {
+        for (let i = 0; i < data.stage.length; i++) {
           //delete stage
-          if (stage.is_deleted) {
+          if (data.stage[i].is_deleted) {
             await this.processStandardStageRepo.delete(
-              stage.process_technical_standard_stage_id,
+              data.stage[i].process_technical_standard_stage_id,
             );
           }
-          if (!stage.process_technical_standard_stage_id) {
+          if (!data.stage[i].process_technical_standard_stage_id) {
             //create new stage
             await this.processStandardStageRepo.save({
               process_technical_standard_id: process_technical_standard_id,
-              stage_title: stage.stage_title,
-              stage_numberic_order: stage.stage_numberic_order,
-              time_start: stage.time_start,
-              time_end: stage.time_end,
+              stage_title: data.stage[i].stage_title,
+              stage_numberic_order: i + 1,
+              time_start: data.stage[i].time_start,
+              time_end: data.stage[i].time_end,
             });
           } else {
             //update stage
             await this.processStandardStageRepo.update(
-              stage.process_technical_standard_stage_id,
+              data.stage[i].process_technical_standard_stage_id,
               {
-                stage_title: stage.stage_title,
-                stage_numberic_order: stage.stage_numberic_order,
-                time_start: stage.time_start,
-                time_end: stage.time_end,
+                stage_title: data.stage[i].stage_title,
+                stage_numberic_order: i + 1,
+                time_start: data.stage[i].time_start,
+                time_end: data.stage[i].time_end,
               },
             );
           }
-          if (stage.content) {
-            for (const content of stage.content) {
+          if (data.stage[i].content) {
+            for (const content of data.stage[i].content) {
               //delete content
               if (content.is_deleted) {
                 await this.processStandardStageContentRepo.delete(
@@ -412,7 +401,7 @@ export class ProcessesService implements IProcessesService {
                 //create new content
                 await this.processStandardStageContentRepo.save({
                   process_technical_standard_stage_id:
-                    stage.process_technical_standard_stage_id,
+                    data.stage[i].process_technical_standard_stage_id,
                   title: content.title,
                   content: content.content,
                   content_numberic_order: content.content_numberic_order,
@@ -436,8 +425,8 @@ export class ProcessesService implements IProcessesService {
           }
 
           // Loop for material
-          if (stage.material) {
-            for (const material of stage.material) {
+          if (data.stage[i].material) {
+            for (const material of data.stage[i].material) {
               //delete material
               if (material.is_deleted) {
                 await this.processStandardStageMaterialRepo.delete(
@@ -449,7 +438,7 @@ export class ProcessesService implements IProcessesService {
                 //create new material
                 await this.processStandardStageMaterialRepo.save({
                   process_technical_standard_stage_id:
-                    stage.process_technical_standard_stage_id,
+                    data.stage[i].process_technical_standard_stage_id,
                   material_id: material.material_id,
                   quantity: material.quantity,
                 });

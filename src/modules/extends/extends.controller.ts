@@ -10,8 +10,8 @@ import {
 import { ExtendsService } from './extends.service';
 import { ApiTags } from '@nestjs/swagger';
 
-@Controller('extends')
 @ApiTags('Extends')
+@Controller('extends')
 export class ExtendsController {
   constructor(private readonly extendsService: ExtendsService) {}
 }

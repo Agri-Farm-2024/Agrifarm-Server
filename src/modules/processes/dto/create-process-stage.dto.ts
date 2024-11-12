@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsString,
   IsNotEmpty,
-  Max,
   Min,
   IsOptional,
   Validate,
@@ -10,7 +9,6 @@ import {
   ValidatorConstraintInterface,
   ValidationArguments,
 } from 'class-validator';
-import { time } from 'console';
 import { CreateProcessStageContentDto } from './create-process-stage-content.dto';
 import { CreateProcessStageMaterialDto } from './create-process-stage-material.dto';
 @ValidatorConstraint({ name: 'isTimeEndGreaterThanStart', async: false })
@@ -37,7 +35,6 @@ export class CreateProcessStageDto {
     description: 'bumberic_order of the stage',
     example: 1,
   })
-  @IsNotEmpty()
   @IsOptional()
   @Min(1)
   stage_numberic_order: number;
@@ -74,6 +71,5 @@ export class CreateProcessStageDto {
     type: [CreateProcessStageContentDto],
   })
   @IsOptional()
-  @IsNotEmpty()
   content: CreateProcessStageContentDto[];
 }

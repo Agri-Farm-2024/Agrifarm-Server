@@ -19,7 +19,7 @@ export class MailService {
       await this.mailerService.sendMail({
         to: email,
         subject: subject,
-        template: `./${template}`,
+        template: `./../${template}`,
         context,
       });
     } catch (error) {

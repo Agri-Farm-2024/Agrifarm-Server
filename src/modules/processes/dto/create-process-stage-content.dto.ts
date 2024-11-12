@@ -27,11 +27,11 @@ export class CreateProcessStageContentDto {
   })
   @IsNotEmpty()
   title: string;
+
   @ApiProperty({
     description: 'the numberic_order of the stage content',
     example: 1,
   })
-  @IsNotEmpty()
   @IsOptional()
   @Min(1)
   content_numberic_order: number;
@@ -40,7 +40,7 @@ export class CreateProcessStageContentDto {
     description: 'the content of the stage',
     example: 'content 1',
   })
-  @IsOptional()
+  @IsNotEmpty()
   content: string;
 
   @ApiProperty({
@@ -48,7 +48,6 @@ export class CreateProcessStageContentDto {
     example: 1,
   })
   @IsNotEmpty()
-  @IsOptional()
   @Min(1)
   time_start: number;
 
@@ -57,7 +56,6 @@ export class CreateProcessStageContentDto {
     example: 1,
   })
   @IsNotEmpty()
-  @IsOptional()
   @Validate(IsTimeEndGreaterThanStart, {
     message: 'time_end must be greater than time_start',
   })
