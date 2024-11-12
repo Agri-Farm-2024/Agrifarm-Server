@@ -18,7 +18,6 @@ import { SubjectMailEnum } from 'src/mails/types/mail-subject.type';
 import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
 import { UserStatus } from './types/user-status.enum';
 import { UserRole } from './types/user-role.enum';
-import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -99,19 +98,22 @@ export class UsersService implements IUserService {
     role: UserRole,
   ): Promise<any> {
     try {
-      // Build filter_search array based on search parameters
-      const filter_search = pagination.search.reduce((acc, searchItem) => {
-        if (searchItem.field && searchItem.value) {
-          acc[searchItem.field] = Like(`%${searchItem.value}%`);
+      // filter condition
+      const filters: any = {};
+      // check role
+      if (role) {
+        filters.role = role;
+      }
+      // check search
+      if (pagination.search) {
+        for (let i = 0; i < pagination.search.length; i++) {
+          const search = pagination.search[i];
+          filters[search.field] = Like(search.value);
+          if (!search.value) {
+            delete filters[search.field];
+          }
         }
-        return acc;
-      }, {});
-
-      // Create filter for role
-      const filter_role = role ? { role } : {};
-
-      // Merge filters
-      const filters = { ...filter_search, ...filter_role };
+      }
       // Get all user
       const [users, total_count] = await Promise.all([
         this.userEntity.find({

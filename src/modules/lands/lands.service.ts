@@ -179,6 +179,16 @@ export class LandsService implements ILandService {
       if (user.role === UserRole.staff) {
         filter_condition.staff_id = user.user_id;
       }
+      // check search
+      if (pagination.search) {
+        for (let i = 0; i < pagination.search.length; i++) {
+          const search = pagination.search[i];
+          filter_condition[search.field] = Like(search.value);
+          if (!search.value) {
+            delete filter_condition[search.field];
+          }
+        }
+      }
       const [lands, total_count] = await Promise.all([
         this.landRepo.find({
           where: filter_condition,
