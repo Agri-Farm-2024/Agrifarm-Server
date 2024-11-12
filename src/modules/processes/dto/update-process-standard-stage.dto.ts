@@ -30,9 +30,7 @@ export class UpdateProcessStandardStageDto {
     description: 'bumberic_order of the stage',
     example: 1,
   })
-  @IsNotEmpty()
   @IsOptional()
-  @Min(1)
   stage_numberic_order: number;
 
   @ApiProperty({

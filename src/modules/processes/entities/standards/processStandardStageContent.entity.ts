@@ -34,7 +34,7 @@ export class ProcessStandardStageContent extends AbstractEntity {
   @Column('int')
   time_end: number;
 
-  @Column('int')
+  @Column('int', { nullable: true })
   content_numberic_order: number;
 
   @ManyToOne(

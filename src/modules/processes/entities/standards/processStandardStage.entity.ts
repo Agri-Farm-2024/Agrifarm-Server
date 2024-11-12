@@ -27,7 +27,7 @@ export class ProcessStandardStage extends AbstractEntity {
   @Column()
   stage_title: string;
 
-  @Column('int')
+  @Column('int',{nullable: true})
   stage_numberic_order: number;
 
   @Column('int')
