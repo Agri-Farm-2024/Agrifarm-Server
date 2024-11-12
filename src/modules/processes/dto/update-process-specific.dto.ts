@@ -4,13 +4,6 @@ import { UpdateProcessSpecificStageDto } from './update-process-specific-stage.d
 
 export class UPdateProcessSpecificDto {
   @ApiProperty({
-    description: 'the UUID of the process specific',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
-  @IsNotEmpty()
-  process_technical_specific_id: string;
-
-  @ApiProperty({
     description: 'time start of processSpecific',
   })
   @IsNotEmpty()

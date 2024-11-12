@@ -23,7 +23,6 @@ export class UpdateProcessSpecificStageDto {
     description: 'bumberic_order of the stage',
     example: 1,
   })
-  @IsNotEmpty()
   @IsOptional()
   @Min(1)
   stage_numberic_order: number;
@@ -32,14 +31,12 @@ export class UpdateProcessSpecificStageDto {
     description: 'time start of the stage',
   })
   @IsNotEmpty()
-  @IsOptional()
   time_start: Date;
 
   @ApiProperty({
     description: 'time end of the stage',
   })
   @IsNotEmpty()
-  @IsOptional()
   @Validate(IsTimeEndGreaterThanStart, {
     message: 'time_end must be greater than time_start',
   })

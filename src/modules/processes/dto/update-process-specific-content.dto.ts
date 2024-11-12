@@ -27,7 +27,6 @@ export class UpdateProcessSpecificStageContentDto {
     description: 'the numberic_order of the stage content',
     example: 1,
   })
-  @IsNotEmpty()
   @IsOptional()
   @Min(1)
   content_numberic_order: number;

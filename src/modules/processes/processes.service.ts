@@ -673,63 +673,63 @@ export class ProcessesService implements IProcessesService {
       // update process specific stage
 
       if (data.stage) {
-        for (const stage of data.stage) {
+        for (let i =0  ; i < data.stage.length; i++) {
           //delete stage
-          if (stage.is_deleted) {
+          if (data.stage[i].is_deleted) {
             await this.processSpecificStageRepo.delete(
-              stage.process_technical_specific_stage_id,
+              data.stage[i].process_technical_specific_stage_id,
             );
           }
-          if (!stage.process_technical_specific_stage_id) {
+          if (!data.stage[i].process_technical_specific_stage_id) {
             //create new stage
             await this.processSpecificStageRepo.save({
               process_technical_specific_id: process_technical_specific_id,
-              stage_title: stage.stage_title,
-              stage_numberic_order: stage.stage_numberic_order,
-              time_start: stage.time_start,
-              time_end: stage.time_end,
+              stage_title: data.stage[i].stage_title,
+              stage_numberic_order: i+1,
+              time_start: data.stage[i].time_start,
+              time_end: data.stage[i].time_end,
             });
           } else {
             //update stage
             await this.processSpecificStageRepo.update(
-              stage.process_technical_specific_stage_id,
+              data.stage[i].process_technical_specific_stage_id,
               {
-                stage_title: stage.stage_title,
-                stage_numberic_order: stage.stage_numberic_order,
-                time_start: stage.time_start,
-                time_end: stage.time_end,
+                stage_title: data.stage[i].stage_title,
+                stage_numberic_order: i + 1,
+                time_start: data.stage[i].time_start,
+                time_end: data.stage[i].time_end,
               },
             );
           }
-          if (stage.content) {
-            for (const content of stage.content) {
+          if (data.stage[i].content) {
+            for (let j = 0; j < data.stage[i].content.length; j++) {
               //delete content
-              if (content.is_deleted) {
+              if (data.stage[i].content[j].is_deleted) {
                 await this.processSpecificStageContentRepo.delete(
-                  content.process_technical_specific_stage_content_id,
+                  data.stage[i].content[j].process_technical_specific_stage_content_id,
                 );
               }
-              if (!content.process_technical_specific_stage_content_id) {
+              if (!data.stage[i].content[j].process_technical_specific_stage_content_id) {
                 //create new content
                 await this.processSpecificStageContentRepo.save({
                   process_technical_specific_stage_id:
-                    stage.process_technical_specific_stage_id,
-                  title: content.title,
-                  content: content.content,
-                  content_numberic_order: content.content_numberic_order,
-                  time_start: content.time_start,
-                  time_end: content.time_end,
+                    data.stage[i].process_technical_specific_stage_id,
+                  title: data.stage[i].content[j].title,
+                  content: data.stage[i].content[j].content,
+                  content_numberic_order: j + 1,
+                  time_start: data.stage[i].content[j].time_start,
+                  time_end: data.stage[i].content[j].time_end,
                 });
               } else {
                 //update content
                 await this.processSpecificStageContentRepo.update(
-                  content.process_technical_specific_stage_content_id,
+                  data.stage[i].content[j].process_technical_specific_stage_content_id,
                   {
-                    title: content.title,
-                    content: content.content,
-                    content_numberic_order: content.content_numberic_order,
-                    time_start: content.time_start,
-                    time_end: content.time_end,
+                    title: data.stage[i].content[j].title,
+                    content: data.stage[i].content[j].content,
+                    content_numberic_order: j + 1,
+                    time_start: data.stage[i].content[j].time_start,
+                    time_end: data.stage[i].content[j].time_end,
                   },
                 );
               }
@@ -737,8 +737,8 @@ export class ProcessesService implements IProcessesService {
           }
 
           // Loop for material
-          if (stage.material) {
-            for (const material of stage.material) {
+          if (data.stage[i].material) {
+            for (const material of data.stage[i].material) {
               //delete material
               if (material.is_deleted) {
                 await this.processSpecificStageMaterialRepo.delete(
@@ -750,7 +750,7 @@ export class ProcessesService implements IProcessesService {
                 //create new material
                 await this.processSpecificStageMaterialRepo.save({
                   process_technical_specific_stage_id:
-                    stage.process_technical_specific_stage_id,
+                    data.stage[i].process_technical_specific_stage_id,
                   material_id: material.material_id,
                   quantity: material.quantity,
                 });
