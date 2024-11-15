@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty } from 'class-validator';
-import { StatusPlant } from '../types/plant-status.enum';
+import { IsNotEmpty } from 'class-validator';
+import { ToLowerCase } from 'src/common/decorations/makeLowerCaseText.decoration';
 
 export class CreatePlantDto {
   @ApiProperty({
@@ -9,10 +9,12 @@ export class CreatePlantDto {
   })
   @IsNotEmpty({ message: 'Land type is required' })
   land_type_id: string;
+
   @ApiProperty({
     example: 'Plant Name',
     description: 'The name of the plant',
   })
   @IsNotEmpty({ message: 'Plant name is required' })
+  @ToLowerCase()
   name: string;
 }

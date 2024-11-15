@@ -5,7 +5,6 @@ import {
   IsNotEmpty,
   IsNumber,
   IsPositive,
-  IsUUID,
   Max,
   Min,
 } from 'class-validator';
@@ -22,7 +21,7 @@ export class CreatePlantSeasonDto {
   month_start: number;
 
   @ApiProperty({
-   description: 'total month the plant will be in season',
+    description: 'total month the plant will be in season',
     example: 1,
   })
   @IsInt()
