@@ -7,9 +7,11 @@ import {
   JoinColumn,
   OneToMany,
   PrimaryGeneratedColumn,
+  OneToOne,
 } from 'typeorm';
-import { Dinary } from './dinary.entity';
+
 import { DinaryImage } from './DinaryImange.entity';
+import { ProcessSpecificStageContent } from 'src/modules/processes/entities/specifics/processSpecificStageContent.entity';
 
 @Entity('dinaries_stage')
 export class DinaryStage extends AbstractEntity {
@@ -24,23 +26,13 @@ export class DinaryStage extends AbstractEntity {
   @Column()
   content: string;
 
-  @Column({
-    default: 0,
-  })
-  numbered_order: number;
-
-  @ManyToOne(() => Dinary, (dinary) => dinary.dinaries_stage, {
-    nullable: true,
-  })
-  @JoinColumn({ name: 'dinary_id' })
-  dinary: Dinary[];
-
-  @ManyToOne(() => User, (user) => user.dinary_stage_by_writer, {
-    nullable: true,
-  })
-  @JoinColumn({ name: 'writer_id' })
-  writter: User[];
+  @Column('float')
+  quality_report: number;
 
   @OneToMany(() => DinaryImage, (dinaryImage) => dinaryImage.dinary_image_id)
   dinaries_image: DinaryImage[];
+
+  @OneToOne(() => ProcessSpecificStageContent)
+  @JoinColumn( {name: 'process_technical_stage_content_id'})
+  dinaries_stage_content: ProcessSpecificStageContent;
 }

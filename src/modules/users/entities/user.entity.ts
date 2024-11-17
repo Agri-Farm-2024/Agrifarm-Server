@@ -5,7 +5,6 @@ import { Request } from 'src/modules/requests/entities/request.entity';
 import { DinaryStage } from 'src/modules/dinaries/entities/dinaryStage.entity';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { Task } from 'src/modules/tasks/entities/task.entity';
-import { Dinary } from 'src/modules/dinaries/entities/dinary.entity';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 import { Extend } from 'src/modules/extends/entities/extend.entity';
 import { Order } from 'src/modules/orders/entities/order.entity';
@@ -66,12 +65,6 @@ export class User extends AbstractEntity {
   @OneToMany(() => Request, (request) => request.sender)
   request: Request[];
 
-  @OneToMany(() => Dinary, (dinary) => dinary.land_renter_id)
-  dinary_by_land_renter: DinaryStage[];
-
-  @OneToMany(() => DinaryStage, (dinaryStage) => dinaryStage.writter)
-  dinary_stage_by_writer: DinaryStage[];
-
   @OneToMany(() => Notification, (notification) => notification.user)
   notifications: Notification[];
 
@@ -108,10 +101,13 @@ export class User extends AbstractEntity {
   @OneToMany(() => Transaction, (transaction) => transaction.user)
   transactions: Transaction[];
 
-  @OneToMany(()=> BookingMaterial, (bookingMaterial) => bookingMaterial.staff)
+  @OneToMany(() => BookingMaterial, (bookingMaterial) => bookingMaterial.staff)
   staff_booking_materials: BookingMaterial[];
 
-  @OneToMany(()=> BookingMaterial, (bookingMaterial) => bookingMaterial.landrenter)
+  @OneToMany(
+    () => BookingMaterial,
+    (bookingMaterial) => bookingMaterial.landrenter,
+  )
   landrenter_booking_materials: BookingMaterial[];
 
   @OneToMany(() => ProcessSpecific, (processSpecific) => processSpecific.expert)
