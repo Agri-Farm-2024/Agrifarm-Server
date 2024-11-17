@@ -20,7 +20,7 @@ export class ReportURL extends AbstractEntity {
   }
 
   @PrimaryGeneratedColumn('uuid')
-  report_image_id: string;
+  report_url_id: string;
 
   @Column('uuid')
   report_id: string;

@@ -57,7 +57,7 @@ export class ReportsService implements IReportService {
       if (error instanceof ForbiddenException) {
         throw error;
       }
-      throw new InternalServerErrorException('Unable to create report');
+      throw new InternalServerErrorException(error.message);
     }
   }
 

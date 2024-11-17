@@ -92,9 +92,6 @@ export class User extends AbstractEntity {
   @OneToMany(() => ProcessStandard, (processStandard) => processStandard.expert)
   process_standard_by_expert: ProcessStandard[];
 
-  @OneToMany(() => Report, (report) => report.report_from)
-  reports: Report[];
-
   @OneToMany(() => Transaction, (transaction) => transaction.user)
   transactions: Transaction[];
 

@@ -9,7 +9,6 @@ export class ReportURLDTO {
     required: false,
   })
  @IsOptional()
- 
   url_link: string;
 
   @ApiProperty({
@@ -25,6 +24,9 @@ export class CreateReportDTO {
     description: 'Report title',
     required: true,
   })
+  @IsNotEmpty({
+    message: 'Report title is required',
+  })
   content: string;
 
   @ApiProperty({
@@ -32,5 +34,6 @@ export class CreateReportDTO {
     required: false,
     type: [ReportURLDTO],
   })
+  @IsOptional()
   url: ReportURLDTO[];
 }

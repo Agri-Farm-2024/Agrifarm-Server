@@ -22,7 +22,6 @@ import { UpdateStatusBookingDTO } from './dto/update-status-booking.dto';
 import { MailService } from 'src/mails/mail.service';
 import { BookingPaymentFrequency } from './types/booking-payment.enum';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
-import { Transaction } from '../transactions/entities/transaction.entity';
 import { TransactionsService } from '../transactions/transactions.service';
 import { LoggerService } from 'src/logger/logger.service';
 
@@ -418,6 +417,7 @@ export class BookingsService implements IBookingService {
           land: true,
           land_renter: true,
           staff: true,
+          extends: true,
         },
         select: {
           land_renter: {

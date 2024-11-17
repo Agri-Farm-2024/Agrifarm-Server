@@ -8,7 +8,6 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { BookingStatus } from '../types/booking-status.enum';
