@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateProcessStageDto } from './create-process-stage.dto';
+import { ToLowerCase } from 'src/common/decorations/makeLowerCaseText.decoration';
 export class CreateProcessDto {
   @ApiProperty({
     description: 'the UUID of the plant',
@@ -15,6 +16,7 @@ export class CreateProcessDto {
     description: 'the name process',
     example: 'Process 1',
   })
+  @ToLowerCase()
   @IsNotEmpty({
     message: 'Name of process is required',
   })

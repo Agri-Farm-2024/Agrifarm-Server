@@ -24,7 +24,6 @@ export class UpdateProcessSpecificStageDto {
     example: 1,
   })
   @IsOptional()
-  @Min(1)
   stage_numberic_order: number;
 
   @ApiProperty({

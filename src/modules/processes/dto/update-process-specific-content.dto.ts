@@ -28,7 +28,6 @@ export class UpdateProcessSpecificStageContentDto {
     example: 1,
   })
   @IsOptional()
-  @Min(1)
   content_numberic_order: number;
 
   @ApiProperty({
