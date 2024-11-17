@@ -1,17 +1,16 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
-import { User } from 'src/modules/users/entities/user.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ExtendStatus } from '../types/extend-status.enum';
+
 @Entity('extends')
 export class Extend extends AbstractEntity {
   constructor(extend: Partial<Extend>) {

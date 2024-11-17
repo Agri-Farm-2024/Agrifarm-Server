@@ -47,7 +47,7 @@ export class ReportsService implements IReportService {
         for (const url of data.url) {
           await this.reportURLRepo.save({
             report_id: new_report.report_id,
-            url_string: url.url_string,
+            url_link: url.url_link,
             url_type: url.url_type,
           });
         }
@@ -57,7 +57,7 @@ export class ReportsService implements IReportService {
       if (error instanceof ForbiddenException) {
         throw error;
       }
-      throw new InternalServerErrorException('Unable to create report');
+      throw new InternalServerErrorException(error.message);
     }
   }
 

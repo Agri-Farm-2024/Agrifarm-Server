@@ -33,10 +33,6 @@ export class Report extends AbstractEntity {
   @OneToMany(() => ReportURL, (reportURL) => reportURL.report)
   report_url: ReportURL[];
 
-  @ManyToOne(() => User, (user) => user.reports)
-  @JoinColumn({ name: 'report_from_id' })
-  report_from: User;
-
   @OneToOne(() => Task, (task) => task.report)
   @JoinColumn({ name: 'task_id' })
   task: Task;

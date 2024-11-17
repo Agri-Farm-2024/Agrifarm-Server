@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ReportUrlType } from '../types/report-url-type.enum';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class ReportURLDTO {
   @ApiProperty({
@@ -7,7 +8,7 @@ export class ReportURLDTO {
     example: 'https://www.google.com',
     required: false,
   })
-  url_string: string;
+  url_link: string;
 
   @ApiProperty({
     description: 'URL type',
@@ -21,6 +22,9 @@ export class CreateReportDTO {
     description: 'Report title',
     required: true,
   })
+  @IsNotEmpty({
+    message: 'Report title is required',
+  })
   content: string;
 
   @ApiProperty({
@@ -28,5 +32,6 @@ export class CreateReportDTO {
     required: false,
     type: [ReportURLDTO],
   })
+  @IsOptional()
   url: ReportURLDTO[];
 }
