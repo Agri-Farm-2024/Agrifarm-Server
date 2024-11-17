@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ICronJob } from './interface/ICronJob.interface';
 import { Cron } from '@nestjs/schedule';
+import { ICronJob } from './interface/ICronJob.interface';
 import { CronTime } from './types/cron-time.enum';
 import { BookingsService } from 'src/modules/bookings/bookings.service';
 import { TransactionsService } from 'src/modules/transactions/transactions.service';

@@ -5,7 +5,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { Like, Repository } from 'typeorm';
+import { In, Like, Not, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
@@ -18,6 +18,7 @@ import { SubjectMailEnum } from 'src/mails/types/mail-subject.type';
 import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
 import { UserStatus } from './types/user-status.enum';
 import { UserRole } from './types/user-role.enum';
+import { Payload } from '../auths/types/payload.type';
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -96,13 +97,16 @@ export class UsersService implements IUserService {
   async getAllUsers(
     pagination: PaginationParams,
     role: UserRole,
+    user: Payload,
   ): Promise<any> {
     try {
       // filter condition
-      const filters: any = {};
+      const filters: any = {
+        role: Not(UserRole.admin),
+      };
       // check role
-      if (role) {
-        filters.role = role;
+      if (user.role === UserRole.manager) {
+        role: Not(In[(UserRole.admin, UserRole.manager)]);
       }
       // check search
       if (pagination.search) {
@@ -119,14 +123,6 @@ export class UsersService implements IUserService {
         this.userEntity.find({
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
-          select: {
-            user_id: true,
-            full_name: true,
-            email: true,
-            role: true,
-            status: true,
-            created_at: true,
-          },
           where: filters,
         }),
         this.userEntity.count({

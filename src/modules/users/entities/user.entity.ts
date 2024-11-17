@@ -86,9 +86,6 @@ export class User extends AbstractEntity {
   @OneToMany(() => BookingLand, (bookingLand) => bookingLand.staff_id)
   booking_staff_id: BookingLand[];
 
-  @OneToMany(() => Extend, (extend) => extend.land_renter)
-  extend_landrenter_id: Extend[];
-
   @OneToMany(() => Order, (order) => order.land_renter)
   orders_landrenter_id: Order[];
 

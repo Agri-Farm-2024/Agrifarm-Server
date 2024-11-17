@@ -21,11 +21,8 @@ export class Extend extends AbstractEntity {
   @PrimaryGeneratedColumn('uuid')
   extend_id: string;
 
-  @ManyToOne(() => User, (user) => user.extend_landrenter_id, {
-    nullable: true,
-  })
-  @JoinColumn({ name: 'land_renter_id' })
-  land_renter: User;
+  @Column()
+  booking_id: string;
 
   @Column()
   total_month: number;
