@@ -8,6 +8,7 @@ export class ReportURLDTO {
     example: 'https://www.google.com',
     required: false,
   })
+ @IsOptional()
   url_link: string;
 
   @ApiProperty({
@@ -15,6 +16,7 @@ export class ReportURLDTO {
     example: ReportUrlType.image,
     required: false,
   })
+  @IsNotEmpty()
   url_type: ReportUrlType;
 }
 export class CreateReportDTO {

@@ -25,7 +25,7 @@ export class ReportURL extends AbstractEntity {
   @Column('uuid')
   report_id: string;
 
-  @Column()
+  @Column({ nullable: true })
   url_link: string;
 
   @Column({
