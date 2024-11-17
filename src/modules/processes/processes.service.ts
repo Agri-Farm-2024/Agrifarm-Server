@@ -313,14 +313,14 @@ export class ProcessesService implements IProcessesService {
   }
 
   async updateStatus(
-    process_technical_standard_id: string,
+    plant_season_id: string,
     status: ProcessTechnicalStandardStatus,
   ): Promise<any> {
     try {
       // check process standard exist
       const process_standard = await this.processStandardRepo.findOne({
         where: {
-          process_technical_standard_id,
+          plant_season_id,
         },
       });
       if (!process_standard) {
