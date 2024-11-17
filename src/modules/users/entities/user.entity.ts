@@ -93,9 +93,6 @@ export class User extends AbstractEntity {
   @OneToMany(() => BookingLand, (bookingLand) => bookingLand.staff_id)
   booking_staff_id: BookingLand[];
 
-  @OneToMany(() => Extend, (extend) => extend.land_renter)
-  extend_landrenter_id: Extend[];
-
   @OneToMany(() => Order, (order) => order.land_renter)
   orders_landrenter_id: Order[];
 
@@ -108,10 +105,13 @@ export class User extends AbstractEntity {
   @OneToMany(() => Transaction, (transaction) => transaction.user)
   transactions: Transaction[];
 
-  @OneToMany(()=> BookingMaterial, (bookingMaterial) => bookingMaterial.staff)
+  @OneToMany(() => BookingMaterial, (bookingMaterial) => bookingMaterial.staff)
   staff_booking_materials: BookingMaterial[];
 
-  @OneToMany(()=> BookingMaterial, (bookingMaterial) => bookingMaterial.landrenter)
+  @OneToMany(
+    () => BookingMaterial,
+    (bookingMaterial) => bookingMaterial.landrenter,
+  )
   landrenter_booking_materials: BookingMaterial[];
 
   @OneToMany(() => ProcessSpecific, (processSpecific) => processSpecific.expert)

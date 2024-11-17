@@ -7,6 +7,7 @@ import {
   Patch,
   Param,
   Query,
+  Request,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -36,15 +37,17 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard)
-  // @Roles(UserRole.admin)
+  @Roles(UserRole.admin, UserRole.manager)
   @ApplyPaginationMetadata
   @ApiQuery({ name: 'role', required: false, enum: UserRole })
   @Get()
   async findAll(
     @Pagination() pagination: PaginationParams,
     @Query('role') role: UserRole,
+    @Request() req: any,
   ): Promise<any> {
-    return await this.usersService.getAllUsers(pagination, role);
+    const user = req['user'];
+    return await this.usersService.getAllUsers(pagination, role, user);
   }
 
   @Patch('/updateStatus/:id')
