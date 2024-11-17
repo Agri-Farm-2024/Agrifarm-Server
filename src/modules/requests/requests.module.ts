@@ -6,6 +6,7 @@ import { Request } from './entities/request.entity';
 import { LoggerModule } from 'src/logger/logger.module';
 import { TasksModule } from '../tasks/tasks.module';
 import { JwtModule } from '@nestjs/jwt';
+import { ProcessesModule } from '../processes/processes.module';
 
 @Module({
   controllers: [RequestsController],
@@ -15,6 +16,7 @@ import { JwtModule } from '@nestjs/jwt';
     LoggerModule,
     forwardRef(() => TasksModule),
     JwtModule,
+    forwardRef(() => ProcessesModule),
   ],
   exports: [RequestsService],
 })

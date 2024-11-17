@@ -33,7 +33,7 @@ import { RequestsModule } from '../requests/requests.module';
     forwardRef(() => ReportsModule),
     forwardRef(() => ServicesModule),
     JwtModule,
-    RequestsModule,
+    forwardRef(() => RequestsModule),
   ],
   exports: [ProcessesService],
 })

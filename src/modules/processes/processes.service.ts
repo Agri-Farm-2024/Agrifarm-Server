@@ -74,6 +74,7 @@ export class ProcessesService implements IProcessesService {
 
     private readonly servicePackageService: ServicesService,
 
+    @Inject(forwardRef(() => RequestsService))
     private readonly requestService: RequestsService,
   ) {}
 
@@ -307,6 +308,31 @@ export class ProcessesService implements IProcessesService {
       if (error instanceof BadRequestException) {
         throw error;
       }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async updateStatus(
+    process_technical_standard_id: string,
+    status: ProcessTechnicalStandardStatus,
+  ): Promise<any> {
+    try {
+      // check process standard exist
+      const process_standard = await this.processStandardRepo.findOne({
+        where: {
+          process_technical_standard_id,
+        },
+      });
+      if (!process_standard) {
+        throw new BadRequestException('Process standard not found');
+      }
+      // update status
+      const updated_process_standard = await this.processStandardRepo.save({
+        ...process_standard,
+        status,
+      });
+      return updated_process_standard;
+    } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
   }
@@ -673,7 +699,7 @@ export class ProcessesService implements IProcessesService {
       // update process specific stage
 
       if (data.stage) {
-        for (let i =0  ; i < data.stage.length; i++) {
+        for (let i = 0; i < data.stage.length; i++) {
           //delete stage
           if (data.stage[i].is_deleted) {
             await this.processSpecificStageRepo.delete(
@@ -685,7 +711,7 @@ export class ProcessesService implements IProcessesService {
             await this.processSpecificStageRepo.save({
               process_technical_specific_id: process_technical_specific_id,
               stage_title: data.stage[i].stage_title,
-              stage_numberic_order: i+1,
+              stage_numberic_order: i + 1,
               time_start: data.stage[i].time_start,
               time_end: data.stage[i].time_end,
             });
@@ -706,10 +732,14 @@ export class ProcessesService implements IProcessesService {
               //delete content
               if (data.stage[i].content[j].is_deleted) {
                 await this.processSpecificStageContentRepo.delete(
-                  data.stage[i].content[j].process_technical_specific_stage_content_id,
+                  data.stage[i].content[j]
+                    .process_technical_specific_stage_content_id,
                 );
               }
-              if (!data.stage[i].content[j].process_technical_specific_stage_content_id) {
+              if (
+                !data.stage[i].content[j]
+                  .process_technical_specific_stage_content_id
+              ) {
                 //create new content
                 await this.processSpecificStageContentRepo.save({
                   process_technical_specific_stage_id:
@@ -723,7 +753,8 @@ export class ProcessesService implements IProcessesService {
               } else {
                 //update content
                 await this.processSpecificStageContentRepo.update(
-                  data.stage[i].content[j].process_technical_specific_stage_content_id,
+                  data.stage[i].content[j]
+                    .process_technical_specific_stage_content_id,
                   {
                     title: data.stage[i].content[j].title,
                     content: data.stage[i].content[j].content,

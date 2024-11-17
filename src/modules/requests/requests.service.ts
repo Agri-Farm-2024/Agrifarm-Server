@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -16,6 +18,9 @@ import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { CreateRequestProcessStandardDTO } from './dto/create-request-processStandard.dto';
 import { RequestStatus } from './types/request-status.enum';
 import { UpdateStatusTaskDTO } from './dto/update-status-task.dto';
+import { ProcessesService } from '../processes/processes.service';
+import { ProcessStandard } from '../processes/entities/standards/processStandard.entity';
+import { ProcessTechnicalStandardStatus } from '../processes/types/status-processStandard.enum';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -26,6 +31,9 @@ export class RequestsService implements IRequestService {
     private readonly mailService: MailService,
     private readonly loggerService: LoggerService,
     private readonly taskService: TasksService,
+
+    @Inject(forwardRef(() => ProcessesService))
+    private readonly processService: ProcessesService,
   ) {}
 
   async createRequestViewLand(data: CreateRequestViewLandDTO): Promise<any> {
@@ -176,6 +184,15 @@ export class RequestsService implements IRequestService {
       });
       if (!request) {
         throw new BadRequestException('Request not found');
+      }
+      if (
+        request.status == RequestStatus.pending_approval &&
+        request.type == RequestType.create_process_standard
+      ) {
+        await this.processService.updateStatus(
+          request.plant_season_id,
+          ProcessTechnicalStandardStatus.pending,
+        );
       }
       // update request status
       const updated_request = await this.requestEntity.save({
