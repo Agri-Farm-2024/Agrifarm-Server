@@ -105,8 +105,8 @@ export class BookingLand extends AbstractEntity {
   })
   status: BookingStatus;
   // Relations
-  @OneToOne(() => Extend, (extend) => extend.booking_land_id)
-  extend_id: Extend;
+  @OneToMany(() => Extend, (extend) => extend.booking_land)
+  extends: Extend[];
 
   @ManyToOne(() => User, (user) => user.booking_by_lanrenter)
   @JoinColumn({ name: 'landrenter_id' })

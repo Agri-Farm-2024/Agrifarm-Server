@@ -11,6 +11,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ExtendStatus } from '../types/extend-status.enum';
 @Entity('extends')
 export class Extend extends AbstractEntity {
   constructor(extend: Partial<Extend>) {
@@ -21,27 +22,34 @@ export class Extend extends AbstractEntity {
   @PrimaryGeneratedColumn('uuid')
   extend_id: string;
 
-  @Column()
-  booking_id: string;
+  @Column('uuid')
+  booking_land_id: string;
 
-  @Column()
+  @Column({ nullable: true })
   total_month: number;
+
+  @Column({ nullable: true })
+  time_start: Date;
 
   @Column()
   price_per_month: number;
 
-  @Column()
-  total_price: number;
-
-  @Column()
+  @Column({ nullable: true })
   reason_for_reject: string;
 
-  @Column()
-  contract_extend_image: string;
+  @Column({ nullable: true })
+  contract_image: string;
+
+  @Column({
+    type: 'enum',
+    enum: ExtendStatus,
+    default: ExtendStatus.pending,
+  })
+  status: ExtendStatus;
   // relation
-  @OneToOne(() => BookingLand, (bookingLand) => bookingLand.extend_id)
-  @JoinColumn({ name: 'booking_id' })
-  booking_land_id: BookingLand;
+  @ManyToOne(() => BookingLand, (bookingLand) => bookingLand.extends)
+  @JoinColumn({ name: 'booking_land_id' })
+  booking_land: BookingLand;
 
   @OneToMany(() => Transaction, (transaction) => transaction.extend)
   transactions: Transaction[];
