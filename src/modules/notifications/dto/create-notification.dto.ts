@@ -12,7 +12,7 @@ export class CreateNotificationDTO {
   content: string;
 
   @IsNotEmpty({ message: 'Component is required' })
-  component: string;
+  component_id: string;
 
   @IsNotEmpty({ message: 'Type is required' })
   @IsEnum({

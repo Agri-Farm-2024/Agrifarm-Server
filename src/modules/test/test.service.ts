@@ -2,27 +2,41 @@ import { Injectable, Logger } from '@nestjs/common';
 import { MailService } from 'src/mails/mail.service';
 import { SubjectMailEnum } from 'src/mails/types/mail-subject.type';
 import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../notifications/types/notification-type.enum';
 
 @Injectable()
 export class TestService {
   private readonly logger = new Logger(TestService.name);
-  constructor(private readonly mailService: MailService) {}
+  constructor(
+    private readonly mailService: MailService,
+    private readonly notificationService: NotificationsService,
+  ) {}
 
-  async test(): Promise<any> {
+  async test(id): Promise<any> {
     try {
-      const test = await this.mailService.sendMail(
-        'chisbr2002@gmail.com',
-        SubjectMailEnum.createBooking,
-        TemplateMailEnum.createBooking,
-        {
-          full_name: 'Bao',
-          time: '2021-10-10',
-          location: 'HCM',
-          staff_fullname: 'Huy',
-          staff_phone: '0123456789',
-          staff_email: 'test@gmail.com',
-        },
-      );
+      console.log(id);
+      // const test = await this.mailService.sendMail(
+      //   'chisbr2002@gmail.com',
+      //   SubjectMailEnum.createBooking,
+      //   TemplateMailEnum.createBooking,
+      //   {
+      //     full_name: 'Bao',
+      //     time: '2021-10-10',
+      //     location: 'HCM',
+      //     staff_fullname: 'Huy',
+      //     staff_phone: '0123456789',
+      //     staff_email: 'test@gmail.com',
+      //   },
+      // );
+      // return test;
+      const test = await this.notificationService.createNotification({
+        user_id: id,
+        title: 'Test',
+        content: 'Test',
+        component_id: 'eddeed05-bace-4407-ab71-794cb5312ddf',
+        type: NotificationType.booking_land,
+      });
       return test;
     } catch (error) {
       this.logger.error(error);

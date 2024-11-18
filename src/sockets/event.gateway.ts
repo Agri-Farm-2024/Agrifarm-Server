@@ -26,7 +26,7 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private clients: { [key: string]: Socket } = {};
 
   handleConnection(client: Socket) {
-    console.log(`Client connected: ${client.id}`);
+    this.logger.log(`Client connected: ${client.id}`);
 
     // Listen for online-user event
     client.on('online-user', (userId: string) => {

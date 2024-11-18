@@ -1,6 +1,6 @@
 export enum NotificationType {
   task = 'task',
-  booking = 'booking',
+  booking_land = 'booking_land',
   request = 'request',
   material = 'material',
   dinary = 'dinary',

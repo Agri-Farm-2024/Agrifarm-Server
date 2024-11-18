@@ -1,14 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { TestService } from './test.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Test')
 @Controller('test')
 export class TestController {
   constructor(private readonly testService: TestService) {}
 
-  @Get()
-  async test(): Promise<any> {
-    await this.testService.test();
+  @Post('/:user_id')
+  async test(@Param('user_id') id: string): Promise<any> {
+    await this.testService.test(id);
   }
 }
