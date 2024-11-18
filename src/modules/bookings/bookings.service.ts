@@ -27,6 +27,7 @@ import { LoggerService } from 'src/logger/logger.service';
 import { SubjectMailEnum } from 'src/mails/types/mail-subject.type';
 import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
 import { Transaction } from '../transactions/entities/transaction.entity';
+import { ExtendsService } from '../extends/extends.service';
 
 @Injectable()
 export class BookingsService implements IBookingService {
@@ -43,6 +44,9 @@ export class BookingsService implements IBookingService {
 
     @Inject(forwardRef(() => TransactionsService))
     private readonly transactionService: TransactionsService,
+
+    @Inject(forwardRef(() => ExtendsService))
+    private readonly extendsService: ExtendsService,
   ) {}
 
   /**
@@ -146,6 +150,7 @@ export class BookingsService implements IBookingService {
       );
       // update land status to booked
       await this.landService.updateLandStatus(land.land_id, LandStatus.booked);
+      // send request extend to old booking
       return new_booking;
     } catch (error) {
       if (error instanceof BadRequestException) {

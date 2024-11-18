@@ -14,5 +14,6 @@ import { JwtModule } from '@nestjs/jwt';
     forwardRef(() => BookingsModule),
     JwtModule,
   ],
+  exports: [ExtendsService],
 })
 export class ExtendsModule {}
