@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { UserStatus } from '../types/user-status.enum';
 
 export class UpdateStatusUserDto {
   @ApiProperty({
@@ -8,6 +9,6 @@ export class UpdateStatusUserDto {
     required: true,
   })
   @IsNotEmpty()
-  @IsString()
-  status: string;
+  @IsEnum(UserStatus)
+  status: UserStatus;
 }

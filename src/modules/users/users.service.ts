@@ -25,15 +25,18 @@ export class UsersService implements IUserService {
   private readonly logger = new Logger(UsersService.name);
   constructor(
     @InjectRepository(User)
-    private readonly userEntity: Repository<User>,
+    private readonly userRepository: Repository<User>,
+
     private readonly loggerService: LoggerService,
+
     private readonly redisService: RedisService,
+
     private readonly mailService: MailService,
   ) {}
 
   async findUserByEmail(email: string) {
     try {
-      const user = await this.userEntity.findOne({
+      const user = await this.userRepository.findOne({
         where: {
           email: email,
         },
@@ -60,7 +63,7 @@ export class UsersService implements IUserService {
    */
   async create(createUserDto: CreateUserDto) {
     // check email is already exists
-    const user = await this.userEntity.findOne({
+    const user = await this.userRepository.findOne({
       where: {
         email: createUserDto.email,
       },
@@ -71,7 +74,7 @@ export class UsersService implements IUserService {
     // Hash the password
     const password_hash = await bcrypt.hash(createUserDto.password, 8);
     // Create a new user
-    const new_user = await this.userEntity.save({
+    const new_user = await this.userRepository.save({
       ...createUserDto,
       password: password_hash,
     });
@@ -120,12 +123,12 @@ export class UsersService implements IUserService {
       }
       // Get all user
       const [users, total_count] = await Promise.all([
-        this.userEntity.find({
+        this.userRepository.find({
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
           where: filters,
         }),
-        this.userEntity.count({
+        this.userRepository.count({
           where: filters,
         }),
       ]);
@@ -148,7 +151,7 @@ export class UsersService implements IUserService {
 
   async findUserById(id: string): Promise<any> {
     try {
-      const user = await this.userEntity.findOne({
+      const user = await this.userRepository.findOne({
         where: {
           user_id: id,
         },
@@ -162,21 +165,35 @@ export class UsersService implements IUserService {
     }
   }
 
-  async updateStatus(id: string, status: string): Promise<any> {
+  async updateStatus(id: string, status: UserStatus): Promise<any> {
     try {
-      // Find the user
-      const user = await this.findUserById(id);
+      // find user
+      const user = await this.userRepository.findOne({
+        where: {
+          user_id: id,
+        },
+      });
+      // check user
       if (!user) {
         throw new BadRequestException('User not found');
       }
-      // Update the status
-      if (status === UserStatus.pending) {
-        throw new BadRequestException('Invalid status');
-      }
-
+      // update status
       user.status = status;
-      // Save the user
-      return await this.userEntity.save(user);
+      // save user
+      await this.userRepository.save(user);
+      // check is active
+      if (status === UserStatus.active) {
+        // send email
+        this.mailService.sendMail(
+          user.email,
+          SubjectMailEnum.registerWelcome,
+          TemplateMailEnum.registerWelcome,
+          {
+            full_name: user.full_name,
+          },
+        );
+      }
+      return;
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
