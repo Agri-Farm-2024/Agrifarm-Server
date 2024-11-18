@@ -8,7 +8,7 @@ export class ReportURLDTO {
     example: 'https://www.google.com',
     required: false,
   })
- @IsOptional()
+  @IsOptional()
   url_link: string;
 
   @ApiProperty({

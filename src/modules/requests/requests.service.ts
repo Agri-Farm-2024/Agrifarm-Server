@@ -29,7 +29,9 @@ export class RequestsService implements IRequestService {
     private readonly requestEntity: Repository<Request>,
 
     private readonly mailService: MailService,
+
     private readonly loggerService: LoggerService,
+
     private readonly taskService: TasksService,
 
     @Inject(forwardRef(() => ProcessesService))

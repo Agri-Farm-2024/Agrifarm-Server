@@ -20,8 +20,6 @@ import { OTPStatus } from './types/otp-status.type';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UserRole } from '../users/types/user-role.enum';
 import { ConfigService } from '@nestjs/config';
-import { TokenStatus } from './types/token-status.enum';
-import { InfoToken } from './types/InfoToken.type';
 import { UserStatus } from '../users/types/user-status.enum';
 import { Payload } from './types/payload.type';
 

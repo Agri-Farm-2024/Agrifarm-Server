@@ -1,5 +1,7 @@
 export enum TemplateMailEnum {
   otpVerifyMail = 'otpVerifyMail',
   registerWelcome = 'registerWelcome',
-  bookingSheduleSign = 'bookingSheduleSign',
+  bookingSheduleSign = '/bookingLand/bookingScheduleSign',
+  createBooking = '/bookingLand/createBooking',
+  paymentBooking = '/bookingLand/paymentBooking',
 }

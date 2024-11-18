@@ -22,7 +22,7 @@ import { MailService } from './mail.service';
           },
         },
         defaults: {
-          from: '"Agri-Farm<baohc110902@gmail.com>',
+          from: '"AgriFarm"',
         },
         template: {
           dir: join(__dirname, 'templates'),

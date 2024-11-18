@@ -28,6 +28,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { SocketsModule } from './sockets/sockets.module';
 import { DiscordsModule } from './discords/discords.module';
 import { CronsModule } from './crons/crons.module';
+import { TestModule } from './modules/test/test.module';
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { CronsModule } from './crons/crons.module';
     SocketsModule,
     ScheduleModule.forRoot(),
     CronsModule,
+    TestModule,
     // DiscordsModule,
   ],
 })

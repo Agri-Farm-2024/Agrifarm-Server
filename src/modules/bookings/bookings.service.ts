@@ -24,6 +24,9 @@ import { BookingPaymentFrequency } from './types/booking-payment.enum';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { TransactionsService } from '../transactions/transactions.service';
 import { LoggerService } from 'src/logger/logger.service';
+import { SubjectMailEnum } from 'src/mails/types/mail-subject.type';
+import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
+import { Transaction } from '../transactions/entities/transaction.entity';
 
 @Injectable()
 export class BookingsService implements IBookingService {
@@ -98,7 +101,8 @@ export class BookingsService implements IBookingService {
       }
       // Get price per month of land
       const total_price =
-        land.price_booking_per_month * createBookingDto.total_month;
+        land.price_booking_per_month * createBookingDto.total_month +
+        land.price_booking_per_month * 2;
       // check if already have booking in this time and status != pending and != reject
       const booking_exist = await this.bookingRepository.find({
         where: {
@@ -122,6 +126,24 @@ export class BookingsService implements IBookingService {
       });
       // send notification to staff and land renter
       // create mail confirm for land renter
+      await this.mailService.sendMail(
+        land_renter.email,
+        SubjectMailEnum.createBooking,
+        TemplateMailEnum.createBooking,
+        {
+          full_name: land_renter.full_name,
+          land_id: land.land_id,
+          land_name: land.name,
+          time_start: createBookingDto.time_start.toLocaleDateString(),
+          time_end: time_end.toLocaleDateString(),
+          total_month: createBookingDto.total_month,
+          price_per_month: land.price_booking_per_month,
+          price_deposit: land.price_booking_per_month * 2,
+          total_price: total_price,
+          staus: 'Chờ xác nhận',
+          user_mail: land_renter.email,
+        },
+      );
       // update land status to booked
       await this.landService.updateLandStatus(land.land_id, LandStatus.booked);
       return new_booking;
@@ -560,8 +582,7 @@ export class BookingsService implements IBookingService {
       if (booking_exist.status !== BookingStatus.pending_contract) {
         throw new BadRequestException('Status booking is not pending contract');
       }
-      // Send mail to land renter and make expred schedule after 48h
-      // await this.mailService.sendMailConfirmBooking(booking_exist);
+      // update status booking to pending sign
       const update_booking = await this.bookingRepository.save({
         ...booking_exist,
         status: BookingStatus.pending_contract,
@@ -569,6 +590,27 @@ export class BookingsService implements IBookingService {
           new Date().getTime() + 48 * 60 * 60 * 1000,
         ),
       });
+      // Send mail to land renter and make expred schedule after 48h
+      await this.mailService.sendMail(
+        user.email,
+        SubjectMailEnum.bookingSheduleSign,
+        TemplateMailEnum.bookingSheduleSign,
+        {
+          full_name: user.full_name,
+          land_id: booking_exist.land_id,
+          land_name: booking_exist.land.name,
+          time_start: booking_exist.time_start.toLocaleDateString(),
+          time_end: booking_exist.time_end.toLocaleDateString(),
+          total_month: booking_exist.total_month,
+          price_per_month: booking_exist.price_per_month,
+          price_deposit: booking_exist.price_deposit,
+          total_price: this.getTotalPriceBooking(booking_exist),
+          staus: 'Chờ ký tên',
+          user_mail: user.email,
+          expired_schedule_at:
+            update_booking.expired_schedule_at.toLocaleDateString(),
+        },
+      );
       return update_booking;
     } catch (error) {
       if (
@@ -662,12 +704,12 @@ export class BookingsService implements IBookingService {
    * @returns
    */
 
-  async updateStatusToCompleted(booking_id: string): Promise<any> {
+  async updateStatusToCompleted(transaction: Transaction): Promise<any> {
     try {
       // get detail booking
       const booking_exist = await this.bookingRepository.findOne({
         where: {
-          booking_id: booking_id,
+          booking_id: transaction.booking_land_id,
         },
       });
       if (!booking_exist) {
@@ -682,8 +724,31 @@ export class BookingsService implements IBookingService {
         ...booking_exist,
         status: BookingStatus.completed,
       });
-      this.loggerService.log(`Booking ${booking_id} is completed`);
+      this.loggerService.log(
+        `Booking ${transaction.booking_land_id} is completed`,
+      );
       // Send mail to land renter
+      await this.mailService.sendMail(
+        booking_exist.land_renter.email,
+        SubjectMailEnum.paymentBooking,
+        TemplateMailEnum.paymentBooking,
+        {
+          full_name: booking_exist.land_renter.full_name,
+          land_id: booking_exist.land_id,
+          land_name: booking_exist.land.name,
+          time_start: booking_exist.time_start.toLocaleDateString(),
+          time_end: booking_exist.time_end.toLocaleDateString(),
+          total_month: booking_exist.total_month,
+          price_per_month: booking_exist.price_per_month,
+          price_deposit: booking_exist.price_deposit,
+          total_price: this.getTotalPriceBooking(booking_exist),
+          staus: 'Đã hoàn thành',
+          user_mail: booking_exist.land_renter.email,
+          transaction_code: transaction.transaction_code,
+          transaction_price: transaction.total_price,
+          transaction_status: 'Thành công',
+        },
+      );
       // Send notification to land renter
       return update_booking;
     } catch (error) {

@@ -3,6 +3,7 @@ import { UpdateStatusBookingDTO } from '../dto/update-status-booking.dto';
 import { BookingLand } from '../entities/bookingLand.entity';
 import { BookingStatus } from '../types/booking-status.enum';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
+import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
 
 export interface IBookingService {
   createBooking(createBookingDto: any, land_renter: Payload): Promise<any>;
@@ -40,7 +41,7 @@ export interface IBookingService {
     user: Payload,
   ): Promise<any>;
 
-  updateStatusToCompleted(booking_id: string): Promise<any>;
+  updateStatusToCompleted(transaction: Transaction): Promise<any>;
 
   updateStatusToExpired(
     booking_exist: BookingLand,

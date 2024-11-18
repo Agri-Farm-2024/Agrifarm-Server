@@ -192,9 +192,8 @@ export class TransactionsService implements ITransactionService {
 
   async handlePaymentBookingLand(transaction: Transaction): Promise<any> {
     try {
-      const update_booking = await this.bookingService.updateStatusToCompleted(
-        transaction.booking_land_id,
-      );
+      const update_booking =
+        await this.bookingService.updateStatusToCompleted(transaction);
       // send order to land renter
       return update_booking;
     } catch (error) {}
