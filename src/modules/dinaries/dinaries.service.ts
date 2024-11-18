@@ -48,5 +48,25 @@ export class DinariesService implements IDinariesService {
     }
   }
 
-  
+  //update dinary stage
+  async updateDinary(updateDinaryDto: UpdateDinaryDto,id:string): Promise<any> {
+    try {
+      const dinary_stage = await this.dinariesStageRepo.findOne({
+        where: {
+          dinary_stage_id: id,
+        },
+      });
+      if (!dinary_stage) {
+        throw new BadRequestException('dinary stage not found');
+      }
+      const updated_dinary_stage = await this.dinariesStageRepo.save({
+        ...dinary_stage,
+        ...updateDinaryDto,
+      });
+      this.loggerService.log('Dinary stage updated');
+      return updated_dinary_stage;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
 }
