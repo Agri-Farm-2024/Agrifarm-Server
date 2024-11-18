@@ -23,16 +23,19 @@ export class DinaryStage extends AbstractEntity {
   @PrimaryGeneratedColumn('uuid')
   dinary_stage_id: string;
 
+  @Column('uuid')
+  process_technical_stage_content_id: string;
+
   @Column()
   content: string;
 
   @Column('float')
   quality_report: number;
 
-  @OneToMany(() => DinaryImage, (dinaryImage) => dinaryImage.dinary_image_id)
+  @OneToMany(() => DinaryImage, (dinaryImage) => dinaryImage.đianry_stage)
   dinaries_image: DinaryImage[];
 
   @OneToOne(() => ProcessSpecificStageContent)
-  @JoinColumn( {name: 'process_technical_stage_content_id'})
+  @JoinColumn({ name: 'process_technical_stage_content_id' })
   dinaries_stage_content: ProcessSpecificStageContent;
 }
