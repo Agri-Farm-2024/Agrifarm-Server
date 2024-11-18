@@ -1,7 +1,7 @@
 import { IsEnum, IsNotEmpty } from 'class-validator';
 import { NotificationType } from '../types/notification-type.enum';
 
-export class CreateNotificationDto {
+export class CreateNotificationDTO {
   @IsNotEmpty({ message: 'User ID is required' })
   user_id: string;
 
@@ -19,5 +19,5 @@ export class CreateNotificationDto {
     NotificationType,
     default: NotificationType.task,
   })
-  type: string;
+  type: NotificationType;
 }

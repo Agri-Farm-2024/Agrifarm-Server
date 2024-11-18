@@ -4,6 +4,7 @@ import { ExtendsController } from './extends.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Extend } from './entities/extend.entity';
 import { BookingsModule } from '../bookings/bookings.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   controllers: [ExtendsController],
@@ -11,6 +12,7 @@ import { BookingsModule } from '../bookings/bookings.module';
   imports: [
     TypeOrmModule.forFeature([Extend]),
     forwardRef(() => BookingsModule),
+    JwtModule,
   ],
 })
 export class ExtendsModule {}

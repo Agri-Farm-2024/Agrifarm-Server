@@ -8,22 +8,54 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { SocketEvent } from './types/socket-event.enum';
+import { LoggerService } from 'src/logger/logger.service';
 
 @WebSocketGateway()
 export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  private readonly logger = new Logger(EventGateway.name);
+  constructor(private readonly loggerService: LoggerService) {}
+
   @WebSocketServer()
   server: Server;
 
   private clients: { [key: string]: Socket } = {};
 
   handleConnection(client: Socket) {
-    this.clients[client.id] = client;
     console.log(`Client connected: ${client.id}`);
+
+    // Listen for online-user event
+    client.on('online-user', (userId: string) => {
+      if (userId) {
+        this.clients[userId] = client;
+        this.logger.log(`User online: ${userId} (Socket ID: ${client.id})`);
+        this.loggerService.log(
+          `User online: ${userId} (Socket ID: ${client.id})`,
+        );
+      } else {
+        this.logger.warn(
+          `online-user event missing userId for Socket ID: ${client.id}`,
+        );
+      }
+    });
   }
 
   handleDisconnect(client: Socket) {
-    delete this.clients[client.id];
-    console.log(`Client disconnected: ${client.id}`);
+    // Remove client from the list of connected clients
+    const userId = Object.keys(this.clients).find(
+      (key) => this.clients[key].id === client.id,
+    );
+
+    if (userId) {
+      delete this.clients[userId];
+      this.logger.log(`User offline: ${userId} (Socket ID: ${client.id})`);
+    } else {
+      this.logger.log(
+        `Client disconnected: ${client.id} (no associated userId)`,
+      );
+      this.loggerService.log(
+        `Client disconnected: ${client.id} (no associated userId)`,
+      );
+    }
   }
 
   sendEventToUserId(userId: string, message: any, event: SocketEvent) {
