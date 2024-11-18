@@ -10,7 +10,12 @@ import { Server, Socket } from 'socket.io';
 import { SocketEvent } from './types/socket-event.enum';
 import { LoggerService } from 'src/logger/logger.service';
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: {
+    origin: '*', // Allow all origins
+    credentials: false, // Do not allow credential
+  },
+})
 export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(EventGateway.name);
   constructor(private readonly loggerService: LoggerService) {}

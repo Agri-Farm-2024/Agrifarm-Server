@@ -11,11 +11,10 @@ import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { RedisService } from 'src/caches/redis/redis.service';
 import { ConfigService } from '@nestjs/config';
-import { TokenStatus } from 'src/modules/auths/types/token-status.enum';
-import { InfoToken } from 'src/modules/auths/types/InfoToken.type';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
+  private readonly logger = new Logger(AuthGuard.name);
   constructor(
     private readonly jwtService: JwtService,
     private reflector: Reflector,
@@ -49,7 +48,7 @@ export class AuthGuard implements CanActivate {
       const decoded = this.jwtService.verify(accessToken, {
         secret: publicKey,
       });
-      Logger.log(decoded, 'Decoded');
+      this.logger.log(decoded, 'Decoded');
       // // Check if token is exist
       // const token_exist = await this.redisSerivce.get(
       //   `token:${decoded.user_id}`,
