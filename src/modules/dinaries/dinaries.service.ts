@@ -23,7 +23,7 @@ export class DinariesService implements IDinariesService {
 
   async createDinary(
     data: CreateDinaryDto,
-    process_stage_content_id,
+    process_stage_content_id: string,
   ): Promise<any> {
     try {
       //check if dinary stage exist
@@ -41,7 +41,12 @@ export class DinariesService implements IDinariesService {
         this.loggerService.log('New dinary stage created');
         return new_dinary_stage;
       } else {
-        throw new BadRequestException('the stage of process specific has been dinary stage already');
+        //get dianry stage by process  technical stage content id
+        const dinary_stage_view = await this.getDinaryStageByProcessContent(
+          process_stage_content_id,
+        );
+        this.loggerService.log('Dinary stage already exist');
+        return dinary_stage_view;
       }
     } catch (error) {
       throw new BadRequestException(error.message);
@@ -49,7 +54,10 @@ export class DinariesService implements IDinariesService {
   }
 
   //update dinary stage
-  async updateDinary(updateDinaryDto: UpdateDinaryDto,id:string): Promise<any> {
+  async updateDinary(
+    updateDinaryDto: UpdateDinaryDto,
+    id: string,
+  ): Promise<any> {
     try {
       const dinary_stage = await this.dinariesStageRepo.findOne({
         where: {
@@ -65,6 +73,22 @@ export class DinariesService implements IDinariesService {
       });
       this.loggerService.log('Dinary stage updated');
       return updated_dinary_stage;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async getDinaryStageByProcessContent(id: string): Promise<any> {
+    try {
+      const dinary_stage = await this.dinariesStageRepo.findOne({
+        where: {
+          process_technical_stage_content_id: id,
+        },
+      });
+      if (!dinary_stage) {
+        throw new BadRequestException('dinary stage not found');
+      }
+      return dinary_stage;
     } catch (error) {
       throw new BadRequestException(error.message);
     }
