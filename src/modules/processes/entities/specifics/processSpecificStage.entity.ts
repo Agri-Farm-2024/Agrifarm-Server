@@ -12,6 +12,7 @@ import {
 import { ProcessSpecific } from './processSpecific.entity';
 import { ProcessSpecificStageContent } from './processSpecificStageContent.entity';
 import { ProcessSpecificStageMaterial } from './processSpecificStageMaterial.entity';
+import { Request } from 'src/modules/requests/entities/request.entity';
 
 @Entity('processes_technical_specific_stage')
 export class ProcessSpecificStage extends AbstractEntity {
@@ -58,4 +59,7 @@ export class ProcessSpecificStage extends AbstractEntity {
       processSpecificStageMaterial.process_technical_specific_stage,
   )
   process_technical_specific_stage_material: ProcessSpecificStageMaterial[];
+
+  @OneToMany(() => Request, (request) => request.process_technical_specific_stage)
+  requests_material_stage: Request[];
 }

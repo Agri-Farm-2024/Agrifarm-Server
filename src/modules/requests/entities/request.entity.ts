@@ -14,6 +14,7 @@ import { Task } from 'src/modules/tasks/entities/task.entity';
 import { PlantSeason } from 'src/modules/plants/entities/plantSeason.entity';
 import { RequestStatus } from '../types/request-status.enum';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
+import { ProcessSpecificStage } from 'src/modules/processes/entities/specifics/processSpecificStage.entity';
 
 @Entity('requests')
 export class Request extends AbstractEntity {
@@ -52,6 +53,10 @@ export class Request extends AbstractEntity {
   @Column({ nullable: true, type: 'uuid' })
   booking_land_id: string;
 
+  @Column({ nullable: true ,type: 'uuid'})
+  process_technical_specific_stage_id: string;
+
+
   @Column({
     default: RequestSupportType.direct,
     type: 'enum',
@@ -81,4 +86,8 @@ export class Request extends AbstractEntity {
   @ManyToOne(() => BookingLand, (booking) => booking.requests)
   @JoinColumn({ name: 'booking_land_id' })
   booking_land: BookingLand;
+
+  @ManyToOne(() => ProcessSpecificStage, (process) => process.requests_material_stage)
+  @JoinColumn({ name: 'process_technical_specific_stage_id' })
+  process_technical_specific_stage: ProcessSpecificStage;
 }
