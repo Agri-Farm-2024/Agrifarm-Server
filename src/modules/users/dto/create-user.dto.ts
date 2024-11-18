@@ -18,13 +18,6 @@ export class CreateUserDto {
   email: string;
 
   @ApiProperty({
-    example: 'password123',
-    description: 'The password of the user',
-  })
-  @IsNotEmpty({ message: 'Password is required' })
-  password: string;
-
-  @ApiProperty({
     example: 'John Doe',
     description: 'The full name of the user',
   })

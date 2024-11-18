@@ -838,6 +838,35 @@ export class BookingsService implements IBookingService {
     }
   }
 
+  async checkExistBookingByTimeAndLand(
+    booking_land_id: string,
+    land_id: string,
+    time_end: Date,
+  ): Promise<any> {
+    try {
+      // Check if exist booking of land in time land
+      const booking_land_exist = await this.bookingRepository.find({
+        where: [
+          {
+            booking_id: Not(booking_land_id),
+            land_id: land_id,
+            time_start: LessThanOrEqual(time_end),
+            time_end: MoreThanOrEqual(time_end),
+          },
+          {
+            booking_id: Not(booking_land_id),
+            land_id: land_id,
+            time_start: LessThanOrEqual(time_end),
+            time_end: LessThanOrEqual(time_end),
+          },
+        ],
+      });
+      return booking_land_exist;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
   private getTotalPriceBooking(booking: BookingLand): number {
     const total_price_booking: number =
       (booking.time_end.getMonth() - booking.time_start.getMonth() + 1) *

@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { LandsModule } from '../lands/lands.module';
 import { TransactionsModule } from '../transactions/transactions.module';
 import { LoggerModule } from 'src/logger/logger.module';
+import { ExtendsModule } from '../extends/extends.module';
 
 @Module({
   controllers: [BookingsController],
@@ -15,8 +16,9 @@ import { LoggerModule } from 'src/logger/logger.module';
     TypeOrmModule.forFeature([BookingLand]),
     JwtModule,
     LandsModule,
-    forwardRef(() => TransactionsModule),
     LoggerModule,
+    forwardRef(() => TransactionsModule),
+    forwardRef(() => ExtendsModule),
   ],
   exports: [BookingsService],
 })

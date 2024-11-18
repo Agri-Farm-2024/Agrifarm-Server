@@ -71,8 +71,10 @@ export class UsersService implements IUserService {
     if (user) {
       throw new BadRequestException('Email already exists');
     }
+    // generate password
+    const password = Math.random().toString(36).slice(-8);
     // Hash the password
-    const password_hash = await bcrypt.hash(createUserDto.password, 8);
+    const password_hash = await bcrypt.hash(password, 8);
     // Create a new user
     const new_user = await this.userRepository.save({
       ...createUserDto,
@@ -87,6 +89,12 @@ export class UsersService implements IUserService {
       TemplateMailEnum.registerWelcome,
       {
         full_name: new_user.full_name,
+        user_id: new_user.user_id,
+        email: new_user.email,
+        phone: new_user.phone,
+        password: password,
+        created_at: new_user.created_at.toLocaleDateString(),
+        status: 'Chờ xác nhận',
       },
     );
     return new_user;
