@@ -38,8 +38,8 @@ export class DinariesController {
     );
   }
 
-  // @UseGuards(AuthGuard)
-  // @Roles(UserRole.expert)
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.expert)
   @Patch('/:dinary_stage_id')
   updateDinaryStage(
     @Body() updateDinaryDto: UpdateDinaryDto,
