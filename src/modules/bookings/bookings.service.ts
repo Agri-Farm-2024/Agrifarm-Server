@@ -226,6 +226,7 @@ export class BookingsService implements IBookingService {
             land: true,
             land_renter: true,
             staff: true,
+            extends: true,
           },
           select: {
             land_renter: {
@@ -318,6 +319,7 @@ export class BookingsService implements IBookingService {
             land: true,
             land_renter: true,
             staff: true,
+            extends: true,
           },
           select: {
             land_renter: {
@@ -378,6 +380,7 @@ export class BookingsService implements IBookingService {
             land: true,
             land_renter: true,
             staff: true,
+            extends: true,
           },
           select: {
             land_renter: {
