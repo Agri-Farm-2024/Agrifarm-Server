@@ -47,4 +47,6 @@ export class DinariesService implements IDinariesService {
       throw new BadRequestException(error.message);
     }
   }
+
+  
 }

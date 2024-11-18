@@ -32,6 +32,14 @@ export class ReportsService implements IReportService {
 
   async createReport(data: CreateReportDTO, task_id: string, user: Payload) {
     try {
+      //chekc report exist
+      const report_exist = await this.reportRepository.findOne({
+        where: { task_id: task_id },
+      });
+      if (report_exist) {
+        throw new BadRequestException('Report already exist');
+      }
+
       // get detail task
       const task_exist: Task = await this.taskService.getDetailTask(task_id);
       if (task_exist.assigned_to_id !== user.user_id) {
