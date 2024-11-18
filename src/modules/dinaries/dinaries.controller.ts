@@ -37,4 +37,14 @@ export class DinariesController {
       process_stage_content_id,
     );
   }
+
+  // @UseGuards(AuthGuard)
+  // @Roles(UserRole.expert)
+  @Patch('/:dinary_stage_id')
+  updateDinaryStage(
+    @Body() updateDinaryDto: UpdateDinaryDto,
+    @Param('dinary_stage_id') id: string,
+  ) {
+    return this.dinariesService.updateDinary(updateDinaryDto, id);
+  }
 }
