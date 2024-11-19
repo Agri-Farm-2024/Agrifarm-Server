@@ -22,7 +22,7 @@ export class CreateExtendDto {
   @Min(1, {
     message: `Total month must be greater than or equal to 1`,
   })
-  @Max(12, {
+  @Max(36, {
     message: `Total month must be less than or equal to 12`,
   })
   total_month: number;

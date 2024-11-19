@@ -60,10 +60,14 @@ export class TransactionsService implements ITransactionService {
         );
       }
       // create new transaction
-      const new_transaction = await this.transactionRepository.save({
+      const new_transaction: any = await this.transactionRepository.save({
         ...transactionDTO,
         transaction_code: transactionCode,
       });
+      new_transaction.payment_link = parsePaymentLink(
+        new_transaction.total_price,
+        new_transaction.transaction_code,
+      );
       return new_transaction;
     } catch (error) {
       throw new Error(error.message);

@@ -53,9 +53,8 @@ export class Request extends AbstractEntity {
   @Column({ nullable: true, type: 'uuid' })
   booking_land_id: string;
 
-  @Column({ nullable: true ,type: 'uuid'})
+  @Column({ nullable: true, type: 'uuid' })
   process_technical_specific_stage_id: string;
-
 
   @Column({
     default: RequestSupportType.direct,
@@ -87,7 +86,10 @@ export class Request extends AbstractEntity {
   @JoinColumn({ name: 'booking_land_id' })
   booking_land: BookingLand;
 
-  @ManyToOne(() => ProcessSpecificStage, (process) => process.requests_material_stage)
+  @ManyToOne(
+    () => ProcessSpecificStage,
+    (process) => process.requests_material_stage,
+  )
   @JoinColumn({ name: 'process_technical_specific_stage_id' })
   process_technical_specific_stage: ProcessSpecificStage;
 }
