@@ -8,7 +8,7 @@ import {
 import { IService } from './interfaces/IService.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ServicePackage } from './entities/servicePackage.entity';
-import { Not, Repository } from 'typeorm';
+import { LessThan, Not, Repository } from 'typeorm';
 import { ServiceSpecific } from './entities/serviceSpecific.entity';
 import { CreateServicePackageDTO } from './dto/create-service-package.dto';
 import { CreateServiceSpecificDTO } from './dto/create-service-specific.dto';
@@ -345,6 +345,31 @@ export class ServicesService implements IService {
       if (error instanceof BadRequestException) {
         throw error;
       }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async checkServiceIsExpired(): Promise<any> {
+    try {
+      // get all service specific
+      const service_specifics = await this.serviceSpecificRepo.find({
+        where: {
+          status: ServiceSpecificStatus.used,
+          time_end: LessThan(new Date()),
+        },
+      });
+      service_specifics.forEach(async (service_specific) => {
+        // update status service specific
+        await this.serviceSpecificRepo.update(
+          {
+            service_specific_id: service_specific.service_specific_id,
+          },
+          {
+            status: ServiceSpecificStatus.expired,
+          },
+        );
+      });
+    } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
   }

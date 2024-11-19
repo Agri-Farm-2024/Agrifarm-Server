@@ -1,5 +1,5 @@
 export interface ICronJob {
-  checkBookingIsExpired(): Promise<void>;
+  checkEverydayIsExpired(): Promise<void>;
 
   checkTransactionIsExpired(): Promise<void>;
 }

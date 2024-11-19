@@ -5,6 +5,7 @@ import { CronTime } from './types/cron-time.enum';
 import { BookingsService } from 'src/modules/bookings/bookings.service';
 import { TransactionsService } from 'src/modules/transactions/transactions.service';
 import { LoggerService } from 'src/logger/logger.service';
+import { ServicesService } from 'src/modules/servicesPackage/servicesPackage.service';
 
 @Injectable()
 export class JobService implements ICronJob {
@@ -12,16 +13,23 @@ export class JobService implements ICronJob {
   constructor(
     private readonly bookingLandService: BookingsService,
 
+    private readonly servicePackageService: ServicesService,
+
     private readonly transactionService: TransactionsService,
 
     private readonly loggerService: LoggerService,
   ) {}
 
   @Cron(CronTime.check_booking_is_expired)
-  async checkBookingIsExpired(): Promise<void> {
+  async checkEverydayIsExpired(): Promise<void> {
+    // Checking booking is expired
     await this.bookingLandService.checkBookingIsExpired();
     this.logger.log('Check booking expire is running');
     this.loggerService.log('Check booking expire is running');
+    // Checking service is expired
+    await this.servicePackageService.checkServiceIsExpired();
+    this.logger.log('Check service expire is running');
+    this.loggerService.log('Check service expire is running');
   }
 
   @Cron(CronTime.check_transaction_is_expired)
