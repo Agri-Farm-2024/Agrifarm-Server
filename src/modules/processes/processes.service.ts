@@ -831,6 +831,9 @@ export class ProcessesService implements IProcessesService {
         where: {
           process_technical_specific_stage_id,
         },
+        relations: {
+          process_technical_specific_stage_material: true,
+        },
       });
     } catch (error) {
       throw new InternalServerErrorException(error.message);

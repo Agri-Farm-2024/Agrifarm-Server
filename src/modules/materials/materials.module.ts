@@ -22,6 +22,7 @@ import { TransactionsModule } from '../transactions/transactions.module';
     LoggerModule,
     forwardRef(() => OrdersModule),
     forwardRef(() => TransactionsModule),
+    
     JwtModule,
   ],
   exports: [MaterialsService],

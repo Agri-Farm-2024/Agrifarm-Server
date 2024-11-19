@@ -70,7 +70,7 @@ export class ReportsService implements IReportService {
         if (request.request_i.status === 'in_progress') {
           await this.requestService.updateRequestStatus(
             request.request_id,
-            RequestStatus.completed,
+            RequestStatus.pending_approval,
           );
         }
       }
@@ -99,4 +99,6 @@ export class ReportsService implements IReportService {
     // Return the newly created report
     return saved_report;
   }
+
+  //update 
 }
