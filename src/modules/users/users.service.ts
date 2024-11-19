@@ -116,7 +116,11 @@ export class UsersService implements IUserService {
       };
       // check role
       if (user.role === UserRole.manager) {
-        role: Not(In[(UserRole.admin, UserRole.manager)]);
+        filters.role = Not(In[(UserRole.admin, UserRole.manager)]);
+      }
+      // check role filter
+      if (role !== UserRole.manager && role !== UserRole.admin) {
+        filters.role = role;
       }
       // check search
       if (pagination.search) {
@@ -131,9 +135,14 @@ export class UsersService implements IUserService {
       // Get all user
       const [users, total_count] = await Promise.all([
         this.userRepository.find({
+          where: filters,
+          order: {
+            updated_at: 'DESC',
+            status: 'ASC',
+            role: 'ASC',
+          },
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
-          where: filters,
         }),
         this.userRepository.count({
           where: filters,
