@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { RequestStatus } from '../types/request-status.enum';
 
 export class UpdateStatusTaskDTO {
@@ -8,6 +8,8 @@ export class UpdateStatusTaskDTO {
     description: 'Status of the task',
     name: 'status',
   })
+  @IsNotEmpty()
+  @IsString()
   status: RequestStatus;
 
   @ApiProperty({

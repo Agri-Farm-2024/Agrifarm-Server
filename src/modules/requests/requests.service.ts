@@ -24,6 +24,9 @@ import { ProcessTechnicalStandardStatus } from '../processes/types/status-proces
 import { CreateRequestMaterialDto } from './dto/create-request-material-stagedto';
 import { Payload } from '../auths/types/payload.type';
 import { request } from 'http';
+import { Material } from '../materials/entities/material.entity';
+import { MaterialsService } from '../materials/materials.service';
+import { ProcessSpecificStage } from '../processes/entities/specifics/processSpecificStage.entity';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -39,6 +42,8 @@ export class RequestsService implements IRequestService {
 
     @Inject(forwardRef(() => ProcessesService))
     private readonly processService: ProcessesService,
+
+    private readonly materialService: MaterialsService,
   ) {}
 
   async createRequestViewLand(data: CreateRequestViewLandDTO): Promise<any> {
@@ -338,18 +343,36 @@ export class RequestsService implements IRequestService {
             throw new BadRequestException('Reason is required');
           }
         }
-        // update request status
-        const updated_request = await this.requestEntity.save({
-          ...request,
-          status: RequestStatus.completed,
-        });
-        return updated_request;
+        //update type request material process specific stage
+        if (
+          request.type === RequestType.material_process_specfic_stage &&
+          data.status === RequestStatus.completed
+        ) {
+          //update quantity material
+          const process_specific_stage_detail: ProcessSpecificStage =
+            await this.processService.getDetailProcessSpecificStage(
+              request.process_technical_specific_stage_id,
+            );
+          if (!process_specific_stage_detail) {
+            throw new BadRequestException('Process specific stage not found');
+          }
+          //   //update quantity material
+          //   await this.materialService.updateQuantityMaterial(
+          //     process_specific_stage_detail
+          //       .process_technical_specific_stage_material.material_id,
+          //     process_specific_stage_detail.quantity,
+          //   );
+          // }
+          // update request status
+          const updated_request = await this.requestEntity.save({
+            ...request,
+            status: RequestStatus.completed,
+          });
+
+          return updated_request;
+        }
       }
     } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
-
       throw new InternalServerErrorException(error.message);
     }
   }

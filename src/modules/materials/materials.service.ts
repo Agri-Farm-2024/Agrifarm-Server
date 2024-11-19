@@ -107,6 +107,21 @@ export class MaterialsService implements IMaterialService {
     }
   }
 
+  //update quantiy material for request material
+  // async updateQuantityMaterial(
+   
+  //   material_stage: [material_id: string, quantity: number],
+  // ): Promise<any> {
+  //   try {
+  //     //check process technical specific stage exist
+      
+  //     }
+  //   } catch (error) {
+  //     throw new InternalServerErrorException(error.message);
+  //   }
+
+  
+
   //Get ALL materials
   async getMaterials(pagination: PaginationParams): Promise<any> {
     try {

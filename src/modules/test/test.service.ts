@@ -1,9 +1,12 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { MailService } from 'src/mails/mail.service';
 import { SubjectMailEnum } from 'src/mails/types/mail-subject.type';
 import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../notifications/types/notification-type.enum';
+import { RequestsService } from '../requests/requests.service';
+import { RequestStatus } from '../requests/types/request-status.enum';
+import { UpdateStatusTaskDTO } from '../requests/dto/update-status-task.dto';
 
 @Injectable()
 export class TestService {
