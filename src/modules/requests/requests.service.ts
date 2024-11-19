@@ -424,6 +424,4 @@ export class RequestsService implements IRequestService {
       return new_request;
     } catch (error) {}
   }
-
-  // create request take material of landrenter
 }

@@ -22,6 +22,7 @@ import {
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { UserRole } from './types/user-role.enum';
 import { UpdateStatusUserDto } from './dto/update-status-user.dto';
+import { UserStatus } from './types/user-status.enum';
 
 @ApiTags('users')
 @Controller('users')
@@ -40,14 +41,16 @@ export class UsersController {
   @Roles(UserRole.admin, UserRole.manager)
   @ApplyPaginationMetadata
   @ApiQuery({ name: 'role', required: false, enum: UserRole })
+  @ApiQuery({ name: 'status', required: false, enum: UserStatus })
   @Get()
   async findAll(
     @Pagination() pagination: PaginationParams,
     @Query('role') role: UserRole,
+    @Query('status') status: UserStatus,
     @Request() req: any,
   ): Promise<any> {
     const user = req['user'];
-    return await this.usersService.getAllUsers(pagination, role, user);
+    return await this.usersService.getAllUsers(pagination, role, user, status);
   }
 
   @Patch('/updateStatus/:id')

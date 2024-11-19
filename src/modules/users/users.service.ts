@@ -108,6 +108,7 @@ export class UsersService implements IUserService {
     pagination: PaginationParams,
     role: UserRole,
     user: Payload,
+    status: UserStatus,
   ): Promise<any> {
     try {
       // filter condition
@@ -118,10 +119,23 @@ export class UsersService implements IUserService {
       if (user.role === UserRole.manager) {
         filters.role = Not(In[(UserRole.admin, UserRole.manager)]);
       }
-      // check role filter
-      if (role !== UserRole.manager && role !== UserRole.admin) {
+      // check role is exist
+      if (role) {
         filters.role = role;
       }
+      // check role filter is admin
+      if (role === UserRole.admin) {
+        throw new BadRequestException('Invalid filter role');
+      }
+      // check role filter is manager
+      if (role === UserRole.manager && user.role !== UserRole.admin) {
+        throw new BadRequestException('You do not have permission');
+      }
+      // check status
+      if (status) {
+        filters.status = status;
+      }
+
       // check search
       if (pagination.search) {
         for (let i = 0; i < pagination.search.length; i++) {

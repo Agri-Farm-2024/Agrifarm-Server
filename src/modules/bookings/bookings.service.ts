@@ -244,6 +244,10 @@ export class BookingsService implements IBookingService {
       const [bookings, total_count] = await Promise.all([
         this.bookingRepository.find({
           where: filter_condition,
+          order: {
+            status: 'ASC',
+            updated_at: 'DESC',
+          },
           relations: {
             land: true,
             land_renter: true,
@@ -337,6 +341,10 @@ export class BookingsService implements IBookingService {
       const [bookings, total_count] = await Promise.all([
         this.bookingRepository.find({
           where: filter_condition,
+          order: {
+            status: 'ASC',
+            updated_at: 'DESC',
+          },
           relations: {
             land: true,
             land_renter: true,
@@ -397,6 +405,10 @@ export class BookingsService implements IBookingService {
           where: {
             landrenter_id: user.user_id,
             ...filter_condition,
+          },
+          order: {
+            status: 'ASC',
+            updated_at: 'DESC',
           },
           relations: {
             land: true,
