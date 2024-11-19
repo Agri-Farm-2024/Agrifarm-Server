@@ -16,7 +16,7 @@ import { RequestsModule } from '../requests/requests.module';
     forwardRef(() => TasksModule),
     JwtModule,
     TasksModule,
-    RequestsModule,
+    forwardRef(() => RequestsModule),
   ],
   exports: [ReportsService],
 })

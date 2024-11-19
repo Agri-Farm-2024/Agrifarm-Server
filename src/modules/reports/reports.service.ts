@@ -31,6 +31,7 @@ export class ReportsService implements IReportService {
 
     private readonly taskService: TasksService,
 
+    @Inject(forwardRef(() => RequestsService))
     private readonly requestService: RequestsService,
   ) {}
 
