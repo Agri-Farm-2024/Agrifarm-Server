@@ -17,6 +17,8 @@ import { CreateReportDTO } from './dto/create-report.dto';
 import { Payload } from '../auths/types/payload.type';
 import { Task } from '../tasks/entities/task.entity';
 import { ReportURL } from './entities/reportURL.entity';
+import { RequestsService } from '../requests/requests.service';
+import { RequestStatus } from '../requests/types/request-status.enum';
 
 @Injectable()
 export class ReportsService implements IReportService {
@@ -28,6 +30,9 @@ export class ReportsService implements IReportService {
     private readonly reportURLRepo: Repository<ReportURL>,
 
     private readonly taskService: TasksService,
+
+    @Inject(forwardRef(() => RequestsService))
+    private readonly requestService: RequestsService,
   ) {}
 
   async createReport(data: CreateReportDTO, task_id: string, user: Payload) {
@@ -58,6 +63,15 @@ export class ReportsService implements IReportService {
             url_link: url.url_link,
             url_type: url.url_type,
           });
+        }
+        //update request status
+        //take request is status in progress
+        const request = await this.taskService.getDetailTask(task_id);
+        if (request.request_i.status === 'in_progress') {
+          await this.requestService.updateRequestStatus(
+            request.request_id,
+            RequestStatus.completed,
+          );
         }
       }
       return new_report;

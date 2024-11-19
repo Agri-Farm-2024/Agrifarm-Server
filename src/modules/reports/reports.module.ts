@@ -6,6 +6,7 @@ import { Report } from './entities/report.entity';
 import { ReportURL } from './entities/reportURL.entity';
 import { TasksModule } from '../tasks/tasks.module';
 import { JwtModule } from '@nestjs/jwt';
+import { RequestsModule } from '../requests/requests.module';
 
 @Module({
   controllers: [ReportsController],
@@ -15,6 +16,7 @@ import { JwtModule } from '@nestjs/jwt';
     forwardRef(() => TasksModule),
     JwtModule,
     TasksModule,
+    forwardRef(() => RequestsModule),
   ],
   exports: [ReportsService],
 })
