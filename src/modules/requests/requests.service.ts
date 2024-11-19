@@ -19,19 +19,12 @@ import { CreateRequestProcessStandardDTO } from './dto/create-request-processSta
 import { RequestStatus } from './types/request-status.enum';
 import { UpdateStatusTaskDTO } from './dto/update-status-task.dto';
 import { ProcessesService } from '../processes/processes.service';
-import { ProcessStandard } from '../processes/entities/standards/processStandard.entity';
 import { ProcessTechnicalStandardStatus } from '../processes/types/status-processStandard.enum';
 import { CreateRequestMaterialDto } from './dto/create-request-material-stagedto';
-import { Payload } from '../auths/types/payload.type';
-import { request } from 'http';
-
-import { Material } from '../materials/entities/material.entity';
 import { MaterialsService } from '../materials/materials.service';
 import { ProcessSpecificStage } from '../processes/entities/specifics/processSpecificStage.entity';
-
 import { SubjectMailEnum } from 'src/mails/types/mail-subject.type';
 import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
-
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -389,12 +382,12 @@ export class RequestsService implements IRequestService {
             throw new BadRequestException('Process specific stage not found');
           }
           //   //update quantity material
-          //   await this.materialService.updateQuantityMaterial(
-          //     process_specific_stage_detail
-          //       .process_technical_specific_stage_material.material_id,
-          //     process_specific_stage_detail.quantity,
-          //   );
-          // }
+          for (const item of process_specific_stage_detail.process_technical_specific_stage_material) {
+            await this.materialService.updateQuantityMaterial(
+              item.material_id,
+              item.quantity,
+            );
+          }
           // update request status
           const updated_request = await this.requestEntity.save({
             ...request,

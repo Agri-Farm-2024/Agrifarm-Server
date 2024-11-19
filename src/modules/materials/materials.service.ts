@@ -107,20 +107,35 @@ export class MaterialsService implements IMaterialService {
     }
   }
 
-  //update quantiy material for request material
-  // async updateQuantityMaterial(
-   
-  //   material_stage: [material_id: string, quantity: number],
-  // ): Promise<any> {
-  //   try {
-  //     //check process technical specific stage exist
-      
-  //     }
-  //   } catch (error) {
-  //     throw new InternalServerErrorException(error.message);
-  //   }
+  // update quantiy material for request material
+  async updateQuantityMaterial(
+    material: string,
+    quantity: number,
+  ): Promise<any> {
+    try {
+      const material_exist = await this.materialEntity.findOne({
+        where: {
+          material_id: material,
+        },
+      });
 
-  
+      if (material_exist.total_quantity + quantity <= 0) {
+        material_exist.status = MaterialStatus.out_of_stock;
+      }
+
+      if (material_exist.total_quantity + quantity > 0) {
+        material_exist.status = MaterialStatus.available;
+      }
+
+      const update_material = await this.materialEntity.save({
+        ...material_exist,
+        total_quantity: material_exist.total_quantity + quantity,
+      });
+      return update_material;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 
   //Get ALL materials
   async getMaterials(pagination: PaginationParams): Promise<any> {
