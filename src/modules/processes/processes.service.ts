@@ -626,6 +626,7 @@ export class ProcessesService implements IProcessesService {
             service_specific: true,
           },
           order: {
+            status: 'ASC',
             process_technical_specific_stage: {
               stage_numberic_order: 'ASC',
               process_technical_specific_stage_content: {
@@ -633,6 +634,7 @@ export class ProcessesService implements IProcessesService {
               },
             },
           },
+
           select: {
             expert: {
               full_name: true,
