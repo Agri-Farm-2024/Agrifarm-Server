@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Extend } from './entities/extend.entity';
 import { BookingsModule } from '../bookings/bookings.module';
 import { JwtModule } from '@nestjs/jwt';
+import { TransactionsModule } from '../transactions/transactions.module';
 
 @Module({
   controllers: [ExtendsController],
@@ -12,6 +13,7 @@ import { JwtModule } from '@nestjs/jwt';
   imports: [
     TypeOrmModule.forFeature([Extend]),
     forwardRef(() => BookingsModule),
+    forwardRef(() => TransactionsModule),
     JwtModule,
   ],
   exports: [ExtendsService],

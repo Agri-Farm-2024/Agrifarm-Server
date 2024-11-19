@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   forwardRef,
   Inject,
   Injectable,
@@ -14,6 +15,12 @@ import { Extend } from './entities/extend.entity';
 import { Repository } from 'typeorm';
 import { BookingStatus } from '../bookings/types/booking-status.enum';
 import { ExtendStatus } from './types/extend-status.enum';
+import { UpdateExtendDTO } from './dto/update-extend.dto';
+import { Payload } from '../auths/types/payload.type';
+import { UserRole } from '../users/types/user-role.enum';
+import { TransactionsService } from '../transactions/transactions.service';
+import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
+import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
 
 @Injectable()
 export class ExtendsService implements IExtendService {
@@ -23,6 +30,9 @@ export class ExtendsService implements IExtendService {
 
     @InjectRepository(Extend)
     private readonly extendRepository: Repository<Extend>,
+
+    @Inject(forwardRef(() => TransactionsService))
+    private readonly transactionService: TransactionsService,
   ) {}
 
   async createExtend(createExtendDTO: CreateExtendDto): Promise<any> {
@@ -68,6 +78,104 @@ export class ExtendsService implements IExtendService {
         price_per_month: bookingLand.land.price_booking_per_month,
       });
       return extend;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async updateExtend(
+    data: UpdateExtendDTO,
+    extend_id: string,
+    user: Payload,
+  ): Promise<any> {
+    try {
+      // find extend by id
+      const extend = await this.extendRepository.findOne({
+        where: { extend_id: extend_id },
+      });
+      if (!extend) {
+        throw new BadRequestException('Extend is not found');
+      }
+      // check condition update to pending sign
+      if (data.status === ExtendStatus.pending_sign) {
+        // check is manager
+        if (user.role !== UserRole.manager) {
+          throw new ForbiddenException('You are not manager');
+        }
+        // check extend status
+        if (extend.status !== ExtendStatus.pending_contract) {
+          throw new BadRequestException('Extend is not pending contract');
+        }
+      }
+      // check condition update to pending payment
+      if (data.status === ExtendStatus.pending_payment) {
+        // check is staff
+        if (user.role !== UserRole.staff) {
+          throw new ForbiddenException('You are not staff');
+        }
+        // check extend status
+        if (extend.status !== ExtendStatus.pending_sign) {
+          throw new BadRequestException('Extend is not pending sign');
+        }
+        // check exist contract
+        if (!data.contract_image) {
+          throw new BadRequestException('Contract image is required');
+        }
+        // create transaction
+        const transactionData: Partial<CreateTransactionDTO> = {
+          extend_id: extend_id,
+          total_price: extend.total_month * extend.price_per_month,
+          purpose: TransactionPurpose.extend,
+          user_id: user.user_id,
+        };
+        await this.transactionService.createTransaction(
+          transactionData as CreateTransactionDTO,
+        );
+      }
+      // update extend
+      await this.extendRepository.save({
+        ...extend,
+        ...data,
+      });
+
+      return await this.extendRepository.findOne({
+        where: { extend_id: extend_id },
+      });
+    } catch (error) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof ForbiddenException
+      ) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async updateExtendToComplete(extend_id: string): Promise<any> {
+    try {
+      // find extend by id
+      const extend = await this.extendRepository.findOne({
+        where: { extend_id: extend_id },
+      });
+      if (!extend) {
+        throw new BadRequestException('Extend is not found');
+      }
+      // check extend status
+      if (extend.status !== ExtendStatus.pending_payment) {
+        throw new BadRequestException('Extend is not pending payment');
+      }
+      // update extend
+      await this.extendRepository.save({
+        ...extend,
+        status: ExtendStatus.completed,
+      });
+      return await this.extendRepository.findOne({
+        where: { extend_id: extend_id },
+      });
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
