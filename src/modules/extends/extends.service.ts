@@ -86,6 +86,20 @@ export class ExtendsService implements IExtendService {
     }
   }
 
+  async createRequestExtend(booking_land_id: string): Promise<any> {
+    try {
+      const new_extend = await this.extendRepository.save({
+        booking_land_id: booking_land_id,
+        status: ExtendStatus.pending,
+      });
+      // send notification to user
+      // send mail to user
+      return new_extend;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
   async updateExtend(
     data: UpdateExtendDTO,
     extend_id: string,

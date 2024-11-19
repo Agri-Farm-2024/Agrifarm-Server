@@ -103,6 +103,23 @@ export class BookingsService implements IBookingService {
       if (!land.staff_id) {
         throw new BadRequestException('Wait for manager assign staff to land');
       }
+      // check previous booking is completed for send request extend
+      const booking_previous = await this.bookingRepository.findOne({
+        where: {
+          land_id: createBookingDto.land_id,
+          status: BookingStatus.completed,
+          time_end: LessThanOrEqual(createBookingDto.time_start),
+        },
+        order: {
+          time_end: 'DESC',
+        },
+      });
+      if (booking_previous) {
+        // send request extend to old booking
+        await this.extendsService.createRequestExtend(
+          booking_previous.booking_id,
+        );
+      }
       // Get price per month of land
       const total_price =
         land.price_booking_per_month * createBookingDto.total_month +
