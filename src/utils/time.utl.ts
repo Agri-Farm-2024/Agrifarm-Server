@@ -4,6 +4,12 @@ export const getTimeByPlusDays = (time: Date, days: number): Date => {
   return result;
 };
 
+export const getTimeByPlusMonths = (time: Date, months: number): Date => {
+  const result = new Date(time);
+  result.setMonth(result.getMonth() + months);
+  return result;
+};
+
 export const setTimeExpireSchedule = (): Date => {
   const result = new Date();
   // check next day is weekend

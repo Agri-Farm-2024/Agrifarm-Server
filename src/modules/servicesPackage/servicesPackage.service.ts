@@ -8,13 +8,13 @@ import {
 import { IService } from './interfaces/IService.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ServicePackage } from './entities/servicePackage.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { ServiceSpecific } from './entities/serviceSpecific.entity';
 import { CreateServicePackageDTO } from './dto/create-service-package.dto';
 import { CreateServiceSpecificDTO } from './dto/create-service-specific.dto';
 import { PlantsService } from '../plants/plants.service';
 import { PlantSeason } from '../plants/entities/plantSeason.entity';
-import { getTimeByPlusDays } from 'src/utils/time.utl';
+import { getTimeByPlusMonths } from 'src/utils/time.utl';
 import { TransactionsService } from '../transactions/transactions.service';
 import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
 import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
@@ -181,25 +181,43 @@ export class ServicesService implements IService {
           'Process standard is not accepted for this plant season',
         );
       }
-      // // check time is valid
-      // const total_month_booking =
-      //   new Date(booking_detail.time_end).getMonth() -
-      //   new Date(booking_detail.time_start).getMonth() +
-      //   (new Date(booking_detail.time_end).getDay() -
-      //     new Date(booking_detail.time_start).getDay()) /
-      //     30;
-
-      // if (total_month_booking < plant_season.total_month) {
-      //   throw new BadRequestException(
-      //     'The time of booking is not enough for this plant season',
-      //   );
-      // }
+      // check time is valid with booking
+      if (
+        booking_detail.time_end <
+        getTimeByPlusMonths(
+          createServicePackage.time_start,
+          plant_season.total_month,
+        )
+      ) {
+        throw new BadRequestException(
+          `Time is not valid with booking expired in ${booking_detail.time_end.toLocaleDateString()}`,
+        );
+      }
+      // get list service by this booking for acreage land
+      const list_service_specific = await this.serviceSpecificRepo.find({
+        where: {
+          booking_id: createServicePackage.booking_id,
+          status: Not(ServiceSpecificStatus.expired),
+        },
+      });
+      let total_acreage = 0;
+      list_service_specific.forEach((service) => {
+        total_acreage += service.acreage_land;
+      });
+      if (
+        total_acreage + createServicePackage.acreage_land >
+        booking_detail.land.acreage_land
+      ) {
+        throw new BadRequestException(
+          `Acreage land is not enough. You still have ${booking_detail.land.acreage_land - total_acreage} acreage land`,
+        );
+      }
       // create a new service specific
       const new_service_specific = await this.serviceSpecificRepo.save({
         ...createServicePackage,
         price_process: plant_season.price_process,
         price_package: service_package.price,
-        time_end: getTimeByPlusDays(
+        time_end: getTimeByPlusMonths(
           createServicePackage.time_start,
           plant_season.total_month,
         ),
