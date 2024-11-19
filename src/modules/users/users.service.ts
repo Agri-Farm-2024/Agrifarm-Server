@@ -89,7 +89,6 @@ export class UsersService implements IUserService {
       TemplateMailEnum.registerWelcome,
       {
         full_name: new_user.full_name,
-        user_id: new_user.user_id,
         email: new_user.email,
         phone: new_user.phone,
         password: password,
@@ -198,6 +197,11 @@ export class UsersService implements IUserService {
           TemplateMailEnum.registerWelcome,
           {
             full_name: user.full_name,
+            email: user.email,
+            phone: user.phone,
+            password: '********',
+            created_at: user.created_at.toLocaleDateString(),
+            status: 'Đã xác nhận',
           },
         );
       }
