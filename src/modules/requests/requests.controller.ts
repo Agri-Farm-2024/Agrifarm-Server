@@ -25,6 +25,7 @@ import { AuthGuard } from 'src/common/guards/auth.guard';
 import { Roles } from 'src/common/decorations/role.decoration';
 import { UserRole } from '../users/types/user-role.enum';
 import { UpdateStatusTaskDTO } from './dto/update-status-task.dto';
+import { CreateRequestMaterialDto } from './dto/create-request-material-stagedto';
 
 @ApiTags('Request')
 @Controller('requests')
@@ -80,5 +81,10 @@ export class RequestsController {
     @Body() data: UpdateStatusTaskDTO,
   ): Promise<any> {
     return await this.requestsService.confirmRequest(request_id, data);
+  }
+
+  @Post('/createRequestMaterial')
+  async createRequestMaterial(@Body() data: CreateRequestMaterialDto) {
+    return await this.requestsService.createRequestMaterial(data);
   }
 }

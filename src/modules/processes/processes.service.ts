@@ -807,4 +807,33 @@ export class ProcessesService implements IProcessesService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  //get detail process specific
+  async getDetailProcessSpecific(
+    process_technical_specific_id: string,
+  ): Promise<any> {
+    try {
+      return await this.processSpecificRepo.findOne({
+        where: {
+          process_technical_specific_id,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+  //get detail process specific stage
+  async getDetailProcessSpecificStage(
+    process_technical_specific_stage_id: string,
+  ): Promise<any> {
+    try {
+      return await this.processSpecificStageRepo.findOne({
+        where: {
+          process_technical_specific_stage_id,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }

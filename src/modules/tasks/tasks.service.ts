@@ -37,6 +37,20 @@ export class TasksService implements ITaskService {
     }
   }
 
+  async createTaskAuto(request_id: string, assigned_to_id: string): Promise<any> {
+    try {
+      // Create a new task
+      const new_task = this.taskEntity.save({
+        request_id,
+        assigned_to_id,
+        assigned_at: new Date(),
+      });
+      return new_task;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
   async assignTask(
     task_id: string,
     assigned_to_id: string,
