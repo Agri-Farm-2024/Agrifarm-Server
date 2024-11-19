@@ -187,6 +187,13 @@ export class ExtendsService implements IExtendService {
         ...extend,
         status: ExtendStatus.completed,
       });
+      // update booking
+      await this.bookingLandService.updateBookingByExtend(
+        extend.booking_land_id,
+        extend.total_month,
+      );
+      // send notification to user
+      // send mail to user
       return await this.extendRepository.findOne({
         where: { extend_id: extend_id },
       });

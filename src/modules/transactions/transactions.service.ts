@@ -20,6 +20,7 @@ import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { parsePaymentLink } from 'src/utils/payment-link.util';
 import { ServicesService } from '../servicesPackage/servicesPackage.service';
 import { OrdersService } from '../orders/orders.service';
+import { ExtendsService } from '../extends/extends.service';
 
 @Injectable()
 export class TransactionsService implements ITransactionService {
@@ -35,6 +36,9 @@ export class TransactionsService implements ITransactionService {
 
     @Inject(forwardRef(() => OrdersService))
     private readonly orderService: OrdersService,
+
+    @Inject(forwardRef(() => ExtendsService))
+    private readonly extendService: ExtendsService,
   ) {}
   /**
    * @function createTransaction
@@ -182,6 +186,10 @@ export class TransactionsService implements ITransactionService {
         case TransactionPurpose.service:
           return this.servicePackageService.handlePaymentServiceSpecificSuccess(
             transaction,
+          );
+        case TransactionPurpose.extend:
+          return this.extendService.updateExtendToComplete(
+            transaction.extend_id,
           );
         default:
           return;

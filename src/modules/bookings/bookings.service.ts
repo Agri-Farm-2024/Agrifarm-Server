@@ -964,6 +964,41 @@ export class BookingsService implements IBookingService {
     });
   }
 
+  async updateBookingByExtend(
+    booking_id: string,
+    total_month: number,
+  ): Promise<any> {
+    try {
+      const booking = await this.bookingRepository.findOne({
+        where: {
+          booking_id: booking_id,
+        },
+        relations: {
+          land: true,
+        },
+      });
+      if (!booking) {
+        throw new BadRequestException('Booking not found');
+      }
+      // get time end by plus month
+      const time_end = new Date(
+        new Date(booking.time_end).setMonth(
+          new Date(booking.time_end).getMonth() + total_month,
+        ),
+      );
+      // update booking
+      const update_booking = await this.bookingRepository.save({
+        ...booking,
+        time_end: time_end,
+        total_month: booking.total_month + total_month,
+        total_price:
+          booking.total_price +
+          booking.land.price_booking_per_month * total_month,
+      });
+      return update_booking;
+    } catch (error) {}
+  }
+
   private getTotalPriceBooking(booking: BookingLand): number {
     const total_price_booking: number =
       (booking.time_end.getMonth() - booking.time_start.getMonth() + 1) *
