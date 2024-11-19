@@ -24,6 +24,8 @@ import { ProcessTechnicalStandardStatus } from '../processes/types/status-proces
 import { CreateRequestMaterialDto } from './dto/create-request-material-stagedto';
 import { Payload } from '../auths/types/payload.type';
 import { request } from 'http';
+import { SubjectMailEnum } from 'src/mails/types/mail-subject.type';
+import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -186,17 +188,44 @@ export class RequestsService implements IRequestService {
         where: {
           request_id: request_id,
         },
+        relations: {
+          task: {
+            assign_to: true,
+          },
+        },
       });
       if (!request) {
         throw new BadRequestException('Request not found');
       }
+      // check type of create process standard to update status process standard
       if (
-        request.status == RequestStatus.pending_approval &&
+        status == RequestStatus.pending_approval &&
         request.type == RequestType.create_process_standard
       ) {
         await this.processService.updateStatus(
           request.plant_season_id,
           ProcessTechnicalStandardStatus.pending,
+        );
+      }
+      // check type of view land for sending mail to user
+      if (
+        status === RequestStatus.assigned &&
+        request.type === RequestType.view_land
+      ) {
+        // send mail to user
+        await this.mailService.sendMail(
+          request.guest_email,
+          SubjectMailEnum.bookingSheduleSign,
+          TemplateMailEnum.bookingSheduleSign,
+          {
+            full_name: request.guest_full_name,
+            time_start: request.time_start.toLocaleDateString(),
+            staff_full_name: request.task.assign_to.full_name,
+            staff_mail: request.task.assign_to.email,
+            staff_phone: request.task.assign_to.phone,
+            user_mail: request.guest_email,
+            user_phone: request.guest_phone,
+          },
         );
       }
       // update request status
