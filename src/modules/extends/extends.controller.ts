@@ -29,7 +29,7 @@ export class ExtendsController {
   }
 
   @UseGuards(AuthGuard)
-  @Roles(UserRole.admin, UserRole.land_renter, UserRole.staff)
+  @Roles(UserRole.manager, UserRole.land_renter, UserRole.staff)
   @Put('/:extend_id')
   async update(
     @Body() data: UpdateExtendDTO,
