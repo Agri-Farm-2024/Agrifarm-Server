@@ -14,6 +14,7 @@ import { ServiceSpecificStatus } from '../types/service-specific-status.enum';
 import { PlantSeason } from 'src/modules/plants/entities/plantSeason.entity';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
+import { Request } from 'src/modules/requests/entities/request.entity';
 
 @Entity('services_specific')
 export class ServiceSpecific extends AbstractEntity {
@@ -77,4 +78,7 @@ export class ServiceSpecific extends AbstractEntity {
 
   @OneToOne(() => Transaction, (transaction) => transaction.service_specific)
   transaction: Transaction;
+
+  @OneToMany(()=> Request, (request) => request.service_specific)
+  requests: Request[];
 }
