@@ -32,6 +32,9 @@ import { RequestsService } from '../requests/requests.service';
 import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
 import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
 import { TransactionType } from '../transactions/types/transaction-type.enum';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
+import { NotificationType } from '../notifications/types/notification-type.enum';
 
 @Injectable()
 export class BookingsService implements IBookingService {
@@ -54,6 +57,8 @@ export class BookingsService implements IBookingService {
 
     @Inject(forwardRef(() => RequestsService))
     private readonly requestService: RequestsService,
+
+    private readonly notificationService: NotificationsService,
   ) {}
 
   /**
@@ -153,6 +158,21 @@ export class BookingsService implements IBookingService {
         price_deposit: land.price_booking_per_month * 2,
       });
       // send notification to staff and land renter
+      await this.notificationService.createNotification({
+        user_id: land.staff_id,
+        title: NotificationTitleEnum.new_booking,
+        content: `Yêu cầu thuê đất mới được tạo trên mãnh đất ${land.name} vui lòng kiểm tra và xác nhận`,
+        type: NotificationType.booking_land,
+        component_id: new_booking.booking_id,
+      });
+
+      await this.notificationService.createNotification({
+        user_id: land_renter.user_id,
+        title: NotificationTitleEnum.new_booking,
+        content: `Yêu cầu thuê đất mới được tạo trên mãnh đất ${land.name}`,
+        type: NotificationType.booking_land,
+        component_id: new_booking.booking_id,
+      });
       // create mail confirm for land renter
       await this.mailService.sendMail(
         land_renter.email,
