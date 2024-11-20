@@ -168,7 +168,7 @@ export class BookingsService implements IBookingService {
           price_per_month: land.price_booking_per_month,
           price_deposit: land.price_booking_per_month * 2,
           total_price: total_price,
-          staus: 'Chờ xác nhận',
+          status: 'Chờ xác nhận',
           user_mail: land_renter.email,
         },
       );
