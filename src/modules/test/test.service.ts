@@ -51,4 +51,21 @@ export class TestService {
       throw error;
     }
   }
+
+  async testNoti(id: string): Promise<any> {
+    try {
+      const test = await this.notificationService.createNotification({
+        user_id: id,
+        title: 'Test',
+        content: 'Test',
+        component_id: 'eddeed05-bace-4407-ab71-794cb5312ddf',
+        type: NotificationType.booking_land,
+      });
+
+      return test;
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
 }
