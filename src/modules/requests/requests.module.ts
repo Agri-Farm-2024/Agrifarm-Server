@@ -9,6 +9,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ProcessesModule } from '../processes/processes.module';
 import { Material } from '../materials/entities/material.entity';
 import { MaterialsModule } from '../materials/materials.module';
+import { ServicesModule } from '../servicesPackage/servicesPackage.module';
 
 @Module({
   controllers: [RequestsController],
@@ -20,6 +21,7 @@ import { MaterialsModule } from '../materials/materials.module';
     MaterialsModule,
     forwardRef(() => TasksModule),
     forwardRef(() => ProcessesModule),
+    ServicesModule,
   ],
   exports: [RequestsService],
 })

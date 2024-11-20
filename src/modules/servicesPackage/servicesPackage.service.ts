@@ -253,12 +253,37 @@ export class ServicesService implements IService {
         where: {
           service_specific_id,
         },
+        relations:{
+          service_package:true,
+          
+        }
       });
       if (!service_specific) {
         throw new BadRequestException('Service specific does not exist');
       }
 
       return service_specific;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  //get detail service package
+  async getDetailServicePackage(service_package_id: string): Promise<any> {
+    try {
+      const service_package = await this.servicePackageRepo.findOne({
+        where: {
+          service_package_id,
+        },
+      });
+      if (!service_package) {
+        throw new BadRequestException('Service package does not exist');
+      }
+
+      return service_package;
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
