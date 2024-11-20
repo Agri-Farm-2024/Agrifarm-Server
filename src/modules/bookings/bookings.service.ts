@@ -774,6 +774,13 @@ export class BookingsService implements IBookingService {
       }
       // Send mail to land renter
       // Send notification to land renter
+      await this.notificationService.createNotification({
+        user_id: booking_exist.land_renter.user_id,
+        title: NotificationTitleEnum.booking_pending_payment,
+        content: `Thanh toán cho yêu cầu thuê đất của bạn đang chờ xử lý`,
+        type: NotificationType.booking_land,
+        component_id: booking_exist.booking_id,
+      });
       // update status booking to pending payment
       await this.bookingRepository.save({
         ...booking_exist,
