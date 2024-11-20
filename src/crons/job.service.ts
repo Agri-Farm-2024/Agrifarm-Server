@@ -22,7 +22,7 @@ export class JobService implements ICronJob {
 
   @Cron(CronTime.check_booking_is_expired)
   async checkEverydayIsExpired(): Promise<void> {
-    // Checking booking is expired
+    // Checking booking is expired and create report land
     await this.bookingLandService.checkBookingIsExpired();
     this.logger.log('Check booking expire is running');
     this.loggerService.log('Check booking expire is running');

@@ -21,6 +21,7 @@ import { UserRole } from '../users/types/user-role.enum';
 import { TransactionsService } from '../transactions/transactions.service';
 import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
 import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
+import { TransactionStatus } from '../transactions/types/transaction-status.enum';
 
 @Injectable()
 export class ExtendsService implements IExtendService {
@@ -48,8 +49,15 @@ export class ExtendsService implements IExtendService {
         await this.bookingLandService.getBookingDetail(
           createExtendDTO.booking_land_id,
         );
+      // check booking status
       if (bookingLand.status !== BookingStatus.completed) {
         throw new BadRequestException('Booking is not paid yet');
+      }
+      // check booking payment
+      for (const transaction of bookingLand.transactions) {
+        if (transaction.status !== TransactionStatus.succeed) {
+          throw new BadRequestException('Booking is not paid yet');
+        }
       }
       // get time end by plus month
       const time_end = new Date(

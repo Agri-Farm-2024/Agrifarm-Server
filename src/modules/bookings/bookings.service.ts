@@ -28,6 +28,7 @@ import { SubjectMailEnum } from 'src/mails/types/mail-subject.type';
 import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
 import { Transaction } from '../transactions/entities/transaction.entity';
 import { ExtendsService } from '../extends/extends.service';
+import { RequestsService } from '../requests/requests.service';
 
 @Injectable()
 export class BookingsService implements IBookingService {
@@ -47,6 +48,9 @@ export class BookingsService implements IBookingService {
 
     @Inject(forwardRef(() => ExtendsService))
     private readonly extendsService: ExtendsService,
+
+    @Inject(forwardRef(() => RequestsService))
+    private readonly requestService: RequestsService,
   ) {}
 
   /**
@@ -477,6 +481,7 @@ export class BookingsService implements IBookingService {
           land_renter: true,
           staff: true,
           extends: true,
+          transactions: true,
         },
         select: {
           land_renter: {
@@ -942,6 +947,9 @@ export class BookingsService implements IBookingService {
     });
     // check booking expired
     const booking_expired = await this.bookingRepository.find({
+      relations: {
+        land: true,
+      },
       where: {
         time_end: LessThanOrEqual(new Date()),
         status: BookingStatus.completed,
@@ -949,10 +957,13 @@ export class BookingsService implements IBookingService {
     });
     // Set booking to expired
     booking_expired.forEach(async (booking) => {
+      // Set status to expired
       await this.bookingRepository.save({
         ...booking,
         status: BookingStatus.expired,
       });
+      // Create report for this land
+      await this.requestService.createRequestReportLand(booking);
       // Send mail to land renter
       // await this.mailService.sendMail(
       //   booking.land_renter.email,

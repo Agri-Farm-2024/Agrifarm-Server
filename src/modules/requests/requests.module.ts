@@ -16,10 +16,10 @@ import { MaterialsModule } from '../materials/materials.module';
   imports: [
     TypeOrmModule.forFeature([Request]),
     LoggerModule,
-    forwardRef(() => TasksModule),
     JwtModule,
-    forwardRef(() => ProcessesModule),
     MaterialsModule,
+    forwardRef(() => TasksModule),
+    forwardRef(() => ProcessesModule),
   ],
   exports: [RequestsService],
 })

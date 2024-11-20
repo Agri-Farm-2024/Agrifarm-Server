@@ -25,6 +25,11 @@ import { MaterialsService } from '../materials/materials.service';
 import { ProcessSpecificStage } from '../processes/entities/specifics/processSpecificStage.entity';
 import { SubjectMailEnum } from 'src/mails/types/mail-subject.type';
 import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
+import { BookingLand } from '../bookings/entities/bookingLand.entity';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../notifications/types/notification-type.enum';
+import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
+import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -42,6 +47,8 @@ export class RequestsService implements IRequestService {
     private readonly processService: ProcessesService,
 
     private readonly materialService: MaterialsService,
+
+    private readonly notificationService: NotificationsService,
   ) {}
 
   async createRequestViewLand(data: CreateRequestViewLandDTO): Promise<any> {
@@ -402,11 +409,11 @@ export class RequestsService implements IRequestService {
     }
   }
 
-  async createRequestReportLand(booking_id: string): Promise<any> {
+  async createRequestReportLand(booking_land: BookingLand): Promise<any> {
     try {
       // Create a new request
       const new_request = await this.requestEntity.save({
-        booking_land_id: booking_id,
+        booking_land_id: booking_land.booking_id,
         type: RequestType.report_land,
       });
       if (!new_request) {
@@ -419,7 +426,16 @@ export class RequestsService implements IRequestService {
       if (!new_task) {
         throw new BadRequestException('Unable to create task');
       }
-      // send noti to manager
+      // send noti to staff
+      await this.notificationService.createNotification({
+        user_id: booking_land.staff_id,
+        title: NotificationTitleEnum.create_report_land,
+        content: NotificationContentEnum.create_report_land(
+          booking_land.land.name,
+        ),
+        component_id: new_request.request_id,
+        type: NotificationType.request,
+      });
       // send mail to user
       return new_request;
     } catch (error) {}
