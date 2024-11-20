@@ -4,4 +4,5 @@ export enum SubjectMailEnum {
   bookingSheduleSign = 'Lịch đặt hẹn ký tên thuê đất của bạn đã được xác nhận',
   createBooking = 'Gửi yêu cầu thuê đất thành công',
   paymentBooking = 'Thanh toán thành công',
+  landViewingSchedule = 'Lịch xem đất',
 }

@@ -235,8 +235,8 @@ export class RequestsService implements IRequestService {
         // send mail to user
         await this.mailService.sendMail(
           request.guest_email,
-          SubjectMailEnum.bookingSheduleSign,
-          TemplateMailEnum.bookingSheduleSign,
+          SubjectMailEnum.landViewingSchedule,
+          TemplateMailEnum.landViewingSchedule,
           {
             full_name: request.guest_full_name,
             time_start: request.time_start.toLocaleDateString(),
