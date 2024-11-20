@@ -12,7 +12,7 @@ import { BookingsService } from '../bookings/bookings.service';
 import { BookingLand } from '../bookings/entities/bookingLand.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Extend } from './entities/extend.entity';
-import { Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { BookingStatus } from '../bookings/types/booking-status.enum';
 import { ExtendStatus } from './types/extend-status.enum';
 import { UpdateExtendDTO } from './dto/update-extend.dto';
@@ -38,6 +38,24 @@ export class ExtendsService implements IExtendService {
 
   async createExtend(createExtendDTO: CreateExtendDto): Promise<any> {
     try {
+      // check extend exist
+      const extend_exist = await this.extendRepository.findOne({
+        where: {
+          booking_land_id: createExtendDTO.booking_land_id,
+          status: Not(
+            In([
+              ExtendStatus.canceled,
+              ExtendStatus.rejected,
+              ExtendStatus.completed,
+            ]),
+          ),
+        },
+      });
+      if (extend_exist) {
+        throw new BadRequestException(
+          'Extend is already exist please handle this extend first',
+        );
+      }
       // Get booking land by id
       const bookingLand: BookingLand =
         await this.bookingLandService.getBookingDetail(

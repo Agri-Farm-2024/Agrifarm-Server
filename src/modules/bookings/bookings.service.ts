@@ -254,6 +254,9 @@ export class BookingsService implements IBookingService {
           order: {
             status: 'ASC',
             updated_at: 'DESC',
+            extends: {
+              created_at: 'DESC',
+            },
           },
           relations: {
             land: true,
@@ -351,6 +354,9 @@ export class BookingsService implements IBookingService {
           order: {
             status: 'ASC',
             updated_at: 'DESC',
+            extends: {
+              created_at: 'DESC',
+            },
           },
           relations: {
             land: true,
@@ -416,6 +422,9 @@ export class BookingsService implements IBookingService {
           order: {
             status: 'ASC',
             updated_at: 'DESC',
+            extends: {
+              created_at: 'DESC',
+            },
           },
           relations: {
             land: true,
@@ -485,6 +494,11 @@ export class BookingsService implements IBookingService {
           staff: true,
           extends: true,
           transactions: true,
+        },
+        order: {
+          extends: {
+            created_at: 'DESC',
+          },
         },
         select: {
           land_renter: {
