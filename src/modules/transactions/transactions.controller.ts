@@ -15,6 +15,8 @@ import {
   Pagination,
 } from 'src/common/decorations/pagination.decoration';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
+import { Roles } from 'src/common/decorations/role.decoration';
+import { UserRole } from '../users/types/user-role.enum';
 
 @ApiTags('Transactions')
 @Controller('transactions')
@@ -30,6 +32,14 @@ export class TransactionsController {
   ) {
     const user: Payload = req['user'];
     return this.transactionsService.getListTransactionByUser(user, pagination);
+  }
+
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.admin, UserRole.manager)
+  @ApplyPaginationMetadata
+  @Get('/getAllTransaction')
+  getAllTransaction(@Pagination() pagination: PaginationParams) {
+    return this.transactionsService.getAllTransaction(pagination);
   }
 
   @Get('/:transaction_id')

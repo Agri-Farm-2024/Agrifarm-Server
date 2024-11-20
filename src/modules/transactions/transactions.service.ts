@@ -219,6 +219,9 @@ export class TransactionsService implements ITransactionService {
       // get list transaction by user
       const [transactions, total_count] = await Promise.all([
         this.transactionRepository.find({
+          order: {
+            updated_at: 'DESC',
+          },
           relations: {
             booking_land: {
               land: true,
@@ -235,6 +238,47 @@ export class TransactionsService implements ITransactionService {
             user_id: user.user_id,
           },
         }),
+      ]);
+      // add payment link to transaction
+      transactions.forEach((transaction: any) => {
+        transaction.payment_link = parsePaymentLink(
+          transaction.total_price,
+          transaction.transaction_code,
+        );
+      });
+      // get total page
+      const total_page = Math.ceil(total_count / pagination.page_size);
+      return {
+        transactions,
+        pagination: {
+          ...pagination,
+          total_page,
+        },
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async getAllTransaction(pagination: PaginationParams): Promise<any> {
+    try {
+      // get list transaction
+      const [transactions, total_count] = await Promise.all([
+        this.transactionRepository.find({
+          order: {
+            updated_at: 'DESC',
+          },
+          relations: {
+            booking_land: {
+              land: true,
+            },
+            user: true,
+            extend: true,
+          },
+          take: pagination.page_size,
+          skip: (pagination.page_index - 1) * pagination.page_size,
+        }),
+        this.transactionRepository.count(),
       ]);
       // add payment link to transaction
       transactions.forEach((transaction: any) => {
