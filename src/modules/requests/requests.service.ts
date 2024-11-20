@@ -30,6 +30,9 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../notifications/types/notification-type.enum';
 import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
 import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
+import { CreateRequestPurchaseDto } from './dto/create-request-puchase.dto';
+import { ServicePackage } from '../servicesPackage/entities/servicePackage.entity';
+import { ServicesService } from '../servicesPackage/servicesPackage.service';
 import { BookingsService } from '../bookings/bookings.service';
 
 @Injectable()
@@ -53,6 +56,8 @@ export class RequestsService implements IRequestService {
     private readonly materialService: MaterialsService,
 
     private readonly notificationService: NotificationsService,
+
+    private readonly servicePackageService: ServicesService,
   ) {}
 
   async createRequestViewLand(data: CreateRequestViewLandDTO): Promise<any> {
@@ -355,6 +360,47 @@ export class RequestsService implements IRequestService {
     }
   }
 
+
+  //create reuqest purchase
+  async createRequestPurchaseAuto(
+    createRequestPurchase: CreateRequestPurchaseDto,
+  ): Promise<any> {
+    try {
+      //check request purchase for service is exist
+      const request_purchase_exist = await this.requestEntity.findOne({
+        where: {
+          service_specific_id: createRequestPurchase.service_specific_id,
+          type: RequestType.product_purchase,
+        },
+      });
+      if (request_purchase_exist) {
+        throw new BadRequestException('Request purchase already exist');
+      }
+      //check service specific have service package have puchase
+      const service_specific_detail =
+        await this.servicePackageService.getDetailServiceSpecific(
+          request_purchase_exist.service_specific_id,
+        );
+      if (!service_specific_detail) {
+        throw new BadRequestException('Service specific not found');
+      }
+      //check time end of service specific before 1 month
+
+      const oneMonthBeforeEnd = new Date(service_specific_detail.time_end);
+      oneMonthBeforeEnd.setMonth(oneMonthBeforeEnd.getMonth() - 1); // Subtract 1 month from time_end
+
+      const now = new Date();
+      if (
+        service_specific_detail.service_package.purchase === true &&
+        service_specific_detail.service_package.process_of_plant === true &&
+        now == oneMonthBeforeEnd
+      ) {
+      }
+    } catch (error) {
+      this.loggerService.error(error.message, error.stack);
+    }
+  }
+=======
   /**
    * This function is used to update request to completed or rejected by staff or manager
    * @function confirmRequest
@@ -362,6 +408,7 @@ export class RequestsService implements IRequestService {
    * @param data
    * @returns
    */
+
 
   async confirmRequest(
     request_id: string,
