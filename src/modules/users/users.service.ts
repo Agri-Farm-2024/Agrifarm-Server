@@ -62,6 +62,21 @@ export class UsersService implements IUserService {
    * @returns
    */
   async create(createUserDto: CreateUserDto) {
+    // check user role
+    if (createUserDto.role === UserRole.manager) {
+      const manager_exist = await this.userRepository.findOne({
+        where: {
+          role: UserRole.manager,
+        },
+      });
+      if (manager_exist) {
+        throw new BadRequestException('Manager already exists');
+      }
+    }
+    // check role admin
+    if (createUserDto.role === UserRole.admin) {
+      throw new BadRequestException('Invalid role');
+    }
     // check email is already exists
     const user = await this.userRepository.findOne({
       where: {
