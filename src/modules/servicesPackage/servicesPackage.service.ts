@@ -40,11 +40,13 @@ export class ServicesService implements IService {
 
     private readonly PlantsService: PlantsService,
 
+    @Inject(forwardRef(() => TransactionsService))
     private readonly transactionService: TransactionsService,
 
     @Inject(forwardRef(() => ProcessesService))
     private readonly processService: ProcessesService,
 
+    @Inject(forwardRef(() => BookingsService))
     private readonly bookingLandService: BookingsService,
   ) {}
 

@@ -18,6 +18,8 @@ import { Payload } from '../auths/types/payload.type';
 import { ReportURL } from './entities/reportURL.entity';
 import { RequestsService } from '../requests/requests.service';
 import { RequestStatus } from '../requests/types/request-status.enum';
+import { RequestType } from '../requests/types/request-type.enum';
+import { BookingsService } from '../bookings/bookings.service';
 
 @Injectable()
 export class ReportsService implements IReportService {
@@ -32,6 +34,8 @@ export class ReportsService implements IReportService {
 
     @Inject(forwardRef(() => RequestsService))
     private readonly requestService: RequestsService,
+
+    private readonly bookingService: BookingsService,
   ) {}
 
   async createReport(data: CreateReportDTO, task_id: string, user: Payload) {
@@ -40,7 +44,9 @@ export class ReportsService implements IReportService {
       const report_exist = await this.reportRepository.findOne({
         where: { task_id: task_id },
         relations: {
-          task: true,
+          task: {
+            request: true,
+          },
         },
       });
       if (report_exist) {
@@ -66,6 +72,16 @@ export class ReportsService implements IReportService {
             url_type: url.url_type,
           });
         }
+      }
+      // check report type
+      if (report_exist.task.request.type === RequestType.report_land) {
+        // update quality for report
+        await this.bookingService.updateBookingByReport(
+          report_exist.task.request.booking_land_id,
+          {
+            quaility_report: data.quality_report,
+          },
+        );
       }
       //update request status to pending_approval
       await this.requestService.updateRequestStatus(

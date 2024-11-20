@@ -84,6 +84,9 @@ export class BookingLand extends AbstractEntity {
   })
   reason_for_cancel: string;
 
+  @Column({ nullable: true, type: 'float' })
+  quality_report: number;
+
   @Column({ nullable: true })
   expired_schedule_at: Date;
 

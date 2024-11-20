@@ -30,6 +30,7 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../notifications/types/notification-type.enum';
 import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
 import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
+import { BookingsService } from '../bookings/bookings.service';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -45,6 +46,9 @@ export class RequestsService implements IRequestService {
 
     @Inject(forwardRef(() => ProcessesService))
     private readonly processService: ProcessesService,
+
+    @Inject(forwardRef(() => BookingsService))
+    private readonly bookingService: BookingsService,
 
     private readonly materialService: MaterialsService,
 
@@ -185,6 +189,14 @@ export class RequestsService implements IRequestService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  /**
+   * This function is used to update request status by call from other service
+   * @function updateRequestStatus
+   * @param request_id
+   * @param status
+   * @returns
+   */
 
   async updateRequestStatus(
     request_id: string,
@@ -343,6 +355,14 @@ export class RequestsService implements IRequestService {
     }
   }
 
+  /**
+   * This function is used to update request to completed or rejected by staff or manager
+   * @function confirmRequest
+   * @param request_id
+   * @param data
+   * @returns
+   */
+
   async confirmRequest(
     request_id: string,
     data: UpdateStatusTaskDTO,
@@ -357,7 +377,7 @@ export class RequestsService implements IRequestService {
       if (!request) {
         throw new BadRequestException('Request not found');
       }
-      // check status is valid
+      // check status is valid to complete or reject
       if (
         data.status !== RequestStatus.completed &&
         data.status !== RequestStatus.rejected
@@ -365,7 +385,7 @@ export class RequestsService implements IRequestService {
         throw new BadRequestException('Invalid status to update');
       }
 
-      // check default status of request
+      // Check status of request is pending approval
       if (request.status !== RequestStatus.pending_approval) {
         throw new BadRequestException('Request is not pending approval');
       } else {
@@ -375,7 +395,7 @@ export class RequestsService implements IRequestService {
             throw new BadRequestException('Reason is required');
           }
         }
-        //update type request material process specific stage
+        // Check condition of material process specific stage to update quantity material
         if (
           request.type === RequestType.material_process_specfic_stage &&
           data.status === RequestStatus.completed
@@ -395,14 +415,25 @@ export class RequestsService implements IRequestService {
               item.quantity,
             );
           }
-          // update request status
-          const updated_request = await this.requestEntity.save({
-            ...request,
-            status: RequestStatus.completed,
-          });
-
-          return updated_request;
         }
+        // Check condition of report land request
+        if (
+          request.type === RequestType.report_land &&
+          data.status === RequestStatus.completed
+        ) {
+          // call boooking service to create transaction refund
+          await this.bookingService.createRefundBooking(
+            request.booking_land_id,
+          );
+        }
+
+        // update request status
+        const updated_request = await this.requestEntity.save({
+          ...request,
+          status: data.status,
+        });
+
+        return updated_request;
       }
     } catch (error) {
       throw new InternalServerErrorException(error.message);

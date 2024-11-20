@@ -9,6 +9,7 @@ import { TransactionsModule } from '../transactions/transactions.module';
 import { LoggerModule } from 'src/logger/logger.module';
 import { ExtendsModule } from '../extends/extends.module';
 import { RequestsModule } from '../requests/requests.module';
+import { ReportsModule } from '../reports/reports.module';
 
 @Module({
   controllers: [BookingsController],
@@ -21,6 +22,7 @@ import { RequestsModule } from '../requests/requests.module';
     forwardRef(() => RequestsModule),
     forwardRef(() => TransactionsModule),
     forwardRef(() => ExtendsModule),
+    forwardRef(() => ReportsModule),
   ],
   exports: [BookingsService],
 })
