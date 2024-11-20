@@ -26,14 +26,4 @@ export class CreateExtendDto {
     message: `Total month must be less than or equal to 12`,
   })
   total_month: number;
-
-  @ApiProperty({
-    example: ExtendStatus.pending_contract,
-    description: `Extend status`,
-    enum: ExtendStatus,
-  })
-  @IsNotEmpty({
-    message: `Extend status is required`,
-  })
-  status: ExtendStatus;
 }

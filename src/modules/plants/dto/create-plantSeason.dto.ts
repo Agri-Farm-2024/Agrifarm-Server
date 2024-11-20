@@ -8,7 +8,7 @@ import {
   Max,
   Min,
 } from 'class-validator';
-import { PlantSeasonType } from 'src/utils/types/plantSeason-type.enum';
+import { PlantSeasonType } from '../types/plant-season-type.enum';
 
 export class CreatePlantSeasonDto {
   @ApiProperty({

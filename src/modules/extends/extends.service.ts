@@ -38,12 +38,6 @@ export class ExtendsService implements IExtendService {
 
   async createExtend(createExtendDTO: CreateExtendDto): Promise<any> {
     try {
-      if (
-        createExtendDTO.status !== ExtendStatus.pending_contract &&
-        createExtendDTO.status !== ExtendStatus.pending
-      ) {
-        throw new BadRequestException('Status is invalid');
-      }
       // Get booking land by id
       const bookingLand: BookingLand =
         await this.bookingLandService.getBookingDetail(
@@ -78,7 +72,7 @@ export class ExtendsService implements IExtendService {
           `Land is already booked in ${checkExistBookingLand[0].time_end}`,
         );
       }
-      // create extend
+      // create extend with default status is pending contract
       const extend = await this.extendRepository.save({
         booking_land_id: bookingLand.booking_id,
         total_month: createExtendDTO.total_month,

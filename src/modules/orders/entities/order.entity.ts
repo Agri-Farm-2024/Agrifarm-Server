@@ -1,4 +1,3 @@
-import e from 'express';
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import {

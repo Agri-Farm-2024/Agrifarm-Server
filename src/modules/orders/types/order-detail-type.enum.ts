@@ -1,4 +1,4 @@
-export enum TypeOrderDetail {
+export enum OrderDetailTypeEnum {
   booking = 'booking',
   material = 'material',
   service = 'service',
