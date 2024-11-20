@@ -7,7 +7,7 @@ import { ApiBody, ApiTags } from '@nestjs/swagger';
 export class TestController {
   constructor(private readonly testService: TestService) {}
 
-  @Post('/testnoti//:user_id')
+  @Post('/testnoti/:user_id')
   async test(@Param('user_id') id: string): Promise<any> {
     await this.testService.testNoti(id);
   }
