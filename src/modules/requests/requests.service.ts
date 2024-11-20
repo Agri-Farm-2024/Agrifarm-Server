@@ -34,6 +34,7 @@ import { CreateRequestPurchaseDto } from './dto/create-request-puchase.dto';
 import { ServicePackage } from '../servicesPackage/entities/servicePackage.entity';
 import { ServicesService } from '../servicesPackage/servicesPackage.service';
 import { BookingsService } from '../bookings/bookings.service';
+import { ServiceSpecific } from '../servicesPackage/entities/serviceSpecific.entity';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -376,23 +377,17 @@ export class RequestsService implements IRequestService {
         throw new BadRequestException('Request purchase already exist');
       }
       //check service specific have service package have puchase
-      const service_specific_detail =
+      const service_specific_detail: ServiceSpecific =
         await this.servicePackageService.getDetailServiceSpecific(
-          request_purchase_exist.service_specific_id,
+          createRequestPurchase.service_specific_id,
         );
       if (!service_specific_detail) {
         throw new BadRequestException('Service specific not found');
       }
-      //check time end of service specific before 1 month
 
-      const oneMonthBeforeEnd = new Date(service_specific_detail.time_end);
-      oneMonthBeforeEnd.setMonth(oneMonthBeforeEnd.getMonth() - 1); // Subtract 1 month from time_end
-
-      const now = new Date();
       if (
         service_specific_detail.service_package.purchase === true &&
-        service_specific_detail.service_package.process_of_plant === true &&
-        now == oneMonthBeforeEnd
+        service_specific_detail.service_package.process_of_plant === true
       ) {
         //create new request purchase
         const new_request = await this.requestEntity.save({

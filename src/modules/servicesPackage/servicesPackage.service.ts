@@ -253,7 +253,7 @@ export class ServicesService implements IService {
     try {
       const service_specific = await this.serviceSpecificRepo.findOne({
         where: {
-          service_specific_id,
+          service_specific_id: service_specific_id,
         },
         relations: {
           service_package: true,
