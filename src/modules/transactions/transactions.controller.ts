@@ -3,11 +3,12 @@ import {
   Delete,
   Get,
   Param,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { Payload } from '../auths/types/payload.type';
 import {
@@ -17,6 +18,9 @@ import {
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { Roles } from 'src/common/decorations/role.decoration';
 import { UserRole } from '../users/types/user-role.enum';
+import { TransactionStatus } from './types/transaction-status.enum';
+import { TransactionPurpose } from './types/transaction-purpose.enum';
+import { TransactionType } from './types/transaction-type.enum';
 
 @ApiTags('Transactions')
 @Controller('transactions')
@@ -37,9 +41,22 @@ export class TransactionsController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.admin, UserRole.manager)
   @ApplyPaginationMetadata
+  @ApiQuery({ name: 'status', required: false, enum: TransactionStatus })
+  @ApiQuery({ name: 'purpose', required: false, enum: TransactionPurpose })
+  @ApiQuery({ name: 'type', required: false, enum: TransactionType })
   @Get('/getAllTransaction')
-  getAllTransaction(@Pagination() pagination: PaginationParams) {
-    return this.transactionsService.getAllTransaction(pagination);
+  getAllTransaction(
+    @Pagination() pagination: PaginationParams,
+    @Query('status') status: TransactionStatus,
+    @Query('purpose') purpose: TransactionPurpose,
+    @Query('type') type: TransactionType,
+  ) {
+    return this.transactionsService.getAllTransaction(
+      pagination,
+      status,
+      purpose,
+      type,
+    );
   }
 
   @Get('/:transaction_id')

@@ -21,6 +21,7 @@ import { parsePaymentLink } from 'src/utils/payment-link.util';
 import { ServicesService } from '../servicesPackage/servicesPackage.service';
 import { OrdersService } from '../orders/orders.service';
 import { ExtendsService } from '../extends/extends.service';
+import { TransactionType } from './types/transaction-type.enum';
 
 @Injectable()
 export class TransactionsService implements ITransactionService {
@@ -260,11 +261,28 @@ export class TransactionsService implements ITransactionService {
     }
   }
 
-  async getAllTransaction(pagination: PaginationParams): Promise<any> {
+  async getAllTransaction(
+    pagination: PaginationParams,
+    status: TransactionStatus,
+    purpose: TransactionPurpose,
+    type: TransactionType,
+  ): Promise<any> {
     try {
+      // filter condition
+      const filter_condition: any = {};
+      if (status) {
+        filter_condition.status = status;
+      }
+      if (purpose) {
+        filter_condition.purpose = purpose;
+      }
+      if (type) {
+        filter_condition.type = type;
+      }
       // get list transaction
       const [transactions, total_count] = await Promise.all([
         this.transactionRepository.find({
+          where: filter_condition,
           order: {
             updated_at: 'DESC',
           },
@@ -278,7 +296,9 @@ export class TransactionsService implements ITransactionService {
           take: pagination.page_size,
           skip: (pagination.page_index - 1) * pagination.page_size,
         }),
-        this.transactionRepository.count(),
+        this.transactionRepository.count({
+          where: filter_condition,
+        }),
       ]);
       // add payment link to transaction
       transactions.forEach((transaction: any) => {
