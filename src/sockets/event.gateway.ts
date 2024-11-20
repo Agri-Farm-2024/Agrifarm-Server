@@ -9,6 +9,8 @@ import {
 import { Server, Socket } from 'socket.io';
 import { SocketEvent } from './types/socket-event.enum';
 import { LoggerService } from 'src/logger/logger.service';
+import { UsersService } from 'src/modules/users/users.service';
+import { User } from 'src/modules/users/entities/user.entity';
 
 @WebSocketGateway({
   cors: {
@@ -18,7 +20,10 @@ import { LoggerService } from 'src/logger/logger.service';
 })
 export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(EventGateway.name);
-  constructor(private readonly loggerService: LoggerService) {}
+  constructor(
+    private readonly loggerService: LoggerService,
+    private readonly userService: UsersService,
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -29,7 +34,7 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.logger.log(`Client connected: ${client.id}`);
 
     // Listen for online-user event
-    client.on('online-user', (userId: string) => {
+    client.on('online-user', async (userId: string) => {
       if (userId) {
         this.clients[userId] = client;
         this.logger.log(`User online: ${userId} (Socket ID: ${client.id})`);
@@ -41,6 +46,9 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
           `online-user event missing userId for Socket ID: ${client.id}`,
         );
       }
+      // Join the room with the user role
+      const user: User = await this.userService.findUserById(userId);
+      client.join(`${user.role}`);
     });
   }
 

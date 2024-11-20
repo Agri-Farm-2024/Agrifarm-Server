@@ -10,6 +10,7 @@ import { LoggerModule } from 'src/logger/logger.module';
 import { ExtendsModule } from '../extends/extends.module';
 import { RequestsModule } from '../requests/requests.module';
 import { ReportsModule } from '../reports/reports.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   controllers: [BookingsController],
@@ -19,6 +20,7 @@ import { ReportsModule } from '../reports/reports.module';
     JwtModule,
     LandsModule,
     LoggerModule,
+    UsersModule,
     forwardRef(() => RequestsModule),
     forwardRef(() => TransactionsModule),
     forwardRef(() => ExtendsModule),

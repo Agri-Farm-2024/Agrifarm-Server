@@ -236,4 +236,17 @@ export class UsersService implements IUserService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  async getListUserByRole(role: UserRole): Promise<any> {
+    try {
+      const users = await this.userRepository.find({
+        where: {
+          role: role,
+        },
+      });
+      return users;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }

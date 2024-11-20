@@ -35,16 +35,17 @@ export class TestService {
       // //   },
       // // );
       // // return test;
-      // const test = await this.notificationService.createNotification({
-      //   user_id: id,
-      //   title: 'Test',
-      //   content: 'Test',
-      //   component_id: 'eddeed05-bace-4407-ab71-794cb5312ddf',
-      //   type: NotificationType.booking_land,
-      // });
-      return await this.requestService.createRequestPurchaseAuto({
-        service_specific_id: '9bbfcc1b-fe74-402c-9dad-ac96fed851b3',
+      const test = await this.notificationService.createNotification({
+        user_id: 'fa3faf64-5052-41c9-a3cb-1f738c66b356',
+        title: 'Test',
+        content: 'Test',
+        component_id: 'eddeed05-bace-4407-ab71-794cb5312ddf',
+        type: NotificationType.booking_land,
       });
+      // return await this.requestService.createRequestPurchaseAuto({
+      //   service_specific_id: '9bbfcc1b-fe74-402c-9dad-ac96fed851b3',
+      // });
+      return test;
     } catch (error) {
       this.logger.error(error);
       throw error;

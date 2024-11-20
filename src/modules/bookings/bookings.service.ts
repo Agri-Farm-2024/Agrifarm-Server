@@ -35,6 +35,8 @@ import { TransactionType } from '../transactions/types/transaction-type.enum';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
 import { NotificationType } from '../notifications/types/notification-type.enum';
+import { UsersService } from '../users/users.service';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class BookingsService implements IBookingService {
@@ -59,6 +61,8 @@ export class BookingsService implements IBookingService {
     private readonly requestService: RequestsService,
 
     private readonly notificationService: NotificationsService,
+
+    private readonly userService: UsersService,
   ) {}
 
   /**
@@ -621,6 +625,17 @@ export class BookingsService implements IBookingService {
       if (land_exist.staff_id !== user.user_id) {
         throw new ForbiddenException('You are not staff of this land');
       }
+      // send notification to manager
+      const manager: User[] = await this.userService.getListUserByRole(
+        UserRole.manager,
+      );
+      await this.notificationService.createNotification({
+        user_id: manager[0].user_id,
+        title: NotificationTitleEnum.booking_pending_sign,
+        content: `Yêu cầu thuê đất mới đã được tạo trên mãnh đất ${land_exist.name} vui lòng kiểm tra và xác nhận`,
+        type: NotificationType.booking_land,
+        component_id: booking_exist.booking_id,
+      });
 
       // update status booking to pending contract
       const update_booking = await this.bookingRepository.save({
@@ -690,6 +705,14 @@ export class BookingsService implements IBookingService {
             update_booking.expired_schedule_at.toLocaleDateString(),
         },
       );
+      // send notification to land renter
+      await this.notificationService.createNotification({
+        user_id: booking_exist.land_renter.user_id,
+        title: NotificationTitleEnum.booking_pending_sign,
+        content: `Yêu cầu thuê đất của bạn đã được xác nhận, vui lòng kiểm tra và xác nhận`,
+        type: NotificationType.booking_land,
+        component_id: booking_exist.booking_id,
+      });
       return update_booking;
     } catch (error) {
       if (
@@ -905,6 +928,13 @@ export class BookingsService implements IBookingService {
       });
       // Send mail to land renter
       // Send notification to land renter
+      await this.notificationService.createNotification({
+        user_id: booking_exist.land_renter.user_id,
+        title: NotificationTitleEnum.booking_rejected,
+        content: `Yêu cầu thuê đất của bạn đã bị từ chối với lí do ${data.reason_for_reject}`,
+        type: NotificationType.booking_land,
+        component_id: booking_exist.booking_id,
+      });
       return update_booking;
     } catch (error) {
       if (

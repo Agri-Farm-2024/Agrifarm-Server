@@ -26,6 +26,12 @@ export class NotificationsService {
       notification,
       SocketEvent.notification,
     );
+    // // send socket to the group of user
+    // this.eventGateway.sendEventToGroup(
+    //   data.user_id,
+    //   notification,
+    //   SocketEvent.notification,
+    // );
     return this.notificationRepository.save(notification);
   }
 
