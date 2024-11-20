@@ -8,7 +8,6 @@ import {
 } from 'typeorm';
 import { Order } from './order.entity';
 import { Material } from 'src/modules/materials/entities/material.entity';
-import { TypeOrderDetail } from 'src/utils/types/orderDetail-type.enum';
 @Entity('order_details')
 export class OrderDetail extends AbstractEntity {
   constructor(orderDetail: Partial<OrderDetail>) {

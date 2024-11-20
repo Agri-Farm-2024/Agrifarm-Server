@@ -1,6 +1,6 @@
-import { ApiOAuth2, ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty } from 'class-validator';
-import { PlantSeasonType } from 'src/utils/types/plantSeason-type.enum';
+import { PlantSeasonType } from '../types/plant-season-type.enum';
 
 export class UpdatePlantSeasonDto {
   @ApiProperty({
@@ -48,8 +48,7 @@ export class UpdatePlantSeasonDto {
     required: true,
     example: 'in_season',
   })
-    @IsNotEmpty()
-    @IsEnum(PlantSeasonType)
-    type: PlantSeasonType;
-
+  @IsNotEmpty()
+  @IsEnum(PlantSeasonType)
+  type: PlantSeasonType;
 }

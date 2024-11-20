@@ -42,7 +42,7 @@ export class Extend extends AbstractEntity {
   @Column({
     type: 'enum',
     enum: ExtendStatus,
-    default: ExtendStatus.pending,
+    default: ExtendStatus.pending_contract,
   })
   status: ExtendStatus;
   // relation

@@ -7,15 +7,17 @@ import { ReportURL } from './entities/reportURL.entity';
 import { TasksModule } from '../tasks/tasks.module';
 import { JwtModule } from '@nestjs/jwt';
 import { RequestsModule } from '../requests/requests.module';
+import { BookingsModule } from '../bookings/bookings.module';
 
 @Module({
   controllers: [ReportsController],
   providers: [ReportsService],
   imports: [
     TypeOrmModule.forFeature([Report, ReportURL]),
-    forwardRef(() => TasksModule),
     JwtModule,
     TasksModule,
+    BookingsModule,
+    forwardRef(() => TasksModule),
     forwardRef(() => RequestsModule),
   ],
   exports: [ReportsService],

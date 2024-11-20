@@ -33,6 +33,7 @@ import { NotificationContentEnum } from '../notifications/types/notification-con
 import { CreateRequestPurchaseDto } from './dto/create-request-puchase.dto';
 import { ServicePackage } from '../servicesPackage/entities/servicePackage.entity';
 import { ServicesService } from '../servicesPackage/servicesPackage.service';
+import { BookingsService } from '../bookings/bookings.service';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -48,6 +49,9 @@ export class RequestsService implements IRequestService {
 
     @Inject(forwardRef(() => ProcessesService))
     private readonly processService: ProcessesService,
+
+    @Inject(forwardRef(() => BookingsService))
+    private readonly bookingService: BookingsService,
 
     private readonly materialService: MaterialsService,
 
@@ -191,6 +195,14 @@ export class RequestsService implements IRequestService {
     }
   }
 
+  /**
+   * This function is used to update request status by call from other service
+   * @function updateRequestStatus
+   * @param request_id
+   * @param status
+   * @returns
+   */
+
   async updateRequestStatus(
     request_id: string,
     status: RequestStatus,
@@ -228,11 +240,11 @@ export class RequestsService implements IRequestService {
         // send mail to user
         await this.mailService.sendMail(
           request.guest_email,
-          SubjectMailEnum.bookingSheduleSign,
-          TemplateMailEnum.bookingSheduleSign,
+          SubjectMailEnum.landViewingSchedule,
+          TemplateMailEnum.landViewingSchedule,
           {
             full_name: request.guest_full_name,
-            time_start: request.time_start.toLocaleDateString(),
+            time_start: request.time_start.toLocaleString(),
             staff_full_name: request.task.assign_to.full_name,
             staff_mail: request.task.assign_to.email,
             staff_phone: request.task.assign_to.phone,
@@ -348,6 +360,7 @@ export class RequestsService implements IRequestService {
     }
   }
 
+
   //create reuqest purchase
   async createRequestPurchaseAuto(
     createRequestPurchase: CreateRequestPurchaseDto,
@@ -387,6 +400,15 @@ export class RequestsService implements IRequestService {
       this.loggerService.error(error.message, error.stack);
     }
   }
+=======
+  /**
+   * This function is used to update request to completed or rejected by staff or manager
+   * @function confirmRequest
+   * @param request_id
+   * @param data
+   * @returns
+   */
+
 
   async confirmRequest(
     request_id: string,
@@ -402,7 +424,7 @@ export class RequestsService implements IRequestService {
       if (!request) {
         throw new BadRequestException('Request not found');
       }
-      // check status is valid
+      // check status is valid to complete or reject
       if (
         data.status !== RequestStatus.completed &&
         data.status !== RequestStatus.rejected
@@ -410,7 +432,7 @@ export class RequestsService implements IRequestService {
         throw new BadRequestException('Invalid status to update');
       }
 
-      // check default status of request
+      // Check status of request is pending approval
       if (request.status !== RequestStatus.pending_approval) {
         throw new BadRequestException('Request is not pending approval');
       } else {
@@ -420,7 +442,7 @@ export class RequestsService implements IRequestService {
             throw new BadRequestException('Reason is required');
           }
         }
-        //update type request material process specific stage
+        // Check condition of material process specific stage to update quantity material
         if (
           request.type === RequestType.material_process_specfic_stage &&
           data.status === RequestStatus.completed
@@ -440,14 +462,25 @@ export class RequestsService implements IRequestService {
               item.quantity,
             );
           }
-          // update request status
-          const updated_request = await this.requestEntity.save({
-            ...request,
-            status: RequestStatus.completed,
-          });
-
-          return updated_request;
         }
+        // Check condition of report land request
+        if (
+          request.type === RequestType.report_land &&
+          data.status === RequestStatus.completed
+        ) {
+          // call boooking service to create transaction refund
+          await this.bookingService.createRefundBooking(
+            request.booking_land_id,
+          );
+        }
+
+        // update request status
+        const updated_request = await this.requestEntity.save({
+          ...request,
+          status: data.status,
+        });
+
+        return updated_request;
       }
     } catch (error) {
       throw new InternalServerErrorException(error.message);

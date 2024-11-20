@@ -29,6 +29,9 @@ import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
 import { Transaction } from '../transactions/entities/transaction.entity';
 import { ExtendsService } from '../extends/extends.service';
 import { RequestsService } from '../requests/requests.service';
+import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
+import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
+import { TransactionType } from '../transactions/types/transaction-type.enum';
 
 @Injectable()
 export class BookingsService implements IBookingService {
@@ -390,7 +393,7 @@ export class BookingsService implements IBookingService {
     }
   }
 
-  private async getListBookingByLandrenter(
+  async getListBookingByLandrenter(
     user: Payload,
     status: BookingStatus,
     type: string,
@@ -1020,6 +1023,73 @@ export class BookingsService implements IBookingService {
       });
       return update_booking;
     } catch (error) {}
+  }
+
+  async createRefundBooking(booking_id: string): Promise<any> {
+    try {
+      // get booking detail
+      const booking = await this.bookingRepository.findOne({
+        where: {
+          booking_id: booking_id,
+        },
+        relations: {
+          land_renter: true,
+          land: true,
+        },
+      });
+      if (!booking) {
+        throw new BadRequestException('Booking not found');
+      }
+      // create transaction refund
+      const transactionDTO: Partial<CreateTransactionDTO> = {
+        booking_land_id: booking_id,
+        user_id: booking.landrenter_id,
+        total_price: booking.price_deposit * booking.quality_report || 0,
+        purpose: TransactionPurpose.booking_land,
+        type: TransactionType.refund,
+      };
+      const transaction = await this.transactionService.createTransaction(
+        transactionDTO as CreateTransactionDTO,
+      );
+      // send notification to land renter
+      // send mail to land renter
+      return transaction;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async updateBookingByReport(booking_id: string, data: any): Promise<any> {
+    try {
+      const booking = await this.bookingRepository.findOne({
+        where: {
+          booking_id: booking_id,
+        },
+        relations: {
+          land: true,
+        },
+      });
+      if (!booking) {
+        throw new BadRequestException('Booking not found');
+      }
+      // update booking
+      const update_booking = await this.bookingRepository.save({
+        ...booking,
+        status: BookingStatus.completed,
+      });
+      // send notification to land renter
+      // send mail to land renter
+      return update_booking;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   private getTotalPriceBooking(booking: BookingLand): number {

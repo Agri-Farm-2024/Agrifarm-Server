@@ -4,4 +4,5 @@ export enum TemplateMailEnum {
   bookingSheduleSign = '/bookingLand/bookingScheduleSign',
   createBooking = '/bookingLand/createBooking',
   paymentBooking = '/bookingLand/paymentBooking',
+  landViewingSchedule = '/request/landViewingSchedule',
 }

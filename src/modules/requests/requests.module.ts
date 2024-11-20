@@ -7,9 +7,10 @@ import { LoggerModule } from 'src/logger/logger.module';
 import { TasksModule } from '../tasks/tasks.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ProcessesModule } from '../processes/processes.module';
-import { Material } from '../materials/entities/material.entity';
 import { MaterialsModule } from '../materials/materials.module';
 import { ServicesModule } from '../servicesPackage/servicesPackage.module';
+import { BookingsModule } from '../bookings/bookings.module';
+
 
 @Module({
   controllers: [RequestsController],
@@ -22,6 +23,7 @@ import { ServicesModule } from '../servicesPackage/servicesPackage.module';
     forwardRef(() => TasksModule),
     forwardRef(() => ProcessesModule),
     ServicesModule,
+    forwardRef(() => BookingsModule),
   ],
   exports: [RequestsService],
 })

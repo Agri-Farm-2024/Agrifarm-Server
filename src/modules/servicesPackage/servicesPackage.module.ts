@@ -18,10 +18,10 @@ import { JwtModule } from '@nestjs/jwt';
     TypeOrmModule.forFeature([ServiceSpecific, ServicePackage]),
     LoggerModule,
     PlantsModule,
+    JwtModule,
     forwardRef(() => TransactionsModule),
     forwardRef(() => ProcessesModule),
-    BookingsModule,
-    JwtModule,
+    forwardRef(() => BookingsModule),
   ],
   exports: [ServicesService],
 })
