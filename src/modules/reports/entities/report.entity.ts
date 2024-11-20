@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { ReportURL } from './reportURL.entity';
 import { Task } from 'src/modules/tasks/entities/task.entity';
+import { QualityPurchaseType } from '../types/quality-type-purchase.enum';
 
 @Entity('reports')
 export class Report extends AbstractEntity {
@@ -27,8 +28,33 @@ export class Report extends AbstractEntity {
   @Column('uuid')
   task_id: string;
 
-  @Column()
+  @Column({ nullable: true })
   content: string;
+
+  @Column({
+    type: 'enum',
+    enum: QualityPurchaseType,
+    nullable: true,
+  })
+  quality_plant: QualityPurchaseType;
+
+  @Column({
+    type: 'enum',
+    enum: QualityPurchaseType,
+    nullable: true,
+  })
+  quality_plant_expect: QualityPurchaseType;
+
+  @Column({ nullable: true })
+  mass_plant: number;
+
+  @Column({ nullable: true })
+  mass_plant_expect: number;
+
+  @Column({ nullable: true })
+  price_purchase_per_kg : number;
+
+  
   // relation
   @OneToMany(() => ReportURL, (reportURL) => reportURL.report)
   report_url: ReportURL[];
