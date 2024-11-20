@@ -37,6 +37,7 @@ import { NotificationTitleEnum } from '../notifications/types/notification-title
 import { NotificationType } from '../notifications/types/notification-type.enum';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
+import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
 
 @Injectable()
 export class BookingsService implements IBookingService {
@@ -810,6 +811,9 @@ export class BookingsService implements IBookingService {
     try {
       // get detail booking
       const booking_exist = await this.bookingRepository.findOne({
+        relations: {
+          land: true,
+        },
         where: {
           booking_id: transaction.booking_land_id,
         },
@@ -852,6 +856,25 @@ export class BookingsService implements IBookingService {
         },
       );
       // Send notification to land renter
+      await this.notificationService.createNotification({
+        user_id: booking_exist.land_renter.user_id,
+        title: NotificationTitleEnum.booking_completed,
+        content: NotificationContentEnum.booking_completed(
+          booking_exist.land.name,
+        ),
+        type: NotificationType.booking_land,
+        component_id: booking_exist.booking_id,
+      });
+      // send notification to staff
+      await this.notificationService.createNotification({
+        user_id: booking_exist.staff_id,
+        title: NotificationTitleEnum.booking_completed,
+        content: NotificationContentEnum.booking_completed(
+          booking_exist.land.name,
+        ),
+        type: NotificationType.booking_land,
+        component_id: booking_exist.booking_id,
+      });
       return update_booking;
     } catch (error) {
       this.logger.error(error.message);

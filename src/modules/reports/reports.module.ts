@@ -8,6 +8,7 @@ import { TasksModule } from '../tasks/tasks.module';
 import { JwtModule } from '@nestjs/jwt';
 import { RequestsModule } from '../requests/requests.module';
 import { BookingsModule } from '../bookings/bookings.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   controllers: [ReportsController],
@@ -17,6 +18,7 @@ import { BookingsModule } from '../bookings/bookings.module';
     JwtModule,
     TasksModule,
     BookingsModule,
+    UsersModule,
     forwardRef(() => TasksModule),
     forwardRef(() => RequestsModule),
   ],

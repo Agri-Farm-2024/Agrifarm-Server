@@ -14,6 +14,10 @@ import { UsersService } from '../users/users.service';
 import { RequestsService } from '../requests/requests.service';
 import { Payload } from '../auths/types/payload.type';
 import { RequestStatus } from '../requests/types/request-status.enum';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
+import { NotificationType } from '../notifications/types/notification-type.enum';
+import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
 
 @Injectable()
 export class TasksService implements ITaskService {
@@ -25,6 +29,8 @@ export class TasksService implements ITaskService {
 
     @Inject(forwardRef(() => RequestsService))
     private readonly requestSerivce: RequestsService,
+
+    private readonly notificationService: NotificationsService,
   ) {}
 
   async createTask(request_id: string): Promise<any> {
@@ -84,6 +90,14 @@ export class TasksService implements ITaskService {
         task.request_id,
         RequestStatus.assigned,
       );
+      // send notification to assigned user
+      await this.notificationService.createNotification({
+        user_id: assigned_to_id,
+        title: NotificationTitleEnum.create_task,
+        content: NotificationContentEnum.assigned_task(),
+        type: NotificationType.task,
+        component_id: task_id,
+      });
       return updated_task;
     } catch (error) {
       if (error instanceof BadRequestException) {

@@ -20,6 +20,11 @@ import { RequestsService } from '../requests/requests.service';
 import { RequestStatus } from '../requests/types/request-status.enum';
 import { RequestType } from '../requests/types/request-type.enum';
 import { BookingsService } from '../bookings/bookings.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../notifications/types/notification-type.enum';
+import { UsersService } from '../users/users.service';
+import { UserRole } from '../users/types/user-role.enum';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class ReportsService implements IReportService {
@@ -36,6 +41,10 @@ export class ReportsService implements IReportService {
     private readonly requestService: RequestsService,
 
     private readonly bookingService: BookingsService,
+
+    private readonly notificationService: NotificationsService,
+
+    private readonly userService: UsersService,
   ) {}
 
   async createReport(data: CreateReportDTO, task_id: string, user: Payload) {
@@ -88,6 +97,19 @@ export class ReportsService implements IReportService {
         report_exist.task.request_id,
         RequestStatus.pending_approval,
       );
+      // send notification to assigned this task
+      // get detail manager
+      const manager: User[] = await this.userService.getListUserByRole(
+        UserRole.manager,
+      );
+      await this.notificationService.createNotification({
+        user_id: report_exist.task.assigned_by_id || manager[0].user_id,
+        title: 'Báo cáo công việc',
+        content: `Báo cáo đã được tạo cho công việc`,
+        type: NotificationType.report,
+        component_id: report_exist.task_id,
+      });
+
       return new_report;
     } catch (error) {
       if (error instanceof ForbiddenException) {
