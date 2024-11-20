@@ -16,5 +16,7 @@ export interface IService {
 
   getDetailServiceSpecific(service_specific_id: string): Promise<any>;
 
+  getDetailServicePackage(service_package_id: string): Promise<any>
+
   deleteServicePackage(service_package_id: string): Promise<any>;
 }

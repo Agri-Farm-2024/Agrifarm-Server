@@ -6,6 +6,7 @@ import { RequestStatus } from '../types/request-status.enum';
 import { UpdateStatusTaskDTO } from '../dto/update-status-task.dto';
 import { CreateRequestMaterialDto } from '../dto/create-request-material-stagedto';
 import { Payload } from 'src/modules/auths/types/payload.type';
+import { CreateRequestPurchaseDto } from '../dto/create-request-puchase.dto';
 
 export interface IRequestService {
   createRequestViewLand(data: CreateRequestViewLandDTO): Promise<any>;
@@ -25,6 +26,10 @@ export interface IRequestService {
   createRequestMaterial(
     createRequestMaterial: CreateRequestMaterialDto,
   ): Promise<any>;
+
+  createRequestPurchaseAuto(
+    createRequestPurchase: CreateRequestPurchaseDto,
+  ): Promise<any>
 
   getDetailRequestPrcocessStandard(plant_season_id: string): Promise<any>;
 
