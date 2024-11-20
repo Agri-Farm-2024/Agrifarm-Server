@@ -255,10 +255,10 @@ export class ServicesService implements IService {
         where: {
           service_specific_id,
         },
-        relations:{
-          service_package:true,
-          
-        }
+        relations: {
+          service_package: true,
+          process_technical_specific: true,
+        },
       });
       if (!service_specific) {
         throw new BadRequestException('Service specific does not exist');

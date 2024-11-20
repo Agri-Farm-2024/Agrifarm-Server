@@ -360,7 +360,6 @@ export class RequestsService implements IRequestService {
     }
   }
 
-
   //create reuqest purchase
   async createRequestPurchaseAuto(
     createRequestPurchase: CreateRequestPurchaseDto,
@@ -395,6 +394,28 @@ export class RequestsService implements IRequestService {
         service_specific_detail.service_package.process_of_plant === true &&
         now == oneMonthBeforeEnd
       ) {
+        //create new request purchase
+        const new_request = await this.requestEntity.save({
+          ...createRequestPurchase,
+          type: RequestType.product_purchase,
+        });
+        if (!new_request) {
+          throw new BadRequestException('Unable to create request');
+        }
+        // create task for the request
+        const new_task = await this.taskService.createTaskAuto(
+          new_request.request_id,
+          service_specific_detail.process_technical_specific.expert_id,
+        );
+        //update status request
+        await this.updateRequestStatus(
+          new_request.request_id,
+          RequestStatus.assigned,
+        );
+        if (!new_task) {
+          throw new BadRequestException('Unable to create task');
+        }
+        return new_request;
       }
     } catch (error) {
       this.loggerService.error(error.message, error.stack);
@@ -408,7 +429,6 @@ export class RequestsService implements IRequestService {
    * @param data
    * @returns
    */
-
 
   async confirmRequest(
     request_id: string,
@@ -459,7 +479,7 @@ export class RequestsService implements IRequestService {
           for (const item of process_specific_stage_detail.process_technical_specific_stage_material) {
             await this.materialService.updateQuantityMaterial(
               item.material_id,
-              item.quantity,
+              -item.quantity,
             );
           }
         }
