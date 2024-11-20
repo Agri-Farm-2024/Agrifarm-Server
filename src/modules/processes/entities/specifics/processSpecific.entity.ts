@@ -40,7 +40,7 @@ export class ProcessSpecific extends AbstractEntity {
   time_end: Date;
 
   @Column({ nullable: true })
-  is_public: Boolean;
+  is_public: boolean;
 
   @Column({
     type: 'enum',

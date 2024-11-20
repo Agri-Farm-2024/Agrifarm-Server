@@ -239,7 +239,7 @@ export class RequestsService implements IRequestService {
           TemplateMailEnum.landViewingSchedule,
           {
             full_name: request.guest_full_name,
-            time_start: request.time_start.toLocaleDateString(),
+            time_start: request.time_start.toLocaleString(),
             staff_full_name: request.task.assign_to.full_name,
             staff_mail: request.task.assign_to.email,
             staff_phone: request.task.assign_to.phone,
