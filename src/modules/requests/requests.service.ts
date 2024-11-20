@@ -400,7 +400,7 @@ export class RequestsService implements IRequestService {
       this.loggerService.error(error.message, error.stack);
     }
   }
-=======
+
   /**
    * This function is used to update request to completed or rejected by staff or manager
    * @function confirmRequest
