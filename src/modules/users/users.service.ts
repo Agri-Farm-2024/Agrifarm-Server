@@ -132,7 +132,7 @@ export class UsersService implements IUserService {
       };
       // check role
       if (user.role === UserRole.manager) {
-        filters.role = Not(In[(UserRole.admin, UserRole.manager)]);
+        filters.role = Not(In([UserRole.admin, UserRole.manager]));
       }
       // check role is exist
       if (role) {
