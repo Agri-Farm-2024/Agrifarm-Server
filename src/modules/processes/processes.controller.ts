@@ -27,6 +27,7 @@ import { createProcessSpecificDTO } from './dto/create-process-specific.dto';
 import { UpdateProcessStandardsDto } from './dto/update-process-standard.dto';
 import { ProcessSpecificStatus } from './types/processSpecific-status.enum';
 import { UPdateProcessSpecificDto } from './dto/update-process-specific.dto';
+import { UpdateProcessSpecificStatusDto } from './dto/update-process-specific-status.dto';
 
 @ApiTags('Process')
 @Controller('processes')
@@ -125,5 +126,10 @@ export class ProcessesController {
   ): Promise<any> {
     const user = req['user'];
     return this.processesService.updateProcessSpecific(id, data, user);
+  }
+
+  @Put('/updateStatusProcessSpecific/:id')
+  updateStatusProcessSpecific(@Param('id') id: string): Promise<any> {
+    return this.processesService.updateStatusProcessSpecific(id);
   }
 }

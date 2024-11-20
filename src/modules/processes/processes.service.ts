@@ -39,6 +39,7 @@ import { UpdateProcessStandardsDto } from './dto/update-process-standard.dto';
 import { ProcessSpecificStatus } from './types/processSpecific-status.enum';
 import { UPdateProcessSpecificDto } from './dto/update-process-specific.dto';
 import { UserRole } from '../users/types/user-role.enum';
+import { UpdateProcessSpecificStatusDto } from './dto/update-process-specific-status.dto';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -837,6 +838,25 @@ export class ProcessesService implements IProcessesService {
           process_technical_specific_stage_material: true,
         },
       });
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+  //update status process specific
+  async updateStatusProcessSpecific(
+    process_technical_specific_id: string,
+  ): Promise<any> {
+    try {
+      const process_specific = await this.processSpecificRepo.findOne({
+        where: {
+          process_technical_specific_id,
+        },
+      });
+      if (!process_specific) {
+        throw new BadRequestException('Process specific not found');
+      }
+      process_specific.status = ProcessSpecificStatus.active;
+      return await this.processSpecificRepo.save(process_specific);
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

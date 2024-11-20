@@ -5,6 +5,7 @@ import { UpdateProcessStandardDto } from '../dto/update-processStandardStatus.dt
 import { ProcessSpecificStatus } from '../types/processSpecific-status.enum';
 import { UPdateProcessSpecificDto } from '../dto/update-process-specific.dto';
 import { Payload } from 'src/modules/auths/types/payload.type';
+import { UpdateProcessSpecificStatusDto } from '../dto/update-process-specific-status.dto';
 
 export interface IProcessesService {
   createProcessStandard(data: CreateProcessDto, expert: any): Promise<any>;
@@ -33,5 +34,9 @@ export interface IProcessesService {
     process_technical_specific_id: string,
     data: UPdateProcessSpecificDto,
     user: Payload,
-  ): Promise<any>
+  ): Promise<any>;
+
+  updateStatusProcessSpecific(
+    process_technical_specific_id: string,
+  ): Promise<any>;
 }
