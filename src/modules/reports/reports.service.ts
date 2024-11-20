@@ -15,7 +15,6 @@ import { TasksService } from '../tasks/tasks.service';
 import { Report } from './entities/report.entity';
 import { CreateReportDTO } from './dto/create-report.dto';
 import { Payload } from '../auths/types/payload.type';
-import { Task } from '../tasks/entities/task.entity';
 import { ReportURL } from './entities/reportURL.entity';
 import { RequestsService } from '../requests/requests.service';
 import { RequestStatus } from '../requests/types/request-status.enum';
@@ -40,15 +39,18 @@ export class ReportsService implements IReportService {
       //chekc report exist
       const report_exist = await this.reportRepository.findOne({
         where: { task_id: task_id },
+        relations: {
+          task: true,
+        },
       });
       if (report_exist) {
-        throw new BadRequestException('Report already exist');
+        return report_exist;
       }
-
-      // get detail task
-      const task_exist: Task = await this.taskService.getDetailTask(task_id);
-      if (task_exist.assigned_to_id !== user.user_id) {
-        throw new ForbiddenException('You are not assigned to this task');
+      // Check assigned user of this task
+      if (report_exist.task.assigned_to_id !== user.user_id) {
+        throw new ForbiddenException(
+          'You are not assigned to this task, you cannot create a report',
+        );
       }
       // create a new instance of the Report entity
       const new_report = await this.reportRepository.save({
@@ -64,16 +66,12 @@ export class ReportsService implements IReportService {
             url_type: url.url_type,
           });
         }
-        //update request status
-        //take request is status in progress
-        const request = await this.taskService.getDetailTask(task_id);
-        if (request.request_i.status === 'in_progress') {
-          await this.requestService.updateRequestStatus(
-            request.request_id,
-            RequestStatus.pending_approval,
-          );
-        }
       }
+      //update request status to pending_approval
+      await this.requestService.updateRequestStatus(
+        report_exist.task.request_id,
+        RequestStatus.pending_approval,
+      );
       return new_report;
     } catch (error) {
       if (error instanceof ForbiddenException) {
@@ -100,5 +98,5 @@ export class ReportsService implements IReportService {
     return saved_report;
   }
 
-  //update 
+  //update
 }
