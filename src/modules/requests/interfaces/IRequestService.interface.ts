@@ -33,8 +33,8 @@ export interface IRequestService {
     createRequestPurchase: CreateRequestPurchaseDto,
   ): Promise<any>;
 
-  createRequestPurchaseharvest(service_specific_id: string);
-  
+  createRequestPurchaseharvest(service_specific_id: string): Promise<any>;
+
   createRequestReportLand(booking_land: BookingLand): Promise<any>;
 
   getDetailRequestPrcocessStandard(plant_season_id: string): Promise<any>;
@@ -43,7 +43,6 @@ export interface IRequestService {
     data: createRequestTechnicalSupportDTO,
     user: Payload,
   ): Promise<any>;
-  
 
   confirmRequest(request_id: string, data: UpdateStatusTaskDTO): Promise<any>;
 }

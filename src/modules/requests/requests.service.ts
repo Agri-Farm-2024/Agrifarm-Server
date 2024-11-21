@@ -442,7 +442,9 @@ export class RequestsService implements IRequestService {
    * @returns
    */
 
-  async createRequestPurchaseharvest(service_specific_id: string) {
+  async createRequestPurchaseharvest(
+    service_specific_id: string,
+  ): Promise<any> {
     try {
       //check request purchase for service is exist
       const request_purchase_hasvest_exist = await this.requestEntity.findOne({

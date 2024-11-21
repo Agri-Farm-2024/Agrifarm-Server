@@ -19,7 +19,7 @@ export interface IService {
 
   getDetailServiceSpecific(service_specific_id: string): Promise<any>;
 
-  getDetailServicePackage(service_package_id: string): Promise<any>
+  getDetailServicePackage(service_package_id: string): Promise<any>;
 
   deleteServicePackage(service_package_id: string): Promise<any>;
 
@@ -27,9 +27,7 @@ export interface IService {
 
   cancelServiceSpecific(service_specific_id: string): Promise<any>;
 
-  handlePaymentServiceSpecificSuccess(
-    transaction: Transaction,
-  ): Promise<any>;
+  handlePaymentServiceSpecificSuccess(transaction: Transaction): Promise<any>;
 
   getListServiceSpecific(
     pagination: PaginationParams,
@@ -38,7 +36,4 @@ export interface IService {
   ): Promise<any>;
 
   getListServicePackages(): Promise<any>;
-
-  
-
 }
