@@ -16,14 +16,14 @@ export class CreateReportPurchaseDto {
     example: QualityPurchaseType.hight,
   })
   @IsOptional()
-  quality_plant: QualityPurchaseType;
+  quality_plant: number;
 
   @ApiProperty({
     description: ' the quality  plant expected ',
     example: QualityPurchaseType.hight,
   })
   @IsOptional()
-  quality_plant_expect: QualityPurchaseType;
+  quality_plant_expect: number;
 
   @ApiProperty({
     description: ' the mass of plant ',

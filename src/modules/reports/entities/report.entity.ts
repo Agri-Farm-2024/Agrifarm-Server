@@ -31,19 +31,11 @@ export class Report extends AbstractEntity {
   @Column({ nullable: true })
   content: string;
 
-  @Column({
-    type: 'enum',
-    enum: QualityPurchaseType,
-    nullable: true,
-  })
-  quality_plant: QualityPurchaseType;
+  @Column({nullable: true})
+  quality_plant: number;
 
-  @Column({
-    type: 'enum',
-    enum: QualityPurchaseType,
-    nullable: true,
-  })
-  quality_plant_expect: QualityPurchaseType;
+  @Column({nullable: true})
+  quality_plant_expect: number;
 
   @Column({ nullable: true })
   mass_plant: number;
@@ -52,9 +44,8 @@ export class Report extends AbstractEntity {
   mass_plant_expect: number;
 
   @Column({ nullable: true })
-  price_purchase_per_kg : number;
+  price_purchase_per_kg: number;
 
-  
   // relation
   @OneToMany(() => ReportURL, (reportURL) => reportURL.report)
   report_url: ReportURL[];
