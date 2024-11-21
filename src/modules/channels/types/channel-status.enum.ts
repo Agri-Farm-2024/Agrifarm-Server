@@ -1,4 +1,4 @@
 export enum ChannelStatus {
   active = 'active',
-  deleted = 'deleted',
+  expired = 'expired ',
 }

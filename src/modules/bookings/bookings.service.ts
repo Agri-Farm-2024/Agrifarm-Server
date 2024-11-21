@@ -280,7 +280,7 @@ export class BookingsService implements IBookingService {
             status: 'ASC',
             updated_at: 'DESC',
             extends: {
-              created_at: 'DESC',
+              created_at: 'ASC',
             },
           },
           relations: {
@@ -380,7 +380,7 @@ export class BookingsService implements IBookingService {
             status: 'ASC',
             updated_at: 'DESC',
             extends: {
-              created_at: 'DESC',
+              created_at: 'ASC',
             },
           },
           relations: {
@@ -448,7 +448,7 @@ export class BookingsService implements IBookingService {
             status: 'ASC',
             updated_at: 'DESC',
             extends: {
-              created_at: 'DESC',
+              created_at: 'ASC',
             },
           },
           relations: {
