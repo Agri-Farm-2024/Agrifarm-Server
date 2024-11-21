@@ -48,6 +48,9 @@ export class ServiceSpecific extends AbstractEntity {
   @Column()
   price_package: number;
 
+  @Column('int', { nullable: true })
+  price_purchase_per_kg: number;
+
   @Column()
   time_start: Date;
 
