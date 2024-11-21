@@ -704,7 +704,7 @@ export class BookingsService implements IBookingService {
           price_per_month: booking_exist.price_per_month,
           price_deposit: booking_exist.price_deposit,
           total_price: this.getTotalPriceBooking(booking_exist),
-          staus: 'Chờ ký tên',
+          status: 'Chờ ký tên',
           user_mail: user.email,
           expired_schedule_at:
             update_booking.expired_schedule_at.toLocaleDateString(),
@@ -859,7 +859,7 @@ export class BookingsService implements IBookingService {
           price_per_month: booking_exist.price_per_month,
           price_deposit: booking_exist.price_deposit,
           total_price: this.getTotalPriceBooking(booking_exist),
-          staus: 'Đã hoàn thành',
+          status: 'Đã hoàn thành',
           user_mail: booking_exist.land_renter.email,
           transaction_code: transaction.transaction_code,
           transaction_price: transaction.total_price,
@@ -1040,7 +1040,7 @@ export class BookingsService implements IBookingService {
       //     price_per_month: booking.price_per_month,
       //     price_deposit: booking.price_deposit,
       //     total_price: this.getTotalPriceBooking(booking),
-      //     staus: 'Hết hạn',
+      //     status: 'Hết hạn',
       //     user_mail: booking.land_renter.email,
       //   },
       // );
@@ -1080,7 +1080,7 @@ export class BookingsService implements IBookingService {
       //     price_per_month: booking.price_per_month,
       //     price_deposit: booking.price_deposit,
       //     total_price: this.getTotalPriceBooking(booking),
-      //     staus: 'Hết hạn',
+      //     status: 'Hết hạn',
       //     user_mail: booking.land_renter.email,
       //   },
       // );
@@ -1160,6 +1160,14 @@ export class BookingsService implements IBookingService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  /**
+   * update booking call by report service
+   * @function updateBookingByReport
+   * @param booking_id
+   * @param data
+   * @returns
+   */
 
   async updateBookingByReport(booking_id: string, data: any): Promise<any> {
     try {

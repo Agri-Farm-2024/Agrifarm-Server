@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
@@ -40,25 +40,43 @@ export class NotificationsService {
     pagination: PaginationParams,
   ): Promise<any> {
     try {
-      const [notifications, total_count] = await Promise.all([
-        this.notificationRepository.find({
-          where: { user_id: userId },
-          order: { created_at: 'DESC' },
-          skip: (pagination.page_index - 1) * pagination.page_size,
-          take: pagination.page_size,
-        }),
-        this.notificationRepository.count({ where: { user_id: userId } }),
-      ]);
+      const [notifications, total_count, total_is_not_seen] = await Promise.all(
+        [
+          this.notificationRepository.find({
+            where: { user_id: userId },
+            order: { created_at: 'DESC' },
+            skip: (pagination.page_index - 1) * pagination.page_size,
+            take: pagination.page_size,
+          }),
+          this.notificationRepository.count({ where: { user_id: userId } }),
+          this.notificationRepository.count({
+            where: { user_id: userId, is_seen: false },
+          }),
+        ],
+      );
       // get total page
       const total_page = Math.ceil(total_count / pagination.page_size);
 
       return {
         notifications,
+        total_is_not_seen,
         pagination: {
           ...pagination,
           total_page,
         },
       };
     } catch (error) {}
+  }
+
+  async seen(userId: string): Promise<any> {
+    try {
+      await this.notificationRepository.update(
+        { user_id: userId },
+        { is_seen: true },
+      );
+      return { message: 'Seen all notifications' };
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 }
