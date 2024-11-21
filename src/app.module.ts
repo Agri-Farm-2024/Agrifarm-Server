@@ -29,6 +29,7 @@ import { SocketsModule } from './sockets/sockets.module';
 import { DiscordsModule } from './discords/discords.module';
 import { CronsModule } from './crons/crons.module';
 import { TestModule } from './modules/test/test.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { TestModule } from './modules/test/test.module';
     ScheduleModule.forRoot(),
     CronsModule,
     TestModule,
+    DashboardModule,
     // DiscordsModule,
   ],
 })

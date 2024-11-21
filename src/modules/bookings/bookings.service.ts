@@ -122,6 +122,9 @@ export class BookingsService implements IBookingService {
       }
       // check previous booking is completed for send request extend
       const booking_previous = await this.bookingRepository.findOne({
+        relations: {
+          land: true,
+        },
         where: {
           land_id: createBookingDto.land_id,
           status: BookingStatus.completed,
@@ -133,9 +136,7 @@ export class BookingsService implements IBookingService {
       });
       if (booking_previous) {
         // send request extend to old booking
-        await this.extendsService.createRequestExtend(
-          booking_previous.booking_id,
-        );
+        await this.extendsService.createRequestExtend(booking_previous);
       }
       // Get price per month of land
       const total_price =

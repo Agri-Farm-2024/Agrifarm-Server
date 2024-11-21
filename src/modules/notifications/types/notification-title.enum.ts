@@ -8,4 +8,5 @@ export enum NotificationTitleEnum {
   create_task = 'Bạn có một nhiệm vụ mới',
   report_purchase = 'Báo cáo kết quả kiểm định trước thu hoạch',
   report_harvest = 'Báo cáo kết quả thu hoạch',
+  request_extend = 'Yêu cầu gia hạn thuê đất',
 }

@@ -22,6 +22,10 @@ import { TransactionsService } from '../transactions/transactions.service';
 import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
 import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
 import { TransactionStatus } from '../transactions/types/transaction-status.enum';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../notifications/types/notification-type.enum';
+import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
+import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
 
 @Injectable()
 export class ExtendsService implements IExtendService {
@@ -34,6 +38,8 @@ export class ExtendsService implements IExtendService {
 
     @Inject(forwardRef(() => TransactionsService))
     private readonly transactionService: TransactionsService,
+
+    private readonly notificationService: NotificationsService,
   ) {}
 
   async createExtend(createExtendDTO: CreateExtendDto): Promise<any> {
@@ -106,13 +112,30 @@ export class ExtendsService implements IExtendService {
     }
   }
 
-  async createRequestExtend(booking_land_id: string): Promise<any> {
+  /**
+   * create request extend is used when new booking is created
+   * @function createRequestExtend
+   * @param booking_previous
+   * @returns
+   */
+
+  async createRequestExtend(booking_previous: BookingLand): Promise<any> {
     try {
+      // get detail
       const new_extend = await this.extendRepository.save({
-        booking_land_id: booking_land_id,
+        booking_land_id: booking_previous.booking_id,
         status: ExtendStatus.pending,
       });
       // send notification to user
+      await this.notificationService.createNotification({
+        user_id: new_extend.booking_land.landrenter_id,
+        component_id: new_extend.extend_id,
+        content: NotificationContentEnum.request_extend(
+          booking_previous.land.name,
+        ),
+        type: NotificationType.extend,
+        title: NotificationTitleEnum.request_extend,
+      });
       // send mail to user
       return new_extend;
     } catch (error) {

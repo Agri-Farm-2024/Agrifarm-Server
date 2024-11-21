@@ -7,4 +7,5 @@ export enum NotificationType {
   process = 'process',
   channel = 'channel',
   report = 'report',
+  extend = 'extend',
 }
