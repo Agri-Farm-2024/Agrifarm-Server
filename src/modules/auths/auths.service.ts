@@ -25,6 +25,7 @@ import { Payload } from './types/payload.type';
 
 @Injectable()
 export class AuthsService implements IAuthService {
+  private readonly logger = new Logger(AuthsService.name);
   constructor(
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,

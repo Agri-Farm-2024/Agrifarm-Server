@@ -111,6 +111,10 @@ export class UsersService implements IUserService {
         status: 'Chờ xác nhận',
       },
     );
+    // logs
+    this.loggerService.log(
+      `New User created with email: ${new_user.email} - role ${new_user.role}`,
+    );
     return new_user;
   }
 
@@ -169,6 +173,33 @@ export class UsersService implements IUserService {
             updated_at: 'DESC',
             status: 'ASC',
             role: 'ASC',
+          },
+          relations: {
+            task_assigned_to: {
+              request: true,
+            },
+          },
+          select: {
+            user_id: true,
+            avatar_url: true,
+            full_name: true,
+            email: true,
+            phone: true,
+            dob: true,
+            created_at: true,
+            updated_at: true,
+            status: true,
+            role: true,
+            task_assigned_to: {
+              task_id: true,
+              assigned_at: true,
+              request: {
+                status: true,
+                type: true,
+                time_start: true,
+                time_end: true,
+              },
+            },
           },
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
@@ -243,6 +274,10 @@ export class UsersService implements IUserService {
           },
         );
       }
+      // logs
+      this.loggerService.log(
+        `User ${user.email} status has been updated to ${status}`,
+      );
       return;
     } catch (error) {
       if (error instanceof BadRequestException) {

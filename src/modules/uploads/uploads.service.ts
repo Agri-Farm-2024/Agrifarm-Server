@@ -11,7 +11,6 @@ import { promises as fs } from 'fs';
 export class UploadsService {
   async uploadFile(file: Express.Multer.File): Promise<any> {
     try {
-      console.log(file);
       // check if the file is image
       if (
         !file.mimetype.includes('image') &&
@@ -24,6 +23,14 @@ export class UploadsService {
 
       // Create directory if it doesn't exist
       await fs.mkdir(uploadDir, { recursive: true });
+
+      // check if the file is already exist
+      const fileExist = await fs
+        .stat(join(uploadDir, file.originalname))
+        .catch(() => null);
+      if (fileExist) {
+        throw new BadRequestException('File already exist');
+      }
 
       // Save the file in the directory
       const filePath = join(uploadDir, file.originalname);
