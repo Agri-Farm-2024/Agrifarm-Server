@@ -10,6 +10,7 @@ import { ProcessesModule } from '../processes/processes.module';
 import { MaterialsModule } from '../materials/materials.module';
 import { ServicesModule } from '../servicesPackage/servicesPackage.module';
 import { BookingsModule } from '../bookings/bookings.module';
+import { ChannelsModule } from '../channels/channels.module';
 
 @Module({
   controllers: [RequestsController],
@@ -23,6 +24,7 @@ import { BookingsModule } from '../bookings/bookings.module';
     forwardRef(() => ProcessesModule),
     ServicesModule,
     forwardRef(() => BookingsModule),
+    ChannelsModule,
   ],
   exports: [RequestsService],
 })

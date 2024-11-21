@@ -16,6 +16,7 @@ import { RequestStatus } from '../types/request-status.enum';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 import { ProcessSpecificStage } from 'src/modules/processes/entities/specifics/processSpecificStage.entity';
 import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
+import { Channel } from 'src/modules/channels/entities/channel.entity';
 
 @Entity('requests')
 export class Request extends AbstractEntity {
@@ -97,8 +98,13 @@ export class Request extends AbstractEntity {
   @JoinColumn({ name: 'process_technical_specific_stage_id' })
   process_technical_specific_stage: ProcessSpecificStage;
 
-  @ManyToOne(()=> ServiceSpecific, (serviceSpecific) => serviceSpecific.requests)
+  @ManyToOne(
+    () => ServiceSpecific,
+    (serviceSpecific) => serviceSpecific.requests,
+  )
   @JoinColumn({ name: 'service_specific_id' })
   service_specific: ServiceSpecific;
 
+  @OneToOne(() => Channel, (channel) => channel.request)
+  channel: Channel;
 }

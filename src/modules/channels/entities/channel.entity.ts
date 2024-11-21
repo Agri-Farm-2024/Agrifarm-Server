@@ -1,8 +1,16 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ChannelStatus } from '../types/channel-status.enum';
 import { ChannelJoin } from './channelJoin.entity';
 import { ChannelMessage } from './channelMessage.entity';
+import { Request } from 'src/modules/requests/entities/request.entity';
 
 @Entity('channels')
 export class Channel extends AbstractEntity {
@@ -19,7 +27,7 @@ export class Channel extends AbstractEntity {
 
   @Column({
     type: 'timestamp',
-    nullable: false,
+    nullable: true,
   })
   expired_at: Date;
 
@@ -35,4 +43,8 @@ export class Channel extends AbstractEntity {
 
   @OneToMany(() => ChannelMessage, (channelMessage) => channelMessage.channel)
   messages: ChannelMessage[];
+
+  @OneToOne(() => Request, (request) => request.channel)
+  @JoinColumn({ name: 'request_id' })
+  request: Request;
 }

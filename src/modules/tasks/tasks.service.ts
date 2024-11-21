@@ -18,6 +18,9 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
 import { NotificationType } from '../notifications/types/notification-type.enum';
 import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
+import { ChannelsService } from '../channels/channels.service';
+import { RequestType } from '../requests/types/request-type.enum';
+import { RequestSupportType } from '../requests/types/request-support-type.enum';
 
 @Injectable()
 export class TasksService implements ITaskService {
@@ -31,6 +34,8 @@ export class TasksService implements ITaskService {
     private readonly requestSerivce: RequestsService,
 
     private readonly notificationService: NotificationsService,
+
+    private readonly channelService: ChannelsService,
   ) {}
 
   async createTask(request_id: string): Promise<any> {
@@ -67,8 +72,13 @@ export class TasksService implements ITaskService {
   ): Promise<any> {
     try {
       // check task exist
-      const task = await this.taskEntity.findOneBy({
-        task_id: task_id,
+      const task = await this.taskEntity.findOne({
+        where: {
+          task_id: task_id,
+        },
+        relations: {
+          request: true,
+        },
       });
       if (!task) {
         throw new BadRequestException('Task not found');
@@ -77,6 +87,17 @@ export class TasksService implements ITaskService {
       const user = await this.userSerivce.findUserById(assigned_to_id);
       if (!user) {
         throw new BadRequestException('User not found');
+      }
+      // check type of request
+      if (
+        task.request.type === RequestType.technical_support &&
+        task.request.support_type === RequestSupportType.chat
+      ) {
+        // join message for assigned user
+        await this.channelService.addAssignToChannel(
+          task.request_id,
+          assigned_to_id,
+        );
       }
       // update task
       const updated_task = await this.taskEntity.save({

@@ -17,6 +17,7 @@ import { CreateMessageDTO } from './dto/create-message.dto';
 import { ChannelStatus } from './types/channel-status.enum';
 import { EventGateway } from 'src/sockets/event.gateway';
 import { SocketEvent } from 'src/sockets/types/socket-event.enum';
+import { CreateChannelDTO } from './dto/create-channel.dto';
 
 @Injectable()
 export class ChannelsService implements IChannelService {
@@ -51,6 +52,9 @@ export class ChannelsService implements IChannelService {
           joins: {
             user_join_id: user_id,
           },
+        },
+        relations: {
+          request: true,
         },
       });
       return channels;
@@ -147,6 +151,68 @@ export class ChannelsService implements IChannelService {
       if (error instanceof ForbiddenException) {
         throw error;
       }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async createChannel(data: CreateChannelDTO): Promise<any> {
+    try {
+      const channel = await this.channelRepository.save({
+        request_id: data.request_id,
+      });
+      // create join
+      await this.channelJoinRepository.save({
+        channel_id: channel.channel_id,
+        user_join_id: data.sender_id,
+      });
+      return channel;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw error;
+    }
+  }
+
+  async addAssignToChannel(request_id: string, user_id: string): Promise<any> {
+    try {
+      // check channel is exist
+      const channel = await this.channelRepository.findOne({
+        where: {
+          request_id: request_id,
+        },
+      });
+      if (!channel) {
+        throw new Error('Channel is not exist');
+      }
+      // check channel is expired
+      if (channel.status === ChannelStatus.expired) {
+        throw new Error('Channel is expired');
+      }
+      // check user is in channel
+      const is_join = await this.channelJoinRepository.findOne({
+        where: {
+          channel_id: channel.channel_id,
+          user_join_id: user_id,
+        },
+      });
+      if (is_join) {
+        throw new Error('User is already in channel');
+      }
+      // create join
+      await this.channelJoinRepository.save({
+        channel_id: channel.channel_id,
+        user_join_id: user_id,
+      });
+      // update channel expired
+      await this.channelRepository.update(
+        {
+          channel_id: channel.channel_id,
+        },
+        {
+          expired_at: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
+        },
+      );
+    } catch (error) {
+      this.loggerService.error(error.message, error.stack);
       throw new InternalServerErrorException(error.message);
     }
   }

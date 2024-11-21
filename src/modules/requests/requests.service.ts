@@ -35,6 +35,10 @@ import { ServicesService } from '../servicesPackage/servicesPackage.service';
 import { BookingsService } from '../bookings/bookings.service';
 import { ServiceSpecific } from '../servicesPackage/entities/serviceSpecific.entity';
 import { Payload } from '../auths/types/payload.type';
+import { createRequestTechnicalSupportDTO } from './dto/create-request-technical-support.dto';
+import { ChannelsService } from '../channels/channels.service';
+import { ServiceSpecificStatus } from '../servicesPackage/types/service-specific-status.enum';
+import { RequestSupportType } from './types/request-support-type.enum';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -59,6 +63,8 @@ export class RequestsService implements IRequestService {
     private readonly notificationService: NotificationsService,
 
     private readonly servicePackageService: ServicesService,
+
+    private readonly channelService: ChannelsService,
   ) {}
 
   async createRequestViewLand(data: CreateRequestViewLandDTO): Promise<any> {
@@ -611,5 +617,34 @@ export class RequestsService implements IRequestService {
     }
   }
 
-  async createRequestTechnicalSupport(data, user: Payload): Promise<any> {}
+  async createRequestTechnicalSupport(
+    data: createRequestTechnicalSupportDTO,
+    user: Payload,
+  ): Promise<any> {
+    try {
+      // check service exist
+      if (data.service_specific_id) {
+        const service_specific: ServiceSpecific =
+          await this.servicePackageService.getDetailServiceSpecific(
+            data.service_specific_id,
+          );
+        // check service is available
+        if (service_specific.status !== ServiceSpecificStatus.used) {
+          throw new BadRequestException('Service is not available');
+        }
+      }
+      // create a new request
+      const new_request = await this.requestEntity.save({
+        ...data,
+        sender_id: user.user_id,
+      });
+      // create task for the request
+      await this.taskService.createTask(new_request.request_id);
+      // check support type
+      if (data.support_type === RequestSupportType.chat) {
+        // create channel
+      }
+      return new_request;
+    } catch (error) {}
+  }
 }

@@ -25,6 +25,7 @@ import { Roles } from 'src/common/decorations/role.decoration';
 import { UserRole } from '../users/types/user-role.enum';
 import { UpdateStatusTaskDTO } from './dto/update-status-task.dto';
 import { CreateRequestMaterialDto } from './dto/create-request-material-stagedto';
+import { createRequestTechnicalSupportDTO } from './dto/create-request-technical-support.dto';
 
 @ApiTags('Request')
 @Controller('requests')
@@ -90,7 +91,10 @@ export class RequestsController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.land_renter)
   @Post('/createRequestTechnicalSupport')
-  async createRequestTechnicalSupport(@Body() data: any, @Request() req: any) {
+  async createRequestTechnicalSupport(
+    @Body() data: createRequestTechnicalSupportDTO,
+    @Request() req: any,
+  ) {
     const user = req['user'];
     return await this.requestsService.createRequestTechnicalSupport(data, user);
   }

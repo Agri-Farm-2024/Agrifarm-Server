@@ -6,6 +6,7 @@ import { Task } from './entities/task.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from '../users/users.module';
 import { RequestsModule } from '../requests/requests.module';
+import { ChannelsModule } from '../channels/channels.module';
 
 @Module({
   controllers: [TasksController],
@@ -15,6 +16,7 @@ import { RequestsModule } from '../requests/requests.module';
     JwtModule,
     UsersModule,
     forwardRef(() => RequestsModule),
+    ChannelsModule,
   ],
   exports: [TasksService],
 })
