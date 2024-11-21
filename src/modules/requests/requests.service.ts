@@ -304,7 +304,13 @@ export class RequestsService implements IRequestService {
     }
   }
 
-  //create request material
+  /**
+   * Create request material call by schedule job
+   * @function createRequestMaterial
+   * @param createRequestMaterial
+   * @returns
+   */
+
   async createRequestMaterial(
     createRequestMaterial: CreateRequestMaterialDto,
   ): Promise<any> {
@@ -368,7 +374,6 @@ export class RequestsService implements IRequestService {
    * @returns
    */
 
-  //create reuqest purchase
   async createRequestPurchaseAuto(
     createRequestPurchase: CreateRequestPurchaseDto,
   ): Promise<any> {
@@ -424,8 +429,13 @@ export class RequestsService implements IRequestService {
     }
   }
 
+  /**
+   * Create request purchase harvest by call from schedule job
+   * @function createRequestPurchaseharvest
+   * @param service_specific_id
+   * @returns
+   */
 
-  //create requestpurchase hasvest
   async createRequestPurchaseharvest(service_specific_id: string) {
     try {
       //check request purchase for service is exist
@@ -446,25 +456,15 @@ export class RequestsService implements IRequestService {
       if (!service_specific_detail) {
         throw new BadRequestException('Service specific not found');
       }
-
       //create new request purchase
       const new_request = await this.requestEntity.save({
         service_specific_id: service_specific_id,
         type: RequestType.product_puchase_harvest,
-
-  async createRequestReportLand(booking_land: BookingLand): Promise<any> {
-    try {
-      // Create a new request
-      const new_request = await this.requestEntity.save({
-        booking_land_id: booking_land.booking_id,
-        type: RequestType.report_land,
-
       });
       if (!new_request) {
         throw new BadRequestException('Unable to create request');
       }
       // create task for the request
-
       const new_task = await this.taskService.createTaskAuto(
         new_request.request_id,
         service_specific_detail.process_technical_specific.expert_id,
@@ -473,20 +473,33 @@ export class RequestsService implements IRequestService {
       await this.updateRequestStatus(
         new_request.request_id,
         RequestStatus.assigned,
-
-      const new_task = await this.taskService.createTask(
-        new_request.request_id,
-
       );
       if (!new_task) {
         throw new BadRequestException('Unable to create task');
       }
-
       return new_request;
     } catch (error) {
       this.loggerService.error(error.message, error.stack);
     }
+  }
 
+  async createRequestReportLand(booking_land: BookingLand): Promise<any> {
+    try {
+      // Create a new request
+      const new_request = await this.requestEntity.save({
+        booking_land_id: booking_land.booking_id,
+        type: RequestType.report_land,
+      });
+      if (!new_request) {
+        throw new BadRequestException('Unable to create request');
+      }
+      // create task for the request
+      const new_task = await this.taskService.createTask(
+        new_request.request_id,
+      );
+      if (!new_task) {
+        throw new BadRequestException('Unable to create task');
+      }
       // send noti to staff
       await this.notificationService.createNotification({
         user_id: booking_land.staff_id,
@@ -499,8 +512,9 @@ export class RequestsService implements IRequestService {
       });
       // send mail to user
       return new_request;
-    } catch (error) {}
-
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   /**
