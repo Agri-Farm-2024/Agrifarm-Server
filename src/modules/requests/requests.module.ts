@@ -11,7 +11,6 @@ import { MaterialsModule } from '../materials/materials.module';
 import { ServicesModule } from '../servicesPackage/servicesPackage.module';
 import { BookingsModule } from '../bookings/bookings.module';
 
-
 @Module({
   controllers: [RequestsController],
   providers: [RequestsService],

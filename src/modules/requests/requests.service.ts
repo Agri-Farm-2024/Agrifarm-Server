@@ -31,10 +31,10 @@ import { NotificationType } from '../notifications/types/notification-type.enum'
 import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
 import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
 import { CreateRequestPurchaseDto } from './dto/create-request-puchase.dto';
-import { ServicePackage } from '../servicesPackage/entities/servicePackage.entity';
 import { ServicesService } from '../servicesPackage/servicesPackage.service';
 import { BookingsService } from '../bookings/bookings.service';
 import { ServiceSpecific } from '../servicesPackage/entities/serviceSpecific.entity';
+import { Payload } from '../auths/types/payload.type';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -540,4 +540,6 @@ export class RequestsService implements IRequestService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  async createRequestTechnicalSupport(data, user: Payload): Promise<any> {}
 }
