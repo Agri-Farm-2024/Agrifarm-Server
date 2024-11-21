@@ -424,23 +424,69 @@ export class RequestsService implements IRequestService {
     }
   }
 
+
+  //create requestpurchase hasvest
+  async createRequestPurchaseharvest(service_specific_id: string) {
+    try {
+      //check request purchase for service is exist
+      const request_purchase_hasvest_exist = await this.requestEntity.findOne({
+        where: {
+          service_specific_id: service_specific_id,
+          type: RequestType.product_puchase_harvest,
+        },
+      });
+      if (request_purchase_hasvest_exist) {
+        throw new BadRequestException('Request purchase already exist');
+      }
+      //check service specific have service package have puchase
+      const service_specific_detail: ServiceSpecific =
+        await this.servicePackageService.getDetailServiceSpecific(
+          service_specific_id,
+        );
+      if (!service_specific_detail) {
+        throw new BadRequestException('Service specific not found');
+      }
+
+      //create new request purchase
+      const new_request = await this.requestEntity.save({
+        service_specific_id: service_specific_id,
+        type: RequestType.product_puchase_harvest,
+
   async createRequestReportLand(booking_land: BookingLand): Promise<any> {
     try {
       // Create a new request
       const new_request = await this.requestEntity.save({
         booking_land_id: booking_land.booking_id,
         type: RequestType.report_land,
+
       });
       if (!new_request) {
         throw new BadRequestException('Unable to create request');
       }
       // create task for the request
+
+      const new_task = await this.taskService.createTaskAuto(
+        new_request.request_id,
+        service_specific_detail.process_technical_specific.expert_id,
+      );
+      //update status request
+      await this.updateRequestStatus(
+        new_request.request_id,
+        RequestStatus.assigned,
+
       const new_task = await this.taskService.createTask(
         new_request.request_id,
+
       );
       if (!new_task) {
         throw new BadRequestException('Unable to create task');
       }
+
+      return new_request;
+    } catch (error) {
+      this.loggerService.error(error.message, error.stack);
+    }
+
       // send noti to staff
       await this.notificationService.createNotification({
         user_id: booking_land.staff_id,
@@ -454,6 +500,7 @@ export class RequestsService implements IRequestService {
       // send mail to user
       return new_request;
     } catch (error) {}
+
   }
 
   /**
@@ -516,6 +563,15 @@ export class RequestsService implements IRequestService {
               -item.quantity,
             );
           }
+        }
+
+        // check condition create request purchase harvest
+        if (
+          request.type === RequestType.product_purchase &&
+          data.status === RequestStatus.completed
+        ) {
+          //create new request purchase hasvest
+          await this.createRequestPurchaseharvest(request.service_specific_id);
         }
         // Check condition of report land request
         if (

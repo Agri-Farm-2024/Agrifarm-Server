@@ -6,4 +6,6 @@ export enum NotificationTitleEnum {
   booking_completed = 'Thanh toán thành công cho yêu cầu thuê đất',
   booking_pending_payment = 'Thanh toán cho yêu cầu thuê đất đang chờ xử lý',
   create_task = 'Bạn có một nhiệm vụ mới',
+  report_purchase = 'Báo cáo kết quả kiểm định trước thu hoạch',
+  report_harvest = 'Báo cáo kết quả thu hoạch',
 }

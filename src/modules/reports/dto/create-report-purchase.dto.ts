@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 import { QualityPurchaseType } from '../types/quality-type-purchase.enum';
+import { ReportURLDTO } from './create-report.dto';
 
 export class CreateReportPurchaseDto {
   @ApiProperty({
@@ -44,4 +45,12 @@ export class CreateReportPurchaseDto {
   })
   @IsOptional()
   price_purchase_per_kg: number;
+
+  @ApiProperty({
+    description: 'the url of report',
+    required: false,
+    type: [ReportURLDTO],
+  })
+  @IsOptional()
+  url: ReportURLDTO[];
 }
