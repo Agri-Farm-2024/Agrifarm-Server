@@ -570,6 +570,7 @@ export class BookingsService implements IBookingService {
         relations: {
           land: true,
           land_renter: true,
+          staff: true,
         },
         where: {
           booking_id: bookingId,
@@ -708,6 +709,9 @@ export class BookingsService implements IBookingService {
           user_mail: user.email,
           expired_schedule_at:
             update_booking.expired_schedule_at.toLocaleDateString(),
+          staff_full_name: booking_exist.staff.full_name,
+          staff_mail: booking_exist.staff.email,
+          staff_phone: booking_exist.staff.full_name,
         },
       );
       // send notification to land renter
