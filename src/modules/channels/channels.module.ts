@@ -14,5 +14,6 @@ import { JwtModule } from '@nestjs/jwt';
     TypeOrmModule.forFeature([Channel, ChannelJoin, ChannelMessage]),
     JwtModule,
   ],
+  exports: [ChannelsService],
 })
 export class ChannelsModule {}

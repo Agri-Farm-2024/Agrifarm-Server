@@ -1,4 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  ForbiddenException,
+  forwardRef,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoggerService } from 'src/logger/logger.service';
 import { Channel } from './entities/channel.entity';
@@ -6,9 +13,10 @@ import { Repository } from 'typeorm';
 import { ChannelJoin } from './entities/channelJoin.entity';
 import { ChannelMessage } from './entities/channelMessage.entity';
 import { IChannelService } from './interfaces/IChannelService.interface';
-import { Payload } from '../auths/types/payload.type';
 import { CreateMessageDTO } from './dto/create-message.dto';
 import { ChannelStatus } from './types/channel-status.enum';
+import { EventGateway } from 'src/sockets/event.gateway';
+import { SocketEvent } from 'src/sockets/types/socket-event.enum';
 
 @Injectable()
 export class ChannelsService implements IChannelService {
@@ -24,6 +32,9 @@ export class ChannelsService implements IChannelService {
 
     @InjectRepository(ChannelMessage)
     private readonly channelMessageRepository: Repository<ChannelMessage>,
+
+    @Inject(forwardRef(() => EventGateway))
+    private readonly eventGateway: EventGateway,
   ) {}
 
   /**
@@ -33,12 +44,12 @@ export class ChannelsService implements IChannelService {
    * @returns
    */
 
-  async getListChannelByUser(user: Payload): Promise<any> {
+  async getListChannelByUser(user_id: string): Promise<any> {
     try {
       const channels = await this.channelRepository.find({
         where: {
           joins: {
-            user_join_id: user.user_id,
+            user_join_id: user_id,
           },
         },
       });
@@ -49,7 +60,15 @@ export class ChannelsService implements IChannelService {
     }
   }
 
-  async createMessage(data: CreateMessageDTO, user: Payload): Promise<any> {
+  /**
+   * create message
+   * @function createMessage
+   * @param data
+   * @param user
+   * @returns
+   */
+
+  async createMessage(data: CreateMessageDTO, user_id: string): Promise<any> {
     try {
       // Check channel is exist
       const channel_exist = await this.channelRepository.findOne({
@@ -69,7 +88,7 @@ export class ChannelsService implements IChannelService {
       const is_join = await this.channelJoinRepository.findOne({
         where: {
           channel_id: data.message_to_id,
-          user_join_id: user.user_id,
+          user_join_id: user_id,
         },
       });
       if (!is_join) {
@@ -78,12 +97,57 @@ export class ChannelsService implements IChannelService {
       // Create message
       const message = await this.channelMessageRepository.save({
         ...data,
-        user_id: user.user_id,
+        user_id: user_id,
       });
+      // send socket message to channel
+      await this.eventGateway.sendEventToGroup(
+        data.message_to_id,
+        message,
+        SocketEvent.message,
+      );
       return message;
     } catch (error) {
       this.logger.error(error.message);
       throw error;
+    }
+  }
+
+  /**
+   * get list message by channel id
+   * @function getListMessageByChannelId
+   * @param channel_id
+   * @param user
+   * @returns
+   */
+
+  async getListMessageByChannelId(
+    channel_id: string,
+    user_id: string,
+  ): Promise<any> {
+    try {
+      // check user is in channel
+      const is_join = await this.channelJoinRepository.findOne({
+        where: {
+          channel_id: channel_id,
+          user_join_id: user_id,
+        },
+      });
+      if (!is_join) {
+        throw new ForbiddenException('You are not in channel');
+      }
+      // get list message
+      const messages = await this.channelMessageRepository.find({
+        where: {
+          message_to_id: channel_id,
+        },
+      });
+      return messages;
+    } catch (error) {
+      this.loggerService.error(error.message, error.stack);
+      if (error instanceof ForbiddenException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
     }
   }
 }

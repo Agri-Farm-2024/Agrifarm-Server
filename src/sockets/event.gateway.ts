@@ -11,6 +11,8 @@ import { SocketEvent } from './types/socket-event.enum';
 import { LoggerService } from 'src/logger/logger.service';
 import { UsersService } from 'src/modules/users/users.service';
 import { User } from 'src/modules/users/entities/user.entity';
+import { ChannelsService } from 'src/modules/channels/channels.service';
+import { Channel } from 'src/modules/channels/entities/channel.entity';
 
 @WebSocketGateway({
   cors: {
@@ -22,7 +24,10 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(EventGateway.name);
   constructor(
     private readonly loggerService: LoggerService,
+
     private readonly userService: UsersService,
+
+    private readonly channelService: ChannelsService,
   ) {}
 
   @WebSocketServer()
@@ -49,6 +54,12 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // Join the room with the user role
       const user: User = await this.userService.findUserById(userId);
       client.join(`${user.role}`);
+      // Join the room of channel with the user role
+      const list_channel_by_user: Channel[] =
+        await this.channelService.getListChannelByUser(userId);
+      list_channel_by_user.forEach((channel) => {
+        client.join(`${channel.channel_id}`);
+      });
     });
   }
 
