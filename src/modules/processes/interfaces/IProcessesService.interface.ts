@@ -6,6 +6,8 @@ import { ProcessSpecificStatus } from '../types/processSpecific-status.enum';
 import { UPdateProcessSpecificDto } from '../dto/update-process-specific.dto';
 import { Payload } from 'src/modules/auths/types/payload.type';
 import { UpdateProcessSpecificStatusDto } from '../dto/update-process-specific-status.dto';
+import { UpdateProcessStandardsDto } from '../dto/update-process-standard.dto';
+import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
 
 export interface IProcessesService {
   createProcessStandard(data: CreateProcessDto, expert: any): Promise<any>;
@@ -21,7 +23,20 @@ export interface IProcessesService {
     updateDto: UpdateProcessStandardDto,
   ): Promise<any>;
 
+  updateProcessStandard(
+    process_technical_standard_id: string,
+    data: UpdateProcessStandardsDto,
+  ): Promise<any>
+
+  updateStatus(
+    plant_season_id: string,
+    status: ProcessTechnicalStandardStatus,
+  ): Promise<any>;
+
+
   removeProcessStandard(id: string): Promise<any>;
+
+  createProcessSpecific(service_specific: ServiceSpecific): Promise<any>;
 
   getListProcessSpecific(
     pagination: PaginationParams,

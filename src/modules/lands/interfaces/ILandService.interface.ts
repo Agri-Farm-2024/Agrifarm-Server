@@ -17,6 +17,9 @@ export interface ILandService {
 
   updateLand(data: any, id: string): any;
 
+  updateLandStatus(id: string, status: LandStatus): Promise<any>;
+  
+
   getLandType(): any;
 
   createLandType(data: any): any;

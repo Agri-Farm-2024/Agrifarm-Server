@@ -11,4 +11,10 @@ export interface ITaskService {
   ): Promise<any>;
 
   getTasksByUserId(user_id: string, status: RequestStatus): Promise<any>;
+
+  startTask(task_id: string, user: Payload): Promise<any>;
+
+  approveTask(task_id: string, user: Payload): Promise<any>;
+
+  getDetailTask(task_id: string): Promise<any>;
 }
