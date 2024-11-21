@@ -567,6 +567,10 @@ export class BookingsService implements IBookingService {
     try {
       // check booking exist
       const booking_exist = await this.bookingRepository.findOne({
+        relations: {
+          land: true,
+          land_renter: true,
+        },
         where: {
           booking_id: bookingId,
         },
@@ -727,7 +731,7 @@ export class BookingsService implements IBookingService {
   }
 
   /**
-   * @function updateStatusToPendingSigṇ
+   * @function updateStatusToPendingPayment
    * @param booking_exist
    * @param data
    * @param user
