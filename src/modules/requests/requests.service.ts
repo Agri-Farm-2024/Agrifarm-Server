@@ -31,10 +31,10 @@ import { NotificationType } from '../notifications/types/notification-type.enum'
 import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
 import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
 import { CreateRequestPurchaseDto } from './dto/create-request-puchase.dto';
-import { ServicePackage } from '../servicesPackage/entities/servicePackage.entity';
 import { ServicesService } from '../servicesPackage/servicesPackage.service';
 import { BookingsService } from '../bookings/bookings.service';
 import { ServiceSpecific } from '../servicesPackage/entities/serviceSpecific.entity';
+import { Payload } from '../auths/types/payload.type';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -361,6 +361,13 @@ export class RequestsService implements IRequestService {
     }
   }
 
+  /**
+   * Create request purchase call by schedule job
+   * @function createRequestPurchaseAuto
+   * @param createRequestPurchase
+   * @returns
+   */
+
   //create reuqest purchase
   async createRequestPurchaseAuto(
     createRequestPurchase: CreateRequestPurchaseDto,
@@ -417,6 +424,7 @@ export class RequestsService implements IRequestService {
     }
   }
 
+
   //create requestpurchase hasvest
   async createRequestPurchaseharvest(service_specific_id: string) {
     try {
@@ -443,11 +451,20 @@ export class RequestsService implements IRequestService {
       const new_request = await this.requestEntity.save({
         service_specific_id: service_specific_id,
         type: RequestType.product_puchase_harvest,
+
+  async createRequestReportLand(booking_land: BookingLand): Promise<any> {
+    try {
+      // Create a new request
+      const new_request = await this.requestEntity.save({
+        booking_land_id: booking_land.booking_id,
+        type: RequestType.report_land,
+
       });
       if (!new_request) {
         throw new BadRequestException('Unable to create request');
       }
       // create task for the request
+
       const new_task = await this.taskService.createTaskAuto(
         new_request.request_id,
         service_specific_detail.process_technical_specific.expert_id,
@@ -456,18 +473,38 @@ export class RequestsService implements IRequestService {
       await this.updateRequestStatus(
         new_request.request_id,
         RequestStatus.assigned,
+
+      const new_task = await this.taskService.createTask(
+        new_request.request_id,
+
       );
       if (!new_task) {
         throw new BadRequestException('Unable to create task');
       }
+
       return new_request;
     } catch (error) {
       this.loggerService.error(error.message, error.stack);
     }
+
+      // send noti to staff
+      await this.notificationService.createNotification({
+        user_id: booking_land.staff_id,
+        title: NotificationTitleEnum.create_report_land,
+        content: NotificationContentEnum.create_report_land(
+          booking_land.land.name,
+        ),
+        component_id: new_request.request_id,
+        type: NotificationType.request,
+      });
+      // send mail to user
+      return new_request;
+    } catch (error) {}
+
   }
 
   /**
-   * This function is used to update request to completed or rejected by staff or manager
+   * function is used to update request to completed or rejected by staff or manager
    * @function confirmRequest
    * @param request_id
    * @param data
@@ -560,35 +597,5 @@ export class RequestsService implements IRequestService {
     }
   }
 
-  async createRequestReportLand(booking_land: BookingLand): Promise<any> {
-    try {
-      // Create a new request
-      const new_request = await this.requestEntity.save({
-        booking_land_id: booking_land.booking_id,
-        type: RequestType.report_land,
-      });
-      if (!new_request) {
-        throw new BadRequestException('Unable to create request');
-      }
-      // create task for the request
-      const new_task = await this.taskService.createTask(
-        new_request.request_id,
-      );
-      if (!new_task) {
-        throw new BadRequestException('Unable to create task');
-      }
-      // send noti to staff
-      await this.notificationService.createNotification({
-        user_id: booking_land.staff_id,
-        title: NotificationTitleEnum.create_report_land,
-        content: NotificationContentEnum.create_report_land(
-          booking_land.land.name,
-        ),
-        component_id: new_request.request_id,
-        type: NotificationType.request,
-      });
-      // send mail to user
-      return new_request;
-    } catch (error) {}
-  }
+  async createRequestTechnicalSupport(data, user: Payload): Promise<any> {}
 }

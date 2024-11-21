@@ -1,14 +1,8 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ChannelStatus } from '../types/channel-status.enum';
+import { ChannelJoin } from './channelJoin.entity';
+import { ChannelMessage } from './channelMessage.entity';
 
 @Entity('channels')
 export class Channel extends AbstractEntity {
@@ -35,4 +29,10 @@ export class Channel extends AbstractEntity {
     default: ChannelStatus.active,
   })
   status: ChannelStatus;
+  // Relation
+  @OneToMany(() => ChannelJoin, (channelJoin) => channelJoin.channel)
+  joins: ChannelJoin[];
+
+  @OneToMany(() => ChannelMessage, (channelMessage) => channelMessage.channel)
+  messages: ChannelMessage[];
 }

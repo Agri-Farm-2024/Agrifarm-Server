@@ -1,26 +1,42 @@
-import { Injectable } from '@nestjs/common';
-import { CreateChannelDto } from './dto/create-channel.dto';
-import { UpdateChannelDto } from './dto/update-channel.dto';
+import { Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { LoggerService } from 'src/logger/logger.service';
+import { Channel } from './entities/channel.entity';
+import { Repository } from 'typeorm';
+import { ChannelJoin } from './entities/channelJoin.entity';
+import { ChannelMessage } from './entities/channelMessage.entity';
+import { IChannelService } from './interfaces/IChannelService.interface';
+import { Payload } from '../auths/types/payload.type';
 
 @Injectable()
-export class ChannelsService {
-  create(createChannelDto: CreateChannelDto) {
-    return 'This action adds a new channel';
-  }
+export class ChannelsService implements IChannelService {
+  private readonly logger = new Logger(ChannelsService.name);
+  constructor(
+    private readonly loggerService: LoggerService,
 
-  findAll() {
-    return `This action returns all channels`;
-  }
+    @InjectRepository(Channel)
+    private readonly channelRepository: Repository<Channel>,
 
-  findOne(id: number) {
-    return `This action returns a #${id} channel`;
-  }
+    @InjectRepository(ChannelJoin)
+    private readonly channelJoinRepository: Repository<ChannelJoin>,
 
-  update(id: number, updateChannelDto: UpdateChannelDto) {
-    return `This action updates a #${id} channel`;
-  }
+    @InjectRepository(ChannelMessage)
+    private readonly channelMessageRepository: Repository<ChannelMessage>,
+  ) {}
 
-  remove(id: number) {
-    return `This action removes a #${id} channel`;
+  async getListChannelByUser(user: Payload): Promise<any> {
+    try {
+      const channels = await this.channelRepository.find({
+        where: {
+          joins: {
+            user_join_id: user.user_id,
+          },
+        },
+      });
+      return channels;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw error;
+    }
   }
 }

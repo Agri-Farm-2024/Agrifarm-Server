@@ -5,10 +5,9 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   Query,
-  Logger,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { RequestsService } from './requests.service';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
@@ -86,5 +85,13 @@ export class RequestsController {
   @Post('/createRequestMaterial')
   async createRequestMaterial(@Body() data: CreateRequestMaterialDto) {
     return await this.requestsService.createRequestMaterial(data);
+  }
+
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.land_renter)
+  @Post('/createRequestTechnicalSupport')
+  async createRequestTechnicalSupport(@Body() data: any, @Request() req: any) {
+    const user = req['user'];
+    return await this.requestsService.createRequestTechnicalSupport(data, user);
   }
 }

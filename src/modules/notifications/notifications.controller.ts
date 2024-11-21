@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request, Patch } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { ApiTags } from '@nestjs/swagger';
 import {
@@ -26,5 +26,12 @@ export class NotificationsController {
       user.user_id,
       pagination,
     );
+  }
+
+  @Patch('/seen')
+  @UseGuards(AuthGuard)
+  async seen(@Request() req: any) {
+    const user: Payload = req['user'];
+    return await this.notificationsService.seen(user.user_id);
   }
 }

@@ -567,6 +567,11 @@ export class BookingsService implements IBookingService {
     try {
       // check booking exist
       const booking_exist = await this.bookingRepository.findOne({
+        relations: {
+          land: true,
+          land_renter: true,
+          staff: true,
+        },
         where: {
           booking_id: bookingId,
         },
@@ -637,11 +642,11 @@ export class BookingsService implements IBookingService {
         type: NotificationType.booking_land,
         component_id: booking_exist.booking_id,
       });
-
+      // config update
+      booking_exist.status = BookingStatus.pending_contract;
       // update status booking to pending contract
       const update_booking = await this.bookingRepository.save({
         ...booking_exist,
-        status: BookingStatus.pending_contract,
       });
       return update_booking;
     } catch (error) {
@@ -677,13 +682,14 @@ export class BookingsService implements IBookingService {
       if (booking_exist.status !== BookingStatus.pending_contract) {
         throw new BadRequestException('Status booking is not pending contract');
       }
+      // config update
+      (booking_exist.expired_schedule_at = new Date(
+        new Date().getTime() + 48 * 60 * 60 * 1000,
+      )),
+        (booking_exist.status = BookingStatus.pending_sign);
       // update status booking to pending sign
       const update_booking = await this.bookingRepository.save({
         ...booking_exist,
-        status: BookingStatus.pending_contract,
-        expired_schedule_at: new Date(
-          new Date().getTime() + 48 * 60 * 60 * 1000,
-        ),
       });
       // Send mail to land renter and make expred schedule after 48h
       await this.mailService.sendMail(
@@ -700,10 +706,13 @@ export class BookingsService implements IBookingService {
           price_per_month: booking_exist.price_per_month,
           price_deposit: booking_exist.price_deposit,
           total_price: this.getTotalPriceBooking(booking_exist),
-          staus: 'Chờ ký tên',
+          status: 'Chờ ký tên',
           user_mail: user.email,
           expired_schedule_at:
             update_booking.expired_schedule_at.toLocaleDateString(),
+          staff_full_name: booking_exist.staff.full_name,
+          staff_mail: booking_exist.staff.email,
+          staff_phone: booking_exist.staff.full_name,
         },
       );
       // send notification to land renter
@@ -727,7 +736,7 @@ export class BookingsService implements IBookingService {
   }
 
   /**
-   * @function updateStatusToPendingSigṇ
+   * @function updateStatusToPendingPayment
    * @param booking_exist
    * @param data
    * @param user
@@ -781,13 +790,14 @@ export class BookingsService implements IBookingService {
         type: NotificationType.booking_land,
         component_id: booking_exist.booking_id,
       });
+      // config update
+      booking_exist.status = BookingStatus.pending_payment;
+      booking_exist.contract_image = data.contract_image;
+      booking_exist.payment_frequency = data.payment_frequency;
+      booking_exist.signed_at = new Date();
       // update status booking to pending payment
       await this.bookingRepository.save({
         ...booking_exist,
-        status: BookingStatus.pending_payment,
-        contract_image: data.contract_image,
-        payment_frequency: data.payment_frequency,
-        signed_at: new Date(),
       });
       // Create transaction for payment
       const transaction =
@@ -832,10 +842,11 @@ export class BookingsService implements IBookingService {
       if (booking_exist.status !== BookingStatus.pending_payment) {
         throw new BadRequestException('Status booking is not pending payment');
       }
+      // config update
+      booking_exist.status = BookingStatus.completed;
       // update status booking to completed
       const update_booking = await this.bookingRepository.save({
         ...booking_exist,
-        status: BookingStatus.completed,
       });
       this.loggerService.log(
         `Booking ${transaction.booking_land_id} is completed`,
@@ -855,7 +866,7 @@ export class BookingsService implements IBookingService {
           price_per_month: booking_exist.price_per_month,
           price_deposit: booking_exist.price_deposit,
           total_price: this.getTotalPriceBooking(booking_exist),
-          staus: 'Đã hoàn thành',
+          status: 'Đã hoàn thành',
           user_mail: booking_exist.land_renter.email,
           transaction_code: transaction.transaction_code,
           transaction_price: transaction.total_price,
@@ -950,11 +961,12 @@ export class BookingsService implements IBookingService {
       if (!data.reason_for_reject) {
         throw new BadRequestException('Reason for reject is required');
       }
+      // config update
+      booking_exist.status = BookingStatus.rejected;
+      booking_exist.reason_for_reject = data.reason_for_reject;
       // update status booking to rejected
       const update_booking = await this.bookingRepository.save({
         ...booking_exist,
-        status: BookingStatus.rejected,
-        reason_for_reject: data.reason_for_reject,
       });
       // Send mail to land renter
       // Send notification to land renter
@@ -1036,7 +1048,7 @@ export class BookingsService implements IBookingService {
       //     price_per_month: booking.price_per_month,
       //     price_deposit: booking.price_deposit,
       //     total_price: this.getTotalPriceBooking(booking),
-      //     staus: 'Hết hạn',
+      //     status: 'Hết hạn',
       //     user_mail: booking.land_renter.email,
       //   },
       // );
@@ -1076,7 +1088,7 @@ export class BookingsService implements IBookingService {
       //     price_per_month: booking.price_per_month,
       //     price_deposit: booking.price_deposit,
       //     total_price: this.getTotalPriceBooking(booking),
-      //     staus: 'Hết hạn',
+      //     status: 'Hết hạn',
       //     user_mail: booking.land_renter.email,
       //   },
       // );
@@ -1156,6 +1168,14 @@ export class BookingsService implements IBookingService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  /**
+   * update booking call by report service
+   * @function updateBookingByReport
+   * @param booking_id
+   * @param data
+   * @returns
+   */
 
   async updateBookingByReport(booking_id: string, data: any): Promise<any> {
     try {

@@ -2,20 +2,19 @@ import { Entity, Column, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { Land } from 'src/modules/lands/entities/land.entity';
 import { Request } from 'src/modules/requests/entities/request.entity';
-import { DinaryStage } from 'src/modules/dinaries/entities/dinaryStage.entity';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { Task } from 'src/modules/tasks/entities/task.entity';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
-import { Extend } from 'src/modules/extends/entities/extend.entity';
 import { Order } from 'src/modules/orders/entities/order.entity';
 import { UserStatus } from '../types/user-status.enum';
 import { UserRole } from '../types/user-role.enum';
 import { ProcessStandard } from 'src/modules/processes/entities/standards/processStandard.entity';
 import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
-import { Report } from 'src/modules/reports/entities/report.entity';
 import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
 import { BookingMaterial } from 'src/modules/materials/entities/booking-material.entity';
 import { ProcessSpecific } from 'src/modules/processes/entities/specifics/processSpecific.entity';
+import { ChannelJoin } from 'src/modules/channels/entities/channelJoin.entity';
+import { ChannelMessage } from 'src/modules/channels/entities/channelMessage.entity';
 
 @Entity('users') // Maps this class to the 'users' table in the database
 export class User extends AbstractEntity {
@@ -106,4 +105,10 @@ export class User extends AbstractEntity {
 
   @OneToMany(() => ProcessSpecific, (processSpecific) => processSpecific.expert)
   expert_process_technical_specific: ProcessSpecific[];
+
+  @OneToMany(() => ChannelJoin, (channelJoin) => channelJoin.user)
+  channels_join: ChannelJoin[];
+
+  @OneToMany(() => ChannelMessage, (channelMessage) => channelMessage.user)
+  messages_sended: ChannelMessage[];
 }
