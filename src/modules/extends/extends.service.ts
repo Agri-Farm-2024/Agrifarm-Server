@@ -124,6 +124,7 @@ export class ExtendsService implements IExtendService {
       // get detail
       const new_extend = await this.extendRepository.save({
         booking_land_id: booking_previous.booking_id,
+        time_start: booking_previous.time_end,
         status: ExtendStatus.pending,
       });
       // send notification to user
@@ -164,6 +165,9 @@ export class ExtendsService implements IExtendService {
       });
       if (!extend) {
         throw new BadRequestException('Extend is not found');
+      }
+      // Check conditoin update to pending_contract
+      if (data.status === ExtendStatus.pending_contract) {
       }
       // check condition update to pending sign
       if (data.status === ExtendStatus.pending_sign) {

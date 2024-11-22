@@ -5,7 +5,11 @@ import { Payload } from 'src/modules/auths/types/payload.type';
 export interface ILandService {
   createLand(data: any): any;
 
-  getListByLandrenter(status: LandStatus, pagination: PaginationParams): any;
+  getListByLandrenter(
+    status: LandStatus,
+    pagination: PaginationParams,
+    land_type_id: string,
+  ): any;
 
   getListLandByStaff(
     status: LandStatus,
@@ -18,7 +22,6 @@ export interface ILandService {
   updateLand(data: any, id: string): any;
 
   updateLandStatus(id: string, status: LandStatus): Promise<any>;
-  
 
   getLandType(): any;
 
