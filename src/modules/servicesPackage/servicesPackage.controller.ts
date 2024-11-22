@@ -7,6 +7,7 @@ import {
   UseGuards,
   Request,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { ServicesService } from './servicesPackage.service';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
@@ -21,6 +22,7 @@ import {
 } from 'src/common/decorations/pagination.decoration';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { ServiceSpecificStatus } from './types/service-specific-status.enum';
+import { UpdateStatusUsedServiceSpecificDTO } from './dto/update-status-used-service-specific.dto';
 
 @ApiTags('Service')
 @Controller('services')
@@ -72,5 +74,19 @@ export class ServicesController {
   @Delete('/deleteServicePackage/:id')
   async deleteServicePackage(id: string) {
     return this.servicesService.deleteServicePackage(id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.staff)
+  @Patch('/updateToUsedServiceSpecific/:service_specific_id')
+  async updateToUsedServiceSpecific(
+    @Body() data: UpdateStatusUsedServiceSpecificDTO,
+    @Request() req: any,
+    @Query('service_specific_id') service_specific_id: string,
+  ) {
+    return this.servicesService.updateToUsedServiceSpecific(
+      service_specific_id,
+      data.contract_image,
+    );
   }
 }

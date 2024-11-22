@@ -28,6 +28,7 @@ import { BookingsService } from '../bookings/bookings.service';
 import { BookingLand } from '../bookings/entities/bookingLand.entity';
 import { Payload } from '../auths/types/payload.type';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
+import { UserRole } from '../users/types/user-role.enum';
 
 @Injectable()
 export class ServicesService implements IService {
@@ -105,19 +106,28 @@ export class ServicesService implements IService {
     status: ServiceSpecificStatus,
   ): Promise<any> {
     try {
-      const filter: any = {
-        landrenter_id: user.user_id,
-      };
+      const filter: any = {};
+
+      if (user.role === UserRole.land_renter) {
+        filter.landrenter_id = user.user_id;
+      }
+
+      if (user.role === UserRole.staff) {
+        filter.booking_land = {
+          staff_id: user.user_id,
+        };
+      }
+
       if (status) {
         filter.status = status;
       }
       const [services, total_count] = await Promise.all([
-        this.servicePackageRepo.find({
+        this.serviceSpecificRepo.find({
           where: filter,
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
         }),
-        this.servicePackageRepo.count({
+        this.serviceSpecificRepo.count({
           where: filter,
         }),
       ]);
@@ -308,17 +318,21 @@ export class ServicesService implements IService {
       if (!service_specific) {
         throw new BadRequestException('Service specific does not exist');
       }
+      // check default status
+      if (service_specific.status !== ServiceSpecificStatus.pending_payment) {
+        throw new BadRequestException(
+          'Service specific is not pending payment',
+        );
+      }
       // update service specific status
       await this.serviceSpecificRepo.update(
         {
           service_specific_id: transaction.service_specific_id,
         },
         {
-          status: ServiceSpecificStatus.used,
+          status: ServiceSpecificStatus.pending_sign,
         },
       );
-      // create process specific
-      await this.processService.createProcessSpecific(service_specific);
       // send email to user
       // send notification to user
       return transaction;
@@ -397,6 +411,44 @@ export class ServicesService implements IService {
           },
         );
       });
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  /**
+   * Update service package for manager upload contract image
+   * @function updateToUsedServiceSpecific
+   * @param service_specific_id
+   * @param updateServicePackageDTO
+   */
+
+  async updateToUsedServiceSpecific(
+    service_specific_id: string,
+    contract_image: string,
+  ): Promise<any> {
+    try {
+      // get detail service specific
+      const service_specific = await this.serviceSpecificRepo.findOne({
+        where: {
+          service_specific_id,
+        },
+      });
+      if (!service_specific) {
+        throw new BadRequestException('Service specific does not exist');
+      }
+      // check default status
+      if (service_specific.status !== ServiceSpecificStatus.pending_sign) {
+        throw new BadRequestException('Service specific is not pending sign');
+      }
+      // update contract image
+      service_specific.contract_image = contract_image;
+      const new_service = await this.serviceSpecificRepo.save(service_specific);
+      // create process specific
+      await this.processService.createProcessSpecific(service_specific);
+      // send email to user
+      // send notification to user
+      return new_service;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
