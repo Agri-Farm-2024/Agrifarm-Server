@@ -4,4 +4,7 @@ export enum CronTime {
 
   // every 10 minutes
   check_transaction_is_expired = '0 */10 * * * *',
+
+  // every 12 hours a day
+  // check_service_is_expired = '0 0 */ 12 * *',
 }

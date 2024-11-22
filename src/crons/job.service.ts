@@ -34,6 +34,8 @@ export class JobService implements ICronJob {
 
   @Cron(CronTime.check_transaction_is_expired)
   checkTransactionIsExpired(): Promise<void> {
+    this.logger.log('Check transaction expire is running');
+    this.loggerService.log('Check transaction expire is running');
     throw new Error('Method not implemented.');
   }
 }

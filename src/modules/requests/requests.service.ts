@@ -559,6 +559,9 @@ export class RequestsService implements IRequestService {
       if (request.status !== RequestStatus.pending_approval) {
         throw new BadRequestException('Request is not pending approval');
       }
+      /**
+       * Condition to check type and status of request
+       */
       if (data.status === RequestStatus.rejected) {
         // check is reason provided
         if (!data.reason_for_reject) {
