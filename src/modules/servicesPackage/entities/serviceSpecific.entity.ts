@@ -57,6 +57,9 @@ export class ServiceSpecific extends AbstractEntity {
   @Column()
   time_end: Date;
 
+  @Column({ nullable: true })
+  contract_image: string;
+
   @Column({
     type: 'enum',
     enum: ServiceSpecificStatus,
