@@ -40,13 +40,6 @@ export class CreateReportPurchaseDto {
   mass_plant_expect: number;
 
   @ApiProperty({
-    description: ' the price of plant ',
-    example: 1000,
-  })
-  @IsOptional()
-  price_purchase_per_kg: number;
-
-  @ApiProperty({
     description: 'the url of report',
     required: false,
     type: [ReportURLDTO],

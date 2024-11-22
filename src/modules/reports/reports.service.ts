@@ -155,9 +155,8 @@ export class ReportsService implements IReportService {
       }
 
       if (
-        task_exist.request.service_specific.service_package.purchase === true &&
         task_exist.request.service_specific.service_package.process_of_plant ===
-          true
+        true
       ) {
         // create a new instance of the Report entity
         const new_report = await this.reportRepository.save({
@@ -168,7 +167,8 @@ export class ReportsService implements IReportService {
           quality_plant: data.quality_plant,
           mass_plant: data.mass_plant,
           price_purchase_per_kg:
-            report_exist.task.request.service_specific.price_purchase_per_kg,
+            report_exist.task.request.service_specific.plant_season
+              .price_purchase_per_kg,
         });
         //crete url report
         if (data.url) {
@@ -181,33 +181,7 @@ export class ReportsService implements IReportService {
           }
         }
       }
-      if (
-        task_exist.request.service_specific.service_package.purchase ===
-          false &&
-        task_exist.request.service_specific.service_package.process_of_plant ===
-          true
-      ) {
-        // create a new instance of the Report entity
-        const new_report = await this.reportRepository.save({
-          task_id: task_id,
-          content: data.content,
-          quality_plant_expect: data.quality_plant_expect,
-          mass_plant_expect: data.mass_plant_expect,
-          quality_plant: data.quality_plant,
-          mass_plant: data.mass_plant,
-          price_purchase_per_kg: data.price_purchase_per_kg,
-        });
-        //crete url report
-        if (data.url) {
-          for (const url of data.url) {
-            await this.reportURLRepo.save({
-              report_id: new_report.report_id,
-              url_link: url.url_link,
-              url_type: url.url_type,
-            });
-          }
-        }
-      }
+      
       //update request status to pending_approval
       await this.requestService.updateRequestStatus(
         report_exist.task.request_id,

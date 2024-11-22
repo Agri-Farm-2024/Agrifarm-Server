@@ -558,53 +558,50 @@ export class RequestsService implements IRequestService {
       // Check status of request is pending approval
       if (request.status !== RequestStatus.pending_approval) {
         throw new BadRequestException('Request is not pending approval');
-      } else {
-        if (data.status === RequestStatus.rejected) {
-          // check is reason provided
-          if (!data.reason_for_reject) {
-            throw new BadRequestException('Reason is required');
-          }
+      }
+      if (data.status === RequestStatus.rejected) {
+        // check is reason provided
+        if (!data.reason_for_reject) {
+          throw new BadRequestException('Reason is required');
         }
-        // Check condition of material process specific stage to update quantity material
-        if (
-          request.type === RequestType.material_process_specfic_stage &&
-          data.status === RequestStatus.completed
-        ) {
-          //update quantity material
-          const process_specific_stage_detail: ProcessSpecificStage =
-            await this.processService.getDetailProcessSpecificStage(
-              request.process_technical_specific_stage_id,
-            );
-          if (!process_specific_stage_detail) {
-            throw new BadRequestException('Process specific stage not found');
-          }
-          //   //update quantity material
-          for (const item of process_specific_stage_detail.process_technical_specific_stage_material) {
-            await this.materialService.updateQuantityMaterial(
-              item.material_id,
-              -item.quantity,
-            );
-          }
+      }
+      // Check condition of material process specific stage to update quantity material
+      if (
+        request.type === RequestType.material_process_specfic_stage &&
+        data.status === RequestStatus.completed
+      ) {
+        //update quantity material
+        const process_specific_stage_detail: ProcessSpecificStage =
+          await this.processService.getDetailProcessSpecificStage(
+            request.process_technical_specific_stage_id,
+          );
+        if (!process_specific_stage_detail) {
+          throw new BadRequestException('Process specific stage not found');
         }
-
-        // check condition create request purchase harvest
-        if (
-          request.type === RequestType.product_purchase &&
-          data.status === RequestStatus.completed
-        ) {
-          //create new request purchase hasvest
-          await this.createRequestPurchaseharvest(request.service_specific_id);
-        }
-        // Check condition of report land request
-        if (
-          request.type === RequestType.report_land &&
-          data.status === RequestStatus.completed
-        ) {
-          // call boooking service to create transaction refund
-          await this.bookingService.createRefundBooking(
-            request.booking_land_id,
+        //   //update quantity material
+        for (const item of process_specific_stage_detail.process_technical_specific_stage_material) {
+          await this.materialService.updateQuantityMaterial(
+            item.material_id,
+            -item.quantity,
           );
         }
+      }
+
+      // check condition create request purchase harvest
+      if (
+        request.type === RequestType.product_purchase &&
+        data.status === RequestStatus.completed
+      ) {
+        //create new request purchase hasvest
+        await this.createRequestPurchaseharvest(request.service_specific_id);
+      }
+      // Check condition of report land request
+      if (
+        request.type === RequestType.report_land &&
+        data.status === RequestStatus.completed
+      ) {
+        // call boooking service to create transaction refund
+        await this.bookingService.createRefundBooking(request.booking_land_id);
 
         // update request status
         const updated_request = await this.requestEntity.save({
