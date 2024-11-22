@@ -617,7 +617,11 @@ export class ProcessesService implements IProcessesService {
               },
             },
             process_technical_specific_stage: {
-              process_technical_specific_stage_content: true,
+              process_technical_specific_stage_content: {
+                dinary_stage: {
+                  dinaries_link: true,
+                },
+              },
               process_technical_specific_stage_material: {
                 materialSpecific: true,
               },
@@ -820,7 +824,9 @@ export class ProcessesService implements IProcessesService {
         relations: {
           process_technical_specific_stage: {
             process_technical_specific_stage_content: {
-              dinary_stage: true,
+              dinary_stage: {
+                dinaries_link: true,
+              },
             },
           },
         },
