@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsUrl,
   IsDateString,
+  MinLength,
 } from 'class-validator';
 import { UserRole } from '../types/user-role.enum';
 
@@ -23,6 +24,10 @@ export class CreateUserDto {
   })
   @IsNotEmpty({ message: 'Full name is required' })
   full_name: string;
+
+  @IsNotEmpty({ message: 'Phone is required' })
+  @MinLength(10, { message: 'Phone must be at least 10 characters' })
+  phone: string;
 
   @ApiProperty({
     example: 'http://example.com/avatar.jpg',

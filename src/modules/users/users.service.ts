@@ -61,7 +61,7 @@ export class UsersService implements IUserService {
    * 4. Send a welcome email
    * @returns
    */
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<any> {
     // check user role
     if (createUserDto.role === UserRole.manager) {
       const manager_exist = await this.userRepository.findOne({
@@ -268,7 +268,6 @@ export class UsersService implements IUserService {
             full_name: user.full_name,
             email: user.email,
             phone: user.phone,
-            password: '********',
             created_at: user.created_at.toLocaleDateString(),
             status: 'Đã xác nhận',
           },
@@ -289,11 +288,7 @@ export class UsersService implements IUserService {
 
   async getListUserByRole(role: UserRole): Promise<any> {
     try {
-      const users = await this.userRepository.find({
-        where: {
-          role: role,
-        },
-      });
+      const users = await this.userRepository.count();
       return users;
     } catch (error) {
       throw new InternalServerErrorException(error.message);

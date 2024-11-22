@@ -8,6 +8,8 @@ import { BookingsModule } from '../bookings/bookings.module';
 import { RequestsModule } from '../requests/requests.module';
 import { MaterialsModule } from '../materials/materials.module';
 import { ServicesModule } from '../servicesPackage/servicesPackage.module';
+import { LandsModule } from '../lands/lands.module';
+import { OrdersModule } from '../orders/orders.module';
 
 @Module({
   controllers: [DashboardController],
@@ -20,6 +22,8 @@ import { ServicesModule } from '../servicesPackage/servicesPackage.module';
     RequestsModule,
     MaterialsModule,
     ServicesModule,
+    LandsModule,
+    OrdersModule,
   ],
 })
 export class DashboardModule {}

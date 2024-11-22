@@ -143,6 +143,15 @@ export class ExtendsService implements IExtendService {
     }
   }
 
+  /**
+   * Update extend to change status
+   * @function updateExtend
+   * @param data
+   * @param extend_id
+   * @param user
+   * @returns
+   */
+
   async updateExtend(
     data: UpdateExtendDTO,
     extend_id: string,
@@ -211,6 +220,13 @@ export class ExtendsService implements IExtendService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  /**
+   * update extend to complete call by transaction service when transaction is succeed
+   * @function
+   * @param extend_id
+   * @returns
+   */
 
   async updateExtendToComplete(extend_id: string): Promise<any> {
     try {

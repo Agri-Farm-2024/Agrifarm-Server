@@ -278,8 +278,9 @@ export class BookingsService implements IBookingService {
         this.bookingRepository.find({
           where: filter_condition,
           order: {
-            status: 'ASC',
+            created_at: 'DESC',
             updated_at: 'DESC',
+            status: 'ASC',
             extends: {
               created_at: 'ASC',
             },
@@ -378,8 +379,9 @@ export class BookingsService implements IBookingService {
         this.bookingRepository.find({
           where: filter_condition,
           order: {
-            status: 'ASC',
+            created_at: 'DESC',
             updated_at: 'DESC',
+            status: 'ASC',
             extends: {
               created_at: 'ASC',
             },
@@ -852,48 +854,51 @@ export class BookingsService implements IBookingService {
       this.loggerService.log(
         `Booking ${transaction.booking_land_id} is completed`,
       );
-      // Send mail to land renter
-      await this.mailService.sendMail(
-        booking_exist.land_renter.email,
-        SubjectMailEnum.paymentBooking,
-        TemplateMailEnum.paymentBooking,
-        {
-          full_name: booking_exist.land_renter.full_name,
-          land_id: booking_exist.land_id,
-          land_name: booking_exist.land.name,
-          time_start: booking_exist.time_start.toLocaleDateString(),
-          time_end: booking_exist.time_end.toLocaleDateString(),
-          total_month: booking_exist.total_month,
-          price_per_month: booking_exist.price_per_month,
-          price_deposit: booking_exist.price_deposit,
-          total_price: this.getTotalPriceBooking(booking_exist),
-          status: 'Đã hoàn thành',
-          user_mail: booking_exist.land_renter.email,
-          transaction_code: transaction.transaction_code,
-          transaction_price: transaction.total_price,
-          transaction_status: 'Thành công',
-        },
-      );
-      // Send notification to land renter
-      await this.notificationService.createNotification({
-        user_id: booking_exist.land_renter.user_id,
-        title: NotificationTitleEnum.booking_completed,
-        content: NotificationContentEnum.booking_completed(
-          booking_exist.land.name,
+
+      await Promise.all([
+        // Send mail to land renter
+        this.mailService.sendMail(
+          booking_exist.land_renter.email,
+          SubjectMailEnum.paymentBooking,
+          TemplateMailEnum.paymentBooking,
+          {
+            full_name: booking_exist.land_renter.full_name,
+            land_id: booking_exist.land_id,
+            land_name: booking_exist.land.name,
+            time_start: booking_exist.time_start.toLocaleDateString(),
+            time_end: booking_exist.time_end.toLocaleDateString(),
+            total_month: booking_exist.total_month,
+            price_per_month: booking_exist.price_per_month,
+            price_deposit: booking_exist.price_deposit,
+            total_price: this.getTotalPriceBooking(booking_exist),
+            status: 'Đã hoàn thành',
+            user_mail: booking_exist.land_renter.email,
+            transaction_code: transaction.transaction_code,
+            transaction_price: transaction.total_price,
+            transaction_status: 'Thành công',
+          },
         ),
-        type: NotificationType.booking_land,
-        component_id: booking_exist.booking_id,
-      });
-      // send notification to staff
-      await this.notificationService.createNotification({
-        user_id: booking_exist.staff_id,
-        title: NotificationTitleEnum.booking_completed,
-        content: NotificationContentEnum.booking_completed(
-          booking_exist.land.name,
-        ),
-        type: NotificationType.booking_land,
-        component_id: booking_exist.booking_id,
-      });
+        // Send notification to land renter
+        this.notificationService.createNotification({
+          user_id: booking_exist.land_renter.user_id,
+          title: NotificationTitleEnum.booking_completed,
+          content: NotificationContentEnum.booking_completed(
+            booking_exist.land.name,
+          ),
+          type: NotificationType.booking_land,
+          component_id: booking_exist.booking_id,
+        }),
+        // send notification to staff
+        this.notificationService.createNotification({
+          user_id: booking_exist.staff_id,
+          title: NotificationTitleEnum.booking_completed,
+          content: NotificationContentEnum.booking_completed(
+            booking_exist.land.name,
+          ),
+          type: NotificationType.booking_land,
+          component_id: booking_exist.booking_id,
+        }),
+      ]);
       return update_booking;
     } catch (error) {
       this.logger.error(error.message);
@@ -1203,6 +1208,15 @@ export class BookingsService implements IBookingService {
       if (error instanceof BadRequestException) {
         throw error;
       }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async getBookingsForDashboard(): Promise<any> {
+    try {
+      const bookings = await this.bookingRepository.count();
+      return bookings;
+    } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
   }

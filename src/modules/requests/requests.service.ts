@@ -121,6 +121,7 @@ export class RequestsService implements IRequestService {
           take: pagination.page_size,
           where: filter_condition,
           order: {
+            created_at: 'DESC',
             status: 'ASC',
           },
         }),
@@ -648,5 +649,31 @@ export class RequestsService implements IRequestService {
       }
       return new_request;
     } catch (error) {}
+  }
+
+  async getAllRequestForDashbaoard(): Promise<any> {
+    try {
+      const [total_request, total_in_progress, total_completed] =
+        await Promise.all([
+          this.requestEntity.count(),
+          this.requestEntity.count({
+            where: {
+              status: RequestStatus.in_progress,
+            },
+          }),
+          this.requestEntity.count({
+            where: {
+              status: RequestStatus.completed,
+            },
+          }),
+        ]);
+      return {
+        total_request,
+        total_in_progress,
+        total_completed,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 }
