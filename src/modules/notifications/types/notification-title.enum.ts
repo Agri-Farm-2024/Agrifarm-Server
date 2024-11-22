@@ -10,4 +10,5 @@ export enum NotificationTitleEnum {
   report_harvest = 'Báo cáo kết quả thu hoạch',
   request_extend = 'Yêu cầu gia hạn thuê đất',
   pending_sign_extend = 'Yêu cầu gia hạn thuê đất đang chờ ký tên',
+  reject_request_purchase =' Chất lượng sản phẩm không đạt yêu càu',
 }
