@@ -475,7 +475,7 @@ export class RequestsService implements IRequestService {
       // create task for the request
       const new_task = await this.taskService.createTaskAuto(
         new_request.request_id,
-        service_specific_detail.process_technical_specific.expert_id,
+        service_specific_detail.booking_land.staff_id,
       );
       //update status request
       await this.updateRequestStatus(

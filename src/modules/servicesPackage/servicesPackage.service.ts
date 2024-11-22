@@ -258,6 +258,7 @@ export class ServicesService implements IService {
         relations: {
           service_package: true,
           process_technical_specific: true,
+          booking_land: true,
         },
       });
       if (!service_specific) {

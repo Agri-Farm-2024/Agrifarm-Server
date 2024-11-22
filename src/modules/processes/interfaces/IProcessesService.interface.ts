@@ -26,13 +26,12 @@ export interface IProcessesService {
   updateProcessStandard(
     process_technical_standard_id: string,
     data: UpdateProcessStandardsDto,
-  ): Promise<any>
+  ): Promise<any>;
 
   updateStatus(
     plant_season_id: string,
     status: ProcessTechnicalStandardStatus,
   ): Promise<any>;
-
 
   removeProcessStandard(id: string): Promise<any>;
 
