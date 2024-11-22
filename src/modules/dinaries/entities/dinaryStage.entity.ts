@@ -23,7 +23,7 @@ export class DinaryStage extends AbstractEntity {
   @PrimaryGeneratedColumn('uuid')
   dinary_stage_id: string;
 
-  @Column('uuid')
+  @Column('uuid', { nullable: true })
   process_technical_specific_stage_content_id: string;
 
   @Column()

@@ -115,8 +115,7 @@ export class DinariesService implements IDinariesService {
         where: {
           process_technical_specific_stage_content_id:
             process_specific_exist.process_technical_specific_stage
-              .process_technical_specific_stage_content
-              .process_technical_specific_stage_content_id,
+              .process_technical_standard_stage_content_id,
         },
       });
     } catch (error) {

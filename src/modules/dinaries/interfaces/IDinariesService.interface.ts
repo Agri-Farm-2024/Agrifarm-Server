@@ -8,4 +8,6 @@ export interface IDinariesService {
     process_stage_content_id: string,
   ): Promise<any>;
   updateDinary(updateDinaryDto: UpdateDinaryDto, id: string): Promise<any>;
+
+  getDinaryStageByProcessSpecificId(process_specific_id): Promise<any>;
 }

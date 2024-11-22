@@ -46,4 +46,13 @@ export class DinariesController {
   ) {
     return this.dinariesService.updateDinary(updateDinaryDto, id);
   }
+
+  @Get('/:process_technical_specific_id')
+  getDinaryStageByProcessSpecificId(
+    @Param('process_technical_specific_id') process_specific_id: string,
+  ) {
+    return this.dinariesService.getDinaryStageByProcessSpecificId(
+      process_specific_id,
+    );
+  }
 }
