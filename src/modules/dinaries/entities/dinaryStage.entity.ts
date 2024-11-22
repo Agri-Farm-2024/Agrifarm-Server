@@ -32,6 +32,7 @@ export class DinaryStage extends AbstractEntity {
   @Column('float')
   quality_report: number;
 
+  // relations
   @OneToMany(() => DinaryImage, (dinaryImage) => dinaryImage.đianry_stage)
   dinaries_image: DinaryImage[];
 

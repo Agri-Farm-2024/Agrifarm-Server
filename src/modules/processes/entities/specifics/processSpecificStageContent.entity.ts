@@ -50,6 +50,9 @@ export class ProcessSpecificStageContent extends AbstractEntity {
   @JoinColumn({ name: 'process_technical_specific_stage_id' })
   process_technical_specific_stage: ProcessSpecificStage;
 
-  @OneToOne(() => DinaryStage, (dinaryStage) => dinaryStage.dinaries_stage_content)
+  @OneToOne(
+    () => DinaryStage,
+    (dinaryStage) => dinaryStage.dinaries_stage_content,
+  )
   dinary_stage: DinaryStage;
 }

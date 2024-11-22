@@ -7,12 +7,11 @@ import {
 import { CreateDinaryDto } from './dto/create-dinary.dto';
 import { UpdateDinaryDto } from './dto/update-dinary.dto';
 import { IDinariesService } from './interfaces/IDinariesService.interface';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DinaryStage } from './entities/dinaryStage.entity';
 import { DinaryImage } from './entities/DinaryImange.entity';
 import { LoggerService } from 'src/logger/logger.service';
-import { Payload } from '../auths/types/payload.type';
 import { ProcessesService } from '../processes/processes.service';
 
 @Injectable()
@@ -45,8 +44,17 @@ export class DinariesService implements IDinariesService {
         //crete new dinary stage
         const new_dinary_stage = await this.dinariesStageRepo.save({
           ...data,
-          process_technical_stage_content_id: process_stage_content_id,
+          process_technical_specific_stage_content_id: process_stage_content_id,
         });
+        // create dinary image
+        if (data.dinaries_image) {
+          data.dinaries_image.forEach(async (image) => {
+            await this.dinariesImageRepo.save({
+              ...image,
+              dinary_stage_id: new_dinary_stage.dinary_stage_id,
+            });
+          });
+        }
         this.loggerService.log('New dinary stage created');
         return new_dinary_stage;
       } else {
