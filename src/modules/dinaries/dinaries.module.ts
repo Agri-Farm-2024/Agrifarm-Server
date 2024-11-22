@@ -4,7 +4,7 @@ import { DinariesController } from './dinaries.controller';
 import { LoggerModule } from 'src/logger/logger.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DinaryStage } from './entities/dinaryStage.entity';
-import { DinaryImage } from './entities/DinaryImange.entity';
+import { DinaryLink } from './entities/dinaryLink.entity';
 import { LoggerService } from 'src/logger/logger.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ProcessesModule } from '../processes/processes.module';
@@ -14,7 +14,7 @@ import { ProcessesModule } from '../processes/processes.module';
   providers: [DinariesService, LoggerService],
   imports: [
     LoggerModule,
-    TypeOrmModule.forFeature([DinaryStage, DinaryImage]),
+    TypeOrmModule.forFeature([DinaryStage, DinaryLink]),
     JwtModule,
     forwardRef(() => ProcessesModule),
   ],

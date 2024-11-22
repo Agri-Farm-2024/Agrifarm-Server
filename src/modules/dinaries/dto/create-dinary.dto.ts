@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { DinaryURLType } from '../types/dinary-url-type.enum';
 
 export class DinaryImageDto {
   @ApiProperty({
@@ -8,7 +9,15 @@ export class DinaryImageDto {
   })
   @IsString()
   @IsNotEmpty()
-  image_link: string;
+  url_link: string;
+
+  @ApiProperty({
+    description: 'Type of dinary',
+    example: DinaryURLType.image,
+    required: false,
+  })
+  @IsOptional()
+  type: DinaryURLType;
 }
 export class CreateDinaryDto {
   @ApiProperty({

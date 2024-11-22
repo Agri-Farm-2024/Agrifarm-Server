@@ -10,7 +10,7 @@ import { IDinariesService } from './interfaces/IDinariesService.interface';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DinaryStage } from './entities/dinaryStage.entity';
-import { DinaryImage } from './entities/DinaryImange.entity';
+import { DinaryLink } from './entities/dinaryLink.entity';
 import { LoggerService } from 'src/logger/logger.service';
 import { ProcessesService } from '../processes/processes.service';
 
@@ -20,8 +20,8 @@ export class DinariesService implements IDinariesService {
     @InjectRepository(DinaryStage)
     private readonly dinariesStageRepo: Repository<DinaryStage>,
 
-    @InjectRepository(DinaryImage)
-    private readonly dinariesImageRepo: Repository<DinaryImage>,
+    @InjectRepository(DinaryLink)
+    private readonly dinariesImageRepo: Repository<DinaryLink>,
 
     private readonly loggerService: LoggerService,
 
@@ -126,7 +126,7 @@ export class DinariesService implements IDinariesService {
               .process_technical_standard_stage_content_id,
         },
         relations: {
-          dinaries_image: true,
+          dinaries_link: true,
           dinaries_stage_content: true,
         },
       });
