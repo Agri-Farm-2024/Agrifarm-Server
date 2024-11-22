@@ -15,15 +15,12 @@ import { ProcessStandardStage } from './entities/standards/processStandardStage.
 import { ProcessStandardStageContent } from './entities/standards/processStandardStageContent.entity';
 import { CreateProcessStageDto } from './dto/create-process-stage.dto';
 import { CreateProcessStageContentDto } from './dto/create-process-stage-content.dto';
-// import { PlantSeason } from '../plants/entities/plantSeason.entity';
 import { CreateProcessStageMaterialDto } from './dto/create-process-stage-material.dto';
 import { ProcessStandardStageMaterial } from './entities/standards/processStandardStageMaterial.entity';
 import { ReportsService } from '../reports/reports.service';
-
 import { Payload } from '../auths/types/payload.type';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { ProcessTechnicalStandardStatus } from './types/status-processStandard.enum';
-
 import { ServiceSpecific } from '../servicesPackage/entities/serviceSpecific.entity';
 import { ProcessSpecific } from './entities/specifics/processSpecific.entity';
 import { ProcessSpecificStage } from './entities/specifics/processSpecificStage.entity';
@@ -39,7 +36,6 @@ import { UpdateProcessStandardsDto } from './dto/update-process-standard.dto';
 import { ProcessSpecificStatus } from './types/processSpecific-status.enum';
 import { UPdateProcessSpecificDto } from './dto/update-process-specific.dto';
 import { UserRole } from '../users/types/user-role.enum';
-import { UpdateProcessSpecificStatusDto } from './dto/update-process-specific-status.dto';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -216,12 +212,8 @@ export class ProcessesService implements IProcessesService {
             expert: true,
           },
           order: {
-            process_standard_stage: {
-              stage_numberic_order: 'ASC',
-              process_standard_stage_content: {
-                content_numberic_order: 'ASC',
-              },
-            },
+            updated_at: 'DESC',
+            status: 'ASC',
           },
           select: {
             expert: {
@@ -693,7 +685,6 @@ export class ProcessesService implements IProcessesService {
       const data_process_specific = {
         time_start: data.time_start,
         time_end: data.time_end,
-       
       };
       const update_process_specific = await this.processSpecificRepo.save({
         ...process_specific,

@@ -8,7 +8,7 @@ import {
 import { CreatePlantDto } from './dto/create-plant.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoggerService } from 'src/logger/logger.service';
-import { LessThan, LessThanOrEqual, Like, Repository } from 'typeorm';
+import { LessThanOrEqual, Like, Repository } from 'typeorm';
 import { Plant } from './entities/plant.entity';
 import { IPlantService } from './interfaces/IPlantService.interface';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
@@ -22,6 +22,7 @@ import { UpdatePlantSeasonDto } from './dto/update-plantSeason.dto';
 
 @Injectable()
 export class PlantsService implements IPlantService {
+  private readonly logger = new Logger(PlantsService.name);
   constructor(
     @InjectRepository(Plant)
     private readonly plantEntity: Repository<Plant>,
@@ -30,8 +31,6 @@ export class PlantsService implements IPlantService {
 
     @InjectRepository(PlantSeason)
     private readonly plantSeasonEntity: Repository<PlantSeason>,
-
-    private readonly logger: LoggerService,
   ) {}
 
   async createPlant(createPlantDto: CreatePlantDto) {
@@ -270,6 +269,10 @@ export class PlantsService implements IPlantService {
         skip: (pagination.page_index - 1) * pagination.page_size,
         take: pagination.page_size,
         where: filter,
+        order: {
+          created_at: 'DESC',
+          updated_at: 'DESC',
+        },
       }),
       this.plantEntity.count({
         where: filter,
@@ -313,6 +316,10 @@ export class PlantsService implements IPlantService {
               land_type: true,
             },
             process_technical_standard: true,
+          },
+          order: {
+            created_at: 'DESC',
+            updated_at: 'DESC',
           },
         }),
         this.plantSeasonEntity.count({ where: filter }),
