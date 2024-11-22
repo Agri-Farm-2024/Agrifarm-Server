@@ -863,6 +863,7 @@ export class ProcessesService implements IProcessesService {
       const process_specific = await this.processSpecificRepo.save(
         process_specific_exist,
       );
+      return process_specific;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

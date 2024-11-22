@@ -181,7 +181,7 @@ export class ReportsService implements IReportService {
           }
         }
       }
-      
+
       //update request status to pending_approval
       await this.requestService.updateRequestStatus(
         report_exist.task.request_id,
@@ -196,7 +196,7 @@ export class ReportsService implements IReportService {
         await this.notificationService.createNotification({
           user_id: report_exist.task.assigned_by_id || manager[0].user_id,
           title: NotificationTitleEnum.report_purchase,
-          content: `Báo cáo đã được tạo cho công việc`,
+          content: `Báo cáo đã được tạo cho công việc kiểm định trước thu hoạch`,
           type: NotificationType.report,
           component_id: report_exist.task_id,
         });
@@ -205,7 +205,7 @@ export class ReportsService implements IReportService {
         await this.notificationService.createNotification({
           user_id: report_exist.task.assigned_by_id || manager[0].user_id,
           title: NotificationTitleEnum.report_harvest,
-          content: `Báo cáo đã được tạo cho công việc`,
+          content: `Báo cáo đã được tạo cho công việc  sau thu hoạch`,
           type: NotificationType.report,
           component_id: report_exist.task_id,
         });

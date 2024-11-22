@@ -594,6 +594,29 @@ export class RequestsService implements IRequestService {
       ) {
         //create new request purchase hasvest
         await this.createRequestPurchaseharvest(request.service_specific_id);
+      } else {
+        if (
+          request.type === RequestType.product_purchase &&
+          data.status === RequestStatus.rejected
+        ) {
+          // Notication to user
+          await this.notificationService.createNotification({
+            user_id: request.sender_id,
+            title: NotificationTitleEnum.reject_request_purchase,
+            content:
+              'Thông báo chất lượng sản phẩm không đạt yêu cầu chất lượng để thu mua',
+            component_id: request.request_id,
+            type: NotificationType.request,
+          });
+        }
+      }
+
+      //check request hasvest complete
+      if (
+        request.type === RequestType.product_puchase_harvest &&
+        data.status === RequestStatus.completed
+      ) {
+        
       }
       // Check condition of report land request
       if (
