@@ -693,7 +693,7 @@ export class ProcessesService implements IProcessesService {
       const data_process_specific = {
         time_start: data.time_start,
         time_end: data.time_end,
-        qr_url: data.qr_url,
+       
       };
       const update_process_specific = await this.processSpecificRepo.save({
         ...process_specific,
