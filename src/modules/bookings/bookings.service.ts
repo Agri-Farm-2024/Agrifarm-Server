@@ -278,7 +278,6 @@ export class BookingsService implements IBookingService {
         this.bookingRepository.find({
           where: filter_condition,
           order: {
-            created_at: 'DESC',
             updated_at: 'DESC',
             status: 'ASC',
             extends: {
@@ -379,7 +378,6 @@ export class BookingsService implements IBookingService {
         this.bookingRepository.find({
           where: filter_condition,
           order: {
-            created_at: 'DESC',
             updated_at: 'DESC',
             status: 'ASC',
             extends: {
