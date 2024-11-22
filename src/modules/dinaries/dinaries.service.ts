@@ -125,6 +125,10 @@ export class DinariesService implements IDinariesService {
             process_specific_exist.process_technical_specific_stage
               .process_technical_standard_stage_content_id,
         },
+        relations: {
+          dinaries_image: true,
+          dinaries_stage_content: true,
+        },
       });
     } catch (error) {
       throw new BadRequestException(error.message);

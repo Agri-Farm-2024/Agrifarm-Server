@@ -7,7 +7,6 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  Timestamp,
 } from 'typeorm';
 import { ProcessSpecific } from './processSpecific.entity';
 import { ProcessSpecificStageContent } from './processSpecificStageContent.entity';
@@ -60,6 +59,9 @@ export class ProcessSpecificStage extends AbstractEntity {
   )
   process_technical_specific_stage_material: ProcessSpecificStageMaterial[];
 
-  @OneToMany(() => Request, (request) => request.process_technical_specific_stage)
+  @OneToMany(
+    () => Request,
+    (request) => request.process_technical_specific_stage,
+  )
   requests_material_stage: Request[];
 }
