@@ -46,6 +46,11 @@ export class LandsController {
     required: false,
     name: 'status',
   })
+  @ApiQuery({
+    name: 'land_type_id',
+    description: 'Get all lands by land type',
+    required: false,
+  })
   getListByLandrenter(
     @Query('status') status: LandStatus,
     @Pagination() pagination: PaginationParams,
