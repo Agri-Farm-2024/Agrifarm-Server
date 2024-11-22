@@ -24,7 +24,7 @@ export class DinaryStage extends AbstractEntity {
   dinary_stage_id: string;
 
   @Column('uuid')
-  process_technical_stage_content_id: string;
+  process_technical_specific_stage_content_id: string;
 
   @Column()
   content: string;
@@ -36,6 +36,6 @@ export class DinaryStage extends AbstractEntity {
   dinaries_image: DinaryImage[];
 
   @OneToOne(() => ProcessSpecificStageContent)
-  @JoinColumn({ name: 'process_technical_stage_content_id' })
+  @JoinColumn({ name: 'process_technical_specific_stage_content_id' })
   dinaries_stage_content: ProcessSpecificStageContent;
 }

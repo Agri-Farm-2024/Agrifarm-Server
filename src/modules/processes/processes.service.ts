@@ -40,6 +40,7 @@ import { ProcessSpecificStatus } from './types/processSpecific-status.enum';
 import { UPdateProcessSpecificDto } from './dto/update-process-specific.dto';
 import { UserRole } from '../users/types/user-role.enum';
 import { UpdateProcessSpecificStatusDto } from './dto/update-process-specific-status.dto';
+import { DinariesService } from '../dinaries/dinaries.service';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -77,6 +78,9 @@ export class ProcessesService implements IProcessesService {
 
     @Inject(forwardRef(() => RequestsService))
     private readonly requestService: RequestsService,
+
+    @Inject(forwardRef(() => DinariesService))
+    private readonly dinariesService: DinariesService,
   ) {}
 
   async createProcessStandard(
@@ -693,7 +697,6 @@ export class ProcessesService implements IProcessesService {
       const data_process_specific = {
         time_start: data.time_start,
         time_end: data.time_end,
-       
       };
       const update_process_specific = await this.processSpecificRepo.save({
         ...process_specific,
@@ -820,6 +823,13 @@ export class ProcessesService implements IProcessesService {
         where: {
           process_technical_specific_id,
         },
+        relations: {
+          process_technical_specific_stage: {
+            process_technical_specific_stage_content: {
+              dinary_stage: true,
+            },
+          },
+        },
       });
     } catch (error) {
       throw new InternalServerErrorException(error.message);
@@ -847,16 +857,18 @@ export class ProcessesService implements IProcessesService {
     process_technical_specific_id: string,
   ): Promise<any> {
     try {
-      const process_specific = await this.processSpecificRepo.findOne({
+      const process_specific_exist = await this.processSpecificRepo.findOne({
         where: {
           process_technical_specific_id,
         },
       });
-      if (!process_specific) {
+      if (!process_specific_exist) {
         throw new BadRequestException('Process specific not found');
       }
-      process_specific.status = ProcessSpecificStatus.active;
-      return await this.processSpecificRepo.save(process_specific);
+      process_specific_exist.status = ProcessSpecificStatus.active;
+      const process_specific = await this.processSpecificRepo.save(
+        process_specific_exist,
+      );
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

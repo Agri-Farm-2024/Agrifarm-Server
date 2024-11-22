@@ -8,15 +8,14 @@ import {
   Delete,
   UseGuards,
   Request,
+  Put,
 } from '@nestjs/common';
 import { DinariesService } from './dinaries.service';
 import { CreateDinaryDto } from './dto/create-dinary.dto';
 import { UpdateDinaryDto } from './dto/update-dinary.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
-import { User } from '../users/entities/user.entity';
 import { UserRole } from '../users/types/user-role.enum';
-import { Role } from 'discord.js';
 import { Roles } from 'src/common/decorations/role.decoration';
 
 @ApiTags('Dinary')
@@ -40,7 +39,7 @@ export class DinariesController {
 
   @UseGuards(AuthGuard)
   @Roles(UserRole.expert)
-  @Patch('/:dinary_stage_id')
+  @Put('/:dinary_stage_id')
   updateDinaryStage(
     @Body() updateDinaryDto: UpdateDinaryDto,
     @Param('dinary_stage_id') id: string,

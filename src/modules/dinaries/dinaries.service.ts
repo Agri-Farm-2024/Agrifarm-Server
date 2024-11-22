@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { CreateDinaryDto } from './dto/create-dinary.dto';
 import { UpdateDinaryDto } from './dto/update-dinary.dto';
 import { IDinariesService } from './interfaces/IDinariesService.interface';
@@ -8,6 +13,7 @@ import { DinaryStage } from './entities/dinaryStage.entity';
 import { DinaryImage } from './entities/DinaryImange.entity';
 import { LoggerService } from 'src/logger/logger.service';
 import { Payload } from '../auths/types/payload.type';
+import { ProcessesService } from '../processes/processes.service';
 
 @Injectable()
 export class DinariesService implements IDinariesService {
@@ -19,6 +25,9 @@ export class DinariesService implements IDinariesService {
     private readonly dinariesImageRepo: Repository<DinaryImage>,
 
     private readonly loggerService: LoggerService,
+
+    @Inject(forwardRef(() => ProcessesService))
+    private readonly processService: ProcessesService,
   ) {}
 
   async createDinary(
@@ -29,7 +38,7 @@ export class DinariesService implements IDinariesService {
       //check if dinary stage exist
       const dinary_stage = await this.dinariesStageRepo.findOne({
         where: {
-          process_technical_stage_content_id: process_stage_content_id,
+          process_technical_specific_stage_content_id: process_stage_content_id,
         },
       });
       if (!dinary_stage) {
@@ -82,13 +91,34 @@ export class DinariesService implements IDinariesService {
     try {
       const dinary_stage = await this.dinariesStageRepo.findOne({
         where: {
-          process_technical_stage_content_id: id,
+          process_technical_specific_stage_content_id: id,
         },
       });
       if (!dinary_stage) {
         throw new BadRequestException('dinary stage not found');
       }
       return dinary_stage;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  //get list dianry by process spcific id
+  async getDinaryStageByProcessSpecificId(process_specific_id): Promise<any> {
+    try {
+      const process_specific_exist =
+        await this.processService.getDetailProcessSpecific(process_specific_id);
+      if (!process_specific_exist) {
+        throw new BadRequestException('Process specific not found');
+      }
+      return await this.dinariesStageRepo.find({
+        where: {
+          process_technical_specific_stage_content_id:
+            process_specific_exist.process_technical_specific_stage
+              .process_technical_specific_stage_content
+              .process_technical_specific_stage_content_id,
+        },
+      });
     } catch (error) {
       throw new BadRequestException(error.message);
     }
