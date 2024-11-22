@@ -280,9 +280,6 @@ export class BookingsService implements IBookingService {
           order: {
             updated_at: 'DESC',
             status: 'ASC',
-            extends: {
-              created_at: 'ASC',
-            },
           },
           relations: {
             land: true,
@@ -304,8 +301,8 @@ export class BookingsService implements IBookingService {
               role: true,
             },
           },
-          take: pagination.page_size,
           skip: (pagination.page_index - 1) * pagination.page_size,
+          take: pagination.page_size,
         }),
         this.bookingRepository.count({
           where: filter_condition,
@@ -380,9 +377,6 @@ export class BookingsService implements IBookingService {
           order: {
             updated_at: 'DESC',
             status: 'ASC',
-            extends: {
-              created_at: 'ASC',
-            },
           },
           relations: {
             land: true,
@@ -404,13 +398,15 @@ export class BookingsService implements IBookingService {
               role: true,
             },
           },
-          take: pagination.page_size,
           skip: (pagination.page_index - 1) * pagination.page_size,
+          take: pagination.page_size,
         }),
         this.bookingRepository.count({
           where: filter_condition,
         }),
       ]);
+      console.log(bookings.length);
+      console.log(total_count);
       // Get total page
       const total_page = Math.ceil(total_count / pagination.page_size);
       return {
@@ -446,11 +442,8 @@ export class BookingsService implements IBookingService {
             ...filter_condition,
           },
           order: {
-            status: 'ASC',
             updated_at: 'DESC',
-            extends: {
-              created_at: 'ASC',
-            },
+            status: 'ASC',
           },
           relations: {
             land: true,
@@ -472,8 +465,8 @@ export class BookingsService implements IBookingService {
               role: true,
             },
           },
-          take: pagination.page_size,
           skip: (pagination.page_index - 1) * pagination.page_size,
+          take: pagination.page_size,
         }),
         this.bookingRepository.count({
           where: {

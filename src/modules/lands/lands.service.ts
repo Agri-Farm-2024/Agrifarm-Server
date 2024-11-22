@@ -99,6 +99,7 @@ export class LandsService implements ILandService {
   async getListByLandrenter(
     status: LandStatus,
     pagination: PaginationParams,
+    land_type_id: string,
   ): Promise<any> {
     try {
       console.log(pagination);
@@ -117,6 +118,10 @@ export class LandsService implements ILandService {
             delete filter_condition[search.field];
           }
         }
+      }
+
+      if (land_type_id) {
+        filter_condition.land_type_id = land_type_id;
       }
 
       const [lands, total_count] = await Promise.all([
@@ -194,6 +199,7 @@ export class LandsService implements ILandService {
           where: filter_condition,
           relations: {
             url: true,
+            land_type: true,
           },
           select: {
             url: {
@@ -236,6 +242,7 @@ export class LandsService implements ILandService {
           url: true,
           staff: true,
           booking_land: true,
+          land_type: true,
         },
         select: {
           url: {
