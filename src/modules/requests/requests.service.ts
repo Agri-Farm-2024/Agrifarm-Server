@@ -381,8 +381,9 @@ export class RequestsService implements IRequestService {
    * @returns
    */
 
-  async createRequestPurchaseAuto(
+  async createRequestPurchase(
     createRequestPurchase: CreateRequestPurchaseDto,
+    user: Payload,
   ): Promise<any> {
     try {
       //check request purchase for service is exist
@@ -404,31 +405,29 @@ export class RequestsService implements IRequestService {
         throw new BadRequestException('Service specific not found');
       }
 
-      if (
-        service_specific_detail.service_package.purchase === true &&
-        service_specific_detail.service_package.process_of_plant === true
-      ) {
+      if (service_specific_detail.service_package.process_of_plant === true) {
         //create new request purchase
         const new_request = await this.requestEntity.save({
           ...createRequestPurchase,
+          sender_id: user.user_id,
           type: RequestType.product_purchase,
         });
         if (!new_request) {
-          throw new BadRequestException('Unable to create request');
+          throw new BadRequestException('You do not use process of plant');
         }
         // create task for the request
         const new_task = await this.taskService.createTaskAuto(
           new_request.request_id,
           service_specific_detail.process_technical_specific.expert_id,
         );
+        if (!new_task) {
+          throw new BadRequestException('Unable to create task');
+        }
         //update status request
         await this.updateRequestStatus(
           new_request.request_id,
           RequestStatus.assigned,
         );
-        if (!new_task) {
-          throw new BadRequestException('Unable to create task');
-        }
         return new_request;
       }
     } catch (error) {

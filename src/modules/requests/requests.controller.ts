@@ -26,6 +26,7 @@ import { UserRole } from '../users/types/user-role.enum';
 import { UpdateStatusTaskDTO } from './dto/update-status-task.dto';
 import { CreateRequestMaterialDto } from './dto/create-request-material-stagedto';
 import { createRequestTechnicalSupportDTO } from './dto/create-request-technical-support.dto';
+import { CreateRequestPurchaseDto } from './dto/create-request-puchase.dto';
 
 @ApiTags('Request')
 @Controller('requests')
@@ -97,5 +98,16 @@ export class RequestsController {
   ) {
     const user = req['user'];
     return await this.requestsService.createRequestTechnicalSupport(data, user);
+  }
+
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.land_renter)
+  @Post('/createRequestPurchase')
+  async createRequestPurchase(
+    @Body() data: CreateRequestPurchaseDto,
+    @Request() req: any,
+  ) {
+    const user = req['user'];
+    return await this.requestsService.createRequestPurchase(data, user);
   }
 }

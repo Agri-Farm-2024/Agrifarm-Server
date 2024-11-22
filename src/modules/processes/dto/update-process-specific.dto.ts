@@ -15,11 +15,6 @@ export class UPdateProcessSpecificDto {
   @IsNotEmpty()
   time_end: Date;
 
-  @ApiProperty({
-    description: 'qr url of processSpecific',
-  })
-  @IsOptional()
-  qr_url: string;
 
   @ApiProperty({
     description: 'the stage of process',
