@@ -92,9 +92,7 @@ export class ReportsService implements IReportService {
         // update quality for report
         await this.bookingService.updateBookingByReport(
           report_exist.task.request.booking_land_id,
-          {
-            quaility_report: data.quality_report,
-          },
+          data.quality_report,
         );
       }
       //update request status to pending_approval

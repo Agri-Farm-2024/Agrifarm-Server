@@ -898,38 +898,6 @@ export class BookingsService implements IBookingService {
   }
 
   /**
-   * @function updateStatusToExpired
-   * @param booking_exist
-   * @param data
-   * @param user
-   * @returns
-   */
-
-  async updateStatusToExpired(
-    booking_exist: BookingLand,
-    data: UpdateStatusBookingDTO,
-    user: Payload,
-  ): Promise<any> {
-    return 'updateStatusToPendingPayment';
-  }
-
-  /**
-   * @function updateStatusToCanceled
-   * @param booking_exist
-   * @param data
-   * @param user
-   * @returns
-   */
-
-  async updateStatusToCanceled(
-    booking_exist: BookingLand,
-    data: UpdateStatusBookingDTO,
-    user: Payload,
-  ): Promise<any> {
-    return 'updateStatusToPendingPayment';
-  }
-
-  /**
    * @function updateStatusToRejected
    * @param booking_exist
    * @param data
@@ -1174,7 +1142,10 @@ export class BookingsService implements IBookingService {
    * @returns
    */
 
-  async updateBookingByReport(booking_id: string, data: any): Promise<any> {
+  async updateBookingByReport(
+    booking_id: string,
+    quality_report: number,
+  ): Promise<any> {
     try {
       const booking = await this.bookingRepository.findOne({
         where: {
@@ -1190,6 +1161,7 @@ export class BookingsService implements IBookingService {
       // update booking
       const update_booking = await this.bookingRepository.save({
         ...booking,
+        quality_report: quality_report,
         status: BookingStatus.completed,
       });
       // send notification to land renter

@@ -9,4 +9,5 @@ export enum NotificationTitleEnum {
   report_purchase = 'Báo cáo kết quả kiểm định trước thu hoạch',
   report_harvest = 'Báo cáo kết quả thu hoạch',
   request_extend = 'Yêu cầu gia hạn thuê đất',
+  pending_sign_extend = 'Yêu cầu gia hạn thuê đất đang chờ ký tên',
 }

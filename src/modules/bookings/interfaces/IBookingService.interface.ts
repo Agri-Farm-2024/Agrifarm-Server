@@ -40,9 +40,6 @@ export interface IBookingService {
 
   getBookingDetail(bookingId: string): Promise<any>;
 
-
-
-
   updateStatusBookingStrategy(
     bookingId: string,
     data: UpdateStatusBookingDTO,
@@ -69,18 +66,6 @@ export interface IBookingService {
 
   updateStatusToCompleted(transaction: Transaction): Promise<any>;
 
-  updateStatusToExpired(
-    booking_exist: BookingLand,
-    data: UpdateStatusBookingDTO,
-    user: Payload,
-  ): Promise<any>;
-
-  updateStatusToCanceled(
-    booking_exist: BookingLand,
-    data: UpdateStatusBookingDTO,
-    user: Payload,
-  ): Promise<any>;
-
   updateStatusToRejected(
     booking_exist: BookingLand,
     data: UpdateStatusBookingDTO,
@@ -95,14 +80,9 @@ export interface IBookingService {
 
   checkBookingIsExpired(): Promise<any>;
 
-  updateBookingByExtend(
-    booking_id: string,
-    total_month: number,
-  ): Promise<any>;
+  updateBookingByExtend(booking_id: string, total_month: number): Promise<any>;
 
   createRefundBooking(booking_id: string): Promise<any>;
 
   updateBookingByReport(booking_id: string, data: any): Promise<any>;
-
-
 }
