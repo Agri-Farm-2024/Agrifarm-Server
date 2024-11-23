@@ -161,6 +161,9 @@ export class ExtendsService implements IExtendService {
     try {
       // find extend by id
       const extend = await this.extendRepository.findOne({
+        relations: {
+          booking_land: true,
+        },
         where: { extend_id: extend_id },
       });
       if (!extend) {
