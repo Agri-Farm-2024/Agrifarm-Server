@@ -123,6 +123,8 @@ export class RequestsService implements IRequestService {
           where: filter_condition,
           relations: {
             task: {
+              assign_by: true,
+              assign_to: true,
               report: {
                 report_url: true,
               },
