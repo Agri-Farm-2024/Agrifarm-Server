@@ -43,11 +43,20 @@ export class JobService implements ICronJob {
     }
   }
 
-  @Cron(CronTime.every_ten_minutes)
-  checkTransactionIsExpired(): Promise<void> {
-    this.logger.log('Check transaction expire is running');
-    this.loggerService.log('Check transaction expire is running');
-    throw new Error('Method not implemented.');
+  @Cron(CronTime.every_one_hour_a_day)
+  async checkTransactionIsExpired(): Promise<void> {
+    try {
+      // Check transaction is expired
+      await this.transactionService.checkTransactionIsExpired();
+      this.logger.log('Check transaction expire is running');
+      this.loggerService.log('Check transaction expire is running');
+    } catch (error) {
+      this.logger.error(`Error when check every one hour ${error.message}`);
+      this.loggerService.error(
+        `Error when check every one hour ${error.message}`,
+        error.stack,
+      );
+    }
   }
 
   @Cron(CronTime.every_five_pm_hours_a_day)
@@ -75,4 +84,22 @@ export class JobService implements ICronJob {
       );
     }
   }
+
+  // @Cron(CronTime.every_eight_am_hours_a_day)
+  // async checkTaskProcessContentForLandRenter(): Promise<void> {
+  //   try {
+  //     // Check and create task process content for land renter
+  //     await this.processService.checkAndCreateTaskProcessContentForLandRenter();
+  //     this.logger.log('Check task process content for land renter is running');
+  //     this.loggerService.log(
+  //       'Check task process content for land renter is running',
+  //     );
+  //   } catch (error) {
+  //     this.logger.error(`Error when check every eight am  ${error.message}`);
+  //     this.loggerService.error(
+  //       `Error when check every eight am  ${error.message}`,
+  //       error.stack,
+  //     );
+  //   }
+  // }
 }

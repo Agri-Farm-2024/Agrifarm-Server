@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { ITransactionService } from './interfaces/transaction.interface';
 import { CreateTransactionDTO } from './dto/create-transaction.dto';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BookingsService } from '../bookings/bookings.service';
@@ -423,6 +423,25 @@ export class TransactionsService implements ITransactionService {
       if (error instanceof BadRequestException) {
         throw error;
       }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async checkTransactionIsExpired(): Promise<void> {
+    try {
+      const transactions_expired = await this.transactionRepository.find({
+        where: {
+          status: TransactionStatus.approved,
+          expired_at: LessThan(new Date()),
+        },
+      });
+      if (transactions_expired.length > 0) {
+        transactions_expired.forEach(async (transaction) => {
+          transaction.status = TransactionStatus.expired;
+          await this.transactionRepository.save(transaction);
+        });
+      }
+    } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
   }

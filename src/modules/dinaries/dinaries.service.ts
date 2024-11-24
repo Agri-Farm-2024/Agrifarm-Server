@@ -14,6 +14,8 @@ import { DinaryLink } from './entities/dinaryLink.entity';
 import { LoggerService } from 'src/logger/logger.service';
 import { ProcessesService } from '../processes/processes.service';
 import { RequestsService } from '../requests/requests.service';
+import { Request } from '../requests/entities/request.entity';
+import { RequestStatus } from '../requests/types/request-status.enum';
 
 @Injectable()
 export class DinariesService implements IDinariesService {
@@ -38,6 +40,17 @@ export class DinariesService implements IDinariesService {
     process_stage_content_id: string,
   ): Promise<any> {
     try {
+      // get detail process stage content
+      const request_process_stage_content_multivate: Request =
+        await this.requestService.getDetailRequestCultivateProcess(
+          process_stage_content_id,
+        );
+      if (
+        request_process_stage_content_multivate.status !==
+        RequestStatus.in_progress
+      ) {
+        throw new BadRequestException('Task not started yet');
+      }
       //check if dinary stage exist
       const dinary_stage = await this.dinariesStageRepo.findOne({
         where: {

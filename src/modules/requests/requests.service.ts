@@ -121,6 +121,27 @@ export class RequestsService implements IRequestService {
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
           where: filter_condition,
+          relations: {
+            task: {
+              report: {
+                report_url: true,
+              },
+            },
+            sender: true,
+            process_technical_specific_stage_content: {
+              dinary_stage: {
+                dinaries_link: true,
+              },
+            },
+            booking_land: {
+              land: true,
+            },
+            channel: true,
+            plant_season: {
+              plant: true,
+            },
+            process_technical_specific_stage: true,
+          },
           order: {
             created_at: 'DESC',
             status: 'ASC',
@@ -199,6 +220,26 @@ export class RequestsService implements IRequestService {
       }
 
       return requestProcess;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async getDetailRequestCultivateProcess(
+    process_technical_specific_stage_content_id: string,
+  ): Promise<any> {
+    try {
+      const requestCultivate = await this.requestEntity.findOne({
+        where: {
+          process_technical_specific_stage_content_id:
+            process_technical_specific_stage_content_id,
+          type: RequestType.cultivate_process_content,
+        },
+      });
+      if (!requestCultivate) {
+        throw new BadRequestException(`Don't have request for this cultivate`);
+      }
+      return requestCultivate;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
