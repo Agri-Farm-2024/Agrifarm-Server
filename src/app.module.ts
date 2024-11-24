@@ -72,7 +72,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     CronsModule,
     TestModule,
     DashboardModule,
-    // DiscordsModule,
+    DiscordsModule,
   ],
 })
 export class AppModule {}

@@ -390,7 +390,6 @@ export class RequestsService implements IRequestService {
 
   async createRequestPurchase(
     createRequestPurchase: CreateRequestPurchaseDto,
-    user: Payload,
   ): Promise<any> {
     try {
       //check request purchase for service is exist
@@ -412,11 +411,14 @@ export class RequestsService implements IRequestService {
         throw new BadRequestException('Service specific not found');
       }
 
-      if (service_specific_detail.service_package.process_of_plant === true) {
+      if (
+        service_specific_detail.service_package.process_of_plant === true &&
+        service_specific_detail.service_package.purchase === true
+      ) {
         //create new request purchase
         const new_request = await this.requestEntity.save({
           ...createRequestPurchase,
-          sender_id: user.user_id,
+          sender_id: service_specific_detail.landrenter_id,
           type: RequestType.product_purchase,
         });
         if (!new_request) {
@@ -604,6 +606,14 @@ export class RequestsService implements IRequestService {
       ) {
         //create new request purchase hasvest
         await this.createRequestPurchaseharvest(request.service_specific_id);
+      }
+
+      //check request hasvest complete
+      if (
+        request.type === RequestType.product_puchase_harvest &&
+        data.status === RequestStatus.completed
+      ) {
+        //create transaction
       }
       // Check condition of report land request
       if (

@@ -161,6 +161,11 @@ export class ExtendsService implements IExtendService {
     try {
       // find extend by id
       const extend = await this.extendRepository.findOne({
+        relations: {
+          booking_land: {
+            land: true,
+          },
+        },
         where: { extend_id: extend_id },
       });
       if (!extend) {
@@ -179,16 +184,16 @@ export class ExtendsService implements IExtendService {
         if (extend.status !== ExtendStatus.pending_contract) {
           throw new BadRequestException('Extend is not pending contract');
         }
-        // send notification to user
-        await this.notificationService.createNotification({
-          user_id: extend.booking_land.landrenter_id,
-          component_id: extend.extend_id,
-          content: NotificationContentEnum.pending_sign_extend(
-            extend.booking_land.land.name,
-          ),
-          type: NotificationType.extend,
-          title: NotificationTitleEnum.pending_sign_extend,
-        });
+        // // send notification to user
+        // await this.notificationService.createNotification({
+        //   user_id: extend.booking_land.landrenter_id,
+        //   component_id: extend.extend_id,
+        //   content: NotificationContentEnum.pending_sign_extend(
+        //     extend.booking_land.land.name,
+        //   ),
+        //   type: NotificationType.extend,
+        //   title: NotificationTitleEnum.pending_sign_extend,
+        // });
       }
       // check condition update to pending payment
       if (data.status === ExtendStatus.pending_payment) {
