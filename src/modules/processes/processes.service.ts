@@ -37,6 +37,10 @@ import { ProcessSpecificStatus } from './types/processSpecific-status.enum';
 import { UPdateProcessSpecificDto } from './dto/update-process-specific.dto';
 import { UserRole } from '../users/types/user-role.enum';
 import { DinariesService } from '../dinaries/dinaries.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../notifications/types/notification-type.enum';
+import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
+import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -77,6 +81,8 @@ export class ProcessesService implements IProcessesService {
 
     @Inject(forwardRef(() => DinariesService))
     private readonly dinariesService: DinariesService,
+
+    private readonly notificationService: NotificationsService,
   ) {}
 
   async createProcessStandard(
@@ -906,5 +912,41 @@ export class ProcessesService implements IProcessesService {
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
+  }
+
+  async checkAndSendNotificationForLandRenterBeforeNewStage(): Promise<any> {
+    try {
+      const check_time = getTimeByPlusDays(new Date(), 1);
+      // get all process specific stage
+      const process_technical_specific_stage =
+        await this.processSpecificStageRepo.find({
+          where: {
+            time_start: Between(new Date(), check_time),
+            process_technical_specific: {
+              status: ProcessSpecificStatus.active,
+            },
+          },
+          relations: {
+            process_technical_specific: {
+              service_specific: true,
+            },
+          },
+        });
+      // Send notification for land renter
+      for (const stage of process_technical_specific_stage) {
+        await this.notificationService.createNotification({
+          user_id:
+            stage.process_technical_specific.service_specific.landrenter_id,
+          content: NotificationContentEnum.ready_process_stage(
+            stage.stage_title,
+            stage.stage_numberic_order,
+          ),
+          component_id:
+            stage.process_technical_specific.process_technical_specific_id,
+          type: NotificationType.process,
+          title: NotificationTitleEnum.ready_process_stage,
+        });
+      }
+    } catch (error) {}
   }
 }

@@ -123,6 +123,15 @@ export class ServicesService implements IService {
       }
       const [services, total_count] = await Promise.all([
         this.serviceSpecificRepo.find({
+          relations: {
+            land_renter: true,
+            plant_season: {
+              plant: true,
+            },
+            booking_land: {
+              land: true,
+            },
+          },
           where: filter,
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,

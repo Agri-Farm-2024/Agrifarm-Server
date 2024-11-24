@@ -12,4 +12,7 @@ export const NotificationContentEnum = {
 
   pending_sign_extend: (land_name: string) =>
     `Yêu cầu gia hạn thuê đất trên ${land_name} đang chờ ký tên`,
+
+  ready_process_stage: (stage_title: string, stage_numberic_order: number) =>
+    `Hãy chuẩn bị cho Giai đoạn ${stage_numberic_order} : ${stage_title}`,
 } as const;

@@ -59,12 +59,18 @@ export class JobService implements ICronJob {
       this.loggerService.log(
         'Check task process content for expert is running',
       );
-    } catch (error) {
-      this.logger.error(
-        `Error when check task process content for expert ${error.message}`,
+      // Check and send notification for landrenter before new stage
+      await this.processService.checkAndSendNotificationForLandRenterBeforeNewStage();
+      this.logger.log(
+        'Check and send noti process stage for land renter is running',
       );
+      this.loggerService.log(
+        'Check and send noti process stage for land renter is running',
+      );
+    } catch (error) {
+      this.logger.error(`Error when check every five pm  ${error.message}`);
       this.loggerService.error(
-        `Error when check task process content for expert ${error.message}`,
+        `Error when check every five pm  ${error.message}`,
         error.stack,
       );
     }
