@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as winston from 'winston';
 import 'winston-daily-rotate-file';
+import * as path from 'path';
 
 @Injectable()
 export class LoggerService extends Logger {
@@ -19,7 +20,7 @@ export class LoggerService extends Logger {
       ),
       transports: [
         new winston.transports.DailyRotateFile({
-          dirname: 'logs',
+          dirname: path.join('logs', this.getCurrentMonthFolder()), // Monthly folder
           filename: '%DATE%.log',
           datePattern: 'YYYY-MM-DD',
           zippedArchive: true,
@@ -27,6 +28,15 @@ export class LoggerService extends Logger {
         }),
       ],
     });
+  }
+
+  /**
+   * Generate the current month folder name.
+   * Format: YYYY-MM
+   */
+  private getCurrentMonthFolder(): string {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   }
 
   log(message: string, context?: string) {

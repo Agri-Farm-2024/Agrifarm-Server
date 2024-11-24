@@ -228,7 +228,9 @@ export class TransactionsService implements ITransactionService {
               land: true,
             },
             extend: {
-              booking_land: true,
+              booking_land: {
+                land: true,
+              },
             },
             service_specific: {
               booking_land: {
@@ -300,7 +302,9 @@ export class TransactionsService implements ITransactionService {
               land: true,
             },
             extend: {
-              booking_land: true,
+              booking_land: {
+                land: true,
+              },
             },
             service_specific: {
               booking_land: {
@@ -347,7 +351,9 @@ export class TransactionsService implements ITransactionService {
             land: true,
           },
           extend: {
-            booking_land: true,
+            booking_land: {
+              land: true,
+            },
           },
           service_specific: {
             booking_land: {

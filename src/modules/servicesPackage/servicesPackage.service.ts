@@ -29,6 +29,7 @@ import { BookingLand } from '../bookings/entities/bookingLand.entity';
 import { Payload } from '../auths/types/payload.type';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { UserRole } from '../users/types/user-role.enum';
+import { RequestsService } from '../requests/requests.service';
 
 @Injectable()
 export class ServicesService implements IService {
@@ -49,6 +50,9 @@ export class ServicesService implements IService {
 
     @Inject(forwardRef(() => BookingsService))
     private readonly bookingLandService: BookingsService,
+
+    @Inject(forwardRef(() => RequestsService))
+    private readonly requestService: RequestsService,
   ) {}
 
   /**
@@ -465,6 +469,37 @@ export class ServicesService implements IService {
       // send email to user
       // send notification to user
       return new_service;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async checkAndCreatePurchaseProductService(): Promise<any> {
+    try {
+      // get date only day month year
+      const date = new Date();
+      date.setHours(0, 0, 0, 0);
+      const list_service = await this.serviceSpecificRepo.find({
+        where: {
+          status: ServiceSpecificStatus.used,
+          service_package: {
+            purchase: true,
+            process_of_plant: true,
+          },
+          time_end: getTimeByPlusMonths(date, 1),
+        },
+      });
+      console.log(getTimeByPlusMonths(date, 1));
+      console.log(list_service);
+      if (list_service.length > 0) {
+        // create request
+        for (const service of list_service) {
+          await this.requestService.createRequestPurchase({
+            service_specific_id: service.service_specific_id,
+          });
+        }
+      }
+      return list_service;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

@@ -681,15 +681,14 @@ export class RequestsService implements IRequestService {
       ) {
         // call boooking service to create transaction refund
         await this.bookingService.createRefundBooking(request.booking_land_id);
-
-        // update request status
-        const updated_request = await this.requestEntity.save({
-          ...request,
-          status: data.status,
-        });
-
-        return updated_request;
       }
+      // update request status
+      const updated_request = await this.requestEntity.save({
+        ...request,
+        status: data.status,
+      });
+
+      return updated_request;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
@@ -756,6 +755,19 @@ export class RequestsService implements IRequestService {
     process_specific_stage_content: ProcessSpecificStageContent,
   ): Promise<any> {
     try {
+      // check exist
+      const request_exist = await this.requestEntity.findOne({
+        where: {
+          process_technical_specific_stage_content_id:
+            process_specific_stage_content.process_technical_specific_stage_content_id,
+          type: RequestType.cultivate_process_content,
+        },
+      });
+      if (request_exist) {
+        throw new BadRequestException(
+          'Request cultivate process content exist',
+        );
+      }
       // Create a new request
       const new_request = await this.requestEntity.save({
         process_technical_specific_stage_content_id:

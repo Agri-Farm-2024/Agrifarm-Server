@@ -57,32 +57,35 @@ export class DinariesService implements IDinariesService {
           process_technical_specific_stage_content_id: process_stage_content_id,
         },
       });
-      // check time
-      if (!dinary_stage) {
-        //crete new dinary stage
-        const new_dinary_stage = await this.dinariesStageRepo.save({
-          ...data,
-          process_technical_specific_stage_content_id: process_stage_content_id,
-        });
-        // create dinary image
-        if (data.dinaries_image) {
-          data.dinaries_image.forEach(async (image) => {
-            await this.dinariesImageRepo.save({
-              ...image,
-              dinary_stage_id: new_dinary_stage.dinary_stage_id,
-            });
-          });
-        }
-        this.loggerService.log('New dinary stage created');
-        return new_dinary_stage;
-      } else {
+      // check dinary is exist
+      if (dinary_stage) {
         //get dianry stage by process  technical stage content id
         const dinary_stage_view = await this.getDinaryStageByProcessContent(
           process_stage_content_id,
         );
-        this.loggerService.log('Dinary stage already exist');
         return dinary_stage_view;
       }
+      //crete new dinary stage
+      const new_dinary_stage = await this.dinariesStageRepo.save({
+        ...data,
+        process_technical_specific_stage_content_id: process_stage_content_id,
+      });
+      // create dinary image
+      if (data.dinaries_image) {
+        data.dinaries_image.forEach(async (image) => {
+          await this.dinariesImageRepo.save({
+            ...image,
+            dinary_stage_id: new_dinary_stage.dinary_stage_id,
+          });
+        });
+      }
+      this.loggerService.log('New dinary stage created');
+      // update request to completed
+      await this.requestService.updateRequestStatus(
+        request_process_stage_content_multivate.request_id,
+        RequestStatus.completed,
+      );
+      return new_dinary_stage;
     } catch (error) {
       throw new BadRequestException(error.message);
     }

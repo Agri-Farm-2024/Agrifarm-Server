@@ -85,21 +85,21 @@ export class JobService implements ICronJob {
     }
   }
 
-  // @Cron(CronTime.every_eight_am_hours_a_day)
-  // async checkTaskProcessContentForLandRenter(): Promise<void> {
-  //   try {
-  //     // Check and create task process content for land renter
-  //     await this.processService.checkAndCreateTaskProcessContentForLandRenter();
-  //     this.logger.log('Check task process content for land renter is running');
-  //     this.loggerService.log(
-  //       'Check task process content for land renter is running',
-  //     );
-  //   } catch (error) {
-  //     this.logger.error(`Error when check every eight am  ${error.message}`);
-  //     this.loggerService.error(
-  //       `Error when check every eight am  ${error.message}`,
-  //       error.stack,
-  //     );
-  //   }
-  // }
+  @Cron(CronTime.every_eight_am_hours_a_day)
+  async checkAndCreatePurchaseProductService(): Promise<void> {
+    try {
+      // Check and create task process content for land renter
+      await this.servicePackageService.checkAndCreatePurchaseProductService();
+      this.logger.log('Check and create purchase product service is running');
+      this.loggerService.log(
+        'Check and create purchase product service is running',
+      );
+    } catch (error) {
+      this.logger.error(`Error when check every eight am  ${error.message}`);
+      this.loggerService.error(
+        `Error when check every eight am  ${error.message}`,
+        error.stack,
+      );
+    }
+  }
 }

@@ -95,10 +95,15 @@ export class ReportsService implements IReportService {
           data.quality_report,
         );
       }
+      let request_status: RequestStatus = RequestStatus.pending_approval;
+      // Check condition to update status request
+      if (task_exist.request.type === RequestType.view_land) {
+        request_status = RequestStatus.completed;
+      }
       //update request status to pending_approval
       await this.requestService.updateRequestStatus(
         report_exist.task.request_id,
-        RequestStatus.pending_approval,
+        request_status,
       );
       // send notification to assigned this task
       // get detail manager
