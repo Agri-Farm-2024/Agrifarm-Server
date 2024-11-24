@@ -235,5 +235,23 @@ export class ReportsService implements IReportService {
     return saved_report;
   }
 
-  //update
+  async getListReportByRequestId(request_id: string): Promise<any> {
+    try {
+      const list_report = await this.reportRepository.find({
+        where: {
+          task: {
+            request_id: request_id,
+          },
+        },
+        relations: {
+          task: {
+            request: true,
+          },
+        },
+      });
+      return list_report;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }
