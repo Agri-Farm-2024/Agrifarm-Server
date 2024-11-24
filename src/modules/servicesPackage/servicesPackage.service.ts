@@ -140,6 +140,9 @@ export class ServicesService implements IService {
             },
             service_package: true,
           },
+          order: {
+            updated_at: 'DESC',
+          },
           where: filter,
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,

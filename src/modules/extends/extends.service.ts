@@ -214,7 +214,7 @@ export class ExtendsService implements IExtendService {
           extend_id: extend_id,
           total_price: extend.total_month * extend.price_per_month,
           purpose: TransactionPurpose.extend,
-          user_id: user.user_id,
+          user_id: extend.booking_land.landrenter_id,
         };
         await this.transactionService.createTransaction(
           transactionData as CreateTransactionDTO,

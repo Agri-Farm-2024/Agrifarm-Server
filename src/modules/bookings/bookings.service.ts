@@ -266,13 +266,15 @@ export class BookingsService implements IBookingService {
         throw new BadRequestException('Manager not get pending and rejected');
       }
       // Filter condition status not pending and rejected , but in case status is null
-      const filter_condition = status
-        ? {
-            status: status,
-          }
-        : {
-            status: Not(In([BookingStatus.pending, BookingStatus.rejected])),
-          };
+      const filter_condition: any = {};
+
+      if (status) {
+        filter_condition.status = status;
+      } else {
+        filter_condition.status = Not(
+          In([BookingStatus.pending, BookingStatus.rejected]),
+        );
+      }
 
       // get list booking by manager except pending and rejected
       const [bookings, total_count] = await Promise.all([
@@ -344,31 +346,27 @@ export class BookingsService implements IBookingService {
        * 1. type = booking: Get all booking by staff and status except pending
        * 2. type = request: Get all booking by staff and status
        */
-      let filter_condition: any = {
+      const filter_condition: any = {
         staff_id: user.user_id,
       };
       // 1, Get all booking by staff and status except pending
       if (type === 'booking') {
-        filter_condition = status
-          ? {
-              status: status,
-            }
-          : {
-              status: Not(BookingStatus.pending),
-            };
+        if (status) {
+          filter_condition.status = status;
+        } else {
+          filter_condition.status = Not(BookingStatus.pending);
+        }
       }
       // 2. Get all booking by staff and status
       if (type === 'request') {
         if (status === BookingStatus.pending_contract) {
-          filter_condition = {
-            status: Not(In([BookingStatus.pending, BookingStatus.rejected])),
-          };
+          filter_condition.status = Not(
+            In([BookingStatus.pending, BookingStatus.rejected]),
+          );
         } else {
-          filter_condition = status
-            ? {
-                status: status,
-              }
-            : {};
+          if (status) {
+            filter_condition.status = status;
+          }
         }
       }
       // Get list booking by staff
@@ -630,6 +628,7 @@ export class BookingsService implements IBookingService {
       const manager: User[] = await this.userService.getListUserByRole(
         UserRole.manager,
       );
+      // send notification to manager
       await this.notificationService.createNotification({
         user_id: manager[0].user_id,
         title: NotificationTitleEnum.manager_booking_pending_sign,
