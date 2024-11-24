@@ -631,8 +631,8 @@ export class BookingsService implements IBookingService {
       );
       await this.notificationService.createNotification({
         user_id: manager[0].user_id,
-        title: NotificationTitleEnum.booking_pending_sign,
-        content: `Yêu cầu thuê đất mới đã được tạo trên mãnh đất ${land_exist.name} vui lòng kiểm tra và xác nhận`,
+        title: NotificationTitleEnum.manager_pending_sign,
+        content: `Hợp đồng thuê đất mới đã được tạo trên ${land_exist.name} vui lòng kiểm tra và xác nhận`,
         type: NotificationType.booking_land,
         component_id: booking_exist.booking_id,
       });
