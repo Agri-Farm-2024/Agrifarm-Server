@@ -52,7 +52,7 @@ export class ProcessSpecificStageContent extends AbstractEntity {
 
   @OneToOne(
     () => DinaryStage,
-    (dinaryStage) => dinaryStage.dinaries_stage_content,
+    (dinaryStage) => dinaryStage.process_technical_specific_stage_content,
   )
   dinary_stage: DinaryStage;
 

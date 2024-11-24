@@ -615,6 +615,7 @@ export class ProcessesService implements IProcessesService {
         this.processSpecificRepo.find({
           where: filter_condition,
           relations: {
+            expert: true,
             process_technical_standard: {
               plant_season: {
                 plant: true,

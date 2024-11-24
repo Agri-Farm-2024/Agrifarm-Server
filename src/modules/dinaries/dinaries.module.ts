@@ -8,6 +8,7 @@ import { DinaryLink } from './entities/dinaryLink.entity';
 import { LoggerService } from 'src/logger/logger.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ProcessesModule } from '../processes/processes.module';
+import { RequestsModule } from '../requests/requests.module';
 
 @Module({
   controllers: [DinariesController],
@@ -17,6 +18,7 @@ import { ProcessesModule } from '../processes/processes.module';
     TypeOrmModule.forFeature([DinaryStage, DinaryLink]),
     JwtModule,
     forwardRef(() => ProcessesModule),
+    forwardRef(() => RequestsModule),
   ],
   exports: [DinariesService],
 })

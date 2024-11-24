@@ -13,6 +13,7 @@ import { DinaryStage } from './entities/dinaryStage.entity';
 import { DinaryLink } from './entities/dinaryLink.entity';
 import { LoggerService } from 'src/logger/logger.service';
 import { ProcessesService } from '../processes/processes.service';
+import { RequestsService } from '../requests/requests.service';
 
 @Injectable()
 export class DinariesService implements IDinariesService {
@@ -27,6 +28,9 @@ export class DinariesService implements IDinariesService {
 
     @Inject(forwardRef(() => ProcessesService))
     private readonly processService: ProcessesService,
+
+    @Inject(forwardRef(() => RequestsService))
+    private readonly requestService: RequestsService,
   ) {}
 
   async createDinary(
@@ -40,6 +44,7 @@ export class DinariesService implements IDinariesService {
           process_technical_specific_stage_content_id: process_stage_content_id,
         },
       });
+      // check time
       if (!dinary_stage) {
         //crete new dinary stage
         const new_dinary_stage = await this.dinariesStageRepo.save({
@@ -127,7 +132,7 @@ export class DinariesService implements IDinariesService {
         },
         relations: {
           dinaries_link: true,
-          dinaries_stage_content: true,
+          process_technical_specific_stage_content: true,
         },
       });
     } catch (error) {
