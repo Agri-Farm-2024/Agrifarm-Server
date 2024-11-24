@@ -8,6 +8,7 @@ import {
   Request,
   Query,
   Patch,
+  Param,
 } from '@nestjs/common';
 import { ServicesService } from './servicesPackage.service';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
@@ -82,7 +83,7 @@ export class ServicesController {
   async updateToUsedServiceSpecific(
     @Body() data: UpdateStatusUsedServiceSpecificDTO,
     @Request() req: any,
-    @Query('service_specific_id') service_specific_id: string,
+    @Param('service_specific_id') service_specific_id: string,
   ) {
     return this.servicesService.updateToUsedServiceSpecific(
       service_specific_id,
