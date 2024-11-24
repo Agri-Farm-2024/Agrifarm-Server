@@ -437,6 +437,16 @@ export class RequestsService implements IRequestService {
           new_request.request_id,
           RequestStatus.assigned,
         );
+
+        // create Notication for expert
+        await this.notificationService.createNotification({
+          user_id: service_specific_detail.process_technical_specific.expert_id,
+          title: NotificationTitleEnum.create_task,
+          content: NotificationContentEnum.assigned_task(),
+          component_id: new_request.request_id,
+          type: NotificationType.request,
+        });
+
         return new_request;
       }
     } catch (error) {
@@ -494,6 +504,14 @@ export class RequestsService implements IRequestService {
       if (!new_task) {
         throw new BadRequestException('Unable to create task');
       }
+      //create notification for staff
+      await this.notificationService.createNotification({
+        user_id: service_specific_detail.booking_land.staff_id,
+        title: NotificationTitleEnum.create_task,
+        content: NotificationContentEnum.assigned_task(),
+        component_id: new_request.request_id,
+        type: NotificationType.request,
+      });
       return new_request;
     } catch (error) {
       this.loggerService.error(error.message, error.stack);

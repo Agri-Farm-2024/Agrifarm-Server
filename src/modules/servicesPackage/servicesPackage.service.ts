@@ -131,12 +131,7 @@ export class ServicesService implements IService {
             booking_land: {
               land: true,
             },
-            process_technical_specific: {
-              process_technical_specific_stage: {
-                process_technical_specific_stage_content: true,
-                process_technical_specific_stage_material: true,
-              },
-            },
+            service_package: true,
           },
           where: filter,
           skip: (pagination.page_index - 1) * pagination.page_size,
