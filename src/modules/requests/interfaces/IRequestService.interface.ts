@@ -31,8 +31,7 @@ export interface IRequestService {
 
   createRequestPurchase(
     createRequestPurchase: CreateRequestPurchaseDto,
-    user: Payload,
-  ): Promise<any> 
+  ): Promise<any>;
 
   createRequestPurchaseharvest(service_specific_id: string): Promise<any>;
 

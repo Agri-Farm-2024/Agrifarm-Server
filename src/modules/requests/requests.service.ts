@@ -383,7 +383,6 @@ export class RequestsService implements IRequestService {
 
   async createRequestPurchase(
     createRequestPurchase: CreateRequestPurchaseDto,
-    user: Payload,
   ): Promise<any> {
     try {
       //check request purchase for service is exist
@@ -405,11 +404,14 @@ export class RequestsService implements IRequestService {
         throw new BadRequestException('Service specific not found');
       }
 
-      if (service_specific_detail.service_package.process_of_plant === true) {
+      if (
+        service_specific_detail.service_package.process_of_plant === true &&
+        service_specific_detail.service_package.purchase === true
+      ) {
         //create new request purchase
         const new_request = await this.requestEntity.save({
           ...createRequestPurchase,
-          sender_id: user.user_id,
+          sender_id: service_specific_detail.landrenter_id,
           type: RequestType.product_purchase,
         });
         if (!new_request) {
@@ -597,21 +599,6 @@ export class RequestsService implements IRequestService {
       ) {
         //create new request purchase hasvest
         await this.createRequestPurchaseharvest(request.service_specific_id);
-      } else {
-        if (
-          request.type === RequestType.product_purchase &&
-          data.status === RequestStatus.rejected
-        ) {
-          // Notication to user
-          await this.notificationService.createNotification({
-            user_id: request.sender_id,
-            title: NotificationTitleEnum.reject_request_purchase,
-            content:
-              'Thông báo chất lượng sản phẩm không đạt yêu cầu chất lượng để thu mua',
-            component_id: request.request_id,
-            type: NotificationType.request,
-          });
-        }
       }
 
       //check request hasvest complete
@@ -619,7 +606,7 @@ export class RequestsService implements IRequestService {
         request.type === RequestType.product_puchase_harvest &&
         data.status === RequestStatus.completed
       ) {
-        
+        //create transaction
       }
       // Check condition of report land request
       if (

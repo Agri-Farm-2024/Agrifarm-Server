@@ -100,14 +100,14 @@ export class RequestsController {
     return await this.requestsService.createRequestTechnicalSupport(data, user);
   }
 
-  @UseGuards(AuthGuard)
-  @Roles(UserRole.land_renter)
-  @Post('/createRequestPurchase')
-  async createRequestPurchase(
-    @Body() data: CreateRequestPurchaseDto,
-    @Request() req: any,
-  ) {
-    const user = req['user'];
-    return await this.requestsService.createRequestPurchase(data, user);
-  }
+  // @UseGuards(AuthGuard)
+  // @Roles(UserRole.land_renter)
+  // @Post('/createRequestPurchase')
+  // async createRequestPurchase(
+  //   @Body() data: CreateRequestPurchaseDto,
+  //   @Request() req: any,
+  // ) {
+  //   const user = req['user'];
+  //   return await this.requestsService.createRequestPurchase(data, user);
+  // }
 }
