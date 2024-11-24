@@ -1,7 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { ProcessesService } from './processes.service';
 import { ProcessesController } from './processes.controller';
-import { TypeORMError } from 'typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProcessStandard } from './entities/standards/processStandard.entity';
 import { ProcessStandardStage } from './entities/standards/processStandardStage.entity';
@@ -16,6 +15,7 @@ import { ProcessSpecificStageMaterial } from './entities/specifics/processSpecif
 import { ServicesModule } from '../servicesPackage/servicesPackage.module';
 import { RequestsModule } from '../requests/requests.module';
 import { DinariesModule } from '../dinaries/dinaries.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   controllers: [ProcessesController],
@@ -36,6 +36,7 @@ import { DinariesModule } from '../dinaries/dinaries.module';
     JwtModule,
     forwardRef(() => RequestsModule),
     forwardRef(() => DinariesModule),
+    UsersModule,
   ],
   exports: [ProcessesService],
 })

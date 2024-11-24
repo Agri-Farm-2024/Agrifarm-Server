@@ -41,6 +41,8 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../notifications/types/notification-type.enum';
 import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
 import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
+import { UsersService } from '../users/users.service';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -83,6 +85,8 @@ export class ProcessesService implements IProcessesService {
     private readonly dinariesService: DinariesService,
 
     private readonly notificationService: NotificationsService,
+
+    private readonly userService: UsersService,
   ) {}
 
   async createProcessStandard(
@@ -521,6 +525,9 @@ export class ProcessesService implements IProcessesService {
           },
         },
       );
+      // get list expert free time
+      const list_expert_free_time: User[] =
+        await this.userService.getListExpertByProcessSpecificFreeTime();
       // create new process specific
       const process_technical_specific = await this.processSpecificRepo.save({
         process_technical_standard_id:
@@ -529,7 +536,7 @@ export class ProcessesService implements IProcessesService {
         time_start: service_specific.time_start,
         time_end: service_specific.time_end,
         qr_url: '',
-        expert_id: process_technical_standard.expert_id,
+        expert_id: list_expert_free_time[0].user_id,
       });
       // create process specific stage
       for (const stage of process_technical_standard.process_standard_stage) {

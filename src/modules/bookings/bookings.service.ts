@@ -1020,14 +1020,33 @@ export class BookingsService implements IBookingService {
       // send notification to land renter
     });
     // check booking expired
-    const booking_expired = await this.bookingRepository.find({
+    const list_booking_expired = await this.bookingRepository.find({
       relations: {
         land: true,
+        extends: true,
       },
       where: {
-        time_end: LessThanOrEqual(new Date()),
         status: BookingStatus.completed,
       },
+    });
+    // define booking_expired
+    const booking_expired: BookingLand[] = [];
+    // set booking expired time by add extend month
+    list_booking_expired.forEach(async (booking) => {
+      if (booking.extends.length > 0) {
+        for (let i = 0; i < booking.extends.length; i++) {
+          booking.time_end = new Date(
+            new Date(booking.time_end).setMonth(
+              new Date(booking.time_end).getMonth() +
+                booking.extends[i].total_month,
+            ),
+          );
+        }
+      }
+      // check booking is expired
+      if (new Date(booking.time_end) < new Date()) {
+        booking_expired.push(booking);
+      }
     });
     // Set booking to expired
     booking_expired.forEach(async (booking) => {
@@ -1088,9 +1107,6 @@ export class BookingsService implements IBookingService {
         ...booking,
         time_end: time_end,
         total_month: booking.total_month + total_month,
-        total_price:
-          booking.total_price +
-          booking.land.price_booking_per_month * total_month,
       });
       return update_booking;
     } catch (error) {}

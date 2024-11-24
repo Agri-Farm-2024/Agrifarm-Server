@@ -60,9 +60,6 @@ export class BookingLand extends AbstractEntity {
   })
   price_deposit: number;
 
-  @Column({ type: 'bigint' })
-  total_price: number;
-
   @Column()
   purpose_rental: string;
 

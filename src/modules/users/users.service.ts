@@ -19,6 +19,8 @@ import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
 import { UserStatus } from './types/user-status.enum';
 import { UserRole } from './types/user-role.enum';
 import { Payload } from '../auths/types/payload.type';
+import { ProcessSpecificStatus } from '../processes/types/processSpecific-status.enum';
+import { ServiceSpecificStatus } from '../servicesPackage/types/service-specific-status.enum';
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -289,6 +291,9 @@ export class UsersService implements IUserService {
   async getListUserByRole(role: UserRole): Promise<any> {
     try {
       const users = await this.userRepository.find({
+        relations: {
+          service_specific: true,
+        },
         where: {
           role: role,
         },
@@ -297,5 +302,32 @@ export class UsersService implements IUserService {
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
+  }
+
+  async getListExpertByProcessSpecificFreeTime(): Promise<any> {
+    try {
+      const experts = await this.userRepository.find({
+        where: {
+          role: UserRole.expert,
+          expert_process_technical_specific: {
+            status: ProcessSpecificStatus.active,
+            service_specific: {
+              status: ServiceSpecificStatus.used,
+            },
+          },
+        },
+        relations: {
+          expert_process_technical_specific: true,
+        },
+      });
+      // orders expert by the number of service specific
+      experts.sort((a, b) => {
+        return (
+          a.expert_process_technical_specific.length -
+          b.expert_process_technical_specific.length
+        );
+      });
+      return experts;
+    } catch (error) {}
   }
 }

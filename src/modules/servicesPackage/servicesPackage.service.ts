@@ -339,11 +339,11 @@ export class ServicesService implements IService {
           service_specific_id: transaction.service_specific_id,
         },
         {
-          status: ServiceSpecificStatus.used,
+          status: ServiceSpecificStatus.pending_sign,
         },
       );
-      // create process specific
-      await this.processService.createProcessSpecific(service_specific);
+      // // create process specific
+      // await this.processService.createProcessSpecific(service_specific);
       // send email to user
       // send notification to user
       return transaction;
@@ -457,7 +457,7 @@ export class ServicesService implements IService {
       service_specific.status = ServiceSpecificStatus.used;
       const new_service = await this.serviceSpecificRepo.save(service_specific);
       // // create process specific
-      // await this.processService.createProcessSpecific(service_specific);
+      await this.processService.createProcessSpecific(service_specific);
       // send email to user
       // send notification to user
       return new_service;
