@@ -142,6 +142,9 @@ export class TasksService implements ITaskService {
             plant_season: {
               plant: true,
             },
+            service_specific: true,
+            process_technical_specific_stage: true,
+            process_technical_specific_stage_content: true,
           },
           assign_by: true,
         },
@@ -154,7 +157,11 @@ export class TasksService implements ITaskService {
             avatar_url: true,
           },
         },
-        order: { created_at: 'DESC' },
+        order: {
+          request: {
+            updated_at: 'DESC',
+          },
+        },
       });
       return tasks;
     } catch (error) {
