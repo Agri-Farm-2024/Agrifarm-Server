@@ -185,15 +185,15 @@ export class ExtendsService implements IExtendService {
           throw new BadRequestException('Extend is not pending contract');
         }
         // // send notification to user
-        // await this.notificationService.createNotification({
-        //   user_id: extend.booking_land.landrenter_id,
-        //   component_id: extend.extend_id,
-        //   content: NotificationContentEnum.pending_sign_extend(
-        //     extend.booking_land.land.name,
-        //   ),
-        //   type: NotificationType.extend,
-        //   title: NotificationTitleEnum.pending_sign_extend,
-        // });
+        await this.notificationService.createNotification({
+          user_id: extend.booking_land.landrenter_id,
+          component_id: extend.extend_id,
+          content: NotificationContentEnum.pending_sign_extend(
+            extend.booking_land.land.name,
+          ),
+          type: NotificationType.extend,
+          title: NotificationTitleEnum.pending_sign_extend,
+        });
       }
       // check condition update to pending payment
       if (data.status === ExtendStatus.pending_payment) {
