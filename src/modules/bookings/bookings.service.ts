@@ -38,6 +38,7 @@ import { NotificationType } from '../notifications/types/notification-type.enum'
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
+import { parsePriceToVND } from 'src/utils/price.util';
 
 @Injectable()
 export class BookingsService implements IBookingService {
@@ -193,7 +194,7 @@ export class BookingsService implements IBookingService {
           total_month: createBookingDto.total_month,
           price_per_month: land.price_booking_per_month,
           price_deposit: land.price_booking_per_month * 2,
-          total_price: total_price,
+          total_price: parsePriceToVND(total_price),
           status: 'Chờ xác nhận',
           user_mail: land_renter.email,
         },
@@ -631,7 +632,7 @@ export class BookingsService implements IBookingService {
       );
       await this.notificationService.createNotification({
         user_id: manager[0].user_id,
-        title: NotificationTitleEnum.manager_pending_sign,
+        title: NotificationTitleEnum.manager_booking_pending_sign,
         content: `Hợp đồng thuê đất mới đã được tạo trên ${land_exist.name} vui lòng kiểm tra và xác nhận`,
         type: NotificationType.booking_land,
         component_id: booking_exist.booking_id,
@@ -714,6 +715,14 @@ export class BookingsService implements IBookingService {
         user_id: booking_exist.land_renter.user_id,
         title: NotificationTitleEnum.booking_pending_sign,
         content: `Yêu cầu thuê đất của bạn đã được xác nhận, vui lòng kiểm tra và xác nhận`,
+        type: NotificationType.booking_land,
+        component_id: booking_exist.booking_id,
+      });
+      // send notification to staff
+      await this.notificationService.createNotification({
+        user_id: booking_exist.staff_id,
+        title: NotificationTitleEnum.staff_booking_pending_sign,
+        content: `Hợp đồng thuê đất mới đã được xác nhận trên ${booking_exist.land.name} vui lòng kiểm tra và xác nhận`,
         type: NotificationType.booking_land,
         component_id: booking_exist.booking_id,
       });
@@ -861,7 +870,9 @@ export class BookingsService implements IBookingService {
             total_month: booking_exist.total_month,
             price_per_month: booking_exist.price_per_month,
             price_deposit: booking_exist.price_deposit,
-            total_price: this.getTotalPriceBooking(booking_exist),
+            total_price: parsePriceToVND(
+              this.getTotalPriceBooking(booking_exist),
+            ),
             status: 'Đã hoàn thành',
             user_mail: booking_exist.land_renter.email,
             transaction_code: transaction.transaction_code,

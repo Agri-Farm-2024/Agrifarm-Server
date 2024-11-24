@@ -12,5 +12,6 @@ export enum NotificationTitleEnum {
   pending_sign_extend = 'Yêu cầu gia hạn thuê đất đang chờ ký tên',
   reject_request_purchase = ' Chất lượng sản phẩm không đạt yêu càu',
   ready_process_stage = `Chuẩn bị cho giai đoạn mới`,
-  manager_pending_sign = 'Hợp đồng thuê đất mới được tạo',
+  manager_booking_pending_sign = 'Hợp đồng thuê đất mới được tạo',
+  staff_booking_pending_sign = 'Hợp đồng thuê đất đang chờ ký tên',
 }
