@@ -131,6 +131,9 @@ export class ServicesService implements IService {
             booking_land: {
               land: true,
             },
+            process_technical_specific: {
+              expert: true,
+            },
             service_package: true,
           },
           where: filter,
