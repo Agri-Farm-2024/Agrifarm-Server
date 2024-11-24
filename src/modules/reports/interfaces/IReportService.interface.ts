@@ -13,4 +13,6 @@ export interface IReportService {
     user: Payload,
   );
   createReport(data: CreateReportDTO, task_id: string, user: Payload);
+
+  getListReportByRequestId(request_id: string): Promise<any>;
 }

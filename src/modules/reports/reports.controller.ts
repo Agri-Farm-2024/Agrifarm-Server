@@ -47,4 +47,9 @@ export class ReportsController {
     const user = req['user'];
     return this.reportsService.createReportPurchase(data, task_id, user);
   }
+
+  @Get('/:request_id')
+  getListReportByRequestId(@Param('request_id') request_id: string) {
+    return this.reportsService.getListReportByRequestId(request_id);
+  }
 }
