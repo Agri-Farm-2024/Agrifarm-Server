@@ -17,6 +17,7 @@ import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 import { ProcessSpecificStage } from 'src/modules/processes/entities/specifics/processSpecificStage.entity';
 import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
 import { Channel } from 'src/modules/channels/entities/channel.entity';
+import { ProcessSpecificStageContent } from 'src/modules/processes/entities/specifics/processSpecificStageContent.entity';
 
 @Entity('requests')
 export class Request extends AbstractEntity {
@@ -59,6 +60,9 @@ export class Request extends AbstractEntity {
   process_technical_specific_stage_id: string;
 
   @Column({ nullable: true, type: 'uuid' })
+  process_technical_specific_stage_content_id: string;
+
+  @Column({ nullable: true, type: 'uuid' })
   service_specific_id: string;
 
   @Column({
@@ -91,12 +95,13 @@ export class Request extends AbstractEntity {
   @JoinColumn({ name: 'booking_land_id' })
   booking_land: BookingLand;
 
-  @ManyToOne(
-    () => ProcessSpecificStage,
-    (process) => process.requests_material_stage,
-  )
+  @ManyToOne(() => ProcessSpecificStage, (process) => process.request)
   @JoinColumn({ name: 'process_technical_specific_stage_id' })
   process_technical_specific_stage: ProcessSpecificStage;
+
+  @ManyToOne(() => ProcessSpecificStageContent, (process) => process.requests)
+  @JoinColumn({ name: 'process_technical_specific_stage_content_id' })
+  process_technical_specific_stage_content: ProcessSpecificStageContent;
 
   @ManyToOne(
     () => ServiceSpecific,

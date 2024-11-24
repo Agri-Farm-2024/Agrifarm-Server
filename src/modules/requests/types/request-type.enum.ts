@@ -7,4 +7,5 @@ export enum RequestType {
   create_process_standard = 'create_process_standard',
   report_land = 'report_land',
   material_process_specfic_stage = 'material_process_specfic_stage',
+  cultivate_process_content = 'cultivate_process_content',
 }

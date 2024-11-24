@@ -39,6 +39,7 @@ import { createRequestTechnicalSupportDTO } from './dto/create-request-technical
 import { ChannelsService } from '../channels/channels.service';
 import { ServiceSpecificStatus } from '../servicesPackage/types/service-specific-status.enum';
 import { RequestSupportType } from './types/request-support-type.enum';
+import { ProcessSpecificStageContent } from '../processes/entities/specifics/processSpecificStageContent.entity';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -229,6 +230,12 @@ export class RequestsService implements IRequestService {
       });
       if (!request) {
         throw new BadRequestException('Request not found');
+      }
+      // check status is start
+      if (status === RequestStatus.in_progress && request.time_start) {
+        if (request.time_start > new Date()) {
+          throw new BadRequestException('Not yet to start task');
+        }
       }
       // check type of create process standard to update status process standard
       if (
@@ -681,6 +688,40 @@ export class RequestsService implements IRequestService {
         total_in_progress,
         total_completed,
       };
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async createRequestCultivateProcessContent(
+    process_specific_stage_content: ProcessSpecificStageContent,
+  ): Promise<any> {
+    try {
+      // Create a new request
+      const new_request = await this.requestEntity.save({
+        process_technical_specific_stage_content_id:
+          process_specific_stage_content.process_technical_specific_stage_content_id,
+        time_start: process_specific_stage_content.time_start,
+        type: RequestType.cultivate_process_content,
+        status: RequestStatus.assigned,
+      });
+      // create task for the request
+      await this.taskService.createTaskAuto(
+        new_request.request_id,
+        process_specific_stage_content.process_technical_specific_stage
+          .process_technical_specific.expert_id,
+      );
+      // send noti to expert
+      await this.notificationService.createNotification({
+        user_id:
+          process_specific_stage_content.process_technical_specific_stage
+            .process_technical_specific.expert_id,
+        title: NotificationTitleEnum.create_task,
+        content: NotificationContentEnum.assigned_task(),
+        component_id: new_request.request_id,
+        type: NotificationType.request,
+      });
+      return new_request;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

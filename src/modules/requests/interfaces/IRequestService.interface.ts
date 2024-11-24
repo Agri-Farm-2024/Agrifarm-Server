@@ -9,6 +9,7 @@ import { Payload } from 'src/modules/auths/types/payload.type';
 import { CreateRequestPurchaseDto } from '../dto/create-request-puchase.dto';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 import { createRequestTechnicalSupportDTO } from '../dto/create-request-technical-support.dto';
+import { ProcessSpecificStageContent } from 'src/modules/processes/entities/specifics/processSpecificStageContent.entity';
 
 export interface IRequestService {
   createRequestViewLand(data: CreateRequestViewLandDTO): Promise<any>;
@@ -31,6 +32,7 @@ export interface IRequestService {
 
   createRequestPurchase(
     createRequestPurchase: CreateRequestPurchaseDto,
+    user: Payload,
   ): Promise<any>;
 
   createRequestPurchaseharvest(service_specific_id: string): Promise<any>;
@@ -38,6 +40,10 @@ export interface IRequestService {
   createRequestReportLand(booking_land: BookingLand): Promise<any>;
 
   getDetailRequestPrcocessStandard(plant_season_id: string): Promise<any>;
+
+  createRequestCultivateProcessContent(
+    process_specific_stage_content: ProcessSpecificStageContent,
+  ): Promise<any>;
 
   createRequestTechnicalSupport(
     data: createRequestTechnicalSupportDTO,

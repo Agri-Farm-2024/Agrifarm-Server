@@ -4,11 +4,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProcessSpecificStage } from './processSpecificStage.entity';
 import { DinaryStage } from 'src/modules/dinaries/entities/dinaryStage.entity';
+import { Request } from 'src/modules/requests/entities/request.entity';
 
 @Entity('processes_technical_specific_stage_content')
 export class ProcessSpecificStageContent extends AbstractEntity {
@@ -39,7 +41,7 @@ export class ProcessSpecificStageContent extends AbstractEntity {
 
   @Column()
   time_end: Date;
-
+  // Relation
   @ManyToOne(
     () => ProcessSpecificStage,
     (processSpecificStage) =>
@@ -53,4 +55,10 @@ export class ProcessSpecificStageContent extends AbstractEntity {
     (dinaryStage) => dinaryStage.dinaries_stage_content,
   )
   dinary_stage: DinaryStage;
+
+  @OneToMany(
+    () => Request,
+    (request) => request.process_technical_specific_stage_content,
+  )
+  requests: Request[];
 }
