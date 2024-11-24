@@ -443,6 +443,7 @@ export class ServicesService implements IService {
       }
       // update contract image
       service_specific.contract_image = contract_image;
+      service_specific.status = ServiceSpecificStatus.used;
       const new_service = await this.serviceSpecificRepo.save(service_specific);
       // create process specific
       await this.processService.createProcessSpecific(service_specific);

@@ -10,7 +10,7 @@ import { CreateProcessDto } from './dto/create-process.dto';
 import { IProcessesService } from './interfaces/IProcessesService.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProcessStandard } from './entities/standards/processStandard.entity';
-import { Repository } from 'typeorm';
+import { Between, IsNull, Not, Repository } from 'typeorm';
 import { ProcessStandardStage } from './entities/standards/processStandardStage.entity';
 import { ProcessStandardStageContent } from './entities/standards/processStandardStageContent.entity';
 import { CreateProcessStageDto } from './dto/create-process-stage.dto';
@@ -36,8 +36,6 @@ import { UpdateProcessStandardsDto } from './dto/update-process-standard.dto';
 import { ProcessSpecificStatus } from './types/processSpecific-status.enum';
 import { UPdateProcessSpecificDto } from './dto/update-process-specific.dto';
 import { UserRole } from '../users/types/user-role.enum';
-
-import { UpdateProcessSpecificStatusDto } from './dto/update-process-specific-status.dto';
 import { DinariesService } from '../dinaries/dinaries.service';
 
 @Injectable()
@@ -870,6 +868,41 @@ export class ProcessesService implements IProcessesService {
         process_specific_exist,
       );
       return process_specific;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async checkAndCreateTaskProcessContentForExpert(): Promise<any> {
+    try {
+      // get all process specific content
+      const check_time = getTimeByPlusDays(new Date(), 1);
+      console.log('check_time', check_time);
+      const process_specific_stage_content =
+        await this.processSpecificStageContentRepo.find({
+          where: {
+            time_start: Between(new Date(), check_time),
+            process_technical_specific_stage: {
+              process_technical_specific: {
+                status: ProcessSpecificStatus.active,
+                expert_id: Not(IsNull()),
+              },
+            },
+          },
+          relations: {
+            process_technical_specific_stage: {
+              process_technical_specific: true,
+            },
+          },
+        });
+      console.log(
+        'process_specific_stage_content',
+        process_specific_stage_content,
+      );
+      // create task for expert
+      for (const content of process_specific_stage_content) {
+        await this.requestService.createRequestCultivateProcessContent(content);
+      }
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

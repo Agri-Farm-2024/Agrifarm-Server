@@ -227,6 +227,14 @@ export class TransactionsService implements ITransactionService {
             booking_land: {
               land: true,
             },
+            extend: {
+              booking_land: true,
+            },
+            service_specific: {
+              booking_land: {
+                land: true,
+              },
+            },
           },
           where: {
             user_id: user.user_id,
@@ -287,11 +295,18 @@ export class TransactionsService implements ITransactionService {
             updated_at: 'DESC',
           },
           relations: {
+            user: true,
             booking_land: {
               land: true,
             },
-            user: true,
-            extend: true,
+            extend: {
+              booking_land: true,
+            },
+            service_specific: {
+              booking_land: {
+                land: true,
+              },
+            },
           },
           take: pagination.page_size,
           skip: (pagination.page_index - 1) * pagination.page_size,
@@ -327,11 +342,18 @@ export class TransactionsService implements ITransactionService {
       const transaction: any = await this.transactionRepository.findOne({
         where: { transaction_id },
         relations: {
+          user: true,
           booking_land: {
             land: true,
           },
-          user: true,
-          extend: true,
+          extend: {
+            booking_land: true,
+          },
+          service_specific: {
+            booking_land: {
+              land: true,
+            },
+          },
         },
         select: {
           user: {

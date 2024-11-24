@@ -105,5 +105,5 @@ export class Transaction extends AbstractEntity {
 
   @ManyToOne(() => Extend, (extend) => extend.transactions)
   @JoinColumn({ name: 'extend_id' })
-  extend: BookingLand;
+  extend: Extend;
 }

@@ -63,5 +63,5 @@ export class ProcessSpecificStage extends AbstractEntity {
     () => Request,
     (request) => request.process_technical_specific_stage,
   )
-  requests_material_stage: Request[];
+  request: Request[];
 }
