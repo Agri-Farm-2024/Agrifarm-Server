@@ -22,7 +22,21 @@ export class TestService {
 
   async test(): Promise<any> {
     try {
-      await this.serviceService.checkAndCreatePurchaseProductService();
+      // await this.serviceService.checkAndCreatePurchaseProductService();
+      await this.mailService.sendMail(
+        'chisbr2002@gmail.com',
+        'test',
+        'test.hbs',
+        {
+          name: 'test',
+        },
+        [
+          {
+            filename: 'test.pdf',
+            path: '/uploadFile/images.png',
+          },
+        ],
+      );
     } catch (error) {
       this.logger.error(error);
       throw error;

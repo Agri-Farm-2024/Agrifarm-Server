@@ -14,13 +14,24 @@ export class MailService {
     subject: string,
     template: string,
     context: any,
+    attachments?: Array<{ filename: string; path: string }>,
   ): Promise<void> {
     try {
+      if (attachments.length > 0) {
+        attachments = attachments.map((attachment) => {
+          return {
+            filename: attachment.filename,
+            path: `./dist/${attachment.path}`,
+          };
+        });
+      }
+
       await this.mailerService.sendMail({
         to: email,
         subject: subject,
         template: `./${template}`,
         context,
+        attachments,
       });
     } catch (error) {
       if (!(error instanceof BadRequestException)) {
