@@ -255,14 +255,17 @@ export class ServicesService implements IService {
         ),
         landrenter_id: user.user_id,
       });
+      // calculate total price
       const total_price =
         (new_service_specific.price_package +
           new_service_specific.price_process) *
         (new_service_specific.acreage_land / 1000);
+      // calculate price deposit
+      const price_deposit = total_price * 0.1;
       // create transaction DTO and create transaction
       const transactionData: Partial<CreateTransactionDTO> = {
         service_specific_id: new_service_specific.service_specific_id,
-        total_price: total_price,
+        total_price: total_price + price_deposit,
         purpose: TransactionPurpose.service,
         user_id: user.user_id,
       };
