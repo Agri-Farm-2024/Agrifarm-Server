@@ -89,16 +89,16 @@ export class TasksService implements ITaskService {
         throw new BadRequestException('User not found');
       }
       // check type of request
-      if (
-        task.request.type === RequestType.technical_support &&
-        task.request.support_type === RequestSupportType.chat
-      ) {
-        // join message for assigned user
-        await this.channelService.addAssignToChannel(
-          task.request_id,
-          assigned_to_id,
-        );
-      }
+      // if (
+      //   task.request.type === RequestType.technical_support &&
+      //   task.request.support_type === RequestSupportType.chat
+      // ) {
+      //   // join message for assigned user
+      //   await this.channelService.addAssignToChannel(
+      //     task.request_id,
+      //     assigned_to_id,
+      //   );
+      // }
       // update task
       const updated_task = await this.taskEntity.save({
         ...task,
@@ -191,6 +191,27 @@ export class TasksService implements ITaskService {
         task.request.status !== RequestStatus.rejected
       ) {
         throw new BadRequestException('Request not assigned or rejected');
+      }
+      // Check type of request
+      if (
+        task.request.type === RequestType.technical_support &&
+        task.request.support_type === RequestSupportType.chat
+      ) {
+        const new_channel = await this.channelService.createChannel({
+          request_id: task.request_id,
+          sender_id: task.request.sender_id,
+          expert_id: task.assigned_to_id,
+        });
+        // send notification to sender
+        await this.notificationService.createNotification({
+          user_id: task.request.sender_id,
+          title: NotificationTitleEnum.create_chat,
+          content: NotificationContentEnum.create_chat(
+            task.request.description,
+          ),
+          type: NotificationType.channel,
+          component_id: new_channel.channel_id,
+        });
       }
       // update request status
       const updated_request = await this.requestSerivce.updateRequestStatus(

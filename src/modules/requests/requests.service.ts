@@ -723,13 +723,13 @@ export class RequestsService implements IRequestService {
       // create task for the request
       await this.taskService.createTask(new_request.request_id);
       // check support type
-      if (data.support_type === RequestSupportType.chat) {
-        // create channel
-        await this.channelService.createChannel({
-          request_id: new_request.request_id,
-          sender_id: user.user_id,
-        });
-      }
+      // if (data.support_type === RequestSupportType.chat) {
+      //   // create channel
+      //   await this.channelService.createChannel({
+      //     request_id: new_request.request_id,
+      //     sender_id: user.user_id,
+      //   });
+      // }
       return new_request;
     } catch (error) {}
   }

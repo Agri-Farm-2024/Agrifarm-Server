@@ -160,10 +160,14 @@ export class ChannelsService implements IChannelService {
       const channel = await this.channelRepository.save({
         request_id: data.request_id,
       });
-      // create join
+      // create join for sender and expert
       await this.channelJoinRepository.save({
         channel_id: channel.channel_id,
         user_join_id: data.sender_id,
+      });
+      await this.channelJoinRepository.save({
+        channel_id: channel.channel_id,
+        user_join_id: data.expert_id,
       });
       return channel;
     } catch (error) {

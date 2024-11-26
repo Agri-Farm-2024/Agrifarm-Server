@@ -15,4 +15,7 @@ export const NotificationContentEnum = {
 
   ready_process_stage: (stage_title: string, stage_numberic_order: number) =>
     `Hãy chuẩn bị cho Giai đoạn ${stage_numberic_order} : ${stage_title}`,
+
+  create_chat: (description: string) =>
+    `Cuộc trò chuyện mới đã được tạo với mô tả: ${description} `,
 } as const;

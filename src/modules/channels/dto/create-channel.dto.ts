@@ -6,4 +6,7 @@ export class CreateChannelDTO {
 
   @IsNotEmpty()
   sender_id: string;
+
+  @IsNotEmpty()
+  expert_id: string;
 }
