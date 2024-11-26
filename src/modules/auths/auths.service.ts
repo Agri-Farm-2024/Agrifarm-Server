@@ -15,13 +15,13 @@ import { RedisService } from 'src/caches/redis/redis.service';
 import { MailService } from 'src/mails/mail.service';
 import { SubjectMailEnum } from 'src/mails/types/mail-subject.type';
 import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
-import { InfoOTP } from './types/IntoOTP.type';
 import { OTPStatus } from './types/otp-status.type';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UserRole } from '../users/types/user-role.enum';
 import { ConfigService } from '@nestjs/config';
 import { UserStatus } from '../users/types/user-status.enum';
-import { Payload } from './types/payload.type';
+import { IUser } from './types/IUser.interface';
+import { IOtp } from './types/IntoOTP.type';
 
 @Injectable()
 export class AuthsService implements IAuthService {
@@ -95,7 +95,7 @@ export class AuthsService implements IAuthService {
 
       Logger.log(`Password match`);
       // 3. Generate a token
-      const payload: Payload = {
+      const payload: IUser = {
         user_id: user.user_id,
         email: user.email,
         full_name: user.full_name,
@@ -123,7 +123,7 @@ export class AuthsService implements IAuthService {
     }
     // check verify otp register
     const exist_otp = await this.redisService.get(`otp:${data.email}:register`);
-    const exist_otp_obj: InfoOTP = JSON.parse(exist_otp);
+    const exist_otp_obj: IOtp = JSON.parse(exist_otp);
     if (!exist_otp_obj || exist_otp_obj.status !== OTPStatus.verified) {
       throw new BadRequestException('Please verify the OTP first');
     }
@@ -215,7 +215,7 @@ export class AuthsService implements IAuthService {
     // get otp from redis
     const exist_otp = await this.redisService.get(`otp:${email}:${type}`);
     // parse to object
-    const exist_otp_obj: InfoOTP = JSON.parse(exist_otp);
+    const exist_otp_obj: IOtp = JSON.parse(exist_otp);
     if (!exist_otp_obj) {
       throw new BadRequestException('OTP is invalid');
     }
@@ -270,7 +270,7 @@ export class AuthsService implements IAuthService {
         secret: privateKey,
       });
       // Generate a new token
-      const payload: Payload = {
+      const payload: IUser = {
         user_id: decoded.user_id,
         email: decoded.email,
         full_name: decoded.full_name,
@@ -298,7 +298,7 @@ export class AuthsService implements IAuthService {
    * 2. Create a token with the payload and the private key
    */
 
-  private async generateToken(payload: Payload): Promise<any> {
+  private async generateToken(payload: IUser): Promise<any> {
     try {
       // Create 2 public and private keys with crypto
       const publicKey = this.configService

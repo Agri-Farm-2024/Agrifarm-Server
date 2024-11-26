@@ -18,4 +18,7 @@ export const NotificationContentEnum = {
 
   create_chat: (description: string) =>
     `Cuộc trò chuyện mới đã được tạo với mô tả: ${description} `,
+
+  create_report: (description: string) =>
+    `Báo cáo cho công việc mới được tạo với mô tả: ${description}`,
 } as const;

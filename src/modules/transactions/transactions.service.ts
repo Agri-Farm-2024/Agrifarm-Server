@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { ITransactionService } from './interfaces/transaction.interface';
 import { CreateTransactionDTO } from './dto/create-transaction.dto';
@@ -15,17 +16,21 @@ import { BookingLand } from '../bookings/entities/bookingLand.entity';
 import { BookingPaymentFrequency } from '../bookings/types/booking-payment.enum';
 import { TransactionStatus } from './types/transaction-status.enum';
 import { TransactionPurpose } from './types/transaction-purpose.enum';
-import { Payload } from '../auths/types/payload.type';
+import { IUser } from '../auths/types/IUser.interface';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { parsePaymentLink } from 'src/utils/payment-link.util';
 import { ServicesService } from '../servicesPackage/servicesPackage.service';
 import { OrdersService } from '../orders/orders.service';
 import { ExtendsService } from '../extends/extends.service';
 import { TransactionType } from './types/transaction-type.enum';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class TransactionsService implements ITransactionService {
+  private readonly logger = new Logger(TransactionsService.name);
   constructor(
+    private readonly loggerService: LoggerService,
+
     @InjectRepository(Transaction)
     private readonly transactionRepository: Repository<Transaction>,
 
@@ -213,7 +218,7 @@ export class TransactionsService implements ITransactionService {
   }
 
   async getListTransactionByUser(
-    user: Payload,
+    user: IUser,
     pagination: PaginationParams,
   ): Promise<any> {
     try {
@@ -400,6 +405,13 @@ export class TransactionsService implements ITransactionService {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
   }
 
+  /**
+   * Cancel transaction call by user
+   * @function cancelTransaction
+   * @param transaction_id
+   * @returns
+   */
+
   async cancelTransaction(transaction_id: string): Promise<any> {
     try {
       // get detail transaction
@@ -417,7 +429,7 @@ export class TransactionsService implements ITransactionService {
       // check purpose transaction
       switch (transaction.purpose) {
         case TransactionPurpose.service:
-          return await this.servicePackageService.cancelServiceSpecific(
+          return await this.servicePackageService.deleteServiceSpecific(
             transaction.service_specific_id,
           );
         case TransactionPurpose.order:
@@ -433,6 +445,10 @@ export class TransactionsService implements ITransactionService {
     }
   }
 
+  /**
+   * Check expired transaction call by cron job
+   * @function checkTransactionIsExpired
+   */
   async checkTransactionIsExpired(): Promise<void> {
     try {
       const transactions_expired = await this.transactionRepository.find({
@@ -443,8 +459,20 @@ export class TransactionsService implements ITransactionService {
       });
       if (transactions_expired.length > 0) {
         transactions_expired.forEach(async (transaction) => {
-          transaction.status = TransactionStatus.expired;
-          await this.transactionRepository.save(transaction);
+          if (transaction.purpose === TransactionPurpose.order) {
+            await this.transactionRepository.delete(transaction.transaction_id);
+            await this.orderService.cancelOrder(transaction.order_id);
+            this.loggerService.log(
+              `Cancel transaction order with ${transaction.order_id}`,
+            );
+          } else if (transaction.purpose === TransactionPurpose.service) {
+            await this.servicePackageService.deleteServiceSpecific(
+              transaction.service_specific_id,
+            );
+          } else {
+            transaction.status = TransactionStatus.expired;
+            await this.transactionRepository.save(transaction);
+          }
         });
       }
     } catch (error) {

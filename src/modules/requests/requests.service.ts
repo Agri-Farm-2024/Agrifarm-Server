@@ -34,7 +34,7 @@ import { CreateRequestPurchaseDto } from './dto/create-request-puchase.dto';
 import { ServicesService } from '../servicesPackage/servicesPackage.service';
 import { BookingsService } from '../bookings/bookings.service';
 import { ServiceSpecific } from '../servicesPackage/entities/serviceSpecific.entity';
-import { Payload } from '../auths/types/payload.type';
+import { IUser } from '../auths/types/IUser.interface';
 import { createRequestTechnicalSupportDTO } from './dto/create-request-technical-support.dto';
 import { ChannelsService } from '../channels/channels.service';
 import { ServiceSpecificStatus } from '../servicesPackage/types/service-specific-status.enum';
@@ -388,6 +388,7 @@ export class RequestsService implements IRequestService {
       const new_request = await this.requestEntity.save({
         ...createRequestMaterial,
         type: RequestType.material_process_specfic_stage,
+        status: RequestStatus.assigned,
       });
       if (!new_request) {
         throw new BadRequestException('Unable to create request');
@@ -412,11 +413,7 @@ export class RequestsService implements IRequestService {
         new_request.request_id,
         process_specific_detail.expert_id,
       );
-      //update status request
-      await this.updateRequestStatus(
-        new_request.request_id,
-        RequestStatus.assigned,
-      );
+
       if (!new_task) {
         throw new BadRequestException('Unable to create task');
       }
@@ -700,7 +697,7 @@ export class RequestsService implements IRequestService {
 
   async createRequestTechnicalSupport(
     data: createRequestTechnicalSupportDTO,
-    user: Payload,
+    user: IUser,
   ): Promise<any> {
     try {
       // check service exist

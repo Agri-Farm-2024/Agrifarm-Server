@@ -11,7 +11,7 @@ import { ChannelsService } from './channels.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateMessageDTO } from './dto/create-message.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
-import { Payload } from '../auths/types/payload.type';
+import { IUser } from '../auths/types/IUser.interface';
 
 @ApiTags('Channels')
 @Controller('channels')
@@ -21,14 +21,14 @@ export class ChannelsController {
   @UseGuards(AuthGuard)
   @Post('/messages')
   async createMessage(@Body() data: CreateMessageDTO, @Request() req: any) {
-    const user: Payload = req['user'];
+    const user: IUser = req['user'];
     return this.channelsService.createMessage(data, user.user_id);
   }
 
   @UseGuards(AuthGuard)
   @Get('/')
   async getListChannelByUser(@Request() req: any) {
-    const user: Payload = req['user'];
+    const user: IUser = req['user'];
     return this.channelsService.getListChannelByUser(user.user_id);
   }
 
@@ -38,7 +38,7 @@ export class ChannelsController {
     @Request() req: any,
     @Param('channel_id') channel_id: string,
   ) {
-    const user: Payload = req['user'];
+    const user: IUser = req['user'];
     return this.channelsService.getListMessageByChannelId(
       channel_id,
       user.user_id,

@@ -14,7 +14,7 @@ import { Repository } from 'typeorm';
 import { TasksService } from '../tasks/tasks.service';
 import { Report } from './entities/report.entity';
 import { CreateReportDTO } from './dto/create-report.dto';
-import { Payload } from '../auths/types/payload.type';
+import { IUser } from '../auths/types/IUser.interface';
 import { ReportURL } from './entities/reportURL.entity';
 import { RequestsService } from '../requests/requests.service';
 import { RequestStatus } from '../requests/types/request-status.enum';
@@ -28,6 +28,7 @@ import { User } from '../users/entities/user.entity';
 import { CreateReportPurchaseDto } from './dto/create-report-purchase.dto';
 import { Task } from '../tasks/entities/task.entity';
 import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
+import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
 
 @Injectable()
 export class ReportsService implements IReportService {
@@ -50,7 +51,7 @@ export class ReportsService implements IReportService {
     private readonly userService: UsersService,
   ) {}
 
-  async createReport(data: CreateReportDTO, task_id: string, user: Payload) {
+  async createReport(data: CreateReportDTO, task_id: string, user: IUser) {
     try {
       // get detail task
       const task_exist: Task = await this.taskService.getDetailTask(task_id);
@@ -96,8 +97,14 @@ export class ReportsService implements IReportService {
         );
       }
       let request_status: RequestStatus = RequestStatus.pending_approval;
-      // Check condition to update status request
-      if (task_exist.request.type === RequestType.view_land) {
+      /**
+       *  Check condition type request view_land , material_process_specfic_stage
+       *  Update request status to completed
+       */
+      if (
+        task_exist.request.type === RequestType.view_land ||
+        task_exist.request.type === RequestType.material_process_specfic_stage
+      ) {
         request_status = RequestStatus.completed;
       }
       //update request status to pending_approval
@@ -105,15 +112,24 @@ export class ReportsService implements IReportService {
         report_exist.task.request_id,
         request_status,
       );
-      // send notification to assigned this task
       // get detail manager
-      const manager: User[] = await this.userService.getListUserByRole(
-        UserRole.manager,
-      );
+      if (!task_exist.assigned_by_id) {
+        const manager: User[] = await this.userService.getListUserByRole(
+          UserRole.manager,
+        );
+        await this.notificationService.createNotification({
+          user_id: report_exist.task.assigned_by_id || manager[0].user_id,
+          title: NotificationTitleEnum.create_report,
+          content: NotificationContentEnum.create_report(new_report.content),
+          type: NotificationType.report,
+          component_id: report_exist.task_id,
+        });
+      }
+      // send notification to assigned this task
       await this.notificationService.createNotification({
-        user_id: report_exist.task.assigned_by_id || manager[0].user_id,
-        title: 'Báo cáo công việc',
-        content: `Báo cáo đã được tạo cho công việc`,
+        user_id: report_exist.task.assigned_by_id,
+        title: NotificationTitleEnum.create_report,
+        content: NotificationContentEnum.create_report(new_report.content),
         type: NotificationType.report,
         component_id: report_exist.task_id,
       });
@@ -131,7 +147,7 @@ export class ReportsService implements IReportService {
   async createReportPurchase(
     data: CreateReportPurchaseDto,
     task_id: string,
-    user: Payload,
+    user: IUser,
   ) {
     try {
       const task_exist: Task = await this.taskService.getDetailTask(task_id);

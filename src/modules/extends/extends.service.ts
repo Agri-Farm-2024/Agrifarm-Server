@@ -16,7 +16,7 @@ import { In, Not, Repository } from 'typeorm';
 import { BookingStatus } from '../bookings/types/booking-status.enum';
 import { ExtendStatus } from './types/extend-status.enum';
 import { UpdateExtendDTO } from './dto/update-extend.dto';
-import { Payload } from '../auths/types/payload.type';
+import { IUser } from '../auths/types/IUser.interface';
 import { UserRole } from '../users/types/user-role.enum';
 import { TransactionsService } from '../transactions/transactions.service';
 import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
@@ -156,7 +156,7 @@ export class ExtendsService implements IExtendService {
   async updateExtend(
     data: UpdateExtendDTO,
     extend_id: string,
-    user: Payload,
+    user: IUser,
   ): Promise<any> {
     try {
       // find extend by id

@@ -10,7 +10,6 @@ import {
 import { TransactionsService } from './transactions.service';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
-import { Payload } from '../auths/types/payload.type';
 import {
   ApplyPaginationMetadata,
   Pagination,
@@ -21,6 +20,7 @@ import { UserRole } from '../users/types/user-role.enum';
 import { TransactionStatus } from './types/transaction-status.enum';
 import { TransactionPurpose } from './types/transaction-purpose.enum';
 import { TransactionType } from './types/transaction-type.enum';
+import { IUser } from '../auths/types/IUser.interface';
 
 @ApiTags('Transactions')
 @Controller('transactions')
@@ -34,7 +34,7 @@ export class TransactionsController {
     @Request() req: any,
     @Pagination() pagination: PaginationParams,
   ) {
-    const user: Payload = req['user'];
+    const user: IUser = req['user'];
     return this.transactionsService.getListTransactionByUser(user, pagination);
   }
 

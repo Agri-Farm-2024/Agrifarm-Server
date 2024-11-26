@@ -1,4 +1,4 @@
-import { Payload } from 'src/modules/auths/types/payload.type';
+import { IUser } from 'src/modules/auths/types/IUser.interface';
 import { UpdateStatusBookingDTO } from '../dto/update-status-booking.dto';
 import { BookingLand } from '../entities/bookingLand.entity';
 import { BookingStatus } from '../types/booking-status.enum';
@@ -6,33 +6,33 @@ import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
 
 export interface IBookingService {
-  createBooking(createBookingDto: any, land_renter: Payload): Promise<any>;
+  createBooking(createBookingDto: any, land_renter: IUser): Promise<any>;
 
   getBookingDetail(bookingId: string): Promise<any>;
 
   getListBookingStrategy(
-    user: Payload,
+    user: IUser,
     status: BookingStatus,
     type: string,
     pagination: PaginationParams,
   ): Promise<any>;
 
   getListBookingByManager(
-    user: Payload,
+    user: IUser,
     status: BookingStatus,
     type: string,
     pagination: PaginationParams,
   ): Promise<any>;
 
   getListBookingByStaff(
-    user: Payload,
+    user: IUser,
     status: BookingStatus,
     type: string,
     pagination: PaginationParams,
   ): Promise<any>;
 
   getListBookingByLandrenter(
-    user: Payload,
+    user: IUser,
     status: BookingStatus,
     type: string,
     pagination: PaginationParams,
@@ -43,25 +43,25 @@ export interface IBookingService {
   updateStatusBookingStrategy(
     bookingId: string,
     data: UpdateStatusBookingDTO,
-    user: Payload,
+    user: IUser,
   ): Promise<any>;
 
   updateStatusToPendingContract(
     booking_exist: BookingLand,
     data: UpdateStatusBookingDTO,
-    user: Payload,
+    user: IUser,
   ): Promise<any>;
 
   updateStatusToPendingSign(
     booking_exist: BookingLand,
     data: UpdateStatusBookingDTO,
-    user: Payload,
+    user: IUser,
   ): Promise<any>;
 
   updateStatusToPendingPayment(
     booking_exist: BookingLand,
     data: UpdateStatusBookingDTO,
-    user: Payload,
+    user: IUser,
   ): Promise<any>;
 
   updateStatusToCompleted(transaction: Transaction): Promise<any>;
@@ -69,7 +69,7 @@ export interface IBookingService {
   updateStatusToRejected(
     booking_exist: BookingLand,
     data: UpdateStatusBookingDTO,
-    user: Payload,
+    user: IUser,
   ): Promise<any>;
 
   checkExistBookingByTimeAndLand(

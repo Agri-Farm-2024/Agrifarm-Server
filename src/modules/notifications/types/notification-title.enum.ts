@@ -15,4 +15,5 @@ export enum NotificationTitleEnum {
   manager_booking_pending_sign = 'Hợp đồng thuê đất mới được tạo',
   staff_booking_pending_sign = 'Hợp đồng thuê đất đang chờ ký tên',
   create_chat = 'Cuộc trò chuyện mới đã được tạo',
+  create_report = 'Báo cáo cho công việc mới được tạo',
 }

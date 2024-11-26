@@ -16,7 +16,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BookingLand } from './entities/bookingLand.entity';
 import { In, LessThanOrEqual, MoreThanOrEqual, Not, Repository } from 'typeorm';
 import { BookingStatus } from './types/booking-status.enum';
-import { Payload } from '../auths/types/payload.type';
+import { IUser } from '../auths/types/IUser.interface';
 import { UserRole } from '../users/types/user-role.enum';
 import { UpdateStatusBookingDTO } from './dto/update-status-booking.dto';
 import { MailService } from 'src/mails/mail.service';
@@ -75,7 +75,7 @@ export class BookingsService implements IBookingService {
    */
   async createBooking(
     createBookingDto: CreateBookingDto,
-    land_renter: Payload,
+    land_renter: IUser,
   ): Promise<any> {
     try {
       // create time end booking equal time_start + total_month
@@ -217,7 +217,7 @@ export class BookingsService implements IBookingService {
    */
 
   async getListBookingStrategy(
-    user: Payload,
+    user: IUser,
     status: BookingStatus,
     type: string,
     pagination: PaginationParams,
@@ -248,7 +248,7 @@ export class BookingsService implements IBookingService {
   }
 
   async getListBookingByManager(
-    user: Payload,
+    user: IUser,
     status: BookingStatus,
     type: string,
     pagination: PaginationParams,
@@ -335,7 +335,7 @@ export class BookingsService implements IBookingService {
   }
 
   async getListBookingByStaff(
-    user: Payload,
+    user: IUser,
     status: BookingStatus,
     type: string,
     pagination: PaginationParams,
@@ -421,7 +421,7 @@ export class BookingsService implements IBookingService {
   }
 
   async getListBookingByLandrenter(
-    user: Payload,
+    user: IUser,
     status: BookingStatus,
     type: string,
     pagination: PaginationParams,
@@ -555,7 +555,7 @@ export class BookingsService implements IBookingService {
   async updateStatusBookingStrategy(
     bookingId: string,
     data: UpdateStatusBookingDTO,
-    user: Payload,
+    user: IUser,
   ): Promise<any> {
     try {
       // check booking exist
@@ -605,7 +605,7 @@ export class BookingsService implements IBookingService {
   async updateStatusToPendingContract(
     booking_exist: BookingLand,
     data: UpdateStatusBookingDTO,
-    user: Payload,
+    user: IUser,
   ): Promise<any> {
     try {
       // Check status booking is pending
@@ -665,7 +665,7 @@ export class BookingsService implements IBookingService {
   async updateStatusToPendingSign(
     booking_exist: BookingLand,
     data: UpdateStatusBookingDTO,
-    user: Payload,
+    user: IUser,
   ): Promise<any> {
     try {
       // Check user is manager
@@ -748,7 +748,7 @@ export class BookingsService implements IBookingService {
   async updateStatusToPendingPayment(
     booking_exist: BookingLand,
     data: UpdateStatusBookingDTO,
-    user: Payload,
+    user: IUser,
   ): Promise<any> {
     try {
       // Check status booking is pending
@@ -918,7 +918,7 @@ export class BookingsService implements IBookingService {
   async updateStatusToRejected(
     booking_exist: BookingLand,
     data: UpdateStatusBookingDTO,
-    user: Payload,
+    user: IUser,
   ): Promise<any> {
     try {
       // check status booking is pending or pending contract

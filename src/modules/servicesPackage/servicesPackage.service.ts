@@ -26,7 +26,7 @@ import { ProcessesService } from '../processes/processes.service';
 import { ServicePackageStatus } from './types/service-package-status.enum';
 import { BookingsService } from '../bookings/bookings.service';
 import { BookingLand } from '../bookings/entities/bookingLand.entity';
-import { Payload } from '../auths/types/payload.type';
+import { IUser } from '../auths/types/IUser.interface';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { UserRole } from '../users/types/user-role.enum';
 import { RequestsService } from '../requests/requests.service';
@@ -106,7 +106,7 @@ export class ServicesService implements IService {
    */
   async getListServiceSpecific(
     pagination: PaginationParams,
-    user: Payload,
+    user: IUser,
     status: ServiceSpecificStatus,
   ): Promise<any> {
     try {
@@ -167,7 +167,7 @@ export class ServicesService implements IService {
 
   async buyServiceSpecific(
     createServicePackage: CreateServiceSpecificDTO,
-    user: Payload,
+    user: IUser,
   ): Promise<any> {
     try {
       // get booking detail
@@ -392,7 +392,7 @@ export class ServicesService implements IService {
     }
   }
 
-  async cancelServiceSpecific(service_specific_id: string): Promise<any> {
+  async deleteServiceSpecific(service_specific_id: string): Promise<any> {
     try {
       // get detail
       const service_specific = await this.serviceSpecificRepo.findOne({
@@ -402,6 +402,11 @@ export class ServicesService implements IService {
       });
       if (!service_specific) {
         throw new BadRequestException('Service specific does not exist');
+      }
+      if (service_specific.status !== ServiceSpecificStatus.pending_payment) {
+        throw new BadRequestException(
+          'Service specific is not pending payment',
+        );
       }
       // delete service specific
       await this.serviceSpecificRepo.delete(

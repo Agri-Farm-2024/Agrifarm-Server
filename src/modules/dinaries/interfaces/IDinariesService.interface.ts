@@ -1,4 +1,3 @@
-import { Payload } from 'src/modules/auths/types/payload.type';
 import { CreateDinaryDto } from '../dto/create-dinary.dto';
 import { UpdateDinaryDto } from '../dto/update-dinary.dto';
 
@@ -9,5 +8,5 @@ export interface IDinariesService {
   ): Promise<any>;
   updateDinary(updateDinaryDto: UpdateDinaryDto, id: string): Promise<any>;
 
-  getDinaryStageByProcessSpecificId(process_specific_id): Promise<any>;
+  getDinaryStageByProcessSpecificId(process_specific_id: string): Promise<any>;
 }

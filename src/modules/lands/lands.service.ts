@@ -19,7 +19,7 @@ import { UserRole } from '../users/types/user-role.enum';
 import { LandType } from './entities/landType.entity';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { LandTypeStatus } from './types/landType-status.enum';
-import { Payload } from '../auths/types/payload.type';
+import { IUser } from '../auths/types/IUser.interface';
 
 @Injectable()
 export class LandsService implements ILandService {
@@ -171,7 +171,7 @@ export class LandsService implements ILandService {
   async getListLandByStaff(
     status: LandStatus,
     pagination: PaginationParams,
-    user: Payload,
+    user: IUser,
   ): Promise<any> {
     try {
       // filter condition

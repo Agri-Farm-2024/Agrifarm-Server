@@ -133,7 +133,9 @@ export class DinariesService implements IDinariesService {
   }
 
   //get list dianry by process spcific id
-  async getDinaryStageByProcessSpecificId(process_specific_id): Promise<any> {
+  async getDinaryStageByProcessSpecificId(
+    process_specific_id: string,
+  ): Promise<any> {
     try {
       const process_specific_exist =
         await this.processService.getDetailProcessSpecific(process_specific_id);

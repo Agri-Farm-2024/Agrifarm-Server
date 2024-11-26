@@ -18,7 +18,7 @@ import { CreateProcessStageContentDto } from './dto/create-process-stage-content
 import { CreateProcessStageMaterialDto } from './dto/create-process-stage-material.dto';
 import { ProcessStandardStageMaterial } from './entities/standards/processStandardStageMaterial.entity';
 import { ReportsService } from '../reports/reports.service';
-import { Payload } from '../auths/types/payload.type';
+import { IUser } from '../auths/types/IUser.interface';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { ProcessTechnicalStandardStatus } from './types/status-processStandard.enum';
 import { ServiceSpecific } from '../servicesPackage/entities/serviceSpecific.entity';
@@ -91,7 +91,7 @@ export class ProcessesService implements IProcessesService {
 
   async createProcessStandard(
     data: CreateProcessDto,
-    expert: Payload,
+    expert: IUser,
   ): Promise<any> {
     try {
       //check if plant id and type process name is already exist
@@ -596,7 +596,7 @@ export class ProcessesService implements IProcessesService {
     pagination: PaginationParams,
     status: ProcessSpecificStatus,
     plant_id: string,
-    user: Payload,
+    user: IUser,
   ): Promise<any> {
     try {
       // filter conditon by status and plant id
@@ -684,7 +684,7 @@ export class ProcessesService implements IProcessesService {
   async updateProcessSpecific(
     process_technical_specific_id: string,
     data: UPdateProcessSpecificDto,
-    user: Payload,
+    user: IUser,
   ): Promise<any> {
     try {
       const filter_condition: any = {};

@@ -12,7 +12,7 @@ import { Repository } from 'typeorm';
 import { ITaskService } from './interfaces/ITaskService.interface';
 import { UsersService } from '../users/users.service';
 import { RequestsService } from '../requests/requests.service';
-import { Payload } from '../auths/types/payload.type';
+import { IUser } from '../auths/types/IUser.interface';
 import { RequestStatus } from '../requests/types/request-status.enum';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
@@ -76,7 +76,7 @@ export class TasksService implements ITaskService {
   async assignTask(
     task_id: string,
     assigned_to_id: string,
-    assigned_by_user: Payload,
+    assigned_by_user: IUser,
   ): Promise<any> {
     try {
       // check task exist
@@ -177,7 +177,7 @@ export class TasksService implements ITaskService {
     }
   }
 
-  async startTask(task_id: string, user: Payload): Promise<any> {
+  async startTask(task_id: string, user: IUser): Promise<any> {
     try {
       // check task exist
       const task = await this.taskEntity.findOne({
@@ -238,7 +238,7 @@ export class TasksService implements ITaskService {
     }
   }
 
-  async approveTask(task_id: string, user: Payload): Promise<any> {
+  async approveTask(task_id: string, user: IUser): Promise<any> {
     try {
       // check task exist
       const task = await this.taskEntity.findOne({

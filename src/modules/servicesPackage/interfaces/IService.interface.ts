@@ -1,4 +1,4 @@
-import { Payload } from 'src/modules/auths/types/payload.type';
+import { IUser } from 'src/modules/auths/types/IUser.interface';
 import { CreateServicePackageDTO } from '../dto/create-service-package.dto';
 import { CreateServiceSpecificDTO } from '../dto/create-service-specific.dto';
 import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
@@ -14,7 +14,7 @@ export interface IService {
 
   buyServiceSpecific(
     createServicePackage: CreateServiceSpecificDTO,
-    user: Payload,
+    user: IUser,
   ): Promise<any>;
 
   getDetailServiceSpecific(service_specific_id: string): Promise<any>;
@@ -25,13 +25,13 @@ export interface IService {
 
   checkServiceIsExpired(): Promise<any>;
 
-  cancelServiceSpecific(service_specific_id: string): Promise<any>;
+  deleteServiceSpecific(service_specific_id: string): Promise<any>;
 
   handlePaymentServiceSpecificSuccess(transaction: Transaction): Promise<any>;
 
   getListServiceSpecific(
     pagination: PaginationParams,
-    user: Payload,
+    user: IUser,
     status: ServiceSpecificStatus,
   ): Promise<any>;
 

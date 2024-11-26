@@ -1,7 +1,7 @@
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { UserRole } from '../types/user-role.enum';
-import { Payload } from 'src/modules/auths/types/payload.type';
 import { UserStatus } from '../types/user-status.enum';
+import { IUser } from 'src/modules/auths/types/IUser.interface';
 
 export interface IUserService {
   create(createUserDto: any): any;
@@ -11,7 +11,7 @@ export interface IUserService {
   getAllUsers(
     pagination: PaginationParams,
     role: UserRole,
-    user: Payload,
+    user: IUser,
     status: UserStatus,
   ): Promise<any>;
 

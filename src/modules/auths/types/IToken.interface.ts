@@ -1,6 +1,6 @@
 import { TokenStatus } from './token-status.enum';
 
-export interface InfoToken {
+export interface IToken {
   refreshToken: string;
   status: TokenStatus;
 }

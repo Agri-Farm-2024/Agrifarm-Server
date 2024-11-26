@@ -1,6 +1,6 @@
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { LandStatus } from '../types/land-status.enum';
-import { Payload } from 'src/modules/auths/types/payload.type';
+import { IUser } from 'src/modules/auths/types/IUser.interface';
 
 export interface ILandService {
   createLand(data: any): any;
@@ -14,7 +14,7 @@ export interface ILandService {
   getListLandByStaff(
     status: LandStatus,
     pagination: PaginationParams,
-    user: Payload,
+    user: IUser,
   ): any;
 
   getDetailLandById(id: string): any;

@@ -18,7 +18,7 @@ import { SubjectMailEnum } from 'src/mails/types/mail-subject.type';
 import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
 import { UserStatus } from './types/user-status.enum';
 import { UserRole } from './types/user-role.enum';
-import { Payload } from '../auths/types/payload.type';
+import { IUser } from '../auths/types/IUser.interface';
 import { ProcessSpecificStatus } from '../processes/types/processSpecific-status.enum';
 import { ServiceSpecificStatus } from '../servicesPackage/types/service-specific-status.enum';
 
@@ -135,7 +135,7 @@ export class UsersService implements IUserService {
   async getAllUsers(
     pagination: PaginationParams,
     role: UserRole,
-    user: Payload,
+    user: IUser,
     status: UserStatus,
   ): Promise<any> {
     try {

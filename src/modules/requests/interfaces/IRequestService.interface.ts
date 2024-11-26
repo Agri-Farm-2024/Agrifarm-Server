@@ -5,7 +5,7 @@ import { CreateRequestProcessStandardDTO } from '../dto/create-request-processSt
 import { RequestStatus } from '../types/request-status.enum';
 import { UpdateStatusTaskDTO } from '../dto/update-status-task.dto';
 import { CreateRequestMaterialDto } from '../dto/create-request-material-stagedto';
-import { Payload } from 'src/modules/auths/types/payload.type';
+import { IUser } from 'src/modules/auths/types/IUser.interface';
 import { CreateRequestPurchaseDto } from '../dto/create-request-puchase.dto';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 import { createRequestTechnicalSupportDTO } from '../dto/create-request-technical-support.dto';
@@ -32,7 +32,7 @@ export interface IRequestService {
 
   createRequestPurchase(
     createRequestPurchase: CreateRequestPurchaseDto,
-    user: Payload,
+    user: IUser,
   ): Promise<any>;
 
   createRequestPurchaseharvest(service_specific_id: string): Promise<any>;
@@ -47,7 +47,7 @@ export interface IRequestService {
 
   createRequestTechnicalSupport(
     data: createRequestTechnicalSupportDTO,
-    user: Payload,
+    user: IUser,
   ): Promise<any>;
 
   confirmRequest(request_id: string, data: UpdateStatusTaskDTO): Promise<any>;

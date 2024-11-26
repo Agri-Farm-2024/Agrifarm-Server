@@ -15,7 +15,7 @@ import { LoggerService } from 'src/logger/logger.service';
 
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { Order } from '../orders/entities/order.entity';
-import { Payload } from '../auths/types/payload.type';
+import { IUser } from '../auths/types/IUser.interface';
 import { OrdersService } from '../orders/orders.service';
 import { MaterialType } from './types/material-type.enum';
 import { TransactionsService } from '../transactions/transactions.service';
@@ -164,7 +164,7 @@ export class MaterialsService implements IMaterialService {
 
   // Buy material
 
-  async buyMaterial(materials: BuyMaterialDTO[], user: Payload): Promise<any> {
+  async buyMaterial(materials: BuyMaterialDTO[], user: IUser): Promise<any> {
     try {
       // Create a new order for the transaction
       const newOrder: Order = await this.orderService.createOrder({

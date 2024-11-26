@@ -1,4 +1,4 @@
-import { Payload } from 'src/modules/auths/types/payload.type';
+import { IUser } from 'src/modules/auths/types/IUser.interface';
 import { RequestStatus } from 'src/modules/requests/types/request-status.enum';
 
 export interface ITaskService {
@@ -7,14 +7,14 @@ export interface ITaskService {
   assignTask(
     task_id: string,
     assigned_to_id: string,
-    assigned_by_user: Payload,
+    assigned_by_user: IUser,
   ): Promise<any>;
 
   getTasksByUserId(user_id: string, status: RequestStatus): Promise<any>;
 
-  startTask(task_id: string, user: Payload): Promise<any>;
+  startTask(task_id: string, user: IUser): Promise<any>;
 
-  approveTask(task_id: string, user: Payload): Promise<any>;
+  approveTask(task_id: string, user: IUser): Promise<any>;
 
   getDetailTask(task_id: string): Promise<any>;
 }
