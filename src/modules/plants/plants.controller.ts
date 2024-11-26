@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  Logger,
   Put,
   Query,
 } from '@nestjs/common';
@@ -44,12 +43,16 @@ export class PlantsController {
     description: 'Filter plants by status',
     required: false,
   })
+  @ApiQuery({
+    name: 'land_type_id',
+    description: 'Filter plants by land type',
+    required: false,
+  })
   @Get('/')
   async getAllPlants(
     @Pagination() pagination: PaginationParams,
     @Query('land_type_id') land_type_id: string,
   ): Promise<any> {
-    Logger.log('Get all plants');
     return await this.plantsService.getAllPlants(pagination, land_type_id);
   }
 
@@ -70,7 +73,6 @@ export class PlantsController {
     @Query('time_start') time_start: number,
     @Query('total_month') total_month: number,
   ): Promise<any> {
-    Logger.log('Get all plant seasons');
     return await this.plantsService.getAllPlantSeasons(
       pagination,
       time_start,
