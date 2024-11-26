@@ -1,1 +1,7 @@
-export const selectUser = ['id', 'full_name', 'email', 'role'];
+export const selectUser = {
+  user_id: true,
+  full_name: true,
+  email: true,
+  phone: true,
+  avatar_url: true,
+};

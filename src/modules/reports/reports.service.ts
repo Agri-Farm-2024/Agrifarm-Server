@@ -98,12 +98,14 @@ export class ReportsService implements IReportService {
       }
       let request_status: RequestStatus = RequestStatus.pending_approval;
       /**
-       *  Check condition type request view_land , material_process_specfic_stage
+       *  Check condition type request view_land , material_process_specfic_stage , technical_support
        *  Update request status to completed
        */
       if (
         task_exist.request.type === RequestType.view_land ||
-        task_exist.request.type === RequestType.material_process_specfic_stage
+        task_exist.request.type ===
+          RequestType.material_process_specfic_stage ||
+        task_exist.request.type === RequestType.technical_support
       ) {
         request_status = RequestStatus.completed;
       }

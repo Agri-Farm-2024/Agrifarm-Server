@@ -20,6 +20,7 @@ import { LandType } from './entities/landType.entity';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { LandTypeStatus } from './types/landType-status.enum';
 import { IUser } from '../auths/types/IUser.interface';
+import { selectUser } from 'src/utils/select.util';
 
 @Injectable()
 export class LandsService implements ILandService {
@@ -102,7 +103,6 @@ export class LandsService implements ILandService {
     land_type_id: string,
   ): Promise<any> {
     try {
-      console.log(pagination);
       // filter condition
       const filter_condition: any = {
         staff_id: Not(IsNull()),
@@ -129,8 +129,10 @@ export class LandsService implements ILandService {
           where: filter_condition,
           relations: {
             url: true,
+            staff: true,
           },
           select: {
+            staff: selectUser,
             url: {
               string_url: true,
               type: true,
@@ -200,8 +202,10 @@ export class LandsService implements ILandService {
           relations: {
             url: true,
             land_type: true,
+            staff: true,
           },
           select: {
+            staff: selectUser,
             url: {
               string_url: true,
               type: true,

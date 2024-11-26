@@ -45,9 +45,12 @@ export class PlantsController {
     required: false,
   })
   @Get('/')
-  async getAllPlants(@Pagination() pagination: PaginationParams): Promise<any> {
+  async getAllPlants(
+    @Pagination() pagination: PaginationParams,
+    @Query('land_type_id') land_type_id: string,
+  ): Promise<any> {
     Logger.log('Get all plants');
-    return await this.plantsService.getAllPlants(pagination);
+    return await this.plantsService.getAllPlants(pagination, land_type_id);
   }
 
   @ApplyPaginationMetadata

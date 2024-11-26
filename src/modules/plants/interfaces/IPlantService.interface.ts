@@ -4,7 +4,10 @@ import { Plant } from '../entities/plant.entity';
 export interface IPlantService {
   createPlant(createPlantDto: any): any;
 
-  getAllPlants(pagination: PaginationParams): Promise<any>;
+  getAllPlants(
+    pagination: PaginationParams,
+    land_type_id: string,
+  ): Promise<any>;
 
   updatePlant(id: string, updateData: UpdatePlantDto): Promise<Plant>;
 

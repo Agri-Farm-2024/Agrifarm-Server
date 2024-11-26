@@ -244,7 +244,10 @@ export class PlantsService implements IPlantService {
     }
   }
 
-  async getAllPlants(pagination: PaginationParams): Promise<any> {
+  async getAllPlants(
+    pagination: PaginationParams,
+    land_type_id: string,
+  ): Promise<any> {
     // check filter condition
     const filter_search = pagination.search.reduce((acc, searchItem) => {
       if (searchItem.field && searchItem.value) {
@@ -254,7 +257,10 @@ export class PlantsService implements IPlantService {
     }, {});
     // check condition by enum
 
-    const filter = { ...filter_search };
+    const filter: any = { ...filter_search };
+    if (land_type_id) {
+      filter.land_type_id = land_type_id;
+    }
     const [plants, total_count] = await Promise.all([
       this.plantEntity.find({
         relations: {
