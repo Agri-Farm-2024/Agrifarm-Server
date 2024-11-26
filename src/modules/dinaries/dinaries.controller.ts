@@ -3,11 +3,8 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   UseGuards,
-  Request,
   Put,
 } from '@nestjs/common';
 import { DinariesService } from './dinaries.service';

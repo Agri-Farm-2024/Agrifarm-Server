@@ -64,60 +64,67 @@ export class UsersService implements IUserService {
    * @returns
    */
   async create(createUserDto: CreateUserDto): Promise<any> {
-    // check user role
-    if (createUserDto.role === UserRole.manager) {
-      const manager_exist = await this.userRepository.findOne({
+    try {
+      // check user role
+      if (createUserDto.role === UserRole.manager) {
+        const manager_exist = await this.userRepository.findOne({
+          where: {
+            role: UserRole.manager,
+          },
+        });
+        if (manager_exist) {
+          throw new BadRequestException('Manager already exists');
+        }
+      }
+      // check role admin
+      if (createUserDto.role === UserRole.admin) {
+        throw new BadRequestException('Invalid role');
+      }
+      // check email is already exists
+      const user = await this.userRepository.findOne({
         where: {
-          role: UserRole.manager,
+          email: createUserDto.email,
         },
       });
-      if (manager_exist) {
-        throw new BadRequestException('Manager already exists');
+      if (user) {
+        throw new BadRequestException('Email already exists');
       }
+      // generate password
+      const password = Math.random().toString(36).slice(-8);
+      // Hash the password
+      const password_hash = await bcrypt.hash(password, 8);
+      // Create a new user
+      const new_user = await this.userRepository.save({
+        ...createUserDto,
+        password: password_hash,
+      });
+      // Log the user creation
+      this.loggerService.log(`New User created with email: ${new_user.email}`);
+      // Send a welcome email
+      this.mailService.sendMail(
+        new_user.email,
+        SubjectMailEnum.registerWelcome,
+        TemplateMailEnum.registerWelcome,
+        {
+          full_name: new_user.full_name,
+          email: new_user.email,
+          phone: new_user.phone,
+          password: password,
+          created_at: new_user.created_at.toLocaleDateString(),
+          status: 'Chờ xác nhận',
+        },
+      );
+      // logs
+      this.loggerService.log(
+        `New User created with email: ${new_user.email} - role ${new_user.role}`,
+      );
+      return new_user;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
     }
-    // check role admin
-    if (createUserDto.role === UserRole.admin) {
-      throw new BadRequestException('Invalid role');
-    }
-    // check email is already exists
-    const user = await this.userRepository.findOne({
-      where: {
-        email: createUserDto.email,
-      },
-    });
-    if (user) {
-      throw new BadRequestException('Email already exists');
-    }
-    // generate password
-    const password = Math.random().toString(36).slice(-8);
-    // Hash the password
-    const password_hash = await bcrypt.hash(password, 8);
-    // Create a new user
-    const new_user = await this.userRepository.save({
-      ...createUserDto,
-      password: password_hash,
-    });
-    // Log the user creation
-    this.loggerService.log(`New User created with email: ${new_user.email}`);
-    // Send a welcome email
-    this.mailService.sendMail(
-      new_user.email,
-      SubjectMailEnum.registerWelcome,
-      TemplateMailEnum.registerWelcome,
-      {
-        full_name: new_user.full_name,
-        email: new_user.email,
-        phone: new_user.phone,
-        password: password,
-        created_at: new_user.created_at.toLocaleDateString(),
-        status: 'Chờ xác nhận',
-      },
-    );
-    // logs
-    this.loggerService.log(
-      `New User created with email: ${new_user.email} - role ${new_user.role}`,
-    );
-    return new_user;
   }
 
   /**

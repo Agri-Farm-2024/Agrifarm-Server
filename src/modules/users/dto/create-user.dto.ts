@@ -11,7 +11,7 @@ import { UserRole } from '../types/user-role.enum';
 
 export class CreateUserDto {
   @ApiProperty({
-    example: 'test@example.com',
+    example: 'test1@example.com',
     description: 'The email of the user',
   })
   @IsEmail({}, { message: 'Invalid email format' })
@@ -25,18 +25,21 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'Full name is required' })
   full_name: string;
 
+  @ApiProperty({
+    example: 'phone',
+    description: 'The phone number of the user',
+  })
   @IsNotEmpty({ message: 'Phone is required' })
   @MinLength(10, { message: 'Phone must be at least 10 characters' })
   phone: string;
 
   @ApiProperty({
-    example: 'http://example.com/avatar.jpg',
+    example: '/uploadFile/avatar.jpg',
     description: 'The avatar URL of the user',
     required: false,
   })
   @IsOptional()
-  @IsUrl({}, { message: 'Invalid avatar URL format' })
-  avatar_url?: string;
+  avatar_url: string;
 
   @ApiProperty({
     example: '1990-01-01',

@@ -725,6 +725,10 @@ export class RequestsService implements IRequestService {
       // check support type
       if (data.support_type === RequestSupportType.chat) {
         // create channel
+        await this.channelService.createChannel({
+          request_id: new_request.request_id,
+          sender_id: user.user_id,
+        });
       }
       return new_request;
     } catch (error) {}
