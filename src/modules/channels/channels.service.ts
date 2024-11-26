@@ -101,10 +101,10 @@ export class ChannelsService implements IChannelService {
       // Create message
       const message = await this.channelMessageRepository.save({
         ...data,
-        user_id: user_id,
+        message_form_id: user_id,
       });
       // send socket message to channel
-      await this.eventGateway.sendEventToGroup(
+      this.eventGateway.sendEventToGroup(
         data.message_to_id,
         message,
         SocketEvent.message,

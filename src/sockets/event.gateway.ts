@@ -59,6 +59,9 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
         await this.channelService.getListChannelByUser(userId);
       list_channel_by_user.forEach((channel) => {
         client.join(`${channel.channel_id}`);
+        this.loggerService.log(
+          `User join channel: ${channel.channel_id} (Socket ID: ${client.id})`,
+        );
       });
     });
   }

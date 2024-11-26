@@ -718,6 +718,7 @@ export class RequestsService implements IRequestService {
           ...data,
           sender_id: user.user_id,
           status: RequestStatus.assigned,
+          type: RequestType.technical_support,
         });
         // assign auto task
         await this.taskService.createTaskAuto(
