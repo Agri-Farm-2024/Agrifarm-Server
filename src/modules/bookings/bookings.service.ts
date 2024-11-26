@@ -39,6 +39,8 @@ import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
 import { parsePriceToVND } from 'src/utils/price.util';
+import { ExtendStatus } from '../extends/types/extend-status.enum';
+import { getTimeByPlusMonths } from 'src/utils/time.utl';
 
 @Injectable()
 export class BookingsService implements IBookingService {
@@ -1001,6 +1003,7 @@ export class BookingsService implements IBookingService {
         expired_schedule_at: LessThanOrEqual(new Date()),
       },
     });
+    console.log(`booking_expired_schedule`, booking_expired_schedule);
     // Set booking to canceled
     booking_expired_schedule.forEach(async (booking) => {
       await this.bookingRepository.save({
@@ -1037,34 +1040,43 @@ export class BookingsService implements IBookingService {
       },
       where: {
         status: BookingStatus.completed,
+        extends: {
+          status: ExtendStatus.completed,
+        },
       },
     });
+    console.log(`list_booking_expired`, list_booking_expired);
     // define booking_expired
-    const booking_expired: BookingLand[] = [];
+    const list_booking_expired_with_extends = [];
     // set booking expired time by add extend month
-    list_booking_expired.forEach(async (booking) => {
+    for (const booking of list_booking_expired) {
       if (booking.extends.length > 0) {
-        for (let i = 0; i < booking.extends.length; i++) {
-          booking.time_end = new Date(
-            new Date(booking.time_end).setMonth(
-              new Date(booking.time_end).getMonth() +
-                booking.extends[i].total_month,
-            ),
+        for (const extend of booking.extends) {
+          booking.time_end = getTimeByPlusMonths(
+            booking.time_end,
+            extend.total_month,
           );
         }
       }
-      // check booking is expired
-      if (new Date(booking.time_end) < new Date()) {
-        booking_expired.push(booking);
+      // check condition
+      if (new Date() > booking.time_end) {
+        list_booking_expired_with_extends.push(booking);
       }
-    });
+    }
+    console.log(`booking_expired`, list_booking_expired_with_extends);
     // Set booking to expired
-    booking_expired.forEach(async (booking) => {
+    list_booking_expired_with_extends.forEach(async (booking) => {
       // Set status to expired
-      await this.bookingRepository.save({
-        ...booking,
-        status: BookingStatus.expired,
-      });
+      await this.bookingRepository.update(
+        {
+          booking_id: booking.booking_id,
+        },
+        {
+          status: BookingStatus.expired,
+        },
+      );
+
+      this.loggerService.log(`Booking ${booking.booking_id} is expired`);
       // Create report for this land
       await this.requestService.createRequestReportLand(booking);
       // Send mail to land renter
@@ -1145,10 +1157,21 @@ export class BookingsService implements IBookingService {
         purpose: TransactionPurpose.booking_land,
         type: TransactionType.refund,
       };
-      const transaction = await this.transactionService.createTransaction(
-        transactionDTO as CreateTransactionDTO,
-      );
+      const transaction: Transaction =
+        await this.transactionService.createTransaction(
+          transactionDTO as CreateTransactionDTO,
+        );
       // send notification to land renter
+      await this.notificationService.createNotification({
+        user_id: booking.land_renter.user_id,
+        title: NotificationTitleEnum.booking_refund,
+        content: NotificationContentEnum.booking_refund(
+          booking.land.name,
+          parsePriceToVND(transaction.total_price),
+        ),
+        type: NotificationType.transaction,
+        component_id: transaction.transaction_id,
+      });
       // send mail to land renter
       return transaction;
     } catch (error) {

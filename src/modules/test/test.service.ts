@@ -8,6 +8,7 @@ import { RequestsService } from '../requests/requests.service';
 import { RequestStatus } from '../requests/types/request-status.enum';
 import { UpdateStatusTaskDTO } from '../requests/dto/update-status-task.dto';
 import { ServicesService } from '../servicesPackage/servicesPackage.service';
+import { JobService } from 'src/crons/job.service';
 
 @Injectable()
 export class TestService {
@@ -18,25 +19,27 @@ export class TestService {
 
     private readonly requestService: RequestsService,
     private readonly serviceService: ServicesService,
+    private readonly jobService: JobService,
   ) {}
 
   async test(): Promise<any> {
     try {
       // await this.serviceService.checkAndCreatePurchaseProductService();
-      await this.mailService.sendMail(
-        'chisbr2002@gmail.com',
-        'test',
-        'test.hbs',
-        {
-          name: 'test',
-        },
-        [
-          {
-            filename: 'test.pdf',
-            path: '/uploadFile/images.png',
-          },
-        ],
-      );
+      // await this.mailService.sendMail(
+      //   'chisbr2002@gmail.com',
+      //   'test',
+      //   'test.hbs',
+      //   {
+      //     name: 'test',
+      //   },
+      //   [
+      //     {
+      //       filename: 'test.pdf',
+      //       path: '/uploadFile/images.png',
+      //     },
+      //   ],
+      // );\
+      await this.jobService.checkEverydayIsExpired();
     } catch (error) {
       this.logger.error(error);
       throw error;

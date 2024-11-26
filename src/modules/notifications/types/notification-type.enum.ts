@@ -8,4 +8,5 @@ export enum NotificationType {
   channel = 'channel',
   report = 'report',
   extend = 'extend',
+  transaction = 'transaction',
 }

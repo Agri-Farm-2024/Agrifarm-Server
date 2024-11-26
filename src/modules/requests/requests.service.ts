@@ -675,7 +675,7 @@ export class RequestsService implements IRequestService {
       ) {
         //create transaction
       }
-      // Check condition of report land request
+      // Check condition of report land with completed status
       if (
         request.type === RequestType.report_land &&
         data.status === RequestStatus.completed

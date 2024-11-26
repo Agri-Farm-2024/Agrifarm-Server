@@ -13,5 +13,6 @@ import { ProcessesModule } from 'src/modules/processes/processes.module';
     ProcessesModule,
   ],
   providers: [JobService],
+  exports: [JobService],
 })
 export class CronsModule {}

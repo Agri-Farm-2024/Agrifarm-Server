@@ -21,4 +21,7 @@ export const NotificationContentEnum = {
 
   create_report: (description: string) =>
     `Báo cáo cho công việc mới được tạo với mô tả: ${description}`,
+
+  booking_refund: (land_name: string, price: string) =>
+    `Yêu cầu hoàn tiền đã được tạo trên ${land_name} với số tiền ${price} `,
 } as const;

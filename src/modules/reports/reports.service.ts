@@ -90,6 +90,11 @@ export class ReportsService implements IReportService {
       }
       // check report type
       if (task_exist.request.type === RequestType.report_land) {
+        if (!data.quality_report) {
+          throw new BadRequestException(
+            'Quality report is required with request type report_land',
+          );
+        }
         // update quality for report
         await this.bookingService.updateBookingByReport(
           report_exist.task.request.booking_land_id,
