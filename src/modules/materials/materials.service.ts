@@ -12,7 +12,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Material } from './entities/material.entity';
 import { Like, Not, Repository } from 'typeorm';
 import { LoggerService } from 'src/logger/logger.service';
-
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { Order } from '../orders/entities/order.entity';
 import { IUser } from '../auths/types/IUser.interface';
@@ -44,7 +43,7 @@ export class MaterialsService implements IMaterialService {
       //check material is exist
       const material = await this.materialEntity.findOne({
         where: {
-          name: Like(createMaterialDto.name),
+          name: createMaterialDto.name,
         },
       });
       if (material) {
@@ -56,7 +55,9 @@ export class MaterialsService implements IMaterialService {
         ...createMaterialDto,
       });
 
-      this.loggerService.log('New material is created');
+      this.loggerService.log(
+        `New material is created with ${new_material.name}`,
+      );
       return new_material;
     } catch (error) {
       throw new InternalServerErrorException(error.message);

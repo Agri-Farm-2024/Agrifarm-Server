@@ -21,6 +21,7 @@ import { NotificationContentEnum } from '../notifications/types/notification-con
 import { ChannelsService } from '../channels/channels.service';
 import { RequestType } from '../requests/types/request-type.enum';
 import { RequestSupportType } from '../requests/types/request-support-type.enum';
+import { selectUser } from 'src/utils/select.util';
 
 @Injectable()
 export class TasksService implements ITaskService {
@@ -138,9 +139,9 @@ export class TasksService implements ITaskService {
 
   async getTasksByUserId(user_id: string, status: RequestStatus): Promise<any> {
     try {
-      const filter = { assigned_to_id: user_id };
+      const filter: any = { assigned_to_id: user_id };
       if (status) {
-        filter['request'] = { status: status };
+        filter.request.status = status;
       }
 
       const tasks = await this.taskEntity.find({
@@ -150,20 +151,28 @@ export class TasksService implements ITaskService {
             plant_season: {
               plant: true,
             },
-            service_specific: true,
+            service_specific: {
+              booking_land: {
+                land: true,
+              },
+            },
             process_technical_specific_stage: true,
-            process_technical_specific_stage_content: true,
+            process_technical_specific_stage_content: {
+              process_technical_specific_stage: {
+                process_technical_specific: {
+                  service_specific: {
+                    booking_land: {
+                      land: true,
+                    },
+                  },
+                },
+              },
+            },
           },
           assign_by: true,
         },
         select: {
-          assign_by: {
-            user_id: true,
-            full_name: true,
-            email: true,
-            role: true,
-            avatar_url: true,
-          },
+          assign_by: selectUser,
         },
         order: {
           request: {
