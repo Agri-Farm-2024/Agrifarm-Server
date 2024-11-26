@@ -842,6 +842,14 @@ export class ProcessesService implements IProcessesService {
             },
           },
         },
+        order: {
+          process_technical_specific_stage: {
+            stage_numberic_order: 'ASC',
+            process_technical_specific_stage_content: {
+              content_numberic_order: 'ASC',
+            },
+          },
+        },
       });
     } catch (error) {
       throw new InternalServerErrorException(error.message);

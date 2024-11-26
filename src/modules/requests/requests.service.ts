@@ -38,7 +38,6 @@ import { Payload } from '../auths/types/payload.type';
 import { createRequestTechnicalSupportDTO } from './dto/create-request-technical-support.dto';
 import { ChannelsService } from '../channels/channels.service';
 import { ServiceSpecificStatus } from '../servicesPackage/types/service-specific-status.enum';
-import { RequestSupportType } from './types/request-support-type.enum';
 import { ProcessSpecificStageContent } from '../processes/entities/specifics/processSpecificStageContent.entity';
 
 @Injectable()
@@ -714,6 +713,19 @@ export class RequestsService implements IRequestService {
         if (service_specific.status !== ServiceSpecificStatus.used) {
           throw new BadRequestException('Service is not available');
         }
+        // create a new request
+        const new_request = await this.requestEntity.save({
+          ...data,
+          sender_id: user.user_id,
+          status: RequestStatus.assigned,
+        });
+        // assign auto task
+        await this.taskService.createTaskAuto(
+          new_request.request_id,
+          service_specific.process_technical_specific.expert_id,
+        );
+        // return
+        return new_request;
       }
       // create a new request
       const new_request = await this.requestEntity.save({
@@ -722,14 +734,6 @@ export class RequestsService implements IRequestService {
       });
       // create task for the request
       await this.taskService.createTask(new_request.request_id);
-      // check support type
-      // if (data.support_type === RequestSupportType.chat) {
-      //   // create channel
-      //   await this.channelService.createChannel({
-      //     request_id: new_request.request_id,
-      //     sender_id: user.user_id,
-      //   });
-      // }
       return new_request;
     } catch (error) {}
   }

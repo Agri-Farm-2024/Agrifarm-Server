@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { ProcessesService } from './processes.service';
 import { CreateProcessDto } from './dto/create-process.dto';
-import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { Roles } from 'src/common/decorations/role.decoration';
 import { UserRole } from '../users/types/user-role.enum';
@@ -23,11 +23,9 @@ import {
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { ProcessTechnicalStandardStatus } from './types/status-processStandard.enum';
 import { UpdateProcessStandardDto } from './dto/update-processStandardStatus.dto';
-import { createProcessSpecificDTO } from './dto/create-process-specific.dto';
 import { UpdateProcessStandardsDto } from './dto/update-process-standard.dto';
 import { ProcessSpecificStatus } from './types/processSpecific-status.enum';
 import { UPdateProcessSpecificDto } from './dto/update-process-specific.dto';
-import { UpdateProcessSpecificStatusDto } from './dto/update-process-specific-status.dto';
 
 @ApiTags('Process')
 @Controller('processes')
@@ -131,5 +129,10 @@ export class ProcessesController {
   @Put('/updateStatusProcessSpecific/:id')
   updateStatusProcessSpecific(@Param('id') id: string): Promise<any> {
     return this.processesService.updateStatusProcessSpecific(id);
+  }
+
+  @Get('/getDetailProcessSpecific/:id')
+  getProcessSpecific(@Param('id') id: string): Promise<any> {
+    return this.processesService.getDetailProcessSpecific(id);
   }
 }

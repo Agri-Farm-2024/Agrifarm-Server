@@ -54,10 +54,18 @@ export class TasksService implements ITaskService {
   ): Promise<any> {
     try {
       // Create a new task
-      const new_task = this.taskEntity.save({
+      const new_task = await this.taskEntity.save({
         request_id,
         assigned_to_id,
         assigned_at: new Date(),
+      });
+      // send notification to assigned user
+      await this.notificationService.createNotification({
+        user_id: assigned_to_id,
+        title: NotificationTitleEnum.create_task,
+        content: NotificationContentEnum.assigned_task(),
+        type: NotificationType.task,
+        component_id: new_task.task_id,
       });
       return new_task;
     } catch (error) {
