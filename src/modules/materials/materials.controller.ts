@@ -3,17 +3,16 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   Put,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { MaterialsService } from './materials.service';
 import { CreateMaterialDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/common/decorations/role.decoration';
 import { UserRole } from '../users/types/user-role.enum';
 import {
@@ -23,6 +22,7 @@ import {
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { BuyMaterialDTO } from './dto/buy-material.dto';
+import { MaterialType } from './types/material-type.enum';
 
 @ApiTags('Material')
 @Controller('materials')
@@ -56,8 +56,12 @@ export class MaterialsController {
   }
 
   @ApplyPaginationMetadata
+  @ApiQuery({ name: 'material_type', required: false, enum: MaterialType })
   @Get('/getALlMaterial')
-  getMaterials(@Pagination() pagination: PaginationParams): Promise<any> {
-    return this.materialsService.getMaterials(pagination);
+  getMaterials(
+    @Pagination() pagination: PaginationParams,
+    @Query('material_type') type: MaterialType,
+  ): Promise<any> {
+    return this.materialsService.getMaterials(pagination, type);
   }
 }

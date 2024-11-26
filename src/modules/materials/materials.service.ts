@@ -138,14 +138,25 @@ export class MaterialsService implements IMaterialService {
   }
 
   //Get ALL materials
-  async getMaterials(pagination: PaginationParams): Promise<any> {
+  async getMaterials(
+    pagination: PaginationParams,
+    type: MaterialType,
+  ): Promise<any> {
     try {
+      // filter condition
+      const filter: any = {};
+      if (type) {
+        filter.type = type;
+      }
       const [materials, total_count] = await Promise.all([
         this.materialEntity.find({
+          where: filter,
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
         }),
-        this.materialEntity.count({}),
+        this.materialEntity.count({
+          where: filter,
+        }),
       ]);
 
       // get total page

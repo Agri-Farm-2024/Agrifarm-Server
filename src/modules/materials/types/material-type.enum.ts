@@ -1,4 +1,4 @@
-export enum MaterialType{
-    buy = 'buy',
-    rent = 'rent'
+export enum MaterialType {
+  buy = 'buy',
+  rent = 'rent',
 }
