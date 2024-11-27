@@ -17,13 +17,15 @@ export class MailService {
     attachments?: Array<{ filename: string; path: string }>,
   ): Promise<void> {
     try {
-      if (attachments.length > 0) {
-        attachments = attachments.map((attachment) => {
-          return {
-            filename: attachment.filename,
-            path: `./dist/${attachment.path}`,
-          };
-        });
+      if (attachments) {
+        if (attachments.length > 0) {
+          attachments = attachments.map((attachment) => {
+            return {
+              filename: attachment.filename,
+              path: `./dist/${attachment.path}`,
+            };
+          });
+        }
       }
 
       await this.mailerService.sendMail({

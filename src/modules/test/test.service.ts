@@ -24,22 +24,22 @@ export class TestService {
 
   async test(): Promise<any> {
     try {
-      // await this.serviceService.checkAndCreatePurchaseProductService();
-      // await this.mailService.sendMail(
-      //   'chisbr2002@gmail.com',
-      //   'test',
-      //   'test.hbs',
-      //   {
-      //     name: 'test',
-      //   },
-      //   [
-      //     {
-      //       filename: 'test.pdf',
-      //       path: '/uploadFile/images.png',
-      //     },
-      //   ],
-      // );\
-      await this.jobService.checkEverydayIsExpired();
+      await this.serviceService.checkAndCreatePurchaseProductService();
+      await this.mailService.sendMail(
+        'phuoc.18112002@gmail.com',
+        'test',
+        'test.hbs',
+        {
+          name: 'test',
+        },
+        // [
+        //   {
+        //     filename: 'test.pdf',
+        //     path: 'uploadFile/images.png',
+        //   },
+        // ],
+      );
+      // await this.jobService.checkEverydayIsExpired();
     } catch (error) {
       this.logger.error(error);
       throw error;
