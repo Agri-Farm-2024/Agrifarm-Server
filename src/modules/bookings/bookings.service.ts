@@ -41,6 +41,7 @@ import { NotificationContentEnum } from '../notifications/types/notification-con
 import { parsePriceToVND } from 'src/utils/price.util';
 import { ExtendStatus } from '../extends/types/extend-status.enum';
 import { getTimeByPlusMonths } from 'src/utils/time.utl';
+import { getNameOfPath } from 'src/utils/link.util';
 
 @Injectable()
 export class BookingsService implements IBookingService {
@@ -880,6 +881,12 @@ export class BookingsService implements IBookingService {
             transaction_price: transaction.total_price,
             transaction_status: 'Thành công',
           },
+          [
+            {
+              filename: getNameOfPath(booking_exist.contract_image),
+              path: booking_exist.contract_image,
+            },
+          ],
         ),
         // Send notification to land renter
         this.notificationService.createNotification({

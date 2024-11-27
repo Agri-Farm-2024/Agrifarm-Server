@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
@@ -36,9 +32,7 @@ export class MailService {
         attachments,
       });
     } catch (error) {
-      if (!(error instanceof BadRequestException)) {
-        throw new InternalServerErrorException(error.message);
-      }
+      throw new BadRequestException(error.message);
     }
   }
 }

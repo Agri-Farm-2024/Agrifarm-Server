@@ -47,7 +47,7 @@ export class JobService implements ICronJob {
   async checkTransactionIsExpired(): Promise<void> {
     try {
       // Check transaction is expired
-      await this.transactionService.checkTransactionIsExpired();
+      // await this.transactionService.checkTransactionIsExpired();
       this.logger.log('Check transaction expire is running');
       this.loggerService.log('Check transaction expire is running');
     } catch (error) {
