@@ -30,6 +30,7 @@ import { DiscordsModule } from './discords/discords.module';
 import { CronsModule } from './crons/crons.module';
 import { TestModule } from './modules/test/test.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+// import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     TestModule,
     DashboardModule,
     DiscordsModule,
+    // PrometheusModule.register(),
   ],
 })
 export class AppModule {}

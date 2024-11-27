@@ -178,6 +178,32 @@ export class MaterialsService implements IMaterialService {
 
   async buyMaterial(materials: BuyMaterialDTO[], user: IUser): Promise<any> {
     try {
+      // check material is have enough quantity
+      if (materials.length === 0) {
+        throw new BadRequestException('Material is empty');
+      }
+      // Loop through each material in the array
+      for (const material of materials) {
+        const material_detail = await this.materialEntity.findOne({
+          where: {
+            material_id: material.material_id,
+          },
+        });
+        // check exist material
+        if (!material_detail) {
+          throw new BadRequestException('Material not found');
+        }
+        // check type of material is buy
+        if (material_detail.type !== MaterialType.buy) {
+          throw new BadRequestException('Material is not for buy');
+        }
+        // check quantity of material
+        if (material_detail.total_quantity < material.quantity) {
+          throw new BadRequestException(
+            `Not enough quantity for material ${material_detail.name}`,
+          );
+        }
+      }
       // Create a new order for the transaction
       const newOrder: Order = await this.orderService.createOrder({
         landrenter_id: user.user_id,
@@ -186,56 +212,31 @@ export class MaterialsService implements IMaterialService {
       let total_price = 0;
       // Loop through each material in the array
       for (const item of materials) {
-        const { material_id, quantity } = item;
-
         // Check if the material exists
-        const material = await this.materialEntity.findOne({
-          where: { material_id },
+        const material_detail = await this.materialEntity.findOne({
+          where: {
+            material_id: item.material_id,
+          },
         });
-        if (!material) {
-          // handle delete order
-          await this.orderService.deleteOrder(newOrder.order_id);
-          throw new BadRequestException(
-            `Material with ID ${material_id} not found`,
-          );
-        }
-        // check material is for buy
-        if (material.type !== MaterialType.buy) {
-          await this.orderService.deleteOrder(newOrder.order_id);
-
-          throw new BadRequestException(
-            `Material with ID ${material_id} is not for buy`,
-          );
-        }
-
-        // Check if there is enough quantity
-        if (material.total_quantity < quantity) {
-          await this.orderService.deleteOrder(newOrder.order_id);
-
-          throw new BadRequestException(
-            `Not enough quantity for material ${material.name}`,
-          );
-        }
         // Create order detail
         await this.orderService.createOrderDetail({
-          material_id: material_id,
+          material_id: item.material_id,
           order_id: newOrder.order_id,
-          quantity: quantity,
-          price_per_iteam: material.price_per_piece,
+          quantity: item.quantity,
+          price_per_iteam: material_detail.price_per_piece,
         });
         // Update the quantity of the material
         await this.materialEntity.update(
           {
-            material_id,
+            material_id: item.material_id,
           },
           {
-            total_quantity: material.total_quantity - quantity,
+            total_quantity: material_detail.total_quantity - item.quantity,
           },
         );
         // Calculate the total price
-        total_price += material.price_per_piece * quantity;
+        total_price += material_detail.price_per_piece * item.quantity;
       }
-      // create transaction
       // create transaction DTO and create transaction
       const transactionData: Partial<CreateTransactionDTO> = {
         order_id: newOrder.order_id,
@@ -256,7 +257,15 @@ export class MaterialsService implements IMaterialService {
     }
   }
 
-  async handleCancelOrder(material: string, quantity: number): Promise<any> {
+  /**
+   * Update back quantity when cancel order
+   * @function handleCancelOrder
+   * @param material
+   * @param quantity
+   * @returns
+   */
+
+  async handleCancelOrder(material: string, quantity: number): Promise<void> {
     try {
       // update quantity material
       const materialEntity = await this.materialEntity.findOne({
@@ -275,8 +284,11 @@ export class MaterialsService implements IMaterialService {
           total_quantity: materialEntity.total_quantity + quantity,
         },
       );
-      return `Material ${materialEntity.name} is updated`;
+      this.loggerService.log(
+        `Material ${materialEntity.name} is updated quantity when cancel order`,
+      );
     } catch (error) {
+      this.loggerService.error(error.message, error.stack);
       if (error instanceof BadRequestException) {
         throw error;
       }

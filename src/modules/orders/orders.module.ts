@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Order } from './entities/order.entity';
 import { OrderDetail } from './entities/orderDetail.entity';
 import { MaterialsModule } from '../materials/materials.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   controllers: [OrdersController],
@@ -12,6 +13,7 @@ import { MaterialsModule } from '../materials/materials.module';
   imports: [
     TypeOrmModule.forFeature([Order, OrderDetail]),
     forwardRef(() => MaterialsModule),
+    JwtModule,
   ],
   exports: [OrdersService],
 })

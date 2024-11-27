@@ -1,6 +1,6 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { OrderDetail } from 'src/modules/orders/entities/orderDetail.entity';
-import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { MaterialType } from '../types/material-type.enum';
 import { MaterialStatus } from '../types/material-status.enum';
 import { MaterialUnit } from '../types/material-unit-enum';
@@ -37,7 +37,7 @@ export class Material extends AbstractEntity {
   @Column({ nullable: true })
   price_per_piece: number;
 
-  @Column({default: 0})
+  @Column({ default: 0 })
   quantity_of_rented: number;
 
   @Column({ nullable: true })
@@ -49,7 +49,7 @@ export class Material extends AbstractEntity {
   @Column({ nullable: true })
   price_of_rent: number;
 
-  @Column({ 
+  @Column({
     type: 'enum',
     enum: MaterialType,
     default: MaterialType.buy,
@@ -63,8 +63,8 @@ export class Material extends AbstractEntity {
   })
   status: MaterialStatus;
 
-  @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.material_oder)
-  material_order_details_id: OrderDetail[];
+  @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.material)
+  orders_detail: OrderDetail[];
 
   @OneToMany(
     () => ProcessStandardStageMaterial,
@@ -79,6 +79,9 @@ export class Material extends AbstractEntity {
   )
   process_specific_stage_material: ProcessSpecificStageMaterial[];
 
-  @ManyToOne(() => BookingMaterialDetail, (bookingMaterialDetail) => bookingMaterialDetail.material)
+  @OneToMany(
+    () => BookingMaterialDetail,
+    (bookingMaterialDetail) => bookingMaterialDetail.material,
+  )
   material_booking_detail: BookingMaterialDetail[];
 }

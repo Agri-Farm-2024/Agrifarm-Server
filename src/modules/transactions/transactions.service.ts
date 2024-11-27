@@ -426,14 +426,20 @@ export class TransactionsService implements ITransactionService {
       if (transaction.status !== TransactionStatus.approved) {
         throw new BadRequestException('Transaction is not approved');
       }
+      // back_up detail transaction
+      const transaction_backup = { ...transaction };
+      // delete transaction
+      await this.transactionRepository.delete(transaction_id);
       // check purpose transaction
       switch (transaction.purpose) {
         case TransactionPurpose.service:
           return await this.servicePackageService.deleteServiceSpecific(
-            transaction.service_specific_id,
+            transaction_backup.service_specific_id,
           );
         case TransactionPurpose.order:
-          return await this.orderService.cancelOrder(transaction.order_id);
+          return await this.orderService.cancelOrder(
+            transaction_backup.order_id,
+          );
         default:
           return `Can't cancel transaction with purpose ${transaction.purpose}`;
       }
@@ -466,6 +472,7 @@ export class TransactionsService implements ITransactionService {
               `Cancel transaction order with ${transaction.order_id}`,
             );
           } else if (transaction.purpose === TransactionPurpose.service) {
+            await this.transactionRepository.delete(transaction.transaction_id);
             await this.servicePackageService.deleteServiceSpecific(
               transaction.service_specific_id,
             );

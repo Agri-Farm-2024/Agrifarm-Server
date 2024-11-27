@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   forwardRef,
   Inject,
   Injectable,
@@ -13,6 +14,8 @@ import { LoggerService } from 'src/logger/logger.service';
 import { OrderDetail } from './entities/orderDetail.entity';
 import { CreateOrderDetailDto } from './dto/create-order-detail.dto';
 import { MaterialsService } from '../materials/materials.service';
+import { IUser } from '../auths/types/IUser.interface';
+import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 
 @Injectable()
 export class OrdersService implements IOrdersService {
@@ -62,14 +65,28 @@ export class OrdersService implements IOrdersService {
 
   async cancelOrder(order_id: string) {
     try {
+      // get order
+      const order = await this.orderRepo.findOne({
+        where: {
+          order_id,
+        },
+      });
+      if (!order) {
+        throw new BadRequestException('Order not found');
+      }
       // get list order detail
       const orderDetail = await this.orderDetailRepo.find({
         where: {
           order_id,
         },
       });
-      // update quantity material
+      // check
+      if (orderDetail.length === 0) {
+        throw new BadRequestException('Order detail not found');
+      }
+      // Loop for each order detail
       for (let i = 0; i < orderDetail.length; i++) {
+        // Update quantity material
         await this.materialService.handleCancelOrder(
           orderDetail[i].material_id,
           orderDetail[i].quantity,
@@ -81,7 +98,32 @@ export class OrdersService implements IOrdersService {
       await this.orderRepo.delete(order_id);
       return 'Order is canceled';
     } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
       throw new InternalServerErrorException(error.message);
     }
+  }
+
+  async getOrdersByUser(
+    user: IUser,
+    pagination: PaginationParams,
+  ): Promise<Order[]> {
+    return await this.orderRepo.find({
+      where: {
+        landrenter_id: user.user_id,
+      },
+      take: pagination.page_size,
+      skip: (pagination.page_index - 1) * pagination.page_size,
+      order: {
+        updated_at: 'DESC',
+      },
+      relations: {
+        orders_detail: {
+          material: true,
+        },
+        transaction: true,
+      },
+    });
   }
 }

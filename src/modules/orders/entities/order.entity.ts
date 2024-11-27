@@ -31,7 +31,7 @@ export class Order extends AbstractEntity {
   land_renter: User;
 
   @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.order)
-  order_details_id: OrderDetail[];
+  orders_detail: OrderDetail[];
 
   @OneToOne(() => Transaction, (transaction) => transaction.order)
   transaction: Transaction;

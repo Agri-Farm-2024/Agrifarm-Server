@@ -33,7 +33,10 @@ export class MaterialsController {
   @ApiBody({ type: [BuyMaterialDTO] })
   @UseGuards(AuthGuard)
   @Roles(UserRole.land_renter)
-  buyMaterial(@Body() buyMaterialDTO: BuyMaterialDTO[], @Request() request) {
+  buyMaterial(
+    @Body() buyMaterialDTO: BuyMaterialDTO[],
+    @Request() request: any,
+  ) {
     const user = request['user'];
     return this.materialsService.buyMaterial(buyMaterialDTO, user);
   }

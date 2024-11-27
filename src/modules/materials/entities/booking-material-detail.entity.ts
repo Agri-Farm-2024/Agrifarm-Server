@@ -3,9 +3,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  ManyToMany,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { BookingMaterial } from './booking-material.entity';
@@ -43,6 +41,7 @@ export class BookingMaterialDetail extends AbstractEntity {
   @JoinColumn({ name: 'booking_material_id' })
   bookingMaterial: BookingMaterial;
 
-  @OneToMany(() => Material, (material) => material.material_booking_detail)
+  @ManyToOne(() => Material, (material) => material.material_booking_detail)
+  @JoinColumn({ name: 'material_id' })
   material: Material[];
 }

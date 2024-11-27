@@ -33,11 +33,11 @@ export class OrderDetail extends AbstractEntity {
   price_per_iteam: number;
 
   // Relation
-  @ManyToOne(() => Order, (order) => order.order_details_id)
+  @ManyToOne(() => Order, (order) => order.orders_detail)
   @JoinColumn({ name: 'order_id' })
   order: Order;
 
-  @ManyToOne(() => Material, (material) => material.material_order_details_id)
+  @ManyToOne(() => Material, (material) => material.orders_detail)
   @JoinColumn({ name: 'material_id' })
-  material_oder: Material;
+  material: Material;
 }

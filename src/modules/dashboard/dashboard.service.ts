@@ -27,7 +27,10 @@ export class DashboardService {
         this.bookingLandService.getBookingsForDashboard(),
       ]);
       return {
-        users,
+        users: {
+          total: users.length,
+          data: users,
+        },
         requests,
         bookings,
         services,
