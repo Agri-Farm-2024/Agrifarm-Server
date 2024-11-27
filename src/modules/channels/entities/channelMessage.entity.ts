@@ -42,5 +42,5 @@ export class ChannelMessage extends AbstractEntity {
 
   @ManyToOne(() => User, (user) => user.messages_sended)
   @JoinColumn({ name: 'message_form_id' })
-  user: User;
+  message_from: User;
 }

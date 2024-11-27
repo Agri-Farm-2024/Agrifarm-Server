@@ -109,6 +109,9 @@ export class User extends AbstractEntity {
   @OneToMany(() => ChannelJoin, (channelJoin) => channelJoin.user)
   channels_join: ChannelJoin[];
 
-  @OneToMany(() => ChannelMessage, (channelMessage) => channelMessage.user)
+  @OneToMany(
+    () => ChannelMessage,
+    (channelMessage) => channelMessage.message_from,
+  )
   messages_sended: ChannelMessage[];
 }

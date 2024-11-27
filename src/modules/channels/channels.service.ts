@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   forwardRef,
   Inject,
@@ -18,6 +19,7 @@ import { ChannelStatus } from './types/channel-status.enum';
 import { EventGateway } from 'src/sockets/event.gateway';
 import { SocketEvent } from 'src/sockets/types/socket-event.enum';
 import { CreateChannelDTO } from './dto/create-channel.dto';
+import { selectUser } from 'src/utils/select.util';
 
 @Injectable()
 export class ChannelsService implements IChannelService {
@@ -47,7 +49,8 @@ export class ChannelsService implements IChannelService {
 
   async getListChannelByUser(user_id: string): Promise<any> {
     try {
-      const channels = await this.channelRepository.find({
+      // get list channel by user
+      const channels: any = await this.channelRepository.find({
         where: {
           joins: {
             user_join_id: user_id,
@@ -57,6 +60,25 @@ export class ChannelsService implements IChannelService {
           request: true,
         },
       });
+      // get newest message
+      for (let i = 0; i < channels.length; i++) {
+        const channel = channels[i];
+        const newest_message = await this.channelMessageRepository.findOne({
+          where: {
+            message_to_id: channel.channel_id,
+          },
+          relations: {
+            message_from: true,
+          },
+          order: {
+            created_at: 'DESC',
+          },
+          select: {
+            message_from: selectUser,
+          },
+        });
+        channel.newest_message = newest_message;
+      }
       return channels;
     } catch (error) {
       this.logger.error(error.message);
@@ -82,11 +104,13 @@ export class ChannelsService implements IChannelService {
       });
       // Check channel is exist
       if (!channel_exist) {
-        throw new Error('Channel is not exist');
+        throw new BadRequestException('Channel is not exist');
       }
       // check channel is expired
       if (channel_exist.status === ChannelStatus.expired) {
-        throw new Error('Channel is expired can not send message');
+        throw new BadRequestException(
+          'Channel is expired can not send message',
+        );
       }
       // check user is in channel
       const is_join = await this.channelJoinRepository.findOne({
@@ -96,7 +120,7 @@ export class ChannelsService implements IChannelService {
         },
       });
       if (!is_join) {
-        throw new Error('User is not in channel');
+        throw new BadRequestException('User is not in channel');
       }
       // Create message
       const message = await this.channelMessageRepository.save({
@@ -112,7 +136,11 @@ export class ChannelsService implements IChannelService {
       return message;
     } catch (error) {
       this.logger.error(error.message);
-      throw error;
+      this.loggerService.error(error.message, error.stack);
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -172,7 +200,8 @@ export class ChannelsService implements IChannelService {
       return channel;
     } catch (error) {
       this.logger.error(error.message);
-      throw error;
+      this.loggerService.error(error.message, error.stack);
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -185,11 +214,11 @@ export class ChannelsService implements IChannelService {
         },
       });
       if (!channel) {
-        throw new Error('Channel is not exist');
+        throw new BadRequestException('Channel is not exist');
       }
       // check channel is expired
       if (channel.status === ChannelStatus.expired) {
-        throw new Error('Channel is expired');
+        throw new BadRequestException('Channel is expired');
       }
       // check user is in channel
       const is_join = await this.channelJoinRepository.findOne({
@@ -199,7 +228,7 @@ export class ChannelsService implements IChannelService {
         },
       });
       if (is_join) {
-        throw new Error('User is already in channel');
+        throw new BadRequestException('User is already in channel');
       }
       // create join
       await this.channelJoinRepository.save({
@@ -216,7 +245,11 @@ export class ChannelsService implements IChannelService {
         },
       );
     } catch (error) {
+      this.logger.error(error.message);
       this.loggerService.error(error.message, error.stack);
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
       throw new InternalServerErrorException(error.message);
     }
   }
