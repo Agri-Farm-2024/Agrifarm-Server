@@ -39,6 +39,7 @@ import { createRequestTechnicalSupportDTO } from './dto/create-request-technical
 import { ChannelsService } from '../channels/channels.service';
 import { ServiceSpecificStatus } from '../servicesPackage/types/service-specific-status.enum';
 import { ProcessSpecificStageContent } from '../processes/entities/specifics/processSpecificStageContent.entity';
+import { selectUser } from 'src/utils/select.util';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -182,18 +183,8 @@ export class RequestsService implements IRequestService {
           task: {
             task_id: true,
             assigned_at: true,
-            assign_by: {
-              user_id: true,
-              email: true,
-              full_name: true,
-              role: true,
-            },
-            assign_to: {
-              user_id: true,
-              email: true,
-              full_name: true,
-              role: true,
-            },
+            assign_by: selectUser,
+            assign_to: selectUser,
           },
         },
       });
@@ -267,6 +258,11 @@ export class RequestsService implements IRequestService {
         relations: {
           task: {
             assign_to: true,
+          },
+        },
+        select: {
+          task: {
+            assign_to: selectUser,
           },
         },
       });

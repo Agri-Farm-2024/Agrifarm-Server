@@ -26,7 +26,6 @@ import { UserRole } from '../users/types/user-role.enum';
 import { UpdateStatusTaskDTO } from './dto/update-status-task.dto';
 import { CreateRequestMaterialDto } from './dto/create-request-material-stagedto';
 import { createRequestTechnicalSupportDTO } from './dto/create-request-technical-support.dto';
-import { CreateRequestPurchaseDto } from './dto/create-request-puchase.dto';
 
 @ApiTags('Request')
 @Controller('requests')

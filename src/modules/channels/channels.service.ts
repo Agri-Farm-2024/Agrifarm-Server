@@ -172,6 +172,12 @@ export class ChannelsService implements IChannelService {
         where: {
           message_to_id: channel_id,
         },
+        relations: {
+          message_from: true,
+        },
+        select: {
+          message_from: selectUser,
+        },
       });
       return messages;
     } catch (error) {
