@@ -29,6 +29,7 @@ import { CreateReportPurchaseDto } from './dto/create-report-purchase.dto';
 import { Task } from '../tasks/entities/task.entity';
 import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
 import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
+import { ChannelsService } from '../channels/channels.service';
 
 @Injectable()
 export class ReportsService implements IReportService {
@@ -49,6 +50,8 @@ export class ReportsService implements IReportService {
     private readonly notificationService: NotificationsService,
 
     private readonly userService: UsersService,
+
+    private readonly channelService: ChannelsService,
   ) {}
 
   async createReport(data: CreateReportDTO, task_id: string, user: IUser) {
@@ -108,11 +111,15 @@ export class ReportsService implements IReportService {
        */
       if (
         task_exist.request.type === RequestType.view_land ||
-        task_exist.request.type ===
-          RequestType.material_process_specfic_stage ||
-        task_exist.request.type === RequestType.technical_support
+        task_exist.request.type === RequestType.material_process_specfic_stage
       ) {
         request_status = RequestStatus.completed;
+      }
+      // Check condition type request technical_support
+      if (task_exist.request.type === RequestType.technical_support) {
+        request_status = RequestStatus.completed;
+        // handle set expired time for channel
+        await this.channelService.setChannelToExpired(task_exist.request_id);
       }
       //update request status to pending_approval
       await this.requestService.updateRequestStatus(

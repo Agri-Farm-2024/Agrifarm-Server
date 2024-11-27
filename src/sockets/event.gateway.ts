@@ -94,6 +94,8 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   sendEventToGroup(groupId: string, message: any, event: SocketEvent) {
     // Broadcast message to the group
+    this.logger.log(`Send ${event} to group: ${groupId}`);
+    this.loggerService.log(`Send ${event} to group: ${groupId}`);
     this.server.to(groupId).emit(`${event}`, { message });
   }
 }

@@ -9,6 +9,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { RequestsModule } from '../requests/requests.module';
 import { BookingsModule } from '../bookings/bookings.module';
 import { UsersModule } from '../users/users.module';
+import { ChannelsModule } from '../channels/channels.module';
 
 @Module({
   controllers: [ReportsController],
@@ -21,6 +22,7 @@ import { UsersModule } from '../users/users.module';
     UsersModule,
     forwardRef(() => TasksModule),
     forwardRef(() => RequestsModule),
+    ChannelsModule,
   ],
   exports: [ReportsService],
 })

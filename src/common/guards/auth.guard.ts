@@ -48,7 +48,7 @@ export class AuthGuard implements CanActivate {
       const decoded = this.jwtService.verify(accessToken, {
         secret: publicKey,
       });
-      this.logger.log(decoded, 'Decoded');
+      // this.logger.log(decoded, 'Decoded');
       // // Check if token is exist
       // const token_exist = await this.redisSerivce.get(
       //   `token:${decoded.user_id}`,

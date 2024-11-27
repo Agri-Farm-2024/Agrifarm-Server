@@ -77,9 +77,6 @@ export class AuthsService implements IAuthService {
       if (user.status !== UserStatus.active) {
         throw new BadRequestException('User is not active');
       }
-
-      Logger.log(JSON.stringify(user), `User found`);
-
       if (!user) {
         throw new BadRequestException('User not found');
       }
@@ -92,8 +89,6 @@ export class AuthsService implements IAuthService {
       if (!isPasswordMatch) {
         throw new BadRequestException('Invalid password');
       }
-
-      Logger.log(`Password match`);
       // 3. Generate a token
       const payload: IUser = {
         user_id: user.user_id,
@@ -109,6 +104,7 @@ export class AuthsService implements IAuthService {
         token,
       };
     } catch (error) {
+      this.logger.error(error.message);
       if (error instanceof BadRequestException) {
         throw error;
       }
@@ -318,7 +314,7 @@ export class AuthsService implements IAuthService {
       //     format: 'pem',
       //   },
       // });
-      Logger.log(`Public key: ${publicKey}, Private key: ${privateKey}`);
+      // Logger.log(`Public key: ${publicKey}, Private key: ${privateKey}`);
       // Create tokens with the payload and the private key
       const refreshToken = this.jwtService.sign(payload, {
         secret: privateKey,
