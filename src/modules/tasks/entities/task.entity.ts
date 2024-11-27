@@ -40,7 +40,7 @@ export class Task extends AbstractEntity {
   @OneToOne(() => Request, (request) => request.task)
   @JoinColumn({ name: 'request_id' })
   request: Request;
-
+  // Relations
   @ManyToOne(() => User, (user) => user.task_assigned_by)
   @JoinColumn({ name: 'assigned_by_id' })
   assign_by: User;

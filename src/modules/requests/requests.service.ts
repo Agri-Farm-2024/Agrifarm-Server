@@ -267,11 +267,6 @@ export class RequestsService implements IRequestService {
             assign_to: true,
           },
         },
-        select: {
-          task: {
-            assign_to: selectUser,
-          },
-        },
       });
       if (!request) {
         throw new BadRequestException('Request not found');
