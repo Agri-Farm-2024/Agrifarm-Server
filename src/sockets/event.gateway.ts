@@ -10,7 +10,6 @@ import { Server, Socket } from 'socket.io';
 import { SocketEvent } from './types/socket-event.enum';
 import { LoggerService } from 'src/logger/logger.service';
 import { UsersService } from 'src/modules/users/users.service';
-import { User } from 'src/modules/users/entities/user.entity';
 import { ChannelsService } from 'src/modules/channels/channels.service';
 import { Channel } from 'src/modules/channels/entities/channel.entity';
 
@@ -46,23 +45,23 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.loggerService.log(
           `User online: ${userId} (Socket ID: ${client.id})`,
         );
+        // Join the room of channel with the user role
+        const list_channel_by_user: Channel[] =
+          await this.channelService.getListChannelByUser(userId);
+        list_channel_by_user.forEach((channel) => {
+          client.join(`${channel.channel_id}`);
+          this.logger.log(
+            `User join channel: ${channel.channel_id} (Socket ID: ${client.id})`,
+          );
+          this.loggerService.log(
+            `User join channel: ${channel.channel_id} (Socket ID: ${client.id})`,
+          );
+        });
       } else {
         this.logger.warn(
           `online-user event missing userId for Socket ID: ${client.id}`,
         );
       }
-      // Join the room with the user role
-      const user: User = await this.userService.findUserById(userId);
-      client.join(`${user.role}`);
-      // Join the room of channel with the user role
-      const list_channel_by_user: Channel[] =
-        await this.channelService.getListChannelByUser(userId);
-      list_channel_by_user.forEach((channel) => {
-        client.join(`${channel.channel_id}`);
-        this.loggerService.log(
-          `User join channel: ${channel.channel_id} (Socket ID: ${client.id})`,
-        );
-      });
     });
   }
 

@@ -18,6 +18,7 @@ export interface IRequestService {
     pagination: PaginationParams,
     status: RequestStatus,
     type: RequestType,
+    user: IUser,
   ): Promise<any>;
 
   getDetailRequest(request_id: string): Promise<any>;

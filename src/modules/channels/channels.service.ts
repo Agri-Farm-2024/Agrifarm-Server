@@ -59,6 +59,11 @@ export class ChannelsService implements IChannelService {
         relations: {
           request: true,
         },
+        order: {
+          messages: {
+            updated_at: 'DESC',
+          },
+        },
       });
       // get newest message
       for (let i = 0; i < channels.length; i++) {

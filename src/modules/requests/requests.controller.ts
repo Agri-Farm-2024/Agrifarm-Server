@@ -45,6 +45,8 @@ export class RequestsController {
   }
 
   @Get('/getListRequest')
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.manager, UserRole.staff)
   @ApplyPaginationMetadata
   @ApiQuery({ name: 'status', required: false, enum: RequestStatus })
   @ApiQuery({ name: 'type', required: false, enum: RequestType })
@@ -52,9 +54,15 @@ export class RequestsController {
     @Pagination() pagination: PaginationParams,
     @Query('status') status: RequestStatus,
     @Query('type') type: RequestType,
+    @Request() req: any,
   ): Promise<any> {
-    // Logger.log(filter);
-    return await this.requestsService.getListRequest(pagination, status, type);
+    const user = req['user'];
+    return await this.requestsService.getListRequest(
+      pagination,
+      status,
+      type,
+      user,
+    );
   }
 
   @Get(':request_id')

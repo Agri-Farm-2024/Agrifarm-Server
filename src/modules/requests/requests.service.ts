@@ -40,6 +40,7 @@ import { ChannelsService } from '../channels/channels.service';
 import { ServiceSpecificStatus } from '../servicesPackage/types/service-specific-status.enum';
 import { ProcessSpecificStageContent } from '../processes/entities/specifics/processSpecificStageContent.entity';
 import { selectUser } from 'src/utils/select.util';
+import { UserRole } from '../users/types/user-role.enum';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -103,10 +104,15 @@ export class RequestsService implements IRequestService {
     pagination: PaginationParams,
     status: RequestStatus,
     type: RequestType,
+    user: IUser,
   ): Promise<any> {
     try {
       // const filter condition
       const filter_condition: any = {};
+      // Check if user is staff
+      if (user.role === UserRole.staff && type === RequestType.view_land) {
+        filter_condition.task.assigned_to_id = user.user_id;
+      }
       // check if status and type is provided
       if (status) {
         filter_condition.status = status;
@@ -137,6 +143,7 @@ export class RequestsService implements IRequestService {
             },
             booking_land: {
               land: true,
+              land_renter: true,
             },
             channel: true,
             plant_season: {
