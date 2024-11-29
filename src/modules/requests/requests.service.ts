@@ -41,6 +41,10 @@ import { ServiceSpecificStatus } from '../servicesPackage/types/service-specific
 import { ProcessSpecificStageContent } from '../processes/entities/specifics/processSpecificStageContent.entity';
 import { selectUser } from 'src/utils/select.util';
 import { UserRole } from '../users/types/user-role.enum';
+import { TransactionsService } from '../transactions/transactions.service';
+import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
+import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
+import { TransactionType } from '../transactions/types/transaction-type.enum';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -67,6 +71,8 @@ export class RequestsService implements IRequestService {
     private readonly servicePackageService: ServicesService,
 
     private readonly channelService: ChannelsService,
+
+    private readonly transactionService: TransactionsService,
   ) {}
 
   async createRequestViewLand(data: CreateRequestViewLandDTO): Promise<any> {
@@ -610,6 +616,12 @@ export class RequestsService implements IRequestService {
         where: {
           request_id: request_id,
         },
+        relations: {
+          task: {
+            report: true,
+          },
+          service_specific: true,
+        },
       });
       if (!request) {
         throw new BadRequestException('Request not found');
@@ -672,6 +684,19 @@ export class RequestsService implements IRequestService {
         data.status === RequestStatus.completed
       ) {
         //create transaction
+        const transactionData: Partial<CreateTransactionDTO> = {
+          service_specific_id: request.service_specific_id,
+          total_price:
+            request.service_specific.price_purchase_per_kg *
+            request.task.report.quality_plant *
+            (request.task.report.mass_plant / 1000),
+          purpose: TransactionPurpose.service_purchase_product,
+          user_id: request.service_specific.landrenter_id,
+          type: TransactionType.refund,
+        };
+        await this.transactionService.createTransaction(
+          transactionData as CreateTransactionDTO,
+        );
       }
       // Check condition of report land with completed status
       if (
@@ -682,13 +707,21 @@ export class RequestsService implements IRequestService {
         await this.bookingService.createRefundBooking(request.booking_land_id);
       }
       // update request status
-      const updated_request = await this.requestEntity.save({
-        ...request,
-        status: data.status,
-      });
+      const updated_request = await this.requestEntity.update(
+        {
+          request_id: request_id,
+        },
+        {
+          status: data.status,
+        },
+      );
 
       return updated_request;
     } catch (error) {
+      this.loggerService.error(error.message, error.stack);
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
       throw new InternalServerErrorException(error.message);
     }
   }

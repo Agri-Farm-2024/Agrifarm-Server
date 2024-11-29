@@ -11,6 +11,7 @@ import { MaterialsModule } from '../materials/materials.module';
 import { ServicesModule } from '../servicesPackage/servicesPackage.module';
 import { BookingsModule } from '../bookings/bookings.module';
 import { ChannelsModule } from '../channels/channels.module';
+import { TransactionsModule } from '../transactions/transactions.module';
 
 @Module({
   controllers: [RequestsController],
@@ -25,6 +26,7 @@ import { ChannelsModule } from '../channels/channels.module';
     ServicesModule,
     forwardRef(() => BookingsModule),
     ChannelsModule,
+    TransactionsModule,
   ],
   exports: [RequestsService],
 })
