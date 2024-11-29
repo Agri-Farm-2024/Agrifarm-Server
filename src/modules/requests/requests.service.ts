@@ -540,7 +540,7 @@ export class RequestsService implements IRequestService {
       // create task for the request
       const new_task = await this.taskService.createTaskAuto(
         new_request.request_id,
-        service_specific_detail.booking_land.staff_id,
+        service_specific_detail.process_technical_specific.expert_id,
       );
       //update status request
       await this.updateRequestStatus(
@@ -552,7 +552,7 @@ export class RequestsService implements IRequestService {
       }
       //create notification for staff
       await this.notificationService.createNotification({
-        user_id: service_specific_detail.booking_land.staff_id,
+        user_id: service_specific_detail.process_technical_specific.expert_id,
         title: NotificationTitleEnum.create_task,
         content: NotificationContentEnum.assigned_task(),
         component_id: new_request.request_id,
@@ -561,6 +561,10 @@ export class RequestsService implements IRequestService {
       return new_request;
     } catch (error) {
       this.loggerService.error(error.message, error.stack);
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
     }
   }
 
