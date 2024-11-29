@@ -202,8 +202,7 @@ export class ReportsService implements IReportService {
           quality_plant: data.quality_plant,
           mass_plant: data.mass_plant,
           price_purchase_per_kg:
-            report_exist.task.request.service_specific.plant_season
-              .price_purchase_per_kg,
+            task_exist.request.service_specific.price_purchase_per_kg,
         });
         //crete url report
         if (data.url) {

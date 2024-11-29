@@ -307,6 +307,9 @@ export class TasksService implements ITaskService {
             plant_season: {
               plant: true,
             },
+            service_specific: {
+              service_package: true,
+            },
           },
           assign_by: true,
           assign_to: true,
