@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional } from 'class-validator';
-import { QualityPurchaseType } from '../types/quality-type-purchase.enum';
+import { IsNotEmpty, IsOptional, Max, Min } from 'class-validator';
 import { ReportURLDTO } from './create-report.dto';
 
 export class CreateReportPurchaseDto {
@@ -8,21 +7,25 @@ export class CreateReportPurchaseDto {
     description: 'the content of report purchase',
     example: 'the plant have a good quality',
   })
-  @IsOptional()
+  @IsNotEmpty()
   content: string;
 
   @ApiProperty({
     description: ' the quality  plant ',
-    example: QualityPurchaseType.hight,
+    example: 100,
   })
   @IsOptional()
+  @Min(1)
+  @Max(100)
   quality_plant: number;
 
   @ApiProperty({
     description: ' the quality  plant expected ',
-    example: QualityPurchaseType.hight,
+    example: 100,
   })
   @IsOptional()
+  @Min(1)
+  @Max(100)
   quality_plant_expect: number;
 
   @ApiProperty({
