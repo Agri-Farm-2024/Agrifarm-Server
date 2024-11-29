@@ -803,7 +803,7 @@ export class RequestsService implements IRequestService {
       });
       return new_request;
     } catch (error) {
-      throw new InternalServerErrorException(error.message);
+      this.loggerService.error(error.message, error.stack);
     }
   }
 }

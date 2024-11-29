@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { IService } from './interfaces/IService.interface';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -33,6 +34,7 @@ import { RequestsService } from '../requests/requests.service';
 
 @Injectable()
 export class ServicesService implements IService {
+  private readonly logger = new Logger(ServicesService.name);
   constructor(
     @InjectRepository(ServicePackage)
     private readonly servicePackageRepo: Repository<ServicePackage>,
@@ -442,7 +444,7 @@ export class ServicesService implements IService {
         );
       });
     } catch (error) {
-      throw new InternalServerErrorException(error.message);
+      this.logger.error(`Error when check service is expired ${error.message}`);
     }
   }
 
@@ -500,8 +502,6 @@ export class ServicesService implements IService {
           time_end: getTimeByPlusMonths(date, 1),
         },
       });
-      console.log(getTimeByPlusMonths(date, 1));
-      console.log(list_service);
       if (list_service.length > 0) {
         // create request
         for (const service of list_service) {

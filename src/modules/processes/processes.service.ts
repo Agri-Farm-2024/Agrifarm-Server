@@ -926,7 +926,7 @@ export class ProcessesService implements IProcessesService {
         await this.requestService.createRequestCultivateProcessContent(content);
       }
     } catch (error) {
-      throw new InternalServerErrorException(error.message);
+      this.logger.error(`Error when check every five pm  ${error.message}`);
     }
   }
 

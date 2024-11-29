@@ -137,10 +137,20 @@ export class TasksService implements ITaskService {
     }
   }
 
+  /**
+   * Get tasks by staff or expert
+   * @function getTasksByUserId
+   * @param user_id
+   * @param status
+   * @returns
+   */
+
   async getTasksByUserId(user_id: string, status: RequestStatus): Promise<any> {
     try {
-      const filter: any = { assigned_to_id: user_id };
+      const filter: any = {};
+      filter.assigned_to_id = user_id;
       if (status) {
+        filter.request = {};
         filter.request.status = status;
       }
 
@@ -180,6 +190,7 @@ export class TasksService implements ITaskService {
           },
         },
       });
+      // console.log(tasks);
       return tasks;
     } catch (error) {
       throw new InternalServerErrorException(error.message);

@@ -327,8 +327,8 @@ export class AuthsService implements IAuthService {
         algorithm: 'RS256',
       });
 
-      console.log(`Access token: ${accessToken}`);
-      console.log(`Refresh token: ${refreshToken}`);
+      // console.log(`Access token: ${accessToken}`);
+      // console.log(`Refresh token: ${refreshToken}`);
       // Verify the token with the public key
       const verifyToken = this.jwtService.verify(accessToken, {
         secret: publicKey,

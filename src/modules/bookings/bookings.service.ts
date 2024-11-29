@@ -1003,110 +1003,115 @@ export class BookingsService implements IBookingService {
   }
 
   async checkBookingIsExpired(): Promise<any> {
-    // Get all booking is pending contract and expired schedule at
-    const booking_expired_schedule = await this.bookingRepository.find({
-      where: {
-        status: BookingStatus.pending_sign,
-        expired_schedule_at: LessThanOrEqual(new Date()),
-      },
-    });
-    console.log(`booking_expired_schedule`, booking_expired_schedule);
-    // Set booking to canceled
-    booking_expired_schedule.forEach(async (booking) => {
-      await this.bookingRepository.save({
-        ...booking,
-        status: BookingStatus.canceled,
-        reason_for_cancel: `Expired sign schedule at ${booking.expired_schedule_at.toLocaleDateString()}`,
-      });
-      // Send mail to land renter
-      // await this.mailService.sendMail(
-      //   booking.land_renter.email,
-      //   SubjectMailEnum.bookingExpired,
-      //   TemplateMailEnum.bookingExpired,
-      //   {
-      //     full_name: booking.land_renter.full_name,
-      //     land_id: booking.land_id,
-      //     land_name: booking.land.name,
-      //     time_start: booking.time_start.toLocaleDateString(),
-      //     time_end: booking.time_end.toLocaleDateString(),
-      //     total_month: booking.total_month,
-      //     price_per_month: booking.price_per_month,
-      //     price_deposit: booking.price_deposit,
-      //     total_price: this.getTotalPriceBooking(booking),
-      //     status: 'Hết hạn',
-      //     user_mail: booking.land_renter.email,
-      //   },
-      // );
-      // send notification to land renter
-    });
-    // check booking expired
-    const list_booking_expired = await this.bookingRepository.find({
-      relations: {
-        land: true,
-        extends: true,
-      },
-      where: {
-        status: BookingStatus.completed,
-        extends: {
-          status: ExtendStatus.completed,
+    try {
+      // Get all booking is pending contract and expired schedule at
+      const booking_expired_schedule = await this.bookingRepository.find({
+        where: {
+          status: BookingStatus.pending_sign,
+          expired_schedule_at: LessThanOrEqual(new Date()),
         },
-      },
-    });
-    console.log(`list_booking_expired`, list_booking_expired);
-    // define booking_expired
-    const list_booking_expired_with_extends = [];
-    // set booking expired time by add extend month
-    for (const booking of list_booking_expired) {
-      if (booking.extends.length > 0) {
-        for (const extend of booking.extends) {
-          booking.time_end = getTimeByPlusMonths(
-            booking.time_end,
-            extend.total_month,
-          );
+      });
+      console.log(`booking_expired_schedule`, booking_expired_schedule);
+      // Set booking to canceled
+      booking_expired_schedule.forEach(async (booking) => {
+        await this.bookingRepository.save({
+          ...booking,
+          status: BookingStatus.canceled,
+          reason_for_cancel: `Expired sign schedule at ${booking.expired_schedule_at.toLocaleDateString()}`,
+        });
+        // Send mail to land renter
+        // await this.mailService.sendMail(
+        //   booking.land_renter.email,
+        //   SubjectMailEnum.bookingExpired,
+        //   TemplateMailEnum.bookingExpired,
+        //   {
+        //     full_name: booking.land_renter.full_name,
+        //     land_id: booking.land_id,
+        //     land_name: booking.land.name,
+        //     time_start: booking.time_start.toLocaleDateString(),
+        //     time_end: booking.time_end.toLocaleDateString(),
+        //     total_month: booking.total_month,
+        //     price_per_month: booking.price_per_month,
+        //     price_deposit: booking.price_deposit,
+        //     total_price: this.getTotalPriceBooking(booking),
+        //     status: 'Hết hạn',
+        //     user_mail: booking.land_renter.email,
+        //   },
+        // );
+        // send notification to land renter
+      });
+      // check booking expired
+      const list_booking_expired = await this.bookingRepository.find({
+        relations: {
+          land: true,
+          extends: true,
+        },
+        where: {
+          status: BookingStatus.completed,
+          extends: {
+            status: ExtendStatus.completed,
+          },
+        },
+      });
+      console.log(`list_booking_expired`, list_booking_expired);
+      // define booking_expired
+      const list_booking_expired_with_extends = [];
+      // set booking expired time by add extend month
+      for (const booking of list_booking_expired) {
+        if (booking.extends.length > 0) {
+          for (const extend of booking.extends) {
+            booking.time_end = getTimeByPlusMonths(
+              booking.time_end,
+              extend.total_month,
+            );
+          }
+        }
+        // check condition
+        if (new Date() > booking.time_end) {
+          list_booking_expired_with_extends.push(booking);
         }
       }
-      // check condition
-      if (new Date() > booking.time_end) {
-        list_booking_expired_with_extends.push(booking);
-      }
-    }
-    console.log(`booking_expired`, list_booking_expired_with_extends);
-    // Set booking to expired
-    list_booking_expired_with_extends.forEach(async (booking) => {
-      // Set status to expired
-      await this.bookingRepository.update(
-        {
-          booking_id: booking.booking_id,
-        },
-        {
-          status: BookingStatus.expired,
-        },
-      );
+      console.log(`booking_expired`, list_booking_expired_with_extends);
+      // Set booking to expired
+      list_booking_expired_with_extends.forEach(async (booking) => {
+        // Set status to expired
+        await this.bookingRepository.update(
+          {
+            booking_id: booking.booking_id,
+          },
+          {
+            status: BookingStatus.expired,
+          },
+        );
 
-      this.loggerService.log(`Booking ${booking.booking_id} is expired`);
-      // Create report for this land
-      await this.requestService.createRequestReportLand(booking);
-      // Send mail to land renter
-      // await this.mailService.sendMail(
-      //   booking.land_renter.email,
-      //   SubjectMailEnum.bookingExpired,
-      //   TemplateMailEnum.bookingExpired,
-      //   {
-      //     full_name: booking.land_renter.full_name,
-      //     land_id: booking.land_id,
-      //     land_name: booking.land.name,
-      //     time_start: booking.time_start.toLocaleDateString(),
-      //     time_end: booking.time_end.toLocaleDateString(),
-      //     total_month: booking.total_month,
-      //     price_per_month: booking.price_per_month,
-      //     price_deposit: booking.price_deposit,
-      //     total_price: this.getTotalPriceBooking(booking),
-      //     status: 'Hết hạn',
-      //     user_mail: booking.land_renter.email,
-      //   },
-      // );
-      // send notification to land renter
-    });
+        this.loggerService.log(`Booking ${booking.booking_id} is expired`);
+        // Create report for this land
+        await this.requestService.createRequestReportLand(booking);
+        // Send mail to land renter
+        // await this.mailService.sendMail(
+        //   booking.land_renter.email,
+        //   SubjectMailEnum.bookingExpired,
+        //   TemplateMailEnum.bookingExpired,
+        //   {
+        //     full_name: booking.land_renter.full_name,
+        //     land_id: booking.land_id,
+        //     land_name: booking.land.name,
+        //     time_start: booking.time_start.toLocaleDateString(),
+        //     time_end: booking.time_end.toLocaleDateString(),
+        //     total_month: booking.total_month,
+        //     price_per_month: booking.price_per_month,
+        //     price_deposit: booking.price_deposit,
+        //     total_price: this.getTotalPriceBooking(booking),
+        //     status: 'Hết hạn',
+        //     user_mail: booking.land_renter.email,
+        //   },
+        // );
+        // send notification to land renter
+      });
+    } catch (error) {
+      this.logger.error(error.message);
+      this.loggerService.error(error.message, error.stack);
+    }
   }
 
   async updateBookingByExtend(
