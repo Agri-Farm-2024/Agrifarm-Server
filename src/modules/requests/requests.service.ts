@@ -315,10 +315,14 @@ export class RequestsService implements IRequestService {
         );
       }
       // update request status
-      const updated_request = await this.requestEntity.save({
-        ...request,
-        status,
-      });
+      const updated_request = await this.requestEntity.update(
+        {
+          request_id: request_id,
+        },
+        {
+          status,
+        },
+      );
       return updated_request;
     } catch (error) {
       if (error instanceof BadRequestException) {

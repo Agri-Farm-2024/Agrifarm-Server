@@ -188,31 +188,25 @@ export class ReportsService implements IReportService {
           'You are not assigned to this task, you cannot create a report',
         );
       }
-
-      if (
-        task_exist.request.service_specific.service_package.process_of_plant ===
-        true
-      ) {
-        // create a new instance of the Report entity
-        const new_report = await this.reportRepository.save({
-          task_id: task_id,
-          content: data.content,
-          quality_plant_expect: data.quality_plant_expect,
-          mass_plant_expect: data.mass_plant_expect,
-          quality_plant: data.quality_plant,
-          mass_plant: data.mass_plant,
-          price_purchase_per_kg:
-            task_exist.request.service_specific.price_purchase_per_kg,
-        });
-        //crete url report
-        if (data.url) {
-          for (const url of data.url) {
-            await this.reportURLRepo.save({
-              report_id: new_report.report_id,
-              url_link: url.url_link,
-              url_type: url.url_type,
-            });
-          }
+      // create a new instance of the Report entity
+      const new_report = await this.reportRepository.save({
+        task_id: task_id,
+        content: data.content,
+        quality_plant_expect: data.quality_plant_expect,
+        mass_plant_expect: data.mass_plant_expect,
+        quality_plant: data.quality_plant,
+        mass_plant: data.mass_plant,
+        price_purchase_per_kg:
+          task_exist.request.service_specific.price_purchase_per_kg,
+      });
+      //crete url report
+      if (data.url) {
+        for (const url of data.url) {
+          await this.reportURLRepo.save({
+            report_id: new_report.report_id,
+            url_link: url.url_link,
+            url_type: url.url_type,
+          });
         }
       }
 
@@ -244,6 +238,7 @@ export class ReportsService implements IReportService {
           component_id: report_exist.task_id,
         });
       }
+      return new_report;
     } catch (error) {
       if (error instanceof ForbiddenException) {
         throw error;
