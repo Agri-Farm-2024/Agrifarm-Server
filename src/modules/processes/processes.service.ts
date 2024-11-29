@@ -965,4 +965,31 @@ export class ProcessesService implements IProcessesService {
       }
     } catch (error) {}
   }
+
+  /**
+   * Update to public process specific to view dinary
+   * @function updateProcessSpecificPublic
+   * @param process_specific_id : string
+   *
+   */
+
+  async updateProcessSpecificPublic(
+    process_specific_id: string,
+    is_public: boolean,
+  ): Promise<any> {
+    try {
+      const process_specific = await this.processSpecificRepo.findOne({
+        where: {
+          process_technical_specific_id: process_specific_id,
+        },
+      });
+      if (!process_specific) {
+        throw new BadRequestException('Process specific not found');
+      }
+      process_specific.is_public = is_public;
+      return await this.processSpecificRepo.save(process_specific);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }

@@ -9,10 +9,11 @@ import {
   Put,
   Param,
   Delete,
+  Patch,
 } from '@nestjs/common';
 import { ProcessesService } from './processes.service';
 import { CreateProcessDto } from './dto/create-process.dto';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { Roles } from 'src/common/decorations/role.decoration';
 import { UserRole } from '../users/types/user-role.enum';
@@ -134,5 +135,26 @@ export class ProcessesController {
   @Get('/getDetailProcessSpecific/:id')
   getProcessSpecific(@Param('id') id: string): Promise<any> {
     return this.processesService.getDetailProcessSpecific(id);
+  }
+
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        is_public: {
+          type: 'boolean',
+        },
+      },
+    },
+  })
+  @Patch('/updateProcessSpecific/public/:process_specific_id')
+  updateProcessSpecificPublic(
+    @Param('process_specific_id') process_specific_id: string,
+    @Body() data: any,
+  ): Promise<any> {
+    return this.processesService.updateProcessSpecificPublic(
+      process_specific_id,
+      data.is_public,
+    );
   }
 }

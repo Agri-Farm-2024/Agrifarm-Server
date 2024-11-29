@@ -1,3 +1,5 @@
+import * as QRCode from 'qrcode';
+
 export const parseUrlLink = (path: string): string => {
   const url_link = `${process.env.HOST_NAME}/${path}`;
   return url_link;
@@ -10,4 +12,8 @@ export const parsePaymentLink = (price: number, content: string) => {
 export const getNameOfPath = (path: string): string => {
   const arr = path.split('/');
   return arr[arr.length - 1];
+};
+
+export const parseQrCodeLink = async (path: string): Promise<string> => {
+  return await QRCode.toDataURL(parseUrlLink(path));
 };

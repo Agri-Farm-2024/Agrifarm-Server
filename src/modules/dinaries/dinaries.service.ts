@@ -16,6 +16,8 @@ import { ProcessesService } from '../processes/processes.service';
 import { RequestsService } from '../requests/requests.service';
 import { Request } from '../requests/entities/request.entity';
 import { RequestStatus } from '../requests/types/request-status.enum';
+import { ProcessSpecific } from '../processes/entities/specifics/processSpecific.entity';
+import { selectDinary } from 'src/utils/select.util';
 
 @Injectable()
 export class DinariesService implements IDinariesService {
@@ -137,21 +139,37 @@ export class DinariesService implements IDinariesService {
     process_specific_id: string,
   ): Promise<any> {
     try {
-      const process_specific_exist =
+      const process_specific_exist: ProcessSpecific =
         await this.processService.getDetailProcessSpecific(process_specific_id);
+      // check if process specific exist
       if (!process_specific_exist) {
         throw new BadRequestException('Process specific not found');
       }
+      // check public standard stage exist
+      if (process_specific_exist.is_public === false) {
+        throw new BadRequestException('Public standard stage not found');
+      }
       return await this.dinariesStageRepo.find({
         where: {
-          process_technical_specific_stage_content_id:
-            process_specific_exist.process_technical_specific_stage
-              .process_technical_standard_stage_content_id,
+          process_technical_specific_stage_content: {
+            process_technical_specific_stage: {
+              process_technical_specific_id: process_specific_id,
+            },
+          },
         },
         relations: {
           dinaries_link: true,
           process_technical_specific_stage_content: true,
         },
+        order: {
+          process_technical_specific_stage_content: {
+            content_numberic_order: 'ASC',
+            process_technical_specific_stage: {
+              stage_numberic_order: 'ASC',
+            },
+          },
+        },
+        select: selectDinary,
       });
     } catch (error) {
       throw new BadRequestException(error.message);
