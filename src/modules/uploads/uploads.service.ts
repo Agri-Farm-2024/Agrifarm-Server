@@ -25,12 +25,12 @@ export class UploadsService {
       await fs.mkdir(uploadDir, { recursive: true });
 
       // check if the file is already exist
-      const fileExist = await fs
-        .stat(join(uploadDir, file.originalname))
-        .catch(() => null);
-      if (fileExist) {
-        throw new BadRequestException('File already exist');
-      }
+      // const fileExist = await fs
+      //   .stat(join(uploadDir, file.originalname))
+      //   .catch(() => null);
+      // if (fileExist) {
+      //   throw new BadRequestException('File already exist');
+      // }
 
       // Save the file in the directory
       const filePath = join(uploadDir, file.originalname);
