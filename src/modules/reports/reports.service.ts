@@ -214,7 +214,7 @@ export class ReportsService implements IReportService {
 
       //update request status to pending_approval
       await this.requestService.updateRequestStatus(
-        report_exist.task.request_id,
+        task_exist.request_id,
         RequestStatus.pending_approval,
       );
       // send notification to assigned this task

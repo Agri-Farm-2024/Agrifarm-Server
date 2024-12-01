@@ -37,7 +37,7 @@ export class ProcessSpecificStage extends AbstractEntity {
 
   @Column()
   time_end: Date;
-
+  // Re;ations
   @ManyToOne(
     () => ProcessSpecific,
     (processSpecific) => processSpecific.process_technical_specific_stage,

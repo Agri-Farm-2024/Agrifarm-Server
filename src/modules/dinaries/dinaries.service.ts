@@ -17,7 +17,7 @@ import { RequestsService } from '../requests/requests.service';
 import { Request } from '../requests/entities/request.entity';
 import { RequestStatus } from '../requests/types/request-status.enum';
 import { ProcessSpecific } from '../processes/entities/specifics/processSpecific.entity';
-import { selectDinary } from 'src/utils/select.util';
+// import { selectDinary } from 'src/utils/select.util';
 
 @Injectable()
 export class DinariesService implements IDinariesService {
@@ -149,28 +149,9 @@ export class DinariesService implements IDinariesService {
       if (process_specific_exist.is_public === false) {
         throw new BadRequestException('Public standard stage not found');
       }
-      return await this.dinariesStageRepo.find({
-        where: {
-          process_technical_specific_stage_content: {
-            process_technical_specific_stage: {
-              process_technical_specific_id: process_specific_id,
-            },
-          },
-        },
-        relations: {
-          dinaries_link: true,
-          process_technical_specific_stage_content: true,
-        },
-        order: {
-          process_technical_specific_stage_content: {
-            content_numberic_order: 'ASC',
-            process_technical_specific_stage: {
-              stage_numberic_order: 'ASC',
-            },
-          },
-        },
-        select: selectDinary,
-      });
+      return await this.processService.getDetailProcessSpecific(
+        process_specific_id,
+      );
     } catch (error) {
       throw new BadRequestException(error.message);
     }
