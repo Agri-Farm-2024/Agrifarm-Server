@@ -256,6 +256,7 @@ export class ServicesService implements IService {
           plant_season.total_month,
         ),
         landrenter_id: user.user_id,
+        price_purchase_per_kg: plant_season.price_purchase_per_kg,
       });
       // calculate total price
       const total_price =
