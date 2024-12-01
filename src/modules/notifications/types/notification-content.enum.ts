@@ -24,4 +24,13 @@ export const NotificationContentEnum = {
 
   booking_refund: (land_name: string, price: string) =>
     `Yêu cầu hoàn tiền đã được tạo trên ${land_name} với số tiền ${price} `,
+
+  create_extend: (land_name: string) =>
+    `Yêu cầu gia hạn thuê đất trên ${land_name} vừa được tạo v`,
+
+  pending_payment_extend: (land_name: string) =>
+    `Yêu cầu gia hạn thuê đất trên ${land_name} đang chờ thanh toán`,
+
+  extend_completed: (land_name: string) =>
+    `Thanh toán gia hạn thuê đất trên ${land_name} thành công`,
 } as const;

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Thông tin tài khoản</title>
+    <style>
+        table,
+        td,
+        div,
+        h1,
+        p {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        .email-header {
+            background-color: #C2D69B;
+            color: #ffffff;
+            text-align: center;
+            padding: 20px;
+            font-size: 24px;
+        }
+
+        .email-header img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .email-footer {
+            background-color: #C2D69B;
+            padding: 40px;
+            text-align: center;
+            color: #000;
+            font-size: 14px;
+        }
+
+        .content-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .content-table th,
+        .content-table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+            font-size: 16px;
+        }
+
+        .content-table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+            width: 40%;
+        }
+
+        .button {
+            display: block;
+            padding: 20px;
+            background-color: #3C603C;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body style="margin:0;padding:0;">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td align="center" style="padding: 20px;">
+                <table class="content" width=700" border="0" cellspacing="0" cellpadding="0"
+                    style="border-collapse: collapse; border: 1px solid #cccccc;">
+                    <!-- Header -->
+                    <tr>
+                        <td class="email-header">
+                            <img
+                                src="https://res.cloudinary.com/dgo0zdagl/image/upload/v1730384676/dscvfl4eoxycauyut2oo.png"></img>
+                        </td>
+                    </tr>
+
+                    <!-- Body -->
+                    <tr>
+                        <td class="body" style="padding: 40px; text-align: left; font-size: 16px; line-height: 1.6;">
+                            Chào <strong>{{full_name}}</strong>, <br>
+                            Chúng tôi xin gửi thông tin đơn đăng ký gia hạn mảnh đất của bạn tại AgriFarm Experience.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding: 0px 40px 0px 40px; text-align: center;">
+                            <a href="https://agrifarm.com/booking-land" class="button">Thông tin yêu cầu</a>
+                            <table class="content-table">
+                                <tr>
+                                    <th>Mã mảnh đất</th>
+                                    <td>{{land_id}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Mảnh đất</th>
+                                    <td>{{land_name}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Ngày bất đầu</th>
+                                    <td>{{time_start}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Ngày kết thúc</th>
+                                    <td>{{time_end}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Tổng số tháng</th>
+                                    <td>{{total_month}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Chi phí mỗi tháng</th>
+                                    <td>{{price_per_month}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Tổng số tiền</th>
+                                    <td>{{total_price}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Tình trạng</th>
+                                    <td>{{status}}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding: 0px 40px 0px 40px; text-align: center;">
+                            <a href="https://agrifarm.com/booking-land" class="button">Thông tin thanh toán</a>
+                            <table class="content-table">
+                                <tr>
+                                    <th>Mã giao dịch</th>
+                                    <td>{{transaction_code}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Số tiền giao dịch</th>
+                                    <td>{{transaction_price}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Tình trạng thanh toán</th>
+                                    <td>{{transaction_status}}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding: 0px 40px 0px 40px; text-align: center;">
+                            <a href="https://agrifarm.com/booking-land" class="button">Thông tin khách hàng</a>
+                            <table class="content-table">
+                                <tr>
+                                    <th>Họ và tên</th>
+                                    <td>{{full_name}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Email</th>
+                                    <td>{{user_mail}}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="body" style="padding: 20px 40px; text-align: left; font-size: 16px; ">
+                            Cảm ơn quý khách đã sử dụng dịch vụ tại AgriFarm Experience.
+                            <br><br>
+                            Trân trọng.
+                            <br><br>
+                            ------------------------------------------
+                            <br><br>
+                            AgriFarm Experience: Dịch Vụ Quản Lý Thuê Đất và Hỗ Trợ Canh Tác Toàn Diện.
+                            <br><br>
+                            <div>
+                                <p>📩 Email: <a href="mailto:agrifarm@gmail.com">agrifarm@gmail.com</a></p>
+                                <p>📞 Số điện thoại: <a href="tel:099995050">099995050</a></p>
+                                <p>📍 Địa chỉ: 123 Biên Hoà, Đồng Nai</p>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Footer -->
+                    <tr>
+                        <td class="email-footer">
+                            <p>&copy; 2024 | AgriFarm Experience</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>

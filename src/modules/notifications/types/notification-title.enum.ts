@@ -17,4 +17,7 @@ export enum NotificationTitleEnum {
   create_chat = 'Cuộc trò chuyện mới đã được tạo',
   create_report = 'Báo cáo cho công việc mới được tạo',
   booking_refund = 'Yêu cầu hoàn tiền đã được tạo',
+  create_extend = 'Yêu cầu gia hạn thuê đất vừa được tạo',
+  pending_payment_extend = 'Yêu cầu gia hạn thuê đất đang chờ thanh toán',
+  extend_completed = 'Thanh toán gia hạn thuê đất thành công',
 }

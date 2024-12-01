@@ -26,6 +26,12 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../notifications/types/notification-type.enum';
 import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
 import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
+import { MailService } from 'src/mails/mail.service';
+import { SubjectMailEnum } from 'src/mails/types/mail-subject.type';
+import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
+import { getTimeByPlusMonths } from 'src/utils/time.utl';
+import { parsePriceToVND } from 'src/utils/price.util';
+import { getNameOfPath } from 'src/utils/link.util';
 
 @Injectable()
 export class ExtendsService implements IExtendService {
@@ -40,6 +46,8 @@ export class ExtendsService implements IExtendService {
     private readonly transactionService: TransactionsService,
 
     private readonly notificationService: NotificationsService,
+
+    private readonly mailService: MailService,
   ) {}
 
   async createExtend(createExtendDTO: CreateExtendDto): Promise<any> {
@@ -102,6 +110,23 @@ export class ExtendsService implements IExtendService {
         total_month: createExtendDTO.total_month,
         time_start: bookingLand.time_end,
         price_per_month: bookingLand.land.price_booking_per_month,
+      });
+      // Send noti for landrenter
+      await this.notificationService.createNotification({
+        user_id: bookingLand.landrenter_id,
+        component_id: extend.extend_id,
+        content: NotificationContentEnum.create_extend(bookingLand.land.name),
+        type: NotificationType.extend,
+        title: NotificationTitleEnum.create_extend,
+      });
+
+      // Send noti for staff
+      await this.notificationService.createNotification({
+        user_id: bookingLand.land.staff_id,
+        component_id: extend.extend_id,
+        content: NotificationContentEnum.create_extend(bookingLand.land.name),
+        type: NotificationType.extend,
+        title: NotificationTitleEnum.create_extend,
       });
       return extend;
     } catch (error) {
@@ -219,6 +244,16 @@ export class ExtendsService implements IExtendService {
         await this.transactionService.createTransaction(
           transactionData as CreateTransactionDTO,
         );
+        // send notification to user
+        await this.notificationService.createNotification({
+          user_id: extend.booking_land.landrenter_id,
+          component_id: extend.extend_id,
+          content: NotificationContentEnum.pending_payment_extend(
+            extend.booking_land.land.name,
+          ),
+          type: NotificationType.extend,
+          title: NotificationTitleEnum.pending_payment_extend,
+        });
       }
       // update extend
       await this.extendRepository.save({
@@ -252,6 +287,13 @@ export class ExtendsService implements IExtendService {
       // find extend by id
       const extend = await this.extendRepository.findOne({
         where: { extend_id: extend_id },
+        relations: {
+          booking_land: {
+            land: true,
+            land_renter: true,
+          },
+          transactions: true,
+        },
       });
       if (!extend) {
         throw new BadRequestException('Extend is not found');
@@ -261,17 +303,62 @@ export class ExtendsService implements IExtendService {
         throw new BadRequestException('Extend is not pending payment');
       }
       // update extend
-      await this.extendRepository.save({
-        ...extend,
-        status: ExtendStatus.completed,
-      });
+      await this.extendRepository.update(
+        {
+          extend_id: extend_id,
+        },
+        {
+          status: ExtendStatus.completed,
+        },
+      );
       // // update booking
       // await this.bookingLandService.updateBookingByExtend(
       //   extend.booking_land_id,
       //   extend.total_month,
       // );
       // send notification to user
+      await this.notificationService.createNotification({
+        user_id: extend.booking_land.landrenter_id,
+        component_id: extend.extend_id,
+        content: NotificationContentEnum.extend_completed(
+          extend.booking_land.land.name,
+        ),
+        type: NotificationType.extend,
+        title: NotificationTitleEnum.extend_completed,
+      });
       // send mail to user
+      await this.mailService.sendMail(
+        extend.booking_land.land_renter.email,
+        SubjectMailEnum.paymentExtend,
+        TemplateMailEnum.paymentExtend,
+        {
+          full_name: extend.booking_land.land_renter.full_name,
+          land_id: extend.booking_land.land_id,
+          land_name: extend.booking_land.land.name,
+          time_start: extend.time_start.toLocaleDateString(),
+          time_end: getTimeByPlusMonths(
+            extend.time_start,
+            extend.total_month,
+          ).toLocaleDateString(),
+          total_month: extend.total_month,
+          price_per_month: extend.price_per_month,
+          total_price: parsePriceToVND(
+            extend.total_month * extend.price_per_month,
+          ),
+          status: 'Đã hoàn thành',
+          user_mail: extend.booking_land.land_renter.email,
+          transaction_code: extend.transactions[0].transaction_code,
+          transaction_price: extend.transactions[0].total_price,
+          transaction_status: 'Thành công',
+        },
+        [
+          {
+            filename: getNameOfPath(extend.contract_image),
+            path: extend.contract_image,
+          },
+        ],
+      );
+
       return await this.extendRepository.findOne({
         where: { extend_id: extend_id },
       });

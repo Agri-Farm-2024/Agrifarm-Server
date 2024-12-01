@@ -5,4 +5,5 @@ export enum SubjectMailEnum {
   createBooking = 'Gửi yêu cầu thuê đất thành công',
   paymentBooking = 'Thanh toán thành công',
   landViewingSchedule = 'Lịch xem đất',
+  paymentExtend = 'Thanh toán gia hạn thành công',
 }
