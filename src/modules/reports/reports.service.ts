@@ -164,7 +164,6 @@ export class ReportsService implements IReportService {
     user: IUser,
   ) {
     try {
-      const task_exist: Task = await this.taskService.getDetailTask(task_id);
       //chekc report exist
       const report_exist = await this.reportRepository.findOne({
         where: { task_id: task_id },
@@ -182,6 +181,9 @@ export class ReportsService implements IReportService {
       if (report_exist) {
         return report_exist;
       }
+      // Check task exist
+      const task_exist: Task = await this.taskService.getDetailTask(task_id);
+
       // Check assigned user of this task
       if (task_exist.assigned_to_id !== user.user_id) {
         throw new ForbiddenException(
@@ -222,20 +224,20 @@ export class ReportsService implements IReportService {
       );
       if (task_exist.request.type === RequestType.product_purchase) {
         await this.notificationService.createNotification({
-          user_id: report_exist.task.assigned_by_id || manager[0].user_id,
+          user_id: task_exist.assigned_by_id || manager[0].user_id,
           title: NotificationTitleEnum.report_purchase,
           content: `Báo cáo đã được tạo cho công việc kiểm định trước thu hoạch`,
           type: NotificationType.report,
-          component_id: report_exist.task_id,
+          component_id: task_exist.task_id,
         });
       }
       if (task_exist.request.type === RequestType.product_puchase_harvest) {
         await this.notificationService.createNotification({
-          user_id: report_exist.task.assigned_by_id || manager[0].user_id,
+          user_id: task_exist.assigned_by_id || manager[0].user_id,
           title: NotificationTitleEnum.report_harvest,
           content: `Báo cáo đã được tạo cho công việc  sau thu hoạch`,
           type: NotificationType.report,
-          component_id: report_exist.task_id,
+          component_id: task_exist.task_id,
         });
       }
       return new_report;
