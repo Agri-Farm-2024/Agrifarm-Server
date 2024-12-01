@@ -156,6 +156,11 @@ export class RequestsService implements IRequestService {
               plant: true,
             },
             process_technical_specific_stage: true,
+            service_specific: {
+              plant_season: {
+                plant: true,
+              },
+            },
           },
           order: {
             created_at: 'DESC',
