@@ -157,6 +157,7 @@ export class RequestsService implements IRequestService {
             },
             process_technical_specific_stage: true,
             service_specific: {
+              land_renter: true,
               plant_season: {
                 plant: true,
               },
