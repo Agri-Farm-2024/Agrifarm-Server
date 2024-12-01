@@ -22,12 +22,24 @@ import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto
 import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
 import { BuyMaterialDTO } from './dto/buy-material.dto';
 import { MaterialStatus } from './types/material-status.enum';
+import { BookingMaterial } from './entities/booking-material.entity';
+import { RentMaterialDto } from './dto/rent-material.dto';
+import { BookingsService } from '../bookings/bookings.service';
+import { BookingLand } from '../bookings/entities/bookingLand.entity';
+import { BookingStatus } from '../bookings/types/booking-status.enum';
+import { BookingMaterialDetail } from './entities/booking-material-detail.entity';
 
 @Injectable()
 export class MaterialsService implements IMaterialService {
   constructor(
     @InjectRepository(Material)
-    private readonly materialEntity: Repository<Material>,
+    private readonly materialRepo: Repository<Material>,
+
+    @InjectRepository(BookingMaterial)
+    private readonly bookingMaterialRepo: Repository<BookingMaterial>,
+
+    @InjectRepository(BookingMaterialDetail)
+    private readonly bookingMaterialDetailRepo: Repository<BookingMaterialDetail>,
 
     @Inject(forwardRef(() => OrdersService))
     private readonly orderService: OrdersService,
@@ -36,12 +48,15 @@ export class MaterialsService implements IMaterialService {
 
     @Inject(forwardRef(() => TransactionsService))
     private readonly transactionService: TransactionsService,
+
+    @Inject(forwardRef(() => BookingsService))
+    private readonly bookingLandService: BookingsService,
   ) {}
 
   async createMaterial(createMaterialDto: CreateMaterialDto) {
     try {
       //check material is exist
-      const material = await this.materialEntity.findOne({
+      const material = await this.materialRepo.findOne({
         where: {
           name: createMaterialDto.name,
         },
@@ -51,7 +66,7 @@ export class MaterialsService implements IMaterialService {
       }
 
       //create new material
-      const new_material = await this.materialEntity.save({
+      const new_material = await this.materialRepo.save({
         ...createMaterialDto,
       });
 
@@ -70,7 +85,7 @@ export class MaterialsService implements IMaterialService {
   ): Promise<Material> {
     try {
       //check material is exist
-      const material_exist = await this.materialEntity.findOne({
+      const material_exist = await this.materialRepo.findOne({
         where: {
           material_id: id,
         },
@@ -79,7 +94,7 @@ export class MaterialsService implements IMaterialService {
         throw new BadRequestException('material not found');
       }
       //check name of material is duplicate
-      const material_name = await this.materialEntity.findOne({
+      const material_name = await this.materialRepo.findOne({
         where: {
           name: Like(updateMaterialDto.name),
           material_id: Not(id),
@@ -99,7 +114,7 @@ export class MaterialsService implements IMaterialService {
         }
       }
 
-      return await this.materialEntity.save({
+      return await this.materialRepo.save({
         ...material_exist,
         ...updateMaterialDto,
       });
@@ -114,7 +129,7 @@ export class MaterialsService implements IMaterialService {
     quantity: number,
   ): Promise<any> {
     try {
-      const material_exist = await this.materialEntity.findOne({
+      const material_exist = await this.materialRepo.findOne({
         where: {
           material_id: material,
         },
@@ -128,7 +143,7 @@ export class MaterialsService implements IMaterialService {
         material_exist.status = MaterialStatus.available;
       }
 
-      const update_material = await this.materialEntity.save({
+      const update_material = await this.materialRepo.save({
         ...material_exist,
         total_quantity: material_exist.total_quantity + quantity,
       });
@@ -150,12 +165,12 @@ export class MaterialsService implements IMaterialService {
         filter.type = type;
       }
       const [materials, total_count] = await Promise.all([
-        this.materialEntity.find({
+        this.materialRepo.find({
           where: filter,
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
         }),
-        this.materialEntity.count({
+        this.materialRepo.count({
           where: filter,
         }),
       ]);
@@ -184,7 +199,7 @@ export class MaterialsService implements IMaterialService {
       }
       // Loop through each material in the array
       for (const material of materials) {
-        const material_detail = await this.materialEntity.findOne({
+        const material_detail = await this.materialRepo.findOne({
           where: {
             material_id: material.material_id,
           },
@@ -213,7 +228,7 @@ export class MaterialsService implements IMaterialService {
       // Loop through each material in the array
       for (const item of materials) {
         // Check if the material exists
-        const material_detail = await this.materialEntity.findOne({
+        const material_detail = await this.materialRepo.findOne({
           where: {
             material_id: item.material_id,
           },
@@ -226,7 +241,7 @@ export class MaterialsService implements IMaterialService {
           price_per_iteam: material_detail.price_per_piece,
         });
         // Update the quantity of the material
-        await this.materialEntity.update(
+        await this.materialRepo.update(
           {
             material_id: item.material_id,
           },
@@ -268,7 +283,7 @@ export class MaterialsService implements IMaterialService {
   async handleCancelOrder(material: string, quantity: number): Promise<void> {
     try {
       // update quantity material
-      const materialEntity = await this.materialEntity.findOne({
+      const materialEntity = await this.materialRepo.findOne({
         where: {
           material_id: material,
         },
@@ -276,7 +291,7 @@ export class MaterialsService implements IMaterialService {
       if (!materialEntity) {
         throw new BadRequestException('Material not found');
       }
-      await this.materialEntity.update(
+      await this.materialRepo.update(
         {
           material_id: material,
         },
@@ -294,5 +309,124 @@ export class MaterialsService implements IMaterialService {
       }
       throw new InternalServerErrorException(error.message);
     }
+  }
+
+  /**
+   * Booking material
+   * @function bookingMaterial
+   * @param materials
+   * @param user
+   */
+
+  async bookingMaterial(data: RentMaterialDto, user: IUser): Promise<any> {
+    try {
+      // CHeck booking is exist
+      const booking_land: BookingLand =
+        await this.bookingLandService.getBookingDetail(data.booking_id);
+      if (booking_land.status !== BookingStatus.completed) {
+        throw new BadRequestException('Booking is not completed');
+      }
+      // check material is have enough quantity
+      if (data.materials.length === 0) {
+        throw new BadRequestException('Material is empty');
+      }
+      // Loop through each material in the array
+      for (const material of data.materials) {
+        const material_detail = await this.materialRepo.findOne({
+          where: {
+            material_id: material.material_id,
+          },
+        });
+        // check exist material
+        if (!material_detail) {
+          throw new BadRequestException('Material not found');
+        }
+        // check type of material is buy
+        if (material_detail.type !== MaterialType.rent) {
+          throw new BadRequestException('Material is not for rent');
+        }
+        // check quantity of material
+        if (material_detail.total_quantity < material.quantity) {
+          throw new BadRequestException(
+            `Not enough quantity for material ${material_detail.name}`,
+          );
+        }
+      }
+      // Create a new booking material
+      const new_booking_material: BookingMaterial =
+        await this.bookingMaterialRepo.save({
+          landrenter_id: user.user_id,
+          time_start: new Date(),
+          // time end is after 7 days
+          time_end: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
+          booking_id: data.booking_id,
+          staff_id: booking_land.staff_id,
+        });
+      // Caculate total_price for transaction
+      let total_price = 0;
+      // Loop through each material in the array
+      for (const item of data.materials) {
+        // Check if the material exists
+        const material_detail = await this.materialRepo.findOne({
+          where: {
+            material_id: item.material_id,
+          },
+        });
+        // Create booking material detail
+        await this.bookingMaterialDetailRepo.save({
+          booking_material_id: new_booking_material.booking_material_id,
+          material_id: item.material_id,
+          quantity: item.quantity,
+          price_deposit_per_item: material_detail.deposit_per_piece,
+          price_per_piece_item: material_detail.price_of_rent,
+        });
+        // Update the quantity of the material
+        await this.materialRepo.update(
+          {
+            material_id: item.material_id,
+          },
+          {
+            total_quantity: material_detail.total_quantity - item.quantity,
+            quantity_of_rented:
+              material_detail.quantity_of_rented + item.quantity,
+          },
+        );
+        // Calculate the total price
+        total_price +=
+          (material_detail.price_of_rent + material_detail.deposit_per_piece) *
+          item.quantity;
+      }
+      // create transaction DTO and create transaction
+      const transactionData: Partial<CreateTransactionDTO> = {
+        booking_material_id: new_booking_material.booking_material_id,
+        total_price: total_price,
+        purpose: TransactionPurpose.booking_material,
+        user_id: user.user_id,
+      };
+
+      const transaction = await this.transactionService.createTransaction(
+        transactionData as CreateTransactionDTO,
+      );
+      return transaction;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  /**
+   * update booking material status
+   * @function updateBookingMaterialStatus
+   * @param booking_material_id
+   */
+
+  async updateBookingMaterialStatus(
+    booking_material_id: string,
+    status: string,
+  ): Promise<any> {
+    try {
+    } catch (error) {}
   }
 }

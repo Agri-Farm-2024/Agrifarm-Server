@@ -12,6 +12,9 @@ export class CreateTransactionDTO {
   booking_land_id: string;
 
   @IsOptional()
+  booking_material_id: string;
+
+  @IsOptional()
   extend_id: string;
 
   @IsOptional()

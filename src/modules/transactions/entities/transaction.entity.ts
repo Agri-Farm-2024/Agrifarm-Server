@@ -15,6 +15,7 @@ import { User } from 'src/modules/users/entities/user.entity';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 import { Extend } from 'src/modules/extends/entities/extend.entity';
 import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
+import { BookingMaterial } from 'src/modules/materials/entities/booking-material.entity';
 @Entity('transactions')
 export class Transaction extends AbstractEntity {
   constructor(transaction: Partial<Transaction>) {
@@ -95,9 +96,12 @@ export class Transaction extends AbstractEntity {
   @JoinColumn({ name: 'service_specific_id' })
   service_specific: ServiceSpecific;
 
-  // @ManyToOne(() => BookingLand, (bookingLand) => bookingLand.transactions)
-  // @JoinColumn({ name: 'booking_land_id' })
-  // booking_material: BookingLand;
+  @ManyToOne(
+    () => BookingMaterial,
+    (bookingMaterial) => bookingMaterial.transaction,
+  )
+  @JoinColumn({ name: 'booking_material_id' })
+  booking_material: BookingMaterial;
 
   // @ManyToOne(() => Order, (bookingLand) => bookingLand.transactions)
   // @JoinColumn({ name: 'booking_land_id' })

@@ -5,12 +5,14 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { BookingMaterialStatus } from '../types/booking-material-status.enum';
 import { User } from 'src/modules/users/entities/user.entity';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 import { BookingMaterialDetail } from './booking-material-detail.entity';
+import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
 
 @Entity('booking_material')
 export class BookingMaterial extends AbstractEntity {
@@ -44,9 +46,6 @@ export class BookingMaterial extends AbstractEntity {
   contract_image: string;
 
   @Column({ nullable: true })
-  reason_for_reject: string;
-
-  @Column({ nullable: true })
   reason_for_cancel: string;
 
   @Column()
@@ -61,10 +60,10 @@ export class BookingMaterial extends AbstractEntity {
   @Column({
     type: 'enum',
     enum: BookingMaterialStatus,
-    default: BookingMaterialStatus.pending,
+    default: BookingMaterialStatus.pending_payment,
   })
   status: BookingMaterialStatus;
-
+  // Relations
   @ManyToOne(() => User, (user) => user.staff_booking_materials)
   @JoinColumn({ name: 'staff_id' })
   staff: User;
@@ -85,4 +84,7 @@ export class BookingMaterial extends AbstractEntity {
     (bookingMaterialDetail) => bookingMaterialDetail.bookingMaterial,
   )
   booking_material_detail: BookingMaterialDetail[];
+
+  @OneToOne(() => Transaction, (transaction) => transaction.booking_material)
+  transaction: Transaction;
 }

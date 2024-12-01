@@ -23,6 +23,7 @@ import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { BuyMaterialDTO } from './dto/buy-material.dto';
 import { MaterialType } from './types/material-type.enum';
+import { RentMaterialDto } from './dto/rent-material.dto';
 
 @ApiTags('Material')
 @Controller('materials')
@@ -66,5 +67,13 @@ export class MaterialsController {
     @Query('material_type') type: MaterialType,
   ): Promise<any> {
     return this.materialsService.getMaterials(pagination, type);
+  }
+
+  @Post('/bookingMaterial')
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.land_renter)
+  bookingMaterial(@Body() data: RentMaterialDto, @Request() request: any) {
+    const user = request['user'];
+    return this.materialsService.bookingMaterial(data, user);
   }
 }

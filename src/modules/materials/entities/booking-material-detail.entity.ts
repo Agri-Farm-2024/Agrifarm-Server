@@ -43,5 +43,5 @@ export class BookingMaterialDetail extends AbstractEntity {
 
   @ManyToOne(() => Material, (material) => material.material_booking_detail)
   @JoinColumn({ name: 'material_id' })
-  material: Material[];
+  material: Material;
 }
