@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsOptional, Max, Min } from 'class-validator';
 import { ExtendStatus } from '../types/extend-status.enum';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -16,6 +16,18 @@ export class UpdateExtendDTO {
   })
   @IsOptional()
   reason_for_reject: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsOptional()
+  @Min(1, {
+    message: 'Total month must be greater than 0',
+  })
+  @Max(12, {
+    message: 'Total month must be less than 13',
+  })
+  total_month: number;
 
   @ApiProperty({
     enum: ExtendStatus,

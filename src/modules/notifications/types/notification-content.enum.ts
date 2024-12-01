@@ -33,4 +33,7 @@ export const NotificationContentEnum = {
 
   extend_completed: (land_name: string) =>
     `Thanh toán gia hạn thuê đất trên ${land_name} thành công`,
+
+  reject_extend: (land_name: string) =>
+    `Yêu cầu gia hạn thuê đất trên ${land_name} của đã bị từ chối`,
 } as const;

@@ -198,6 +198,117 @@ export class ExtendsService implements IExtendService {
       }
       // Check conditoin update to pending_contract
       if (data.status === ExtendStatus.pending_contract) {
+        // check is land renter
+        if (user.role !== UserRole.land_renter) {
+          throw new ForbiddenException('You are not land renter');
+        }
+        // check is owner of booking
+        if (extend.booking_land.landrenter_id !== user.user_id) {
+          throw new ForbiddenException('You are not owner of booking');
+        }
+        // Check status is pending
+        if (extend.status !== ExtendStatus.pending) {
+          throw new BadRequestException('Extend is not pending');
+        }
+        // Check field is include
+        if (!data.total_month) {
+          throw new BadRequestException('Total month is required');
+        }
+        // update extend
+        await this.extendRepository.update(
+          {
+            extend_id: extend_id,
+          },
+          {
+            ...data,
+          },
+        );
+        // send notification to staff
+        await this.notificationService.createNotification({
+          user_id: extend.booking_land.land.staff_id,
+          component_id: extend.extend_id,
+          content: NotificationContentEnum.create_extend(
+            extend.booking_land.land.name,
+          ),
+          type: NotificationType.extend,
+          title: NotificationTitleEnum.create_extend,
+        });
+      }
+      // Check condition update to rejected
+      if (data.status === ExtendStatus.rejected) {
+        // check status
+        if (
+          extend.status !== ExtendStatus.pending &&
+          extend.status !== ExtendStatus.pending_contract
+        ) {
+          throw new BadRequestException(
+            'Extend is not pending or pending contract',
+          );
+        }
+        // Check status is pending rejected by land renter
+        if (extend.status === ExtendStatus.pending) {
+          // check is land renter
+          if (user.role !== UserRole.land_renter) {
+            throw new ForbiddenException('You are not land renter');
+          }
+          // check is owner of booking
+          if (extend.booking_land.landrenter_id !== user.user_id) {
+            throw new ForbiddenException('You are not owner of booking');
+          }
+          // check reason for reject
+          if (!data.reason_for_reject) {
+            throw new BadRequestException('Reason for reject is required');
+          }
+          // update extend
+          await this.extendRepository.update(
+            {
+              extend_id: extend_id,
+            },
+            {
+              ...data,
+            },
+          );
+          // send notification to staff
+          await this.notificationService.createNotification({
+            user_id: extend.booking_land.land.staff_id,
+            component_id: extend.extend_id,
+            content: NotificationContentEnum.reject_extend(
+              extend.booking_land.land.name,
+            ),
+            type: NotificationType.extend,
+            title: NotificationTitleEnum.reject_extend,
+          });
+        }
+        // Check status is pending rejected by staff
+        if (extend.status === ExtendStatus.pending_contract) {
+          // check is staff
+          if (user.role !== UserRole.manager) {
+            throw new ForbiddenException('You are not manager');
+          }
+          // check reason for reject
+          if (!data.reason_for_reject) {
+            throw new BadRequestException('Reason for reject is required');
+          }
+          // update extend
+          await this.extendRepository.update(
+            {
+              extend_id: extend_id,
+            },
+            {
+              ...data,
+            },
+          );
+          // send notification to land renter
+          await this.notificationService.createNotification({
+            user_id: extend.booking_land.landrenter_id,
+            component_id: extend.extend_id,
+            content: NotificationContentEnum.reject_extend(
+              extend.booking_land.land.name,
+            ),
+            type: NotificationType.extend,
+            title: NotificationTitleEnum.reject_extend,
+          });
+        }
       }
       // check condition update to pending sign
       if (data.status === ExtendStatus.pending_sign) {
