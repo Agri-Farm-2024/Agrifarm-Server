@@ -293,7 +293,6 @@ export class ChannelsService implements IChannelService {
         },
         {
           expired_at: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
-          status: ChannelStatus.expired,
         },
       );
       // logger

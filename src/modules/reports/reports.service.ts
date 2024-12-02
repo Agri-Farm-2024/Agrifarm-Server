@@ -61,26 +61,31 @@ export class ReportsService implements IReportService {
       //chekc report exist
       const report_exist = await this.reportRepository.findOne({
         where: { task_id: task_id },
-        relations: {
-          task: {
-            request: true,
-          },
-        },
       });
-      if (report_exist) {
-        return report_exist;
-      }
       // Check assigned user of this task
       if (task_exist.assigned_to_id !== user.user_id) {
         throw new ForbiddenException(
           'You are not assigned to this task, you cannot create a report',
         );
       }
-      // create a new instance of the Report entity
-      const new_report = await this.reportRepository.save({
-        task_id: task_id,
-        content: data.content,
-      });
+      // define new_report is report exist
+      let new_report: Report = report_exist;
+      // check condition is create or update report
+      if (!report_exist) {
+        // create a new instance of the Report entity
+        new_report = await this.reportRepository.save({
+          task_id: task_id,
+          content: data.content,
+        });
+      } else {
+        // update report
+        new_report = await this.reportRepository.save({
+          ...report_exist,
+          content: data.content,
+        });
+        // delete all url report
+        await this.reportURLRepo.delete({ report_id: new_report.report_id });
+      }
       // create url report
       if (data.url) {
         for (const url of data.url) {
@@ -91,6 +96,7 @@ export class ReportsService implements IReportService {
           });
         }
       }
+
       // check report type
       if (task_exist.request.type === RequestType.report_land) {
         if (!data.quality_report) {
