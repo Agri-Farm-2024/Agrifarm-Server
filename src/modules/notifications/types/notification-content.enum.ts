@@ -36,4 +36,11 @@ export const NotificationContentEnum = {
 
   reject_extend: (land_name: string) =>
     `Yêu cầu gia hạn thuê đất trên ${land_name} của đã bị từ chối`,
+
+  update_material_specific_stage: (
+    stage_title: string,
+    stage_numberic_order: number,
+  ) => {
+    return `Cập nhật vật liệu cho giai đoạn ${stage_numberic_order} : ${stage_title}`;
+  },
 } as const;

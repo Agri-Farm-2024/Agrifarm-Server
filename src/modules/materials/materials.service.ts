@@ -64,7 +64,21 @@ export class MaterialsService implements IMaterialService {
       if (material) {
         throw new BadRequestException('Material name already exist');
       }
-
+      // check type is buy
+      if (createMaterialDto.type === MaterialType.buy) {
+        if (!createMaterialDto.price_per_piece) {
+          throw new BadRequestException('Price per piece is required');
+        }
+      }
+      // check type is rent
+      if (createMaterialDto.type === MaterialType.rent) {
+        if (!createMaterialDto.price_of_rent) {
+          throw new BadRequestException('Price of rent is required');
+        }
+        if (!createMaterialDto.deposit_per_piece) {
+          throw new BadRequestException('Deposit per piece is required');
+        }
+      }
       //create new material
       const new_material = await this.materialRepo.save({
         ...createMaterialDto,
@@ -326,7 +340,7 @@ export class MaterialsService implements IMaterialService {
       if (booking_land.status !== BookingStatus.completed) {
         throw new BadRequestException('Booking is not completed');
       }
-      // check material is have enough quantity
+      // check materials is empty
       if (data.materials.length === 0) {
         throw new BadRequestException('Material is empty');
       }
@@ -341,7 +355,7 @@ export class MaterialsService implements IMaterialService {
         if (!material_detail) {
           throw new BadRequestException('Material not found');
         }
-        // check type of material is buy
+        // check type of material is rent
         if (material_detail.type !== MaterialType.rent) {
           throw new BadRequestException('Material is not for rent');
         }

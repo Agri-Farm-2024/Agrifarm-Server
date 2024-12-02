@@ -96,7 +96,7 @@ export class ReportsService implements IReportService {
           });
         }
       }
-
+      let request_status: RequestStatus = RequestStatus.pending_approval;
       // check report type
       if (task_exist.request.type === RequestType.report_land) {
         if (!data.quality_report) {
@@ -110,7 +110,6 @@ export class ReportsService implements IReportService {
           data.quality_report,
         );
       }
-      let request_status: RequestStatus = RequestStatus.pending_approval;
       /**
        *  Check condition type request view_land , material_process_specfic_stage , technical_support
        *  Update request status to completed

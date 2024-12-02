@@ -299,6 +299,15 @@ export class RequestsService implements IRequestService {
           ProcessTechnicalStandardStatus.pending,
         );
       }
+      // Check type of material process specific stage to update status process specific stage
+      if (
+        status === RequestStatus.completed &&
+        request.type === RequestType.material_process_specfic_stage
+      ) {
+        await this.processService.updateMaterialSpecificStage(
+          request.process_technical_specific_stage_id,
+        );
+      }
       // check type of view land for sending mail to user
       if (
         status === RequestStatus.assigned &&
@@ -635,7 +644,10 @@ export class RequestsService implements IRequestService {
             report: true,
           },
           service_specific: true,
-          booking_land: true,
+          booking_land: {
+            land: true,
+            land_renter: true,
+          },
         },
       });
       if (!request) {

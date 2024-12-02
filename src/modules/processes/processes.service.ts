@@ -1052,4 +1052,54 @@ export class ProcessesService implements IProcessesService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  /**
+   *  Update material specific stage call when expert create report
+   * @function updateMaterialSpecificStage
+   * @param process_technical_specific_stage_id : string
+   */
+
+  async updateMaterialSpecificStage(
+    process_technical_specific_stage_id: string,
+  ): Promise<void> {
+    // get detail of material specific stage
+    const process_technical_specific_stage =
+      await this.processSpecificStageRepo.findOne({
+        where: {
+          process_technical_specific_stage_id,
+        },
+        relations: {
+          process_technical_specific_stage_material: true,
+          process_technical_specific: {
+            service_specific: true,
+          },
+        },
+      });
+    // update all material to 0
+    for (const stage_material of process_technical_specific_stage.process_technical_specific_stage_material) {
+      await this.processSpecificStageMaterialRepo.update(
+        {
+          process_technical_specific_stage_material_id:
+            stage_material.process_technical_specific_stage_material_id,
+        },
+        {
+          quantity: 0,
+        },
+      );
+    }
+    // Send noti to user
+    await this.notificationService.createNotification({
+      user_id:
+        process_technical_specific_stage.process_technical_specific
+          .service_specific.landrenter_id,
+      content: NotificationContentEnum.update_material_specific_stage(
+        process_technical_specific_stage.stage_title,
+        process_technical_specific_stage.stage_numberic_order,
+      ),
+      component_id:
+        process_technical_specific_stage.process_technical_specific_stage_id,
+      type: NotificationType.process,
+      title: NotificationTitleEnum.update_material_specific_stage,
+    });
+  }
 }

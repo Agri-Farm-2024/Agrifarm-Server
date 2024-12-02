@@ -21,4 +21,5 @@ export enum NotificationTitleEnum {
   pending_payment_extend = 'Yêu cầu gia hạn thuê đất đang chờ thanh toán',
   extend_completed = 'Thanh toán gia hạn thuê đất thành công',
   reject_extend = 'Yêu cầu gia hạn thuê đất của bạn đã bị từ chối',
+  update_material_specific_stage = 'Cập nhật vật liệu cho giai đoạn cụ thể',
 }

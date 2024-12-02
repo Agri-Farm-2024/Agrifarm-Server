@@ -1169,7 +1169,7 @@ export class BookingsService implements IBookingService {
         );
       // send notification to land renter
       await this.notificationService.createNotification({
-        user_id: booking.land_renter.user_id,
+        user_id: booking.landrenter_id,
         title: NotificationTitleEnum.booking_refund,
         content: NotificationContentEnum.booking_refund(
           booking.land.name,
