@@ -24,6 +24,7 @@ import { AuthGuard } from 'src/common/guards/auth.guard';
 import { BuyMaterialDTO } from './dto/buy-material.dto';
 import { MaterialType } from './types/material-type.enum';
 import { RentMaterialDto } from './dto/rent-material.dto';
+import { BookingMaterialStatus } from './types/booking-material-status.enum';
 
 @ApiTags('Material')
 @Controller('materials')
@@ -75,5 +76,19 @@ export class MaterialsController {
   bookingMaterial(@Body() data: RentMaterialDto, @Request() request: any) {
     const user = request['user'];
     return this.materialsService.bookingMaterial(data, user);
+  }
+
+  @Get('/bookingMaterial')
+  @ApplyPaginationMetadata
+  @ApiQuery({ name: 'status', required: false, enum: BookingMaterialStatus })
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.land_renter)
+  getBookingMaterial(
+    @Pagination() pagination: PaginationParams,
+    @Request() request: any,
+    @Query('status') status: BookingMaterialStatus,
+  ) {
+    const user = request['user'];
+    return this.materialsService.getBookingMaterials(pagination, status, user);
   }
 }

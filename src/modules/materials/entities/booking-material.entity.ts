@@ -24,14 +24,14 @@ export class BookingMaterial extends AbstractEntity {
   @PrimaryGeneratedColumn('uuid')
   booking_material_id: string;
 
-  @Column('uuid', { name: 'staff_id' })
+  @Column('uuid')
   staff_id: string;
 
-  @Column('uuid', { name: 'landrenter_id' })
+  @Column('uuid')
   landrenter_id: string;
 
-  @Column('uuid', { name: 'booking_id' })
-  booking_id: string;
+  @Column('uuid')
+  booking_land_id: string;
 
   @Column()
   time_start: Date;
@@ -72,12 +72,9 @@ export class BookingMaterial extends AbstractEntity {
   @JoinColumn({ name: 'landrenter_id' })
   landrenter: User;
 
-  @ManyToOne(
-    () => BookingLand,
-    (bookingLand) => bookingLand.land_booking_materials,
-  )
-  @JoinColumn({ name: 'booking_id' })
-  booking: BookingLand;
+  @ManyToOne(() => BookingLand, (bookingLand) => bookingLand.booking_materials)
+  @JoinColumn({ name: 'booking_land_id' })
+  booking_land: BookingLand;
 
   @OneToMany(
     () => BookingMaterialDetail,

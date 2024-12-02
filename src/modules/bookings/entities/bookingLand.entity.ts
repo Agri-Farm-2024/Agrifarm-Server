@@ -134,9 +134,9 @@ export class BookingLand extends AbstractEntity {
 
   @OneToMany(
     () => BookingMaterial,
-    (bookingMaterial) => bookingMaterial.booking,
+    (bookingMaterial) => bookingMaterial.booking_land,
   )
-  land_booking_materials: BookingMaterial[];
+  booking_materials: BookingMaterial[];
 
   @OneToMany(() => Request, (request) => request.booking_land)
   requests: Request[];

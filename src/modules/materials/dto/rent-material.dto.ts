@@ -17,5 +17,5 @@ export class RentMaterialDto {
   @IsNotEmpty({
     message: 'Booking id is required',
   })
-  booking_id: string;
+  booking_land_id: string;
 }

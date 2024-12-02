@@ -28,6 +28,8 @@ import { BookingsService } from '../bookings/bookings.service';
 import { BookingLand } from '../bookings/entities/bookingLand.entity';
 import { BookingStatus } from '../bookings/types/booking-status.enum';
 import { BookingMaterialDetail } from './entities/booking-material-detail.entity';
+import { BookingMaterialStatus } from './types/booking-material-status.enum';
+import { UserRole } from '../users/types/user-role.enum';
 
 @Injectable()
 export class MaterialsService implements IMaterialService {
@@ -336,7 +338,7 @@ export class MaterialsService implements IMaterialService {
     try {
       // CHeck booking is exist
       const booking_land: BookingLand =
-        await this.bookingLandService.getBookingDetail(data.booking_id);
+        await this.bookingLandService.getBookingDetail(data.booking_land_id);
       if (booking_land.status !== BookingStatus.completed) {
         throw new BadRequestException('Booking is not completed');
       }
@@ -373,7 +375,7 @@ export class MaterialsService implements IMaterialService {
           time_start: new Date(),
           // time end is after 7 days
           time_end: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
-          booking_id: data.booking_id,
+          booking_id: data.booking_land_id,
           staff_id: booking_land.staff_id,
         });
       // Caculate total_price for transaction
@@ -442,5 +444,50 @@ export class MaterialsService implements IMaterialService {
   ): Promise<any> {
     try {
     } catch (error) {}
+  }
+
+  /**
+   * Get all booking material
+   * @function getBookingMaterials
+   * @param pagination
+   * @param user
+   */
+
+  async getBookingMaterials(
+    pagination: PaginationParams,
+    status: BookingMaterialStatus,
+    user: IUser,
+  ): Promise<any> {
+    try {
+      const filter: any = {};
+      if (user.role === UserRole.land_renter) {
+        filter.landrenter_id = user.user_id;
+      }
+      // check status
+      if (status) {
+        filter.status = status;
+      }
+      const [booking_materials, total_count] = await Promise.all([
+        this.bookingMaterialRepo.find({
+          where: filter,
+          skip: (pagination.page_index - 1) * pagination.page_size,
+          take: pagination.page_size,
+        }),
+        this.bookingMaterialRepo.count({
+          where: filter,
+        }),
+      ]);
+      // get total page
+      const total_page = Math.ceil(total_count / pagination.page_size);
+      return {
+        booking_materials,
+        pagination: {
+          ...pagination,
+          total_page,
+        },
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 }
