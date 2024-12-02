@@ -100,7 +100,7 @@ export class ReportsService implements IReportService {
         }
         // update quality for report
         await this.bookingService.updateBookingByReport(
-          report_exist.task.request.booking_land_id,
+          task_exist.request.booking_land_id,
           data.quality_report,
         );
       }
@@ -123,7 +123,7 @@ export class ReportsService implements IReportService {
       }
       //update request status to pending_approval
       await this.requestService.updateRequestStatus(
-        report_exist.task.request_id,
+        task_exist.request_id,
         request_status,
       );
       // get detail manager
@@ -132,20 +132,20 @@ export class ReportsService implements IReportService {
           UserRole.manager,
         );
         await this.notificationService.createNotification({
-          user_id: report_exist.task.assigned_by_id || manager[0].user_id,
+          user_id: task_exist.assigned_by_id || manager[0].user_id,
           title: NotificationTitleEnum.create_report,
           content: NotificationContentEnum.create_report(new_report.content),
           type: NotificationType.report,
-          component_id: report_exist.task_id,
+          component_id: task_exist.task_id,
         });
       }
       // send notification to assigned this task
       await this.notificationService.createNotification({
-        user_id: report_exist.task.assigned_by_id,
+        user_id: task_exist.assigned_by_id,
         title: NotificationTitleEnum.create_report,
         content: NotificationContentEnum.create_report(new_report.content),
         type: NotificationType.report,
-        component_id: report_exist.task_id,
+        component_id: task_exist.task_id,
       });
 
       return new_report;
