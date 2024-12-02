@@ -43,7 +43,7 @@ import { NotificationTitleEnum } from '../notifications/types/notification-title
 import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
-import { selectDinary, selectUser } from 'src/utils/select.util';
+import { selectUser } from 'src/utils/select.util';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -896,7 +896,14 @@ export class ProcessesService implements IProcessesService {
               time_end: true,
               content_numberic_order: true,
               dinary_stage: {
-                dinaries_link: true,
+                dinary_stage_id: true,
+                content: true,
+                quality_report: true,
+                created_at: true,
+                dinaries_link: {
+                  url_link: true,
+                  type: true,
+                },
               },
             },
           },

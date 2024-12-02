@@ -635,6 +635,7 @@ export class RequestsService implements IRequestService {
             report: true,
           },
           service_specific: true,
+          booking_land: true,
         },
       });
       if (!request) {
@@ -718,7 +719,7 @@ export class RequestsService implements IRequestService {
         data.status === RequestStatus.completed
       ) {
         // call boooking service to create transaction refund
-        await this.bookingService.createRefundBooking(request.booking_land_id);
+        await this.bookingService.createRefundBooking(request.booking_land);
       }
       // update request status
       const updated_request = await this.requestEntity.update(

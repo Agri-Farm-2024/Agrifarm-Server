@@ -82,7 +82,7 @@ export interface IBookingService {
 
   updateBookingByExtend(booking_id: string, total_month: number): Promise<any>;
 
-  createRefundBooking(booking_id: string): Promise<any>;
+  createRefundBooking(booking: BookingLand): Promise<any>;
 
   updateBookingByReport(booking_id: string, data: any): Promise<any>;
 }

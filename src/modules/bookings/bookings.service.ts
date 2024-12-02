@@ -1146,24 +1146,18 @@ export class BookingsService implements IBookingService {
     } catch (error) {}
   }
 
-  async createRefundBooking(booking_id: string): Promise<any> {
+  /**
+   * Create refund booking transaction for land renter when report booking confirm
+   * @function createRefundBooking
+   * @param booking
+   * @returns
+   */
+
+  async createRefundBooking(booking: BookingLand): Promise<any> {
     try {
-      // get booking detail
-      const booking = await this.bookingRepository.findOne({
-        where: {
-          booking_id: booking_id,
-        },
-        relations: {
-          land_renter: true,
-          land: true,
-        },
-      });
-      if (!booking) {
-        throw new BadRequestException('Booking not found');
-      }
       // create transaction refund
       const transactionDTO: Partial<CreateTransactionDTO> = {
-        booking_land_id: booking_id,
+        booking_land_id: booking.booking_id,
         user_id: booking.landrenter_id,
         total_price: booking.price_deposit * booking.quality_report || 0,
         purpose: TransactionPurpose.booking_land,
