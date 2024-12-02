@@ -334,7 +334,7 @@ export class AuthsService implements IAuthService {
         secret: publicKey,
       });
 
-      Logger.log(`Verify token: ${JSON.stringify(verifyToken)}`);
+      this.logger.log(`Verify token: ${JSON.stringify(verifyToken)}`);
       //Save to redis
       // await this.redisService.set(
       //   `token:${refreshToken}`,

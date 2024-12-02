@@ -151,6 +151,7 @@ export class DinariesService implements IDinariesService {
       }
       return await this.processService.getDetailProcessSpecific(
         process_specific_id,
+        true,
       );
     } catch (error) {
       throw new BadRequestException(error.message);

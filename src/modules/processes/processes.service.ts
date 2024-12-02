@@ -828,6 +828,7 @@ export class ProcessesService implements IProcessesService {
   //get detail process specific
   async getDetailProcessSpecific(
     process_technical_specific_id: string,
+    is_dinary?: boolean,
   ): Promise<any> {
     try {
       return await this.processSpecificRepo.findOne({
@@ -891,6 +892,7 @@ export class ProcessesService implements IProcessesService {
             time_end: true,
             process_technical_specific_stage_content: {
               process_technical_specific_stage_content_id: true,
+              content: is_dinary ? false : true,
               title: true,
               time_start: true,
               time_end: true,
