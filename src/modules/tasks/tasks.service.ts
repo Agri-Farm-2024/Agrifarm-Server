@@ -183,6 +183,9 @@ export class TasksService implements ITaskService {
             },
           },
           assign_by: true,
+          report: {
+            report_url: true,
+          },
         },
         select: {
           assign_by: selectUser,
