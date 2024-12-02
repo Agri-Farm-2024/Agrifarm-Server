@@ -127,21 +127,14 @@ export class ReportsService implements IReportService {
         request_status,
       );
       // get detail manager
-      if (!task_exist.assigned_by_id) {
-        const manager: User[] = await this.userService.getListUserByRole(
-          UserRole.manager,
-        );
-        await this.notificationService.createNotification({
-          user_id: task_exist.assigned_by_id || manager[0].user_id,
-          title: NotificationTitleEnum.create_report,
-          content: NotificationContentEnum.create_report(new_report.content),
-          type: NotificationType.report,
-          component_id: task_exist.task_id,
-        });
-      }
+      const manager: User[] = await this.userService.getListUserByRole(
+        UserRole.manager,
+      );
       // send notification to assigned this task
       await this.notificationService.createNotification({
-        user_id: task_exist.assigned_by_id,
+        user_id: task_exist.assigned_by_id
+          ? task_exist.assigned_by_id
+          : manager[0].user_id,
         title: NotificationTitleEnum.create_report,
         content: NotificationContentEnum.create_report(new_report.content),
         type: NotificationType.report,
