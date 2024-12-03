@@ -21,13 +21,11 @@ export interface IService {
 
   getDetailServicePackage(service_package_id: string): Promise<any>;
 
+  handlePaymentServiceSpecificSuccess(transaction: Transaction): Promise<any>;
+
   deleteServicePackage(service_package_id: string): Promise<any>;
 
-  checkServiceIsExpired(): Promise<any>;
-
   deleteServiceSpecific(service_specific_id: string): Promise<any>;
-
-  handlePaymentServiceSpecificSuccess(transaction: Transaction): Promise<any>;
 
   getListServiceSpecific(
     pagination: PaginationParams,
@@ -36,4 +34,13 @@ export interface IService {
   ): Promise<any>;
 
   getListServicePackages(): Promise<any>;
+
+  checkServiceIsExpired(): Promise<any>;
+
+  updateToUsedServiceSpecific(
+    service_specific_id: string,
+    contract_image: string,
+  ): Promise<any>;
+
+  checkAndCreatePurchaseProductService(): Promise<any>;
 }

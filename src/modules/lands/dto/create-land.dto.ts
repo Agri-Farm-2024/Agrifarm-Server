@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsPositive } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsPositive } from 'class-validator';
 import { ToLowerCase } from 'src/common/decorations/makeLowerCaseText.decoration';
 
 export class CreateLandDto {
@@ -15,14 +15,14 @@ export class CreateLandDto {
     description: 'the description of the land',
     example: 'Land 1 is a beautiful land with a lot of trees',
   })
-  @IsOptional() // Allows description to be null or undefined
+  @IsOptional()
   title: string;
 
   @ApiProperty({
     description: 'the description of the land',
     example: 'Land 1 is a beautiful land with a lot of trees',
   })
-  @IsOptional() // Allows description to be null or undefined
+  @IsOptional()
   description: string;
 
   @ApiProperty({
@@ -30,7 +30,6 @@ export class CreateLandDto {
     example: 100,
   })
   @IsNotEmpty()
-  @IsNumber()
   @IsPositive()
   acreage_land: number;
 
@@ -39,9 +38,15 @@ export class CreateLandDto {
     example: 100,
   })
   @IsNotEmpty()
-  @IsNumber()
   @IsPositive()
   price_booking_per_month: number;
+
+  @ApiProperty({
+    description: 'the id of the land type',
+    example: '1',
+  })
+  @IsNotEmpty()
+  land_type_id: string;
 
   @ApiProperty({
     description: 'The image url of the land',

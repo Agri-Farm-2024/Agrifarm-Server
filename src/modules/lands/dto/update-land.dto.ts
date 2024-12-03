@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsPositive, IsString } from 'class-validator';
+import { IsOptional, IsPositive } from 'class-validator';
 import { LandURLType } from '../types/land-url-type.enum';
 import { ToLowerCase } from 'src/common/decorations/makeLowerCaseText.decoration';
 
@@ -8,7 +8,6 @@ class UpdateLandURLDTO {
     description: 'The id of the image',
     example: '1',
   })
-  @IsString()
   @IsOptional()
   @ToLowerCase()
   land_url_id: string;
@@ -17,7 +16,6 @@ class UpdateLandURLDTO {
     description: 'The url of the image',
     example: 'https://www.google.com.vn',
   })
-  @IsString()
   @IsOptional()
   string_url: string;
 
@@ -57,7 +55,6 @@ export class UpdateLandDTO {
     example: 100,
   })
   @IsOptional()
-  @IsNumber()
   @IsPositive()
   acreage_land: number;
 
@@ -66,7 +63,6 @@ export class UpdateLandDTO {
     example: 100,
   })
   @IsOptional()
-  @IsNumber()
   @IsPositive()
   price_booking_per_month: number;
 
@@ -74,7 +70,6 @@ export class UpdateLandDTO {
     description: 'Staff id',
     example: '1',
   })
-  @IsString()
   @IsOptional()
   staff_id: string;
 

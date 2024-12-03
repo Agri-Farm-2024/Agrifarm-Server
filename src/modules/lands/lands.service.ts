@@ -57,11 +57,12 @@ export class LandsService implements ILandService {
         description: data.description,
         acreage_land: data.acreage_land,
         price_booking_per_month: data.price_booking_per_month,
+        land_type_id: data.land_type_id,
       });
       // create url image
       if (data.images) {
         for (let i = 0; i < data.images.length; i++) {
-          await this.landURLRepo.create({
+          await this.landURLRepo.save({
             string_url: data.images[i],
             type: LandURLType.image,
             land_id: new_land.land_id,
@@ -70,9 +71,9 @@ export class LandsService implements ILandService {
       }
       // create url video
       if (data.videos) {
-        for (let i = 0; i < data.videos.length; i++) {
-          await this.landURLRepo.create({
-            string_url: data.images[i],
+        for (let j = 0; j < data.videos.length; j++) {
+          await this.landURLRepo.save({
+            string_url: data.videos[j],
             type: LandURLType.video,
             land_id: new_land.land_id,
           });
@@ -80,9 +81,10 @@ export class LandsService implements ILandService {
       }
 
       // Log the land creation
-      this.loggerService.log('New land is created');
+      this.loggerService.log(`New land is created with name: ${data.name}`);
       return new_land;
     } catch (error) {
+      this.loggerService.error(error.message, error.stack);
       if (error instanceof BadRequestException) {
         throw error;
       }
@@ -322,6 +324,7 @@ export class LandsService implements ILandService {
         acreage_land: data.acreage_land,
         price_booking_per_month: data.price_booking_per_month,
         staff_id: data.staff_id,
+        land_type_id: data.land_type_id,
       };
       // update land
       const updated_land = await this.landRepo.save({

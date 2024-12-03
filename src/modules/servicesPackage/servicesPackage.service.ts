@@ -375,6 +375,18 @@ export class ServicesService implements IService {
   //delete service package
   async deleteServicePackage(service_package_id: string): Promise<any> {
     try {
+      // CHeck if the service package is used
+      const service_specific_used = await this.serviceSpecificRepo.findOne({
+        where: {
+          service_package: {
+            service_package_id,
+          },
+          status: ServiceSpecificStatus.used,
+        },
+      });
+      if (service_specific_used) {
+        throw new BadRequestException('Service package is used');
+      }
       // check if the service package exists
       const service_package = await this.servicePackageRepo.findOne({
         where: {
@@ -423,6 +435,11 @@ export class ServicesService implements IService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  /**
+   * Check service is expired call by cron job
+   * @function checkServiceIsExpired
+   */
 
   async checkServiceIsExpired(): Promise<any> {
     try {
@@ -487,6 +504,12 @@ export class ServicesService implements IService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  /**
+   * Check and create purchase product service call by cron job
+   * @function checkAndCreatePurchaseProductService
+   * @returns
+   */
 
   async checkAndCreatePurchaseProductService(): Promise<any> {
     try {
