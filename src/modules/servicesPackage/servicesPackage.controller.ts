@@ -9,6 +9,7 @@ import {
   Query,
   Patch,
   Param,
+  Put,
 } from '@nestjs/common';
 import { ServicesService } from './servicesPackage.service';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
@@ -24,6 +25,7 @@ import {
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { ServiceSpecificStatus } from './types/service-specific-status.enum';
 import { UpdateStatusUsedServiceSpecificDTO } from './dto/update-status-used-service-specific.dto';
+import { updateServicePackageDTO } from './dto/update-service-package.dto';
 
 @ApiTags('Service')
 @Controller('services')
@@ -89,5 +91,16 @@ export class ServicesController {
       service_specific_id,
       data.contract_image,
     );
+  }
+
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.staff)
+  @Put('/updateServicePackage/:service_specific_id')
+  async updateServicePackage(
+    @Body() data: updateServicePackageDTO,
+    @Request() req: any,
+    @Param('service_specific_id') service_specific_id: string,
+  ) {
+    return this.servicesService.updateServicePackage(service_specific_id, data);
   }
 }

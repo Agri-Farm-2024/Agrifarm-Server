@@ -1,8 +1,6 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { CreatePlantDto } from './create-plant.dto';
+import { ApiProperty } from '@nestjs/swagger';
 import { StatusPlant } from '../types/plant-status.enum';
 import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
-import { Unique } from 'typeorm';
 import { Transform } from 'class-transformer';
 
 export class UpdatePlantDto {

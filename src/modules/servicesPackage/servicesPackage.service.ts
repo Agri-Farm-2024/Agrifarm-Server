@@ -31,6 +31,7 @@ import { IUser } from '../auths/types/IUser.interface';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { UserRole } from '../users/types/user-role.enum';
 import { RequestsService } from '../requests/requests.service';
+import { updateServicePackageDTO } from './dto/update-service-package.dto';
 
 @Injectable()
 export class ServicesService implements IService {
@@ -536,6 +537,42 @@ export class ServicesService implements IService {
       }
       return list_service;
     } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  /**
+   * Update service package
+   * @function updateServicePackage
+   * @param service_package_id
+   * @param data
+   * @returns
+   */
+
+  async updateServicePackage(
+    service_package_id: string,
+    data: updateServicePackageDTO,
+  ): Promise<any> {
+    try {
+      // check exist
+      const service_package = await this.servicePackageRepo.findOne({
+        where: {
+          service_package_id,
+        },
+      });
+      if (!service_package) {
+        throw new BadRequestException('Service package does not exist');
+      }
+      // update service package
+      await this.servicePackageRepo.save({
+        ...service_package,
+        ...data,
+      });
+      return 'Update service package successfully';
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
       throw new InternalServerErrorException(error.message);
     }
   }
