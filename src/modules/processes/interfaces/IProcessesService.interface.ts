@@ -52,4 +52,17 @@ export interface IProcessesService {
   updateStatusProcessSpecific(
     process_technical_specific_id: string,
   ): Promise<any>;
+
+  checkAndCreateTaskProcessContentForExpert(): Promise<any>;
+
+  checkAndSendNotificationForLandRenterBeforeNewStage(): Promise<any>;
+
+  updateProcessSpecificPublic(
+    process_specific_id: string,
+    is_public: boolean,
+  ): Promise<any>;
+
+  updateMaterialSpecificStage(
+    process_technical_specific_stage_id: string,
+  ): Promise<void>;
 }
