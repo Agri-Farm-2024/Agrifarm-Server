@@ -184,6 +184,7 @@ export class TransactionsService implements ITransactionService {
       }
       // update transaction status
       transaction.status = TransactionStatus.succeed;
+      transaction.pay_at = new Date();
       await this.transactionRepository.save(transaction);
       // handle business logic
       switch (transaction.purpose) {
@@ -455,6 +456,7 @@ export class TransactionsService implements ITransactionService {
    * Check expired transaction call by cron job
    * @function checkTransactionIsExpired
    */
+
   async checkTransactionIsExpired(): Promise<void> {
     try {
       const transactions_expired = await this.transactionRepository.find({
@@ -482,6 +484,35 @@ export class TransactionsService implements ITransactionService {
           }
         });
       }
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  /**
+   * get revenue for dashboard
+   * @function getRevenueForDashboard
+   */
+
+  async getRevenueForDashboard(): Promise<any> {
+    try {
+      const transactions = await this.transactionRepository.find({
+        where: {
+          status: TransactionStatus.succeed,
+        },
+      });
+      // Reduce transaction with total_price and month
+      const revenue = transactions.reduce((acc, transaction): any => {
+        const month = transaction.pay_at.getMonth() + 1;
+        if (!acc[month]) {
+          acc[month] = {
+            total_price: transaction.total_price,
+          };
+        }
+        acc[month].total_price += transaction.total_price;
+        return acc;
+      }, {});
+      return revenue;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

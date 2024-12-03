@@ -44,6 +44,9 @@ export class Transaction extends AbstractEntity {
   @Column('uuid', { nullable: true })
   service_specific_id: string;
 
+  @Column({ nullable: true })
+  pay_at: Date;
+
   @Column({ unique: true })
   transaction_code: string;
 

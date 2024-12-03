@@ -43,4 +43,6 @@ export interface IService {
   ): Promise<any>;
 
   checkAndCreatePurchaseProductService(): Promise<any>;
+
+  getServiceForDashboard(): Promise<any>;
 }

@@ -794,6 +794,12 @@ export class RequestsService implements IRequestService {
     } catch (error) {}
   }
 
+  /**
+   * Get all request for dashboard
+   * @function getAllRequestForDashbaoard
+   * @returns
+   */
+
   async getAllRequestForDashbaoard(): Promise<any> {
     try {
       const [total_request, total_in_progress, total_completed] =

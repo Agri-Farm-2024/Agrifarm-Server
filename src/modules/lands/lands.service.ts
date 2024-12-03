@@ -475,4 +475,22 @@ export class LandsService implements ILandService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  /**
+   * @function getLandForDashboard
+   */
+
+  async getLandForDashboard(): Promise<any> {
+    try {
+      const lands = await this.landRepo.find({
+        select: {
+          name: true,
+          status: true,
+        },
+      });
+      return lands;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }

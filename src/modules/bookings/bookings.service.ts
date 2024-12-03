@@ -1232,8 +1232,18 @@ export class BookingsService implements IBookingService {
 
   async getBookingsForDashboard(): Promise<any> {
     try {
-      const bookings = await this.bookingRepository.count();
-      return bookings;
+      const [total, total_completed] = await Promise.all([
+        this.bookingRepository.count(),
+        this.bookingRepository.count({
+          where: {
+            status: BookingStatus.completed,
+          },
+        }),
+      ]);
+      return {
+        total,
+        total_completed,
+      };
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

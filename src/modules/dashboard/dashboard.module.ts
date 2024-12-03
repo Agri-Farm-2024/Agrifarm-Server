@@ -24,6 +24,7 @@ import { OrdersModule } from '../orders/orders.module';
     ServicesModule,
     LandsModule,
     OrdersModule,
+    LandsModule,
   ],
 })
 export class DashboardModule {}

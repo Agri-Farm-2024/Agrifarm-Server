@@ -576,4 +576,61 @@ export class ServicesService implements IService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  /**
+   * Get service for dashboard
+   * @function getServiceForDashboard
+   * @returns
+   */
+
+  async getServiceForDashboard(): Promise<any> {
+    try {
+      const [total, total_completed] = await Promise.all([
+        this.serviceSpecificRepo.count(),
+        this.serviceSpecificRepo.count({
+          where: {
+            status: ServiceSpecificStatus.used,
+          },
+        }),
+      ]);
+      return {
+        total,
+        total_used: total_completed,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  /**
+   * Get service for dashboard
+   * @function getServicePackageForDashboard
+   * @returns
+   */
+
+  async getServicePackageForDashboard(): Promise<any> {
+    try {
+      const services = await this.serviceSpecificRepo.find({
+        where: {
+          status: ServiceSpecificStatus.used,
+        },
+        relations: {
+          service_package: true,
+        },
+      });
+      // reduces
+      const servie_package = services.reduce((acc, service): any => {
+        if (!acc[service.service_package.name]) {
+          acc[service.service_package.name] = {
+            total_buy: 0,
+          };
+        }
+        acc[service.service_package.name].total_buy += 1;
+        return acc;
+      }, {});
+      return servie_package;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }

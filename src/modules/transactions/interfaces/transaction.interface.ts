@@ -28,4 +28,8 @@ export interface ITransactionService {
   getDetailTransaction(transaction_id: string): Promise<any>;
 
   cancelTransaction(transaction_id: string): Promise<any>;
+
+  checkTransactionIsExpired(): Promise<void>;
+
+  getRevenueForDashboard(): Promise<any>;
 }

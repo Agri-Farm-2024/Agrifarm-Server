@@ -126,4 +126,28 @@ export class OrdersService implements IOrdersService {
       },
     });
   }
+
+  async getOrderForDashboard(): Promise<any> {
+    try {
+      // get all order detail
+      const orders_detail = await this.orderDetailRepo.find({
+        relations: {
+          material: true,
+        },
+      });
+      // reduce code to material
+      const materials = orders_detail.reduce((acc, order_detail): any => {
+        if (!acc[order_detail.material.name]) {
+          acc[order_detail.material.name] = {
+            total_buy: 0,
+          };
+        }
+        acc[order_detail.material.name].total_buy += order_detail.quantity;
+        return acc;
+      }, {});
+      return materials;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }
