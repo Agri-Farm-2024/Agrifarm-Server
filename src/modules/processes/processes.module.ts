@@ -16,6 +16,7 @@ import { ServicesModule } from '../servicesPackage/servicesPackage.module';
 import { RequestsModule } from '../requests/requests.module';
 import { DinariesModule } from '../dinaries/dinaries.module';
 import { UsersModule } from '../users/users.module';
+import { MaterialsModule } from '../materials/materials.module';
 
 @Module({
   controllers: [ProcessesController],
@@ -37,6 +38,7 @@ import { UsersModule } from '../users/users.module';
     forwardRef(() => RequestsModule),
     forwardRef(() => DinariesModule),
     UsersModule,
+    MaterialsModule,
   ],
   exports: [ProcessesService],
 })

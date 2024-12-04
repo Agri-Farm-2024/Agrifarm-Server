@@ -128,8 +128,8 @@ export class ProcessesController {
   }
 
   @Put('/updateStatusProcessSpecific/:id')
-  updateStatusProcessSpecific(@Param('id') id: string): Promise<any> {
-    return this.processesService.updateStatusProcessSpecific(id);
+  updateStatusProcessSpecificToACtive(@Param('id') id: string): Promise<any> {
+    return this.processesService.updateStatusProcessSpecificToACtive(id);
   }
 
   @Get('/getDetailProcessSpecific/:id')

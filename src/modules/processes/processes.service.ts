@@ -17,7 +17,6 @@ import { CreateProcessStageDto } from './dto/create-process-stage.dto';
 import { CreateProcessStageContentDto } from './dto/create-process-stage-content.dto';
 import { CreateProcessStageMaterialDto } from './dto/create-process-stage-material.dto';
 import { ProcessStandardStageMaterial } from './entities/standards/processStandardStageMaterial.entity';
-import { ReportsService } from '../reports/reports.service';
 import { IUser } from '../auths/types/IUser.interface';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { ProcessTechnicalStandardStatus } from './types/status-processStandard.enum';
@@ -26,7 +25,6 @@ import { ProcessSpecific } from './entities/specifics/processSpecific.entity';
 import { ProcessSpecificStage } from './entities/specifics/processSpecificStage.entity';
 import { ProcessSpecificStageContent } from './entities/specifics/processSpecificStageContent.entity';
 import { ProcessSpecificStageMaterial } from './entities/specifics/processSpecificStageMaterial.entity';
-import { ServicesService } from '../servicesPackage/servicesPackage.service';
 import { getTimeByPlusDays } from 'src/utils/time.utl';
 import { RequestsService } from '../requests/requests.service';
 import { Request } from '../requests/entities/request.entity';
@@ -36,7 +34,6 @@ import { UpdateProcessStandardsDto } from './dto/update-process-standard.dto';
 import { ProcessSpecificStatus } from './types/processSpecific-status.enum';
 import { UPdateProcessSpecificDto } from './dto/update-process-specific.dto';
 import { UserRole } from '../users/types/user-role.enum';
-import { DinariesService } from '../dinaries/dinaries.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../notifications/types/notification-type.enum';
 import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
@@ -44,6 +41,7 @@ import { NotificationContentEnum } from '../notifications/types/notification-con
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 import { selectUser } from 'src/utils/select.util';
+import { MaterialsService } from '../materials/materials.service';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -74,20 +72,14 @@ export class ProcessesService implements IProcessesService {
     @InjectRepository(ProcessStandardStageMaterial)
     private readonly processStandardStageMaterialRepo: Repository<ProcessStandardStageMaterial>,
 
-    @Inject(forwardRef(() => ReportsService))
-    private readonly reportService: ReportsService,
-
-    private readonly servicePackageService: ServicesService,
-
     @Inject(forwardRef(() => RequestsService))
     private readonly requestService: RequestsService,
-
-    @Inject(forwardRef(() => DinariesService))
-    private readonly dinariesService: DinariesService,
 
     private readonly notificationService: NotificationsService,
 
     private readonly userService: UsersService,
+
+    private readonly materialService: MaterialsService,
   ) {}
 
   async createProcessStandard(
@@ -850,6 +842,7 @@ export class ProcessesService implements IProcessesService {
                 dinaries_link: true,
               },
             },
+            request: true,
           },
         },
         order: {
@@ -908,6 +901,11 @@ export class ProcessesService implements IProcessesService {
                 },
               },
             },
+            request: {
+              request_id: true,
+              status: true,
+              type: true,
+            },
           },
         },
       });
@@ -915,7 +913,14 @@ export class ProcessesService implements IProcessesService {
       throw new InternalServerErrorException(error.message);
     }
   }
-  //get detail process specific stage
+
+  /**
+   * Get detail process specific stage
+   * @function getDetailProcessSpecificStage
+   * @param process_technical_specific_stage_id
+   * @returns
+   */
+
   async getDetailProcessSpecificStage(
     process_technical_specific_stage_id: string,
   ): Promise<any> {
@@ -932,25 +937,94 @@ export class ProcessesService implements IProcessesService {
       throw new InternalServerErrorException(error.message);
     }
   }
-  //update status process specific
-  async updateStatusProcessSpecific(
+
+  /**
+   * Update status process specific
+   * @function updateStatusProcessSpecific
+   * @param process_technical_specific_id
+   * @returns
+   */
+
+  async updateStatusProcessSpecificToACtive(
     process_technical_specific_id: string,
   ): Promise<any> {
     try {
+      // Check process specific exist
       const process_specific_exist = await this.processSpecificRepo.findOne({
         where: {
           process_technical_specific_id,
+        },
+        relations: {
+          process_technical_specific_stage: {
+            process_technical_specific_stage_material: {
+              materialSpecific: true,
+            },
+          },
         },
       });
       if (!process_specific_exist) {
         throw new BadRequestException('Process specific not found');
       }
+      // Check all material is enough
+      /**
+       * Loop for all stage of process specific
+       * Loop for all material of stage
+       */
+      // Loop for all stage of process specific
+      for (const stage of process_specific_exist.process_technical_specific_stage) {
+        // Loop for all material of stage
+        for (const material of stage.process_technical_specific_stage_material) {
+          // Check material is enough return error if not enough
+          if (material.quantity > material.materialSpecific.total_quantity) {
+            // Send notification for manager
+            await this.notificationService.createNotification({
+              user_id: process_specific_exist.expert_id,
+              content: NotificationContentEnum.warning_material_specific_stage(
+                material.materialSpecific.name,
+                material.quantity,
+                material.materialSpecific.name,
+                material.quantity - material.materialSpecific.total_quantity,
+              ),
+              component_id: process_technical_specific_id,
+              type: NotificationType.process,
+              title: NotificationTitleEnum.warning_material_specific_stage,
+            });
+            // throw error if material is not enough
+
+            throw new BadRequestException(
+              `Material ${material.materialSpecific.name} is not enough: need ${material.quantity} 
+              but have ${material.materialSpecific.total_quantity}. 
+              Wait manager update material`,
+            );
+          }
+        }
+      }
+      // Update quantity of material in stock
+      for (const stage of process_specific_exist.process_technical_specific_stage) {
+        // Loop for all material of stage
+        for (const material of stage.process_technical_specific_stage_material) {
+          // Update quantity of material in stock
+          await this.materialService.updateQuantityMaterial(
+            material.materialSpecific.material_id,
+            -material.quantity,
+          );
+        }
+      }
+      // Update status to active
       process_specific_exist.status = ProcessSpecificStatus.active;
-      const process_specific = await this.processSpecificRepo.save(
-        process_specific_exist,
+      const process_specific = await this.processSpecificRepo.update(
+        {
+          process_technical_specific_id,
+        },
+        {
+          status: ProcessSpecificStatus.active,
+        },
       );
       return process_specific;
     } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
       throw new InternalServerErrorException(error.message);
     }
   }
@@ -1082,16 +1156,12 @@ export class ProcessesService implements IProcessesService {
           },
         },
       });
-    // update all material to 0
-    for (const stage_material of process_technical_specific_stage.process_technical_specific_stage_material) {
-      await this.processSpecificStageMaterialRepo.update(
-        {
-          process_technical_specific_stage_material_id:
-            stage_material.process_technical_specific_stage_material_id,
-        },
-        {
-          quantity: 0,
-        },
+    // update store material
+    for (const material of process_technical_specific_stage.process_technical_specific_stage_material) {
+      // update quantity of material in stock
+      await this.materialService.updateQuantityMaterial(
+        material.material_id,
+        material.quantity,
       );
     }
     // Send noti to user

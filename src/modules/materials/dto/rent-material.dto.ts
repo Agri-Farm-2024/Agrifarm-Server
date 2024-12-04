@@ -18,4 +18,13 @@ export class RentMaterialDto {
     message: 'Booking id is required',
   })
   booking_land_id: string;
+
+  @ApiProperty({
+    example: 1,
+    description: 'The total month of booking',
+  })
+  @IsNotEmpty({
+    message: 'Booking id is required',
+  })
+  total_day: number;
 }

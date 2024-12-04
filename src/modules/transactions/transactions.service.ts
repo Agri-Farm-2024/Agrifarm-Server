@@ -47,6 +47,7 @@ export class TransactionsService implements ITransactionService {
     @Inject(forwardRef(() => ExtendsService))
     private readonly extendService: ExtendsService,
 
+    @Inject(forwardRef(() => MaterialsService))
     private readonly materialService: MaterialsService,
   ) {}
   /**

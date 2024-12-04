@@ -49,7 +49,7 @@ export interface IProcessesService {
     user: IUser,
   ): Promise<any>;
 
-  updateStatusProcessSpecific(
+  updateStatusProcessSpecificToACtive(
     process_technical_specific_id: string,
   ): Promise<any>;
 

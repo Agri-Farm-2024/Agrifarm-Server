@@ -33,6 +33,7 @@ import { BookingMaterialStatus } from './types/booking-material-status.enum';
 import { UserRole } from '../users/types/user-role.enum';
 import { Transaction } from '../transactions/entities/transaction.entity';
 import { UpdateBookingMaterialDTO } from './dto/update-booking.material.dto';
+import { getTimeByPlusDays } from 'src/utils/time.utl';
 
 @Injectable()
 export class MaterialsService implements IMaterialService {
@@ -161,6 +162,11 @@ export class MaterialsService implements IMaterialService {
 
       if (material_exist.total_quantity + quantity > 0) {
         material_exist.status = MaterialStatus.available;
+      }
+
+      if (material_exist.type === MaterialType.rent) {
+        material_exist.quantity_of_rented =
+          material_exist.quantity_of_rented + quantity;
       }
 
       const update_material = await this.materialRepo.save({
@@ -377,8 +383,7 @@ export class MaterialsService implements IMaterialService {
         await this.bookingMaterialRepo.save({
           landrenter_id: user.user_id,
           time_start: new Date(),
-          // time end is after 7 days
-          time_end: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
+          time_end: getTimeByPlusDays(new Date(), data.total_day),
           booking_id: data.booking_land_id,
           staff_id: booking_land.staff_id,
         });
@@ -419,7 +424,7 @@ export class MaterialsService implements IMaterialService {
       // create transaction DTO and create transaction
       const transactionData: Partial<CreateTransactionDTO> = {
         booking_material_id: new_booking_material.booking_material_id,
-        total_price: total_price,
+        total_price: total_price * data.total_day,
         purpose: TransactionPurpose.booking_material,
         user_id: user.user_id,
       };

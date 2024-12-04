@@ -43,4 +43,13 @@ export const NotificationContentEnum = {
   ) => {
     return `Cập nhật vật liệu cho giai đoạn ${stage_numberic_order} : ${stage_title}`;
   },
+
+  warning_material_specific_stage: (
+    stage_title: string,
+    stage_numberic_order: number,
+    material_name: string,
+    need_quantity: number,
+  ) => {
+    return `Cảnh báo vật liệu cho giai đoạn ${stage_numberic_order} : ${stage_title} không đủ. Vật liệu ${material_name} cần ${need_quantity} `;
+  },
 } as const;

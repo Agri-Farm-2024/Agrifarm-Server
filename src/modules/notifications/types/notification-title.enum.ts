@@ -22,4 +22,5 @@ export enum NotificationTitleEnum {
   extend_completed = 'Thanh toán gia hạn thuê đất thành công',
   reject_extend = 'Yêu cầu gia hạn thuê đất của bạn đã bị từ chối',
   update_material_specific_stage = 'Cập nhật vật liệu cho giai đoạn cụ thể',
+  warning_material_specific_stage = 'Cảnh báo vật liệu cho giai đoạn cụ thể không đủ',
 }
