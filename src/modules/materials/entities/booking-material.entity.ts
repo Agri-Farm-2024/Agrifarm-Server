@@ -39,17 +39,14 @@ export class BookingMaterial extends AbstractEntity {
   @Column()
   time_end: Date;
 
-  @Column({ nullable: true })
-  quality_report: string;
+  @Column({ default: 0 })
+  quality_report: number;
 
   @Column({ nullable: true })
   contract_image: string;
 
   @Column({ nullable: true })
   reason_for_cancel: string;
-
-  @Column()
-  is_schedule: boolean;
 
   @Column()
   expired_schedule_at: Date;

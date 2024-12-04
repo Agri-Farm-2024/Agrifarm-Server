@@ -992,12 +992,12 @@ export class ProcessesService implements IProcessesService {
 
   async checkAndSendNotificationForLandRenterBeforeNewStage(): Promise<any> {
     try {
-      const check_time = getTimeByPlusDays(new Date(), 1);
+      const time_by_plus_1_day = getTimeByPlusDays(new Date(), 1);
       // get all process specific stage
       const process_technical_specific_stage =
         await this.processSpecificStageRepo.find({
           where: {
-            time_start: Between(new Date(), check_time),
+            time_start: Between(new Date(), time_by_plus_1_day),
             process_technical_specific: {
               status: ProcessSpecificStatus.active,
             },
@@ -1022,8 +1022,15 @@ export class ProcessesService implements IProcessesService {
           type: NotificationType.process,
           title: NotificationTitleEnum.ready_process_stage,
         });
+        // create request material stage for expert
+        await this.requestService.createRequestMaterial({
+          process_technical_specific_stage_id:
+            stage.process_technical_specific_stage_id,
+        });
       }
-    } catch (error) {}
+    } catch (error) {
+      this.logger.error(`Error when check every five pm  ${error.message}`);
+    }
   }
 
   /**

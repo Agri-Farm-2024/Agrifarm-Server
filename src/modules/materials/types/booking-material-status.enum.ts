@@ -3,6 +3,5 @@ export enum BookingMaterialStatus {
   pending_sign = 'pending_sign',
   completed = 'completed',
   expired = 'expired',
-  rejected = 'rejected',
   canceled = 'canceled',
 }

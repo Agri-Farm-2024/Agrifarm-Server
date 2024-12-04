@@ -3,6 +3,7 @@ import { BuyMaterialDTO } from '../dto/buy-material.dto';
 import { IUser } from 'src/modules/auths/types/IUser.interface';
 import { MaterialType } from '../types/material-type.enum';
 import { RentMaterialDto } from '../dto/rent-material.dto';
+import { UpdateBookingMaterialDTO } from '../dto/update-booking.material.dto';
 
 export interface IMaterialService {
   createMaterial(createMaterialDto: any): any;
@@ -21,6 +22,7 @@ export interface IMaterialService {
 
   updateBookingMaterialStatus(
     booking_material_id: string,
-    status: string,
+    data: UpdateBookingMaterialDTO,
+    user: IUser,
   ): Promise<any>;
 }

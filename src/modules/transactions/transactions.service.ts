@@ -24,6 +24,7 @@ import { ExtendsService } from '../extends/extends.service';
 import { TransactionType } from './types/transaction-type.enum';
 import { LoggerService } from 'src/logger/logger.service';
 import { parsePaymentLink } from 'src/utils/link.util';
+import { MaterialsService } from '../materials/materials.service';
 
 @Injectable()
 export class TransactionsService implements ITransactionService {
@@ -45,6 +46,8 @@ export class TransactionsService implements ITransactionService {
 
     @Inject(forwardRef(() => ExtendsService))
     private readonly extendService: ExtendsService,
+
+    private readonly materialService: MaterialsService,
   ) {}
   /**
    * @function createTransaction
@@ -198,6 +201,8 @@ export class TransactionsService implements ITransactionService {
           return this.extendService.updateExtendToComplete(
             transaction.extend_id,
           );
+        case TransactionPurpose.booking_material:
+          return this.materialService.handlePaymentBookingMaterial(transaction);
         default:
           return;
       }

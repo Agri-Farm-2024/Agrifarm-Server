@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { CreateMaterialDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
@@ -30,9 +31,12 @@ import { BookingStatus } from '../bookings/types/booking-status.enum';
 import { BookingMaterialDetail } from './entities/booking-material-detail.entity';
 import { BookingMaterialStatus } from './types/booking-material-status.enum';
 import { UserRole } from '../users/types/user-role.enum';
+import { Transaction } from '../transactions/entities/transaction.entity';
+import { UpdateBookingMaterialDTO } from './dto/update-booking.material.dto';
 
 @Injectable()
 export class MaterialsService implements IMaterialService {
+  private readonly logger = new Logger(MaterialsService.name);
   constructor(
     @InjectRepository(Material)
     private readonly materialRepo: Repository<Material>,
@@ -440,10 +444,71 @@ export class MaterialsService implements IMaterialService {
 
   async updateBookingMaterialStatus(
     booking_material_id: string,
-    status: string,
+    data: UpdateBookingMaterialDTO,
+    user: IUser,
   ): Promise<any> {
     try {
-    } catch (error) {}
+      // get booking material
+      const booking_material = await this.bookingMaterialRepo.findOne({
+        where: {
+          booking_material_id,
+        },
+      });
+      if (!booking_material) {
+        throw new BadRequestException('Booking material not found');
+      }
+      // update to completed
+      if (data.status === BookingMaterialStatus.completed) {
+        // check pre condition to update status
+        if (booking_material.status !== BookingMaterialStatus.pending_sign) {
+          throw new BadRequestException('Booking material is not pending sign');
+        }
+        // check user is staff
+        if (user.role !== UserRole.staff) {
+          throw new BadRequestException('User is not staff');
+        }
+        // check data is valid
+        if (!data.contract_image) {
+          throw new BadRequestException('Contract image is required');
+        }
+        booking_material.status = BookingMaterialStatus.completed;
+        booking_material.signed_at = new Date();
+        booking_material.contract_image = data.contract_image;
+      }
+
+      // update material
+      await this.bookingMaterialRepo.save(booking_material);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  /**
+   * update booking material status
+   * @function updateBookingMaterialStatus
+   * @param booking_material_id
+   */
+
+  async handlePaymentBookingMaterial(transaction: Transaction): Promise<any> {
+    try {
+      // update booking material status
+      const booking_material = await this.bookingMaterialRepo.findOne({
+        where: {
+          booking_material_id: transaction.booking_material_id,
+        },
+      });
+      if (!booking_material) {
+        throw new BadRequestException('Booking material not found');
+      }
+      // update status
+      booking_material.status = BookingMaterialStatus.pending_sign;
+      return await this.bookingMaterialRepo.save({
+        ...booking_material,
+      });
+      // send noti to landrenter and staff
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   /**
