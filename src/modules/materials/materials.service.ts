@@ -474,6 +474,7 @@ export class MaterialsService implements IMaterialService {
         booking_material.status = BookingMaterialStatus.completed;
         booking_material.signed_at = new Date();
         booking_material.contract_image = data.contract_image;
+        // Send noti to user
       }
 
       // update material
@@ -524,7 +525,9 @@ export class MaterialsService implements IMaterialService {
     user: IUser,
   ): Promise<any> {
     try {
+      // Filter condition
       const filter: any = {};
+      // check role landrenter return by landrenter_id
       if (user.role === UserRole.land_renter) {
         filter.landrenter_id = user.user_id;
       }

@@ -8,6 +8,7 @@ import {
   UseGuards,
   Request,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { MaterialsService } from './materials.service';
 import { CreateMaterialDto } from './dto/create-material.dto';
@@ -25,6 +26,7 @@ import { BuyMaterialDTO } from './dto/buy-material.dto';
 import { MaterialType } from './types/material-type.enum';
 import { RentMaterialDto } from './dto/rent-material.dto';
 import { BookingMaterialStatus } from './types/booking-material-status.enum';
+import { UpdateBookingMaterialDTO } from './dto/update-booking.material.dto';
 
 @ApiTags('Material')
 @Controller('materials')
@@ -82,7 +84,7 @@ export class MaterialsController {
   @ApplyPaginationMetadata
   @ApiQuery({ name: 'status', required: false, enum: BookingMaterialStatus })
   @UseGuards(AuthGuard)
-  @Roles(UserRole.land_renter)
+  @Roles(UserRole.land_renter, UserRole.manager, UserRole.staff)
   getBookingMaterial(
     @Pagination() pagination: PaginationParams,
     @Request() request: any,
@@ -90,5 +92,21 @@ export class MaterialsController {
   ) {
     const user = request['user'];
     return this.materialsService.getBookingMaterials(pagination, status, user);
+  }
+
+  @Patch('/updateBookingMaterialStatus/:booking_material_id')
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.manager, UserRole.staff)
+  updateBookingMaterialStatus(
+    @Param('booking_material_id') booking_material_id: string,
+    @Body() data: UpdateBookingMaterialDTO,
+    @Request() request: any,
+  ) {
+    const user = request['user'];
+    return this.materialsService.updateBookingMaterialStatus(
+      booking_material_id,
+      data,
+      user,
+    );
   }
 }

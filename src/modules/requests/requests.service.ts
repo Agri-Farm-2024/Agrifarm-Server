@@ -164,8 +164,7 @@ export class RequestsService implements IRequestService {
             },
           },
           order: {
-            created_at: 'DESC',
-            status: 'ASC',
+            updated_at: 'DESC',
           },
         }),
         this.requestEntity.count({

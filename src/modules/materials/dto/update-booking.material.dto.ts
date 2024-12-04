@@ -4,16 +4,9 @@ import { BookingMaterialStatus } from '../types/booking-material-status.enum';
 
 export class UpdateBookingMaterialDTO {
   @ApiProperty({
-    description: 'Booking ID',
-    example: '1',
-  })
-  @IsNotEmpty()
-  booking_id: string;
-
-  @ApiProperty({
-    type: BookingMaterialStatus,
     description: 'Status of booking',
     example: BookingMaterialStatus.completed,
+    enum: BookingMaterialStatus,
   })
   @IsEnum(BookingMaterialStatus)
   @IsNotEmpty()
