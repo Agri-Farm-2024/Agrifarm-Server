@@ -48,9 +48,6 @@ export class BookingMaterial extends AbstractEntity {
   @Column({ nullable: true })
   reason_for_cancel: string;
 
-  @Column()
-  expired_schedule_at: Date;
-
   @Column({ nullable: true })
   signed_at: Date;
 

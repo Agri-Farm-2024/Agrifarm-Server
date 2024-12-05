@@ -384,7 +384,7 @@ export class MaterialsService implements IMaterialService {
           landrenter_id: user.user_id,
           time_start: new Date(),
           time_end: getTimeByPlusDays(new Date(), data.total_day),
-          booking_id: data.booking_land_id,
+          booking_land_id: data.booking_land_id,
           staff_id: booking_land.staff_id,
         });
       // Caculate total_price for transaction
