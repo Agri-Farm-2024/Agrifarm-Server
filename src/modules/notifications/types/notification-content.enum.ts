@@ -52,4 +52,13 @@ export const NotificationContentEnum = {
   ) => {
     return `Cảnh báo vật liệu cho giai đoạn ${stage_numberic_order} : ${stage_title} không đủ. Vật liệu ${material_name} cần ${need_quantity} `;
   },
+
+  transaction_booking_material_expired: (land_name: string) =>
+    `Thanh toán cho thuê vật tư trên ${land_name} đã hết hạn`,
+
+  new_booking_material: (land_name: string) =>
+    `Yêu cầu thuê vật tư mới được tạo trên ${land_name}`,
+
+  booking_material_pending_sign: (land_name: string) =>
+    `Thanh toán thành công, yêu cầu thuê vật tư trên ${land_name} đang chờ ký tên`,
 } as const;

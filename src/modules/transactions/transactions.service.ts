@@ -108,7 +108,7 @@ export class TransactionsService implements ITransactionService {
       // if payment frequency is single
       if (booking.payment_frequency === BookingPaymentFrequency.single) {
         // Create transaction expired 1 day
-        const new_transaction = this.transactionRepository.save({
+        const new_transaction = await this.transactionRepository.save({
           booking_land_id: booking_id,
           transaction_code,
           total_price,
@@ -116,13 +116,14 @@ export class TransactionsService implements ITransactionService {
           expired_at: new Date(new Date().setDate(new Date().getDate() + 1)),
           user_id: booking.landrenter_id,
         });
-        return new_transaction;
+        // Return detail transaction
+        return await this.getDetailTransaction(new_transaction.transaction_id);
       }
       // if payment frequency is multiple
       //Nếu thuê trên 1 năm sẽ lấy ⅔ phần tiền , ⅓ phần tiền còn lại sẽ lấy vào 10 ngày trước khi bắt đầu ⅓ thời gian còn lại
       if (booking.payment_frequency === BookingPaymentFrequency.multiple) {
         // create 1st transaction expired after 1 days
-        const first_transaction = this.transactionRepository.save({
+        const first_transaction = await this.transactionRepository.save({
           booking_land_id: booking_id,
           transaction_code: transaction_code,
           total_price: Math.ceil((total_price * 2) / 3),
@@ -152,7 +153,10 @@ export class TransactionsService implements ITransactionService {
           status: TransactionStatus.pending,
           user_id: booking.landrenter_id,
         });
-        return first_transaction;
+        // return detail transaction
+        return await this.getDetailTransaction(
+          first_transaction.transaction_id,
+        );
       }
     } catch (error) {}
   }
@@ -372,6 +376,11 @@ export class TransactionsService implements ITransactionService {
               land: true,
             },
           },
+          booking_material: {
+            booking_material_detail: {
+              material: true,
+            },
+          },
         },
         select: {
           user: {
@@ -446,6 +455,10 @@ export class TransactionsService implements ITransactionService {
         case TransactionPurpose.order:
           return await this.orderService.cancelOrder(
             transaction_backup.order_id,
+          );
+        case TransactionPurpose.booking_material:
+          return await this.materialService.cancelBookingMaterial(
+            transaction_backup.booking_material_id,
           );
         default:
           return `Can't cancel transaction with purpose ${transaction.purpose}`;

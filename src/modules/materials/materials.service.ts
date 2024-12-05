@@ -34,6 +34,10 @@ import { UserRole } from '../users/types/user-role.enum';
 import { Transaction } from '../transactions/entities/transaction.entity';
 import { UpdateBookingMaterialDTO } from './dto/update-booking.material.dto';
 import { getTimeByPlusDays } from 'src/utils/time.utl';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../notifications/types/notification-type.enum';
+import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
+import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
 
 @Injectable()
 export class MaterialsService implements IMaterialService {
@@ -58,6 +62,8 @@ export class MaterialsService implements IMaterialService {
 
     @Inject(forwardRef(() => BookingsService))
     private readonly bookingLandService: BookingsService,
+
+    private readonly notificationService: NotificationsService,
   ) {}
 
   async createMaterial(createMaterialDto: CreateMaterialDto) {
@@ -428,6 +434,16 @@ export class MaterialsService implements IMaterialService {
         purpose: TransactionPurpose.booking_material,
         user_id: user.user_id,
       };
+      // send noti to staff
+      await this.notificationService.createNotification({
+        title: NotificationTitleEnum.new_booking_material,
+        content: NotificationContentEnum.new_booking_material(
+          booking_land.land.name,
+        ),
+        user_id: booking_land.staff_id,
+        component_id: new_booking_material.booking_material_id,
+        type: NotificationType.booking_material,
+      });
 
       const transaction = await this.transactionService.createTransaction(
         transactionData as CreateTransactionDTO,
@@ -506,12 +522,31 @@ export class MaterialsService implements IMaterialService {
       if (!booking_material) {
         throw new BadRequestException('Booking material not found');
       }
+      // send noti to landrenter and staff
+      await this.notificationService.createNotification({
+        title: NotificationTitleEnum.booking_material_pending_sign,
+        content: NotificationContentEnum.booking_material_pending_sign(
+          booking_material.booking_land.land.name,
+        ),
+        user_id: booking_material.landrenter_id,
+        component_id: booking_material.booking_material_id,
+        type: NotificationType.booking_material,
+      });
+      // send noti to staff
+      await this.notificationService.createNotification({
+        title: NotificationTitleEnum.booking_material_pending_sign,
+        content: NotificationContentEnum.booking_material_pending_sign(
+          booking_material.booking_land.land.name,
+        ),
+        user_id: booking_material.staff_id,
+        component_id: booking_material.booking_material_id,
+        type: NotificationType.booking_material,
+      });
       // update status
       booking_material.status = BookingMaterialStatus.pending_sign;
       return await this.bookingMaterialRepo.save({
         ...booking_material,
       });
-      // send noti to landrenter and staff
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
@@ -545,6 +580,9 @@ export class MaterialsService implements IMaterialService {
           where: filter,
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
+          order: {
+            updated_at: 'DESC',
+          },
         }),
         this.bookingMaterialRepo.count({
           where: filter,
@@ -559,6 +597,49 @@ export class MaterialsService implements IMaterialService {
           total_page,
         },
       };
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  /**
+   * Cancel booking material call when transaction is expried
+   * @function cancelBookingMaterial
+   * @param booking_material_id
+   */
+
+  async cancelBookingMaterial(booking_material_id: string): Promise<any> {
+    try {
+      // get booking material
+      const booking_material = await this.bookingMaterialRepo.findOne({
+        where: {
+          booking_material_id,
+        },
+        relations: {
+          booking_material_detail: true,
+          booking_land: {
+            land: true,
+          },
+        },
+      });
+      // loop and delete booking material detail
+      for (const item of booking_material.booking_material_detail) {
+        await this.bookingMaterialDetailRepo.delete(
+          item.booking_material_detail_id,
+        );
+      }
+      // delete booking material
+      await this.bookingMaterialRepo.delete(booking_material_id);
+      // send noti to landrenter
+      await this.notificationService.createNotification({
+        title: NotificationTitleEnum.transaction_booking_material_expired,
+        content: NotificationContentEnum.transaction_booking_material_expired(
+          booking_material.booking_land.land.name,
+        ),
+        user_id: booking_material.landrenter_id,
+        component_id: booking_material_id,
+        type: NotificationType.booking_material,
+      });
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

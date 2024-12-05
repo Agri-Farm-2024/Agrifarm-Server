@@ -1011,7 +1011,6 @@ export class BookingsService implements IBookingService {
           expired_schedule_at: LessThanOrEqual(new Date()),
         },
       });
-      console.log(`booking_expired_schedule`, booking_expired_schedule);
       // Set booking to canceled
       booking_expired_schedule.forEach(async (booking) => {
         await this.bookingRepository.save({
@@ -1053,7 +1052,6 @@ export class BookingsService implements IBookingService {
           },
         },
       });
-      console.log(`list_booking_expired`, list_booking_expired);
       // define booking_expired
       const list_booking_expired_with_extends = [];
       // set booking expired time by add extend month
@@ -1071,7 +1069,6 @@ export class BookingsService implements IBookingService {
           list_booking_expired_with_extends.push(booking);
         }
       }
-      console.log(`booking_expired`, list_booking_expired_with_extends);
       // Set booking to expired
       list_booking_expired_with_extends.forEach(async (booking) => {
         // Set status to expired

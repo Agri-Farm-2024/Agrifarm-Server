@@ -5,7 +5,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { In, Like, Not, Repository } from 'typeorm';
+import { In, Like, MoreThan, Not, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
@@ -21,6 +21,7 @@ import { UserRole } from './types/user-role.enum';
 import { IUser } from '../auths/types/IUser.interface';
 import { ProcessSpecificStatus } from '../processes/types/processSpecific-status.enum';
 import { ServiceSpecificStatus } from '../servicesPackage/types/service-specific-status.enum';
+import { RequestStatus } from '../requests/types/request-status.enum';
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -336,5 +337,34 @@ export class UsersService implements IUserService {
       });
       return experts;
     } catch (error) {}
+  }
+
+  /**
+   * Check task of expert for free time
+   * @function filterExpertFreeTime
+   */
+
+  async filterExpertFreeTime(): Promise<any> {
+    try {
+      const list_expert_with_task_is_pending = await this.userRepository.find({
+        where: {
+          role: UserRole.expert,
+          request: {
+            status: RequestStatus.pending,
+            time_start: MoreThan(new Date()),
+          },
+        },
+        relations: {
+          request: true,
+        },
+      });
+      // filter experts with request is lowest
+      list_expert_with_task_is_pending.sort((a, b) => {
+        return a.request.length - b.request.length;
+      });
+      return list_expert_with_task_is_pending;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 }
