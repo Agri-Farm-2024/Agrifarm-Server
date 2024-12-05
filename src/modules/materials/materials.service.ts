@@ -38,6 +38,7 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../notifications/types/notification-type.enum';
 import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
 import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
+import { selectUser } from 'src/utils/select.util';
 
 @Injectable()
 export class MaterialsService implements IMaterialService {
@@ -582,6 +583,19 @@ export class MaterialsService implements IMaterialService {
           take: pagination.page_size,
           order: {
             updated_at: 'DESC',
+          },
+          relations: {
+            booking_material_detail: {
+              material: true,
+            },
+            landrenter: true,
+            booking_land: {
+              land: true,
+            },
+            transaction: true,
+          },
+          select: {
+            landrenter: selectUser,
           },
         }),
         this.bookingMaterialRepo.count({
