@@ -282,16 +282,13 @@ export class ChannelsService implements IChannelService {
       if (!channel) {
         throw new BadRequestException('Channel is not exist');
       }
-      // check channel is expired
-      if (channel.status === ChannelStatus.expired) {
-        throw new BadRequestException('Channel is expired');
-      }
       // update channel expired after 7 days
       await this.channelRepository.update(
         {
           channel_id: channel.channel_id,
         },
         {
+          status: ChannelStatus.expired,
           expired_at: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
         },
       );

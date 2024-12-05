@@ -506,18 +506,26 @@ export class TransactionsService implements ITransactionService {
         where: {
           status: TransactionStatus.succeed,
         },
+        order: {
+          pay_at: 'ASC',
+        },
       });
-      // Reduce transaction with total_price and month
-      const revenue = transactions.reduce((acc, transaction): any => {
+      // define revenue by 12 month
+      const revenue: any = {};
+      // define month for revenue
+      for (let i = 1; i <= 12; i++) {
+        revenue[i] = {
+          total_price: 0,
+        };
+      }
+      // loop transaction to revenue
+      transactions.forEach((transaction) => {
         const month = transaction.pay_at.getMonth() + 1;
-        if (!acc[month]) {
-          acc[month] = {
-            total_price: transaction.total_price,
-          };
+        if (revenue[month]) {
+          revenue[month].total_price += transaction.total_price;
         }
-        acc[month].total_price += transaction.total_price;
-        return acc;
-      }, {});
+      });
+
       return revenue;
     } catch (error) {
       throw new InternalServerErrorException(error.message);

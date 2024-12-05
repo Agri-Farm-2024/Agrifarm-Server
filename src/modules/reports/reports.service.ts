@@ -122,6 +122,7 @@ export class ReportsService implements IReportService {
       }
       // Check condition type request technical_support
       if (task_exist.request.type === RequestType.technical_support) {
+        // update request status to completed
         request_status = RequestStatus.completed;
         // handle set expired time for channel
         await this.channelService.setChannelToExpired(task_exist.request_id);

@@ -786,6 +786,7 @@ export class RequestsService implements IRequestService {
       const new_request = await this.requestEntity.save({
         ...data,
         sender_id: user.user_id,
+        type: RequestType.technical_support,
       });
       // create task for the request
       await this.taskService.createTask(new_request.request_id);
