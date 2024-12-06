@@ -18,6 +18,7 @@ import { ProcessSpecificStage } from 'src/modules/processes/entities/specifics/p
 import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
 import { Channel } from 'src/modules/channels/entities/channel.entity';
 import { ProcessSpecificStageContent } from 'src/modules/processes/entities/specifics/processSpecificStageContent.entity';
+import { BookingMaterial } from 'src/modules/materials/entities/booking-material.entity';
 
 @Entity('requests')
 export class Request extends AbstractEntity {
@@ -64,6 +65,9 @@ export class Request extends AbstractEntity {
 
   @Column({ nullable: true, type: 'uuid' })
   service_specific_id: string;
+
+  @Column({ nullable: true, type: 'uuid' })
+  booking_material_id: string;
 
   @Column({
     default: RequestSupportType.direct,
@@ -112,4 +116,8 @@ export class Request extends AbstractEntity {
 
   @OneToOne(() => Channel, (channel) => channel.request)
   channel: Channel;
+
+  @ManyToOne(() => BookingMaterial, (booking) => booking.requests)
+  @JoinColumn({ name: 'booking_material_id' })
+  booking_material: BookingMaterial;
 }

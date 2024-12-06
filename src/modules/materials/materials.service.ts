@@ -11,7 +11,7 @@ import { UpdateMaterialDto } from './dto/update-material.dto';
 import { IMaterialService } from './interface/IMaterialService.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Material } from './entities/material.entity';
-import { Like, Not, Repository } from 'typeorm';
+import { LessThan, Like, Not, Repository } from 'typeorm';
 import { LoggerService } from 'src/logger/logger.service';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { Order } from '../orders/entities/order.entity';
@@ -39,6 +39,9 @@ import { NotificationType } from '../notifications/types/notification-type.enum'
 import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
 import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
 import { selectUser } from 'src/utils/select.util';
+import { RequestsService } from '../requests/requests.service';
+import { Request } from '../requests/entities/request.entity';
+import { TransactionType } from '../transactions/types/transaction-type.enum';
 
 @Injectable()
 export class MaterialsService implements IMaterialService {
@@ -65,6 +68,9 @@ export class MaterialsService implements IMaterialService {
     private readonly bookingLandService: BookingsService,
 
     private readonly notificationService: NotificationsService,
+
+    @Inject(forwardRef(() => RequestsService))
+    private readonly requestService: RequestsService,
   ) {}
 
   async createMaterial(createMaterialDto: CreateMaterialDto) {
@@ -655,6 +661,90 @@ export class MaterialsService implements IMaterialService {
         type: NotificationType.booking_material,
       });
     } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  /**
+   * Checking booking material is expired
+   * @function checkBookingMaterialIsExpired
+   */
+
+  async checkBookingMaterialIsExpired(): Promise<any> {
+    try {
+      // get all booking material is pending sign and time end < now
+      const booking_materials_expired = await this.bookingMaterialRepo.find({
+        where: {
+          status: BookingMaterialStatus.pending_sign,
+          time_end: LessThan(new Date()),
+        },
+      });
+      // loop through each booking material
+      for (const booking_material of booking_materials_expired) {
+        // update status booking material
+        booking_material.status = BookingMaterialStatus.expired;
+        await this.bookingMaterialRepo.save(booking_material);
+        // send noti to landrenter
+        await this.notificationService.createNotification({
+          title: NotificationTitleEnum.booking_material_expired,
+          content: NotificationContentEnum.booking_material_expired(),
+          user_id: booking_material.landrenter_id,
+          component_id: booking_material.booking_material_id,
+          type: NotificationType.booking_material,
+        });
+        // create request report material
+        await this.requestService.createRequestReportBookingMaterial(
+          booking_material.booking_material_id,
+        );
+      }
+    } catch (error) {
+      this.loggerService.error(error.message, error.stack);
+    }
+  }
+
+  /**
+   * create refund transaction booking material
+   * @function createRefundTransactionBookingMaterial
+   * @param request
+   */
+
+  async createRefundTransactionBookingMaterial(request: Request): Promise<any> {
+    try {
+      // get detail booking material
+      const booking_material = await this.bookingMaterialRepo.findOne({
+        where: {
+          booking_material_id: request.booking_material_id,
+        },
+      });
+      // get all booking detail
+      const bookings_detail_material =
+        await this.bookingMaterialDetailRepo.find({
+          where: {
+            booking_material_id: request.booking_material_id,
+          },
+        });
+      // define total price deposit
+      let total_price_deposit: number = 0;
+      // loop through each booking detail
+      for (const item of bookings_detail_material) {
+        total_price_deposit += item.price_deposit_per_item * item.quantity;
+      }
+      // create transaction
+      const transactionData: Partial<CreateTransactionDTO> = {
+        user_id: booking_material.landrenter_id,
+        type: TransactionType.refund,
+        total_price: total_price_deposit * request.task.report.quality_report,
+        purpose: TransactionPurpose.report_booking_material,
+        booking_material_id: request.booking_material_id,
+      };
+      await this.transactionService.createTransaction(
+        transactionData as CreateTransactionDTO,
+      );
+      this.loggerService.log(
+        `Refund transaction is created for booking material ${booking_material.booking_material_id}`,
+      );
+    } catch (error) {
+      this.loggerService.error(error.message, error.stack);
       throw new InternalServerErrorException(error.message);
     }
   }

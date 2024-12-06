@@ -33,7 +33,7 @@ export class BookingMaterialDetail extends AbstractEntity {
 
   @Column('int')
   price_per_piece_item: number;
-
+  // Relations
   @ManyToOne(
     () => BookingMaterial,
     (bookingMaterial) => bookingMaterial.booking_material_id,

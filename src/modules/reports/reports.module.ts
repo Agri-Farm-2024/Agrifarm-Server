@@ -10,6 +10,7 @@ import { RequestsModule } from '../requests/requests.module';
 import { BookingsModule } from '../bookings/bookings.module';
 import { UsersModule } from '../users/users.module';
 import { ChannelsModule } from '../channels/channels.module';
+import { ServicesModule } from '../servicesPackage/servicesPackage.module';
 
 @Module({
   controllers: [ReportsController],
@@ -23,6 +24,7 @@ import { ChannelsModule } from '../channels/channels.module';
     forwardRef(() => TasksModule),
     forwardRef(() => RequestsModule),
     ChannelsModule,
+    ServicesModule,
   ],
   exports: [ReportsService],
 })

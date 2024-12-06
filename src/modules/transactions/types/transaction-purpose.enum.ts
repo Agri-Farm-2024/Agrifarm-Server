@@ -4,7 +4,8 @@ export enum TransactionPurpose {
   booking_material = 'booking_material',
   extend = 'extend',
   service = 'service',
-  cancel_service = 'cancel_service',
-  cancel_booking_land = 'cancel_booking_land',
+  report_service = 'cancel_service',
+  report_booking_land = 'cancel_booking_land',
+  report_booking_material = 'cancel_booking_material',
   service_purchase_product = 'service_purchase_product',
 }

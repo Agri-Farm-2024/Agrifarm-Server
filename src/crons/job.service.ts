@@ -7,6 +7,7 @@ import { TransactionsService } from 'src/modules/transactions/transactions.servi
 import { LoggerService } from 'src/logger/logger.service';
 import { ServicesService } from 'src/modules/servicesPackage/servicesPackage.service';
 import { ProcessesService } from 'src/modules/processes/processes.service';
+import { MaterialsService } from 'src/modules/materials/materials.service';
 
 @Injectable()
 export class JobService implements ICronJob {
@@ -21,6 +22,8 @@ export class JobService implements ICronJob {
     private readonly loggerService: LoggerService,
 
     private readonly processService: ProcessesService,
+
+    private readonly materialService: MaterialsService,
   ) {}
 
   @Cron(CronTime.every_new_day)
@@ -34,6 +37,8 @@ export class JobService implements ICronJob {
       await this.servicePackageService.checkServiceIsExpired();
       this.logger.log('Check service expire is running');
       this.loggerService.log('Check service expire is running');
+      // Checking booking material is expired
+      await this.materialService.checkBookingMaterialIsExpired();
     } catch (error) {
       this.logger.error(`Error when check every day ${error.message}`);
       this.loggerService.error(
@@ -47,7 +52,7 @@ export class JobService implements ICronJob {
   async checkTransactionIsExpired(): Promise<void> {
     try {
       // Check transaction is expired
-      // await this.transactionService.checkTransactionIsExpired();
+      await this.transactionService.checkTransactionIsExpired();
       this.logger.log('Check transaction expire is running');
       this.loggerService.log('Check transaction expire is running');
     } catch (error) {

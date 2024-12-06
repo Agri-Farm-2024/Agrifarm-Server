@@ -30,6 +30,7 @@ import { Task } from '../tasks/entities/task.entity';
 import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
 import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
 import { ChannelsService } from '../channels/channels.service';
+import { ServicesService } from '../servicesPackage/servicesPackage.service';
 
 @Injectable()
 export class ReportsService implements IReportService {
@@ -52,6 +53,8 @@ export class ReportsService implements IReportService {
     private readonly userService: UsersService,
 
     private readonly channelService: ChannelsService,
+
+    private readonly servicePackageService: ServicesService,
   ) {}
 
   async createReport(data: CreateReportDTO, task_id: string, user: IUser) {
@@ -76,6 +79,7 @@ export class ReportsService implements IReportService {
         new_report = await this.reportRepository.save({
           task_id: task_id,
           content: data.content,
+          quality_report: data.quality_report ? data.quality_report : 0,
         });
       } else {
         // update report
@@ -96,20 +100,17 @@ export class ReportsService implements IReportService {
           });
         }
       }
+      // Define request status is pending_approval
       let request_status: RequestStatus = RequestStatus.pending_approval;
-      // check report type
+      // check request type is report_land update quality for booking land
       if (task_exist.request.type === RequestType.report_land) {
-        if (!data.quality_report) {
-          throw new BadRequestException(
-            'Quality report is required with request type report_land',
-          );
-        }
         // update quality for report
         await this.bookingService.updateBookingByReport(
           task_exist.request.booking_land_id,
-          data.quality_report,
+          data.quality_report ? data.quality_report : 0,
         );
       }
+
       /**
        *  Check condition type request view_land , material_process_specfic_stage , technical_support
        *  Update request status to completed

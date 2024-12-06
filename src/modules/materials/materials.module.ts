@@ -10,6 +10,7 @@ import { BookingMaterialDetail } from './entities/booking-material-detail.entity
 import { JwtModule } from '@nestjs/jwt';
 import { TransactionsModule } from '../transactions/transactions.module';
 import { BookingsModule } from '../bookings/bookings.module';
+import { RequestsModule } from '../requests/requests.module';
 
 @Module({
   controllers: [MaterialsController],
@@ -25,6 +26,7 @@ import { BookingsModule } from '../bookings/bookings.module';
     forwardRef(() => TransactionsModule),
     forwardRef(() => BookingsModule),
     JwtModule,
+    forwardRef(() => RequestsModule),
   ],
   exports: [MaterialsService],
 })

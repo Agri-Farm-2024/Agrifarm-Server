@@ -504,6 +504,10 @@ export class TransactionsService implements ITransactionService {
         });
       }
     } catch (error) {
+      this.loggerService.error(
+        `Error when check transaction expired ${error.message}`,
+        error.stack,
+      );
       throw new InternalServerErrorException(error.message);
     }
   }

@@ -13,6 +13,7 @@ import { User } from 'src/modules/users/entities/user.entity';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 import { BookingMaterialDetail } from './booking-material-detail.entity';
 import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
+import { Request } from 'src/modules/requests/entities/request.entity';
 
 @Entity('booking_material')
 export class BookingMaterial extends AbstractEntity {
@@ -38,9 +39,6 @@ export class BookingMaterial extends AbstractEntity {
 
   @Column()
   time_end: Date;
-
-  @Column({ default: 0 })
-  quality_report: number;
 
   @Column({ nullable: true })
   contract_image: string;
@@ -78,4 +76,7 @@ export class BookingMaterial extends AbstractEntity {
 
   @OneToOne(() => Transaction, (transaction) => transaction.booking_material)
   transaction: Transaction;
+
+  @OneToMany(() => Request, (request) => request.booking_material)
+  requests: Request[];
 }

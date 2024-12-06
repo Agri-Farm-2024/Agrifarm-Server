@@ -26,19 +26,22 @@ export class Report extends AbstractEntity {
   @Column({ nullable: true })
   content: string;
 
-  @Column({ nullable: true })
+  @Column({ default: 0, type: 'float' })
+  quality_report: number;
+
+  @Column({ default: 0, type: 'float' })
   quality_plant: number;
 
-  @Column({ nullable: true })
+  @Column({ default: 0, type: 'float' })
   quality_plant_expect: number;
 
-  @Column({ nullable: true })
+  @Column({ default: 0 })
   mass_plant: number;
 
-  @Column({ nullable: true })
+  @Column({ default: 0 })
   mass_plant_expect: number;
 
-  @Column({ nullable: true })
+  @Column({ default: 0 })
   price_purchase_per_kg: number;
 
   // relation

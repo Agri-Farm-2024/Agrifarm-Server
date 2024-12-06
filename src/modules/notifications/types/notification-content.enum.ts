@@ -61,4 +61,7 @@ export const NotificationContentEnum = {
 
   booking_material_pending_sign: (land_name: string) =>
     `Thanh toán thành công, yêu cầu thuê vật tư trên ${land_name} đang chờ ký tên`,
+
+  booking_material_expired: () =>
+    `Thuê vật tư đã hết hạn chúng tôi sẽ tiến hành kiểm tra.`,
 } as const;

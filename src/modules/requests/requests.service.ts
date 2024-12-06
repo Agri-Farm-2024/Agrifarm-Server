@@ -50,7 +50,7 @@ import { TransactionType } from '../transactions/types/transaction-type.enum';
 export class RequestsService implements IRequestService {
   constructor(
     @InjectRepository(Request)
-    private readonly requestEntity: Repository<Request>,
+    private readonly requestRepo: Repository<Request>,
 
     private readonly mailService: MailService,
 
@@ -73,12 +73,14 @@ export class RequestsService implements IRequestService {
     private readonly channelService: ChannelsService,
 
     private readonly transactionService: TransactionsService,
+
+    private readonly materialSerivce: MaterialsService,
   ) {}
 
   async createRequestViewLand(data: CreateRequestViewLandDTO): Promise<any> {
     try {
       // Create a new request
-      const new_request = await this.requestEntity.save({
+      const new_request = await this.requestRepo.save({
         ...data,
         type: RequestType.view_land,
       });
@@ -129,7 +131,7 @@ export class RequestsService implements IRequestService {
       }
       // get list request
       const [requests, total_count] = await Promise.all([
-        this.requestEntity.find({
+        this.requestRepo.find({
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
           where: filter_condition,
@@ -167,7 +169,7 @@ export class RequestsService implements IRequestService {
             updated_at: 'DESC',
           },
         }),
-        this.requestEntity.count({
+        this.requestRepo.count({
           where: filter_condition,
         }),
       ]);
@@ -187,7 +189,7 @@ export class RequestsService implements IRequestService {
 
   async getDetailRequest(request_id: string): Promise<any> {
     try {
-      const request = await this.requestEntity.findOne({
+      const request = await this.requestRepo.findOne({
         where: {
           request_id: request_id,
         },
@@ -219,7 +221,7 @@ export class RequestsService implements IRequestService {
     plant_season_id: string,
   ): Promise<any> {
     try {
-      const requestProcess = await this.requestEntity.findOne({
+      const requestProcess = await this.requestRepo.findOne({
         where: {
           plant_season_id: plant_season_id,
           type: RequestType.create_process_standard,
@@ -239,7 +241,7 @@ export class RequestsService implements IRequestService {
     process_technical_specific_stage_content_id: string,
   ): Promise<any> {
     try {
-      const requestCultivate = await this.requestEntity.findOne({
+      const requestCultivate = await this.requestRepo.findOne({
         where: {
           process_technical_specific_stage_content_id:
             process_technical_specific_stage_content_id,
@@ -269,7 +271,7 @@ export class RequestsService implements IRequestService {
   ): Promise<any> {
     try {
       // check request exist
-      const request = await this.requestEntity.findOne({
+      const request = await this.requestRepo.findOne({
         where: {
           request_id: request_id,
         },
@@ -329,7 +331,7 @@ export class RequestsService implements IRequestService {
         );
       }
       // update request status
-      const updated_request = await this.requestEntity.update(
+      const updated_request = await this.requestRepo.update(
         {
           request_id: request_id,
         },
@@ -352,7 +354,7 @@ export class RequestsService implements IRequestService {
   ): Promise<any> {
     try {
       //check if request have plant_season_id
-      const request_exist_plantseaosn = await this.requestEntity.findOne({
+      const request_exist_plantseaosn = await this.requestRepo.findOne({
         where: {
           plant_season_id: data.plant_season_id,
           type: RequestType.create_process_standard,
@@ -365,7 +367,7 @@ export class RequestsService implements IRequestService {
       }
 
       // Create a new request
-      const new_request = await this.requestEntity.save({
+      const new_request = await this.requestRepo.save({
         ...data,
         type: RequestType.create_process_standard,
       });
@@ -396,7 +398,7 @@ export class RequestsService implements IRequestService {
     createRequestMaterial: CreateRequestMaterialDto,
   ): Promise<any> {
     try {
-      const request_exist_material = await this.requestEntity.findOne({
+      const request_exist_material = await this.requestRepo.findOne({
         where: {
           process_technical_specific_stage_id:
             createRequestMaterial.process_technical_specific_stage_id,
@@ -407,7 +409,7 @@ export class RequestsService implements IRequestService {
         throw new BadRequestException('Request material already exist');
       }
       // Create a new request
-      const new_request = await this.requestEntity.save({
+      const new_request = await this.requestRepo.save({
         ...createRequestMaterial,
         type: RequestType.material_process_specfic_stage,
         status: RequestStatus.assigned,
@@ -457,7 +459,7 @@ export class RequestsService implements IRequestService {
   ): Promise<any> {
     try {
       //check request purchase for service is exist
-      const request_purchase_exist = await this.requestEntity.findOne({
+      const request_purchase_exist = await this.requestRepo.findOne({
         where: {
           service_specific_id: createRequestPurchase.service_specific_id,
           type: RequestType.product_purchase,
@@ -480,7 +482,7 @@ export class RequestsService implements IRequestService {
         service_specific_detail.service_package.purchase === true
       ) {
         //create new request purchase
-        const new_request = await this.requestEntity.save({
+        const new_request = await this.requestRepo.save({
           ...createRequestPurchase,
           sender_id: service_specific_detail.landrenter_id,
           type: RequestType.product_purchase,
@@ -530,7 +532,7 @@ export class RequestsService implements IRequestService {
   ): Promise<any> {
     try {
       //check request purchase for service is exist
-      const request_purchase_hasvest_exist = await this.requestEntity.findOne({
+      const request_purchase_hasvest_exist = await this.requestRepo.findOne({
         where: {
           service_specific_id: service_specific_id,
           type: RequestType.product_puchase_harvest,
@@ -548,7 +550,7 @@ export class RequestsService implements IRequestService {
         throw new BadRequestException('Service specific not found');
       }
       //create new request purchase
-      const new_request = await this.requestEntity.save({
+      const new_request = await this.requestRepo.save({
         service_specific_id: service_specific_id,
         type: RequestType.product_puchase_harvest,
       });
@@ -589,7 +591,7 @@ export class RequestsService implements IRequestService {
   async createRequestReportLand(booking_land: BookingLand): Promise<any> {
     try {
       // Create a new request
-      const new_request = await this.requestEntity.save({
+      const new_request = await this.requestRepo.save({
         booking_land_id: booking_land.booking_id,
         type: RequestType.report_land,
       });
@@ -634,7 +636,7 @@ export class RequestsService implements IRequestService {
   ): Promise<any> {
     try {
       // check request exist
-      const request = await this.requestEntity.findOne({
+      const request = await this.requestRepo.findOne({
         where: {
           request_id: request_id,
         },
@@ -732,8 +734,18 @@ export class RequestsService implements IRequestService {
         // call boooking service to create transaction refund
         await this.bookingService.createRefundBooking(request.booking_land);
       }
+      // CHeck condition of report booking material with completed status
+      if (
+        request.type === RequestType.report_booking_material &&
+        data.status === RequestStatus.completed
+      ) {
+        // // call booking service to create transaction refund
+        await this.materialService.createRefundTransactionBookingMaterial(
+          request,
+        );
+      }
       // update request status
-      const updated_request = await this.requestEntity.update(
+      const updated_request = await this.requestRepo.update(
         {
           request_id: request_id,
         },
@@ -741,7 +753,10 @@ export class RequestsService implements IRequestService {
           status: data.status,
         },
       );
-
+      // log
+      this.loggerService.log(
+        `Request ${request_id} is updated to ${data.status}`,
+      );
       return updated_request;
     } catch (error) {
       this.loggerService.error(error.message, error.stack);
@@ -768,7 +783,7 @@ export class RequestsService implements IRequestService {
           throw new BadRequestException('Service is not available');
         }
         // create a new request
-        const new_request = await this.requestEntity.save({
+        const new_request = await this.requestRepo.save({
           ...data,
           sender_id: user.user_id,
           status: RequestStatus.assigned,
@@ -783,7 +798,7 @@ export class RequestsService implements IRequestService {
         return new_request;
       }
       // create a new request
-      const new_request = await this.requestEntity.save({
+      const new_request = await this.requestRepo.save({
         ...data,
         sender_id: user.user_id,
         type: RequestType.technical_support,
@@ -804,13 +819,13 @@ export class RequestsService implements IRequestService {
     try {
       const [total_request, total_in_progress, total_completed] =
         await Promise.all([
-          this.requestEntity.count(),
-          this.requestEntity.count({
+          this.requestRepo.count(),
+          this.requestRepo.count({
             where: {
               status: RequestStatus.in_progress,
             },
           }),
-          this.requestEntity.count({
+          this.requestRepo.count({
             where: {
               status: RequestStatus.completed,
             },
@@ -831,7 +846,7 @@ export class RequestsService implements IRequestService {
   ): Promise<any> {
     try {
       // check exist
-      const request_exist = await this.requestEntity.findOne({
+      const request_exist = await this.requestRepo.findOne({
         where: {
           process_technical_specific_stage_content_id:
             process_specific_stage_content.process_technical_specific_stage_content_id,
@@ -844,7 +859,7 @@ export class RequestsService implements IRequestService {
         );
       }
       // Create a new request
-      const new_request = await this.requestEntity.save({
+      const new_request = await this.requestRepo.save({
         process_technical_specific_stage_content_id:
           process_specific_stage_content.process_technical_specific_stage_content_id,
         time_start: process_specific_stage_content.time_start,
@@ -868,6 +883,57 @@ export class RequestsService implements IRequestService {
         type: NotificationType.request,
       });
       return new_request;
+    } catch (error) {
+      this.loggerService.error(error.message, error.stack);
+    }
+  }
+
+  /**
+   * Create request report booking material call when booking material is expired
+   * @function createRequestReportBookingMaterial
+   * @param booking_material_id
+   */
+
+  async createRequestReportBookingMaterial(
+    booking_material_id: string,
+  ): Promise<void> {
+    try {
+      // create a new request
+      const new_request = await this.requestRepo.save({
+        booking_material_id,
+        type: RequestType.report_booking_material,
+      });
+      // create task for the request
+      await this.taskService.createTask(new_request.request_id);
+      // log
+      this.loggerService.log(
+        `New request report booking material created for ${booking_material_id}`,
+      );
+    } catch (error) {
+      this.loggerService.error(error.message, error.stack);
+    }
+  }
+  /**
+   * Create request report service specific call when service specific is expired
+   * @function createRequestReportServiceSpecific
+   * @param service_specific_id
+   */
+
+  async createRequestReportServiceSpecific(
+    service_specific_id: string,
+  ): Promise<void> {
+    try {
+      // create a new request
+      const new_request = await this.requestRepo.save({
+        service_specific_id,
+        type: RequestType.report_service_specific,
+      });
+      // create task for the request
+      await this.taskService.createTask(new_request.request_id);
+      // log
+      this.loggerService.log(
+        `New request report service specific created for ${service_specific_id}`,
+      );
     } catch (error) {
       this.loggerService.error(error.message, error.stack);
     }

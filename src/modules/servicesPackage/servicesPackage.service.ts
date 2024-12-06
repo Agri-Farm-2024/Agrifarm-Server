@@ -461,6 +461,10 @@ export class ServicesService implements IService {
             status: ServiceSpecificStatus.expired,
           },
         );
+        // Create request report this service specific
+        await this.requestService.createRequestReportServiceSpecific(
+          service_specific.service_specific_id,
+        );
       });
     } catch (error) {
       this.logger.error(`Error when check service is expired ${error.message}`);
