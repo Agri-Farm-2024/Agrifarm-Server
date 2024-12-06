@@ -157,6 +157,16 @@ export class BookingsService implements IBookingService {
       if (booking_exist.length > 0) {
         throw new BadRequestException('Land is already booked');
       }
+      // check payment frequency
+      if (
+        createBookingDto.payment_frequency === BookingPaymentFrequency.multiple
+      ) {
+        if (createBookingDto.total_month < 12) {
+          throw new BadRequestException(
+            'You can only pay multiple of at least 12 months',
+          );
+        }
+      }
       // create new booking
       const new_booking = await this.bookingRepository.save({
         ...createBookingDto,
@@ -167,7 +177,7 @@ export class BookingsService implements IBookingService {
         total_price: total_price,
         price_deposit: land.price_booking_per_month * 2,
       });
-      // send notification to staff and land renter
+      // send notification to staff
       await this.notificationService.createNotification({
         user_id: land.staff_id,
         title: NotificationTitleEnum.new_booking,
@@ -175,7 +185,7 @@ export class BookingsService implements IBookingService {
         type: NotificationType.booking_land,
         component_id: new_booking.booking_id,
       });
-
+      // send noti to land renter
       await this.notificationService.createNotification({
         user_id: land_renter.user_id,
         title: NotificationTitleEnum.new_booking,
@@ -774,18 +784,6 @@ export class BookingsService implements IBookingService {
       if (!data.contract_image) {
         throw new BadRequestException('Contract image is required');
       }
-      // check payment frequency to create transaction
-      if (!data.payment_frequency) {
-        throw new BadRequestException('Payment frequency is required');
-      }
-      // check time for payment
-      if (data.payment_frequency === BookingPaymentFrequency.multiple) {
-        if (booking_exist.total_month < 12) {
-          throw new BadRequestException(
-            'Can not payment multiple time with total month < 12',
-          );
-        }
-      }
       // Send mail to land renter
       // Send notification to land renter
       await this.notificationService.createNotification({
@@ -798,7 +796,6 @@ export class BookingsService implements IBookingService {
       // config update
       booking_exist.status = BookingStatus.pending_payment;
       booking_exist.contract_image = data.contract_image;
-      booking_exist.payment_frequency = data.payment_frequency;
       booking_exist.signed_at = new Date();
       // update status booking to pending payment
       await this.bookingRepository.save({

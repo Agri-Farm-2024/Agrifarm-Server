@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BookingStatus } from '../types/booking-status.enum';
 import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
-import { BookingPaymentFrequency } from '../types/booking-payment.enum';
 
 export class UpdateStatusBookingDTO {
   @ApiProperty({
@@ -17,15 +16,6 @@ export class UpdateStatusBookingDTO {
   })
   @IsOptional()
   reason_for_reject: string;
-
-  @ApiProperty({
-    type: 'string',
-    description: 'payment frequency of booking',
-    enum: BookingPaymentFrequency,
-  })
-  @IsEnum(BookingPaymentFrequency)
-  @IsOptional()
-  payment_frequency: BookingPaymentFrequency;
 
   @ApiProperty({
     type: 'string',

@@ -1,7 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate, IsNotEmpty, Max, Min } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  Max,
+  Min,
+} from 'class-validator';
 import { IsFutureDate } from 'src/common/decorations/isFutureTime.decoration';
+import { BookingPaymentFrequency } from '../types/booking-payment.enum';
 
 export class CreateBookingDto {
   @ApiProperty({
@@ -45,6 +53,15 @@ export class CreateBookingDto {
     message: 'Total month must be less than 36',
   })
   total_month: number;
+
+  @ApiProperty({
+    type: 'string',
+    description: 'payment frequency of booking',
+    enum: BookingPaymentFrequency,
+  })
+  @IsEnum(BookingPaymentFrequency)
+  @IsOptional()
+  payment_frequency: BookingPaymentFrequency;
 
   @ApiProperty({
     description: 'purpose rental',
