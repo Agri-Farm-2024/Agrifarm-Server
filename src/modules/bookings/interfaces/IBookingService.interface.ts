@@ -10,28 +10,7 @@ export interface IBookingService {
 
   getBookingDetail(bookingId: string): Promise<any>;
 
-  getListBookingStrategy(
-    user: IUser,
-    status: BookingStatus,
-    type: string,
-    pagination: PaginationParams,
-  ): Promise<any>;
-
-  getListBookingByManager(
-    user: IUser,
-    status: BookingStatus,
-    type: string,
-    pagination: PaginationParams,
-  ): Promise<any>;
-
-  getListBookingByStaff(
-    user: IUser,
-    status: BookingStatus,
-    type: string,
-    pagination: PaginationParams,
-  ): Promise<any>;
-
-  getListBookingByLandrenter(
+  getListBooking(
     user: IUser,
     status: BookingStatus,
     type: string,

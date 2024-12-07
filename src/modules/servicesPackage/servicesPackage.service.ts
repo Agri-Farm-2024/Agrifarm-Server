@@ -32,6 +32,7 @@ import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { UserRole } from '../users/types/user-role.enum';
 import { RequestsService } from '../requests/requests.service';
 import { updateServicePackageDTO } from './dto/update-service-package.dto';
+import { Request } from '../requests/entities/request.entity';
 
 @Injectable()
 export class ServicesService implements IService {
@@ -633,6 +634,38 @@ export class ServicesService implements IService {
         return acc;
       }, {});
       return servie_package;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  /**
+   * Get service for dashboard
+   * @function createRefundTransactionServiceSpecific
+   * @param request
+   * @returns
+   */
+
+  async createRefundTransactionServiceSpecific(request: Request): Promise<any> {
+    try {
+      // Define price for deposit
+      const price_for_deposit =
+        (request.service_specific.price_package +
+          request.service_specific.price_process) *
+        (request.service_specific.acreage_land / 1000) *
+        0.1;
+      // create transaction DTO and create transaction for refund deposit
+      const transactionData: Partial<CreateTransactionDTO> = {
+        service_specific_id: request.service_specific.service_specific_id,
+        total_price: price_for_deposit * request.task.report.quality_report,
+        purpose: TransactionPurpose.report_service_specific,
+        user_id: request.service_specific.landrenter_id,
+      };
+      const transaction = await this.transactionService.createTransaction(
+        transactionData as CreateTransactionDTO,
+      );
+      // send notification to user
+      return transaction;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

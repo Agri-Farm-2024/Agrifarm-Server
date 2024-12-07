@@ -229,230 +229,81 @@ export class BookingsService implements IBookingService {
    * @param user
    */
 
-  async getListBookingStrategy(
+  async getListBooking(
     user: IUser,
     status: BookingStatus,
     type: string,
     pagination: PaginationParams,
   ): Promise<any> {
     try {
-      if (type !== 'booking' && type !== 'request') {
-        throw new BadRequestException('Type is invalid');
-      }
-
-      const getListBookingStrategy = {
-        [UserRole.manager]: this.getListBookingByManager.bind(this),
-        [UserRole.staff]: this.getListBookingByStaff.bind(this),
-        [UserRole.land_renter]: this.getListBookingByLandrenter.bind(this),
-      };
-
-      return await getListBookingStrategy[user.role](
-        user,
-        status,
-        type,
-        pagination,
-      );
-    } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
-      throw new InternalServerErrorException(error.message);
-    }
-  }
-
-  async getListBookingByManager(
-    user: IUser,
-    status: BookingStatus,
-    type: string,
-    pagination: PaginationParams,
-  ): Promise<any> {
-    try {
-      // check type is not request
-      if (type !== 'booking') {
-        throw new BadRequestException('Manager only get booking');
-      }
-      // check valid status
-      if (
-        status === BookingStatus.pending ||
-        status === BookingStatus.rejected
-      ) {
-        throw new BadRequestException('Manager not get pending and rejected');
-      }
-      // Filter condition status not pending and rejected , but in case status is null
       const filter_condition: any = {};
-
-      if (status) {
-        filter_condition.status = status;
-      } else {
-        filter_condition.status = Not(
-          In([BookingStatus.pending, BookingStatus.rejected]),
-        );
+      // FIlter condition by manager
+      if (user.role === UserRole.manager) {
+        if (type !== 'booking') {
+          throw new BadRequestException('Manager only get booking');
+        }
+        // check valid status params
+        if (
+          status === BookingStatus.pending ||
+          status === BookingStatus.rejected
+        ) {
+          throw new BadRequestException('Manager not get pending and rejected');
+        }
+        // Check status
+        if (status) {
+          filter_condition.status = status;
+        } else {
+          filter_condition.status = Not(
+            In([BookingStatus.pending, BookingStatus.rejected]),
+          );
+        }
       }
-
-      // get list booking by manager except pending and rejected
-      const [bookings, total_count] = await Promise.all([
-        this.bookingRepository.find({
-          where: filter_condition,
-          order: {
-            updated_at: 'DESC',
-            status: 'ASC',
-          },
-          relations: {
-            land: true,
-            land_renter: true,
-            staff: true,
-            extends: true,
-          },
-          select: {
-            land_renter: {
-              user_id: true,
-              full_name: true,
-              email: true,
-              role: true,
-            },
-            staff: {
-              user_id: true,
-              full_name: true,
-              email: true,
-              role: true,
-            },
-          },
-          skip: (pagination.page_index - 1) * pagination.page_size,
-          take: pagination.page_size,
-        }),
-        this.bookingRepository.count({
-          where: filter_condition,
-        }),
-      ]);
-      // Parse contract image to url link
-      // bookings.forEach((booking) => {
-      //   booking.contract_image = booking.contract_image
-      //     ? parseUrlLink(booking.contract_image)
-      //     : null;
-      // });
-      // get total page
-      const total_page = Math.ceil(total_count / pagination.page_size);
-      return {
-        bookings,
-        pagination: {
-          ...pagination,
-          total_page,
-        },
-      };
-    } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
-      throw new InternalServerErrorException(error.message);
-    }
-  }
-
-  async getListBookingByStaff(
-    user: IUser,
-    status: BookingStatus,
-    type: string,
-    pagination: PaginationParams,
-  ): Promise<any> {
-    try {
+      // Filter condition by staff
       /**
        * Filter condition status by type
        * 1. type = booking: Get all booking by staff and status except pending
        * 2. type = request: Get all booking by staff and status
        */
-      const filter_condition: any = {
-        staff_id: user.user_id,
-      };
-      // 1, Get all booking by staff and status except pending
-      if (type === 'booking') {
-        if (status) {
-          filter_condition.status = status;
-        } else {
-          filter_condition.status = Not(BookingStatus.pending);
-        }
-      }
-      // 2. Get all booking by staff and status
-      if (type === 'request') {
-        if (status === BookingStatus.pending_contract) {
-          filter_condition.status = Not(
-            In([BookingStatus.pending, BookingStatus.rejected]),
-          );
-        } else {
+      if (user.role === UserRole.staff) {
+        filter_condition.staff_id = user.user_id;
+        // 1, Get all booking by staff and status except pending
+        if (type === 'booking') {
           if (status) {
             filter_condition.status = status;
+          } else {
+            filter_condition.status = Not(BookingStatus.pending);
+          }
+        }
+        // 2. Get all booking by staff and status
+        if (type === 'request') {
+          if (status === BookingStatus.pending_contract) {
+            filter_condition.status = Not(
+              In([BookingStatus.pending, BookingStatus.rejected]),
+            );
+          } else {
+            if (status) {
+              filter_condition.status = status;
+            }
           }
         }
       }
-      // Get list booking by staff
-      const [bookings, total_count] = await Promise.all([
-        this.bookingRepository.find({
-          where: filter_condition,
-          order: {
-            updated_at: 'DESC',
-            status: 'ASC',
-          },
-          relations: {
-            land: true,
-            land_renter: true,
-            staff: true,
-            extends: true,
-          },
-          select: {
-            land_renter: {
-              user_id: true,
-              full_name: true,
-              email: true,
-              role: true,
-            },
-            staff: {
-              user_id: true,
-              full_name: true,
-              email: true,
-              role: true,
-            },
-          },
-          skip: (pagination.page_index - 1) * pagination.page_size,
-          take: pagination.page_size,
-        }),
-        this.bookingRepository.count({
-          where: filter_condition,
-        }),
-      ]);
-      console.log(bookings.length);
-      console.log(total_count);
-      // Get total page
-      const total_page = Math.ceil(total_count / pagination.page_size);
-      return {
-        bookings,
-        pagination: {
-          ...pagination,
-          total_page,
-        },
-      };
-    } catch (error) {
-      throw new InternalServerErrorException(error.message);
-    }
-  }
 
-  async getListBookingByLandrenter(
-    user: IUser,
-    status: BookingStatus,
-    type: string,
-    pagination: PaginationParams,
-  ): Promise<any> {
-    try {
-      // Filter condition status
-      const filter_condition = status
-        ? {
-            status: status,
-          }
-        : {};
+      // Filter condition by land renter
+      if (user.role === UserRole.land_renter) {
+        filter_condition.landrenter_id = user.user_id;
+        if (status) {
+          filter_condition.status = status;
+        }
+      }
+      // const filter_condition = status
+      //   ? {
+      //       status: status,
+      //     }
+      //   : {};
       // Get list booking by land renter
       const [bookings, total_count] = await Promise.all([
         this.bookingRepository.find({
-          where: {
-            landrenter_id: user.user_id,
-            ...filter_condition,
-          },
+          where: filter_condition,
           order: {
             updated_at: 'DESC',
             status: 'ASC',
@@ -503,6 +354,9 @@ export class BookingsService implements IBookingService {
         },
       };
     } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
       throw new InternalServerErrorException(error.message);
     }
   }

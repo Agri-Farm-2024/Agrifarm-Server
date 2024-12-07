@@ -744,6 +744,16 @@ export class RequestsService implements IRequestService {
           request,
         );
       }
+      // Check condition of report service specific with completed status
+      if (
+        request.type === RequestType.report_service_specific &&
+        data.status === RequestStatus.completed
+      ) {
+        // call service package service to create transaction refund
+        await this.servicePackageService.createRefundTransactionServiceSpecific(
+          request,
+        );
+      }
       // update request status
       const updated_request = await this.requestRepo.update(
         {

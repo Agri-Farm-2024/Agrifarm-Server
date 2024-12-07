@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, Min } from 'class-validator';
+import { IsFutureDate } from 'src/common/decorations/isFutureTime.decoration';
+import { ResetToStartOfDay } from 'src/common/decorations/resetToStartOfDay.decoration';
 
 export class CreateServiceSpecificDTO {
   @ApiProperty({
@@ -48,5 +50,9 @@ export class CreateServiceSpecificDTO {
   @IsNotEmpty({
     message: 'time_start is required',
   })
+  @IsFutureDate({
+    message: 'Date must be in the future',
+  })
+  @ResetToStartOfDay()
   time_start: Date;
 }

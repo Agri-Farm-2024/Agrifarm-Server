@@ -60,8 +60,9 @@ export class BookingsController {
     @Query('type') type: string,
     @Pagination() pagination: PaginationParams,
   ): Promise<any> {
-    return await this.bookingsService.getListBookingStrategy(
-      request.user,
+    const user = request['user'];
+    return await this.bookingsService.getListBooking(
+      user,
       status,
       type,
       pagination,

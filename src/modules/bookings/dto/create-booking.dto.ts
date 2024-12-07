@@ -1,15 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import {
-  IsDate,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  Max,
-  Min,
-} from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, Max, Min } from 'class-validator';
 import { IsFutureDate } from 'src/common/decorations/isFutureTime.decoration';
 import { BookingPaymentFrequency } from '../types/booking-payment.enum';
+import { ResetToStartOfDay } from 'src/common/decorations/resetToStartOfDay.decoration';
 
 export class CreateBookingDto {
   @ApiProperty({
@@ -29,13 +22,10 @@ export class CreateBookingDto {
   @IsNotEmpty({
     message: 'You must enter a total month ',
   })
-  @Type(() => Date)
-  @IsDate({
-    message: 'Date must be a valid date format',
-  })
   @IsFutureDate({
     message: 'Date must be in the future',
   })
+  @ResetToStartOfDay()
   time_start: Date;
 
   @ApiProperty({
