@@ -449,7 +449,7 @@ export class RequestsService implements IRequestService {
 
   /**
    * Create request purchase call by schedule job
-   * @function createRequestPurchaseAuto
+   * @function createRequestPurchase
    * @param createRequestPurchase
    * @returns
    */
@@ -477,15 +477,13 @@ export class RequestsService implements IRequestService {
         throw new BadRequestException('Service specific not found');
       }
 
-      if (
-        service_specific_detail.service_package.process_of_plant === true &&
-        service_specific_detail.service_package.purchase === true
-      ) {
+      if (service_specific_detail.service_package.purchase === true) {
         //create new request purchase
         const new_request = await this.requestRepo.save({
           ...createRequestPurchase,
           sender_id: service_specific_detail.landrenter_id,
           type: RequestType.product_purchase,
+          status: RequestStatus.assigned,
         });
         if (!new_request) {
           throw new BadRequestException('You do not use process of plant');
