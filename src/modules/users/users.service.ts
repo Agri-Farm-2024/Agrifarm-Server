@@ -19,8 +19,6 @@ import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
 import { UserStatus } from './types/user-status.enum';
 import { UserRole } from './types/user-role.enum';
 import { IUser } from '../auths/types/IUser.interface';
-import { ProcessSpecificStatus } from '../processes/types/processSpecific-status.enum';
-import { ServiceSpecificStatus } from '../servicesPackage/types/service-specific-status.enum';
 import { RequestStatus } from '../requests/types/request-status.enum';
 
 @Injectable()
@@ -317,15 +315,11 @@ export class UsersService implements IUserService {
       const experts = await this.userRepository.find({
         where: {
           role: UserRole.expert,
-          expert_process_technical_specific: {
-            status: ProcessSpecificStatus.active,
-            service_specific: {
-              status: ServiceSpecificStatus.used,
-            },
-          },
         },
         relations: {
-          expert_process_technical_specific: true,
+          expert_process_technical_specific: {
+            service_specific: true,
+          },
         },
       });
       // orders expert by the number of service specific
