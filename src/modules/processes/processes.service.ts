@@ -631,24 +631,17 @@ export class ProcessesService implements IProcessesService {
                 materialSpecific: true,
               },
             },
-            service_specific: true,
-          },
-          order: {
-            status: 'ASC',
-            process_technical_specific_stage: {
-              stage_numberic_order: 'ASC',
-              process_technical_specific_stage_content: {
-                content_numberic_order: 'ASC',
-              },
+            service_specific: {
+              land_renter: true,
             },
           },
-
+          order: {
+            updated_at: 'DESC',
+          },
           select: {
-            expert: {
-              full_name: true,
-              email: true,
-              role: true,
-              user_id: true,
+            expert: selectUser,
+            service_specific: {
+              land_renter: selectUser,
             },
           },
           take: pagination.page_size,

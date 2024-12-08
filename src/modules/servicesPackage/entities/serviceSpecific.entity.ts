@@ -73,7 +73,7 @@ export class ServiceSpecific extends AbstractEntity {
 
   @ManyToOne(() => User, (user) => user.service_specific)
   @JoinColumn({ name: 'landrenter_id' })
-  land_renter: ServiceSpecific;
+  land_renter: User;
 
   @ManyToOne(() => PlantSeason, (plantSeason) => plantSeason.service_specific)
   @JoinColumn({ name: 'plant_season_id' })
