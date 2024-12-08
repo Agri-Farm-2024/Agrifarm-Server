@@ -1,13 +1,10 @@
-import e from 'express';
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
-  Timestamp,
 } from 'typeorm';
 import { ProcessSpecificStage } from './processSpecificStage.entity';
 import { Material } from 'src/modules/materials/entities/material.entity';
@@ -24,7 +21,7 @@ export class ProcessSpecificStageMaterial extends AbstractEntity {
   @PrimaryGeneratedColumn('uuid')
   process_technical_specific_stage_material_id: string;
 
-  @Column('uuid',{ nullable: true })
+  @Column('uuid', { nullable: true })
   process_technical_specific_stage_id: string;
 
   @Column('uuid')
