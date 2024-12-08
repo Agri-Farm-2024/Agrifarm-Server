@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, Min, Validate } from 'class-validator';
+import { IsNotEmpty, IsOptional, Validate } from 'class-validator';
 import { UpdateProcessSpecificStageContentDto } from './update-process-specific-content.dto';
 import { UpdateProcessSpecificStageMaterialDto } from './update-process-specific-material.dto';
 import { IsTimeEndGreaterThanStart } from 'src/common/decorations/isTimeEndGreaterThanStart.decoration';

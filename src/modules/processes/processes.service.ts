@@ -636,7 +636,13 @@ export class ProcessesService implements IProcessesService {
             },
           },
           order: {
-            updated_at: 'DESC',
+            status: 'ASC',
+            process_technical_specific_stage: {
+              stage_numberic_order: 'ASC',
+              process_technical_specific_stage_content: {
+                content_numberic_order: 'ASC',
+              },
+            },
           },
           select: {
             expert: selectUser,

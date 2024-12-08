@@ -15,7 +15,6 @@ export class UPdateProcessSpecificDto {
   @IsNotEmpty()
   time_end: Date;
 
-
   @ApiProperty({
     description: 'the stage of process',
     type: [UpdateProcessSpecificStageDto],
