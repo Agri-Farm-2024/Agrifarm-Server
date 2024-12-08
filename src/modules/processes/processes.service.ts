@@ -640,9 +640,6 @@ export class ProcessesService implements IProcessesService {
           },
           select: {
             expert: selectUser,
-            service_specific: {
-              land_renter: selectUser,
-            },
           },
           take: pagination.page_size,
           skip: (pagination.page_index - 1) * pagination.page_size,
