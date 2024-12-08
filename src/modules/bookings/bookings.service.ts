@@ -332,10 +332,7 @@ export class BookingsService implements IBookingService {
           take: pagination.page_size,
         }),
         this.bookingRepository.count({
-          where: {
-            landrenter_id: user.user_id,
-            ...filter_condition,
-          },
+          where: filter_condition,
         }),
       ]);
       // Parse contract image to url link
