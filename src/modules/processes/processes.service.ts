@@ -312,7 +312,7 @@ export class ProcessesService implements IProcessesService {
     }
   }
 
-  async updateStatus(
+  async updateStatusProcessTechnicalStandardByRequest(
     plant_season_id: string,
     status: ProcessTechnicalStandardStatus,
   ): Promise<any> {

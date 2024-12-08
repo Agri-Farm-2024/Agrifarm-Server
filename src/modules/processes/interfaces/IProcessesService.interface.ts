@@ -27,7 +27,7 @@ export interface IProcessesService {
     data: UpdateProcessStandardsDto,
   ): Promise<any>;
 
-  updateStatus(
+  updateStatusProcessTechnicalStandardByRequest(
     plant_season_id: string,
     status: ProcessTechnicalStandardStatus,
   ): Promise<any>;

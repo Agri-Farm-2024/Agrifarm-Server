@@ -292,12 +292,12 @@ export class RequestsService implements IRequestService {
       }
       // check type of create process standard to update status process standard
       if (
-        status == RequestStatus.pending_approval &&
+        status == RequestStatus.completed &&
         request.type == RequestType.create_process_standard
       ) {
-        await this.processService.updateStatus(
+        await this.processService.updateStatusProcessTechnicalStandardByRequest(
           request.plant_season_id,
-          ProcessTechnicalStandardStatus.pending,
+          ProcessTechnicalStandardStatus.accepted,
         );
       }
       // Check type of material process specific stage to update status process specific stage
@@ -816,7 +816,13 @@ export class RequestsService implements IRequestService {
       // create task for the request
       await this.taskService.createTask(new_request.request_id);
       return new_request;
-    } catch (error) {}
+    } catch (error) {
+      this.loggerService.error(error.message, error.stack);
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   /**

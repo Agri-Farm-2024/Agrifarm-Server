@@ -117,7 +117,9 @@ export class ReportsService implements IReportService {
        */
       if (
         task_exist.request.type === RequestType.view_land ||
-        task_exist.request.type === RequestType.material_process_specfic_stage
+        task_exist.request.type ===
+          RequestType.material_process_specfic_stage ||
+        task_exist.request.type === RequestType.create_process_standard
       ) {
         request_status = RequestStatus.completed;
       }
