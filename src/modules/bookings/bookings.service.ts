@@ -202,7 +202,9 @@ export class BookingsService implements IBookingService {
           full_name: land_renter.full_name,
           land_id: land.land_id,
           land_name: land.name,
-          time_start: createBookingDto.time_start.toLocaleDateString(),
+          time_start: new Date(
+            createBookingDto.time_start,
+          ).toLocaleDateString(),
           time_end: time_end.toLocaleDateString(),
           total_month: createBookingDto.total_month,
           price_per_month: land.price_booking_per_month,
