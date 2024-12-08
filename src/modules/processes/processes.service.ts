@@ -670,21 +670,17 @@ export class ProcessesService implements IProcessesService {
     user: IUser,
   ): Promise<any> {
     try {
-      const filter_condition: any = {};
       const process_specific = await this.processSpecificRepo.findOne({
         where: {
           process_technical_specific_id,
         },
       });
       if (!process_specific) {
-        throw new BadRequestException('Process standard not found!');
+        throw new BadRequestException('Process specific not found');
       }
-      //check if process  is in active
-      if (process_specific.status === ProcessSpecificStatus.pending) {
-        throw new BadRequestException('Process standard is in active');
-      }
-      if (user.role === UserRole.expert) {
-        filter_condition.expert_id = user.user_id;
+      // check user
+      if (user.user_id !== process_specific.expert_id) {
+        throw new BadRequestException('You have no permission');
       }
       //update process Specific
       const data_process_specific = {

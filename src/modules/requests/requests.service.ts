@@ -872,11 +872,14 @@ export class RequestsService implements IRequestService {
           'Request cultivate process content exist',
         );
       }
+      const time_start = new Date(
+        process_specific_stage_content.time_start,
+      ).setHours(0, 0, 0, 0);
       // Create a new request
       const new_request = await this.requestRepo.save({
         process_technical_specific_stage_content_id:
           process_specific_stage_content.process_technical_specific_stage_content_id,
-        time_start: process_specific_stage_content.time_start,
+        time_start: time_start,
         type: RequestType.cultivate_process_content,
         status: RequestStatus.assigned,
       });
