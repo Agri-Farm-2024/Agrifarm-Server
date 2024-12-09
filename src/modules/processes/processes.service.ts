@@ -633,6 +633,9 @@ export class ProcessesService implements IProcessesService {
             },
             service_specific: {
               land_renter: true,
+              booking_land: {
+                land: true,
+              },
             },
           },
           order: {
@@ -1087,10 +1090,7 @@ export class ProcessesService implements IProcessesService {
           title: NotificationTitleEnum.ready_process_stage,
         });
         // create request material stage for expert
-        await this.requestService.createRequestMaterial({
-          process_technical_specific_stage_id:
-            stage.process_technical_specific_stage_id,
-        });
+        await this.requestService.createRequestMaterial(stage);
       }
     } catch (error) {
       this.logger.error(`Error when check every five pm  ${error.message}`);

@@ -4,12 +4,12 @@ import { RequestType } from '../types/request-type.enum';
 import { CreateRequestProcessStandardDTO } from '../dto/create-request-processStandard.dto';
 import { RequestStatus } from '../types/request-status.enum';
 import { UpdateStatusTaskDTO } from '../dto/update-status-task.dto';
-import { CreateRequestMaterialDto } from '../dto/create-request-material-stagedto';
 import { IUser } from 'src/modules/auths/types/IUser.interface';
 import { CreateRequestPurchaseDto } from '../dto/create-request-puchase.dto';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 import { createRequestTechnicalSupportDTO } from '../dto/create-request-technical-support.dto';
 import { ProcessSpecificStageContent } from 'src/modules/processes/entities/specifics/processSpecificStageContent.entity';
+import { ProcessSpecificStage } from 'src/modules/processes/entities/specifics/processSpecificStage.entity';
 
 export interface IRequestService {
   createRequestViewLand(data: CreateRequestViewLandDTO): Promise<any>;
@@ -28,7 +28,7 @@ export interface IRequestService {
   ): Promise<any>;
 
   createRequestMaterial(
-    createRequestMaterial: CreateRequestMaterialDto,
+    process_specific_stage: ProcessSpecificStage,
   ): Promise<any>;
 
   createRequestPurchase(

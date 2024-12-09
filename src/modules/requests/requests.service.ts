@@ -20,7 +20,6 @@ import { RequestStatus } from './types/request-status.enum';
 import { UpdateStatusTaskDTO } from './dto/update-status-task.dto';
 import { ProcessesService } from '../processes/processes.service';
 import { ProcessTechnicalStandardStatus } from '../processes/types/status-processStandard.enum';
-import { CreateRequestMaterialDto } from './dto/create-request-material-stagedto';
 import { MaterialsService } from '../materials/materials.service';
 import { ProcessSpecificStage } from '../processes/entities/specifics/processSpecificStage.entity';
 import { SubjectMailEnum } from 'src/mails/types/mail-subject.type';
@@ -45,6 +44,7 @@ import { TransactionsService } from '../transactions/transactions.service';
 import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
 import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
 import { TransactionType } from '../transactions/types/transaction-type.enum';
+import { ProcessSpecific } from '../processes/entities/specifics/processSpecific.entity';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -395,13 +395,13 @@ export class RequestsService implements IRequestService {
    */
 
   async createRequestMaterial(
-    createRequestMaterial: CreateRequestMaterialDto,
+    process_specific_stage: ProcessSpecificStage,
   ): Promise<any> {
     try {
       const request_exist_material = await this.requestRepo.findOne({
         where: {
           process_technical_specific_stage_id:
-            createRequestMaterial.process_technical_specific_stage_id,
+            process_specific_stage.process_technical_specific_stage_id,
           type: RequestType.material_process_specfic_stage,
         },
       });
@@ -410,7 +410,8 @@ export class RequestsService implements IRequestService {
       }
       // Create a new request
       const new_request = await this.requestRepo.save({
-        ...createRequestMaterial,
+        process_technical_specific_stage_id:
+          process_specific_stage.process_technical_specific_stage_id,
         type: RequestType.material_process_specfic_stage,
         status: RequestStatus.assigned,
       });
@@ -418,21 +419,14 @@ export class RequestsService implements IRequestService {
         throw new BadRequestException('Unable to create request');
       }
       // create task for the request
-
-      const process_specific_stage_detail =
-        await this.processService.getDetailProcessSpecificStage(
-          new_request.process_technical_specific_stage_id,
-        );
-      if (!process_specific_stage_detail) {
-        throw new BadRequestException('Process specific stage not found');
-      }
-      const process_specific_detail =
+      const process_specific_detail: ProcessSpecific =
         await this.processService.getDetailProcessSpecific(
-          process_specific_stage_detail.process_technical_specific_id,
+          process_specific_stage.process_technical_specific_id,
         );
       if (!process_specific_detail) {
         throw new BadRequestException('Process specific not found');
       }
+      console.log('process_specific_detail', process_specific_detail);
       const new_task = await this.taskService.createTaskAuto(
         new_request.request_id,
         process_specific_detail.expert_id,
@@ -872,14 +866,11 @@ export class RequestsService implements IRequestService {
           'Request cultivate process content exist',
         );
       }
-      const time_start = new Date(
-        process_specific_stage_content.time_start,
-      ).setHours(0, 0, 0, 0);
       // Create a new request
       const new_request = await this.requestRepo.save({
         process_technical_specific_stage_content_id:
           process_specific_stage_content.process_technical_specific_stage_content_id,
-        time_start: time_start,
+        time_start: process_specific_stage_content.time_start,
         type: RequestType.cultivate_process_content,
         status: RequestStatus.assigned,
       });

@@ -27,10 +27,10 @@ export class TestService {
 
   async test(): Promise<any> {
     try {
-      const users =
-        await this.userService.getListExpertByProcessSpecificFreeTime();
-
-      return users;
+      // const users =
+      //   await this.userService.getListExpertByProcessSpecificFreeTime();
+      // return users;
+      await this.jobService.checkTaskProcessContentForExpert();
       // await this.serviceService.checkAndCreatePurchaseProductService();
       // await this.mailService.sendMail(
       //   'phuoc.18112002@gmail.com',
