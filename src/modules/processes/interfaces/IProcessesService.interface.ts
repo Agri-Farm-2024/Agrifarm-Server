@@ -55,7 +55,7 @@ export interface IProcessesService {
 
   checkAndCreateTaskProcessContentForExpert(): Promise<any>;
 
-  checkAndSendNotificationForLandRenterBeforeNewStage(): Promise<any>;
+  CheckNewStageProcessSpecific(): Promise<any>;
 
   updateProcessSpecificPublic(
     process_specific_id: string,

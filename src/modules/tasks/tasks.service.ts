@@ -219,6 +219,12 @@ export class TasksService implements ITaskService {
       if (task.assigned_to_id !== user.user_id) {
         throw new ForbiddenException('Task not assigned to you');
       }
+      // Check request time to start
+      if (task.request.time_start) {
+        if (new Date() < task.request.time_start) {
+          throw new BadRequestException('Request time not start yet');
+        }
+      }
       // check request status
       if (
         task.request.status !== RequestStatus.assigned &&

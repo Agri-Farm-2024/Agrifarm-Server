@@ -44,15 +44,22 @@ export class AuthsService implements IAuthService {
    */
 
   async loginStrategy(data: LoginDTO, typeLogin: string): Promise<any> {
-    const loginStrategy = {
-      emailAndPassword: this.loginWIthEmailAndPassword.bind(this),
-    };
+    try {
+      const loginStrategy = {
+        emailAndPassword: this.loginWIthEmailAndPassword.bind(this),
+      };
 
-    if (!loginStrategy[typeLogin]) {
-      throw new BadRequestException('Invalid login type !');
+      if (!loginStrategy[typeLogin]) {
+        throw new BadRequestException('Invalid login type !');
+      }
+
+      return await loginStrategy[typeLogin](data);
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
     }
-
-    return await loginStrategy[typeLogin](data);
   }
 
   /**

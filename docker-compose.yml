@@ -7,8 +7,8 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./uploadFile:/app/dist/uploadFile  # Maps host `uploadFile` folder to container
-      - ./logs:/app/dist/logs  # Maps host `logs` folder to container
+      - ./uploadFile:/app/dist/uploadFile  
+      - ./logs:/app/dist/logs  
     env_file:
       - .env
     environment:

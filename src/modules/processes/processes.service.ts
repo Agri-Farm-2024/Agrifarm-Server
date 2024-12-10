@@ -42,6 +42,7 @@ import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 import { selectUser } from 'src/utils/select.util';
 import { MaterialsService } from '../materials/materials.service';
+import { ServiceSpecificStatus } from '../servicesPackage/types/service-specific-status.enum';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -1057,7 +1058,7 @@ export class ProcessesService implements IProcessesService {
     }
   }
 
-  async checkAndSendNotificationForLandRenterBeforeNewStage(): Promise<any> {
+  async CheckNewStageProcessSpecific(): Promise<any> {
     try {
       const time_by_plus_1_day = getTimeByPlusDays(new Date(), 1);
       // get all process specific stage
@@ -1067,6 +1068,9 @@ export class ProcessesService implements IProcessesService {
             time_start: Between(new Date(), time_by_plus_1_day),
             process_technical_specific: {
               status: ProcessSpecificStatus.active,
+              service_specific: {
+                status: ServiceSpecificStatus.used,
+              },
             },
           },
           relations: {

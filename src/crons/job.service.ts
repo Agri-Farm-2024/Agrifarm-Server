@@ -74,7 +74,7 @@ export class JobService implements ICronJob {
         'Check task process content for expert is running',
       );
       // Check and send notification for landrenter before new stage
-      await this.processService.checkAndSendNotificationForLandRenterBeforeNewStage();
+      await this.processService.CheckNewStageProcessSpecific();
       this.logger.log(
         'Check and send noti process stage for land renter is running',
       );

@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { IRequestService } from './interfaces/IRequestService.interface';
 import { CreateRequestViewLandDTO } from './dto/create-request-view-land.dto';
@@ -44,10 +45,10 @@ import { TransactionsService } from '../transactions/transactions.service';
 import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
 import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
 import { TransactionType } from '../transactions/types/transaction-type.enum';
-import { ProcessSpecific } from '../processes/entities/specifics/processSpecific.entity';
 
 @Injectable()
 export class RequestsService implements IRequestService {
+  private readonly logger = new Logger(RequestsService.name);
   constructor(
     @InjectRepository(Request)
     private readonly requestRepo: Repository<Request>,
@@ -284,12 +285,6 @@ export class RequestsService implements IRequestService {
       if (!request) {
         throw new BadRequestException('Request not found');
       }
-      // check status is start
-      if (status === RequestStatus.in_progress && request.time_start) {
-        if (request.time_start > new Date()) {
-          throw new BadRequestException('Not yet to start task');
-        }
-      }
       // check type of create process standard to update status process standard
       if (
         status == RequestStatus.completed &&
@@ -388,54 +383,40 @@ export class RequestsService implements IRequestService {
   }
 
   /**
-   * Create request material call by schedule job
-   * @function createRequestMaterial
-   * @param createRequestMaterial
+   * Create request material by stage process specific call by schedule job
+   * @param process_specific_stage
    * @returns
    */
 
   async createRequestMaterial(
     process_specific_stage: ProcessSpecificStage,
-  ): Promise<any> {
+  ): Promise<void> {
     try {
+      // set time start is  0h next day
+      const time_start = new Date();
+      time_start.setDate(time_start.getDate() + 1);
+      time_start.setHours(0, 0, 0, 0);
       const request_exist_material = await this.requestRepo.findOne({
         where: {
           process_technical_specific_stage_id:
             process_specific_stage.process_technical_specific_stage_id,
           type: RequestType.material_process_specfic_stage,
+          time_start: time_start,
         },
       });
-      if (request_exist_material) {
-        throw new BadRequestException('Request material already exist');
-      }
-      // Create a new request
-      const new_request = await this.requestRepo.save({
-        process_technical_specific_stage_id:
-          process_specific_stage.process_technical_specific_stage_id,
-        type: RequestType.material_process_specfic_stage,
-        status: RequestStatus.assigned,
-      });
-      if (!new_request) {
-        throw new BadRequestException('Unable to create request');
-      }
-      // create task for the request
-      const process_specific_detail: ProcessSpecific =
-        await this.processService.getDetailProcessSpecific(
-          process_specific_stage.process_technical_specific_id,
+      if (!request_exist_material) {
+        // Create a new request
+        const new_request = await this.requestRepo.save({
+          process_technical_specific_stage_id:
+            process_specific_stage.process_technical_specific_stage_id,
+          type: RequestType.material_process_specfic_stage,
+          status: RequestStatus.assigned,
+        });
+        await this.taskService.createTaskAuto(
+          new_request.request_id,
+          process_specific_stage.process_technical_specific.expert_id,
         );
-      if (!process_specific_detail) {
-        throw new BadRequestException('Process specific not found');
       }
-      console.log('process_specific_detail', process_specific_detail);
-      const new_task = await this.taskService.createTaskAuto(
-        new_request.request_id,
-        process_specific_detail.expert_id,
-      );
-
-      if (!new_task) {
-        throw new BadRequestException('Unable to create task');
-      }
-      return new_request;
     } catch (error) {
       this.loggerService.error(error.message, error.stack);
     }
@@ -580,43 +561,53 @@ export class RequestsService implements IRequestService {
     }
   }
 
-  async createRequestReportLand(booking_land: BookingLand): Promise<any> {
+  /**
+   * Create request report land call when booking land is expired by schedule job
+   * @param booking_land
+   */
+
+  async createRequestReportLand(booking_land: BookingLand): Promise<void> {
     try {
-      // Create a new request
-      const new_request = await this.requestRepo.save({
-        booking_land_id: booking_land.booking_id,
-        type: RequestType.report_land,
+      // check request exist
+      const request_exist = await this.requestRepo.findOne({
+        where: {
+          booking_land_id: booking_land.booking_id,
+          type: RequestType.report_land,
+        },
       });
-      if (!new_request) {
-        throw new BadRequestException('Unable to create request');
+      if (!request_exist) {
+        // Create a new request
+        const new_request = await this.requestRepo.save({
+          booking_land_id: booking_land.booking_id,
+          type: RequestType.report_land,
+        });
+        // create task for the request
+        await this.taskService.createTask(new_request.request_id);
+        // send noti to staff
+        await this.notificationService.createNotification({
+          user_id: booking_land.staff_id,
+          title: NotificationTitleEnum.create_report_land,
+          content: NotificationContentEnum.create_report_land(
+            booking_land.land.name,
+          ),
+          component_id: new_request.request_id,
+          type: NotificationType.request,
+        });
+        // log
+        this.logger.log(
+          `New request report land created for ${booking_land.booking_id}`,
+        );
+        this.loggerService.log(
+          `New request report land created for ${booking_land.booking_id}`,
+        );
       }
-      // create task for the request
-      const new_task = await this.taskService.createTask(
-        new_request.request_id,
-      );
-      if (!new_task) {
-        throw new BadRequestException('Unable to create task');
-      }
-      // send noti to staff
-      await this.notificationService.createNotification({
-        user_id: booking_land.staff_id,
-        title: NotificationTitleEnum.create_report_land,
-        content: NotificationContentEnum.create_report_land(
-          booking_land.land.name,
-        ),
-        component_id: new_request.request_id,
-        type: NotificationType.request,
-      });
-      // send mail to user
-      return new_request;
     } catch (error) {
-      throw new InternalServerErrorException(error.message);
+      this.loggerService.error(error.message, error.stack);
     }
   }
 
   /**
-   * function is used to update request to completed or rejected by staff or manager
-   * @function confirmRequest
+   * Update request to completed or rejected by staff or manager
    * @param request_id
    * @param data
    * @returns
@@ -923,7 +914,6 @@ export class RequestsService implements IRequestService {
   }
   /**
    * Create request report service specific call when service specific is expired
-   * @function createRequestReportServiceSpecific
    * @param service_specific_id
    */
 
