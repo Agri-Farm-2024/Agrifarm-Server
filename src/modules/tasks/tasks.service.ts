@@ -162,15 +162,32 @@ export class TasksService implements ITaskService {
               plant: true,
             },
             service_specific: {
+              plant_season: {
+                plant: true,
+              },
               booking_land: {
                 land: true,
               },
             },
-            process_technical_specific_stage: true,
+            process_technical_specific_stage: {
+              process_technical_specific: {
+                service_specific: {
+                  plant_season: {
+                    plant: true,
+                  },
+                  booking_land: {
+                    land: true,
+                  },
+                },
+              },
+            },
             process_technical_specific_stage_content: {
               process_technical_specific_stage: {
                 process_technical_specific: {
                   service_specific: {
+                    plant_season: {
+                      plant: true,
+                    },
                     booking_land: {
                       land: true,
                     },
