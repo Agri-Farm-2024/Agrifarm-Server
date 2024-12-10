@@ -42,6 +42,8 @@ import { parsePriceToVND } from 'src/utils/price.util';
 import { ExtendStatus } from '../extends/types/extend-status.enum';
 import { getTimeByPlusMonths } from 'src/utils/time.utl';
 import { getNameOfPath } from 'src/utils/link.util';
+import { ServiceSpecificStatus } from '../servicesPackage/types/service-specific-status.enum';
+import { ServiceSpecific } from '../servicesPackage/entities/serviceSpecific.entity';
 
 @Injectable()
 export class BookingsService implements IBookingService {
@@ -297,12 +299,6 @@ export class BookingsService implements IBookingService {
           filter_condition.status = status;
         }
       }
-      // const filter_condition = status
-      //   ? {
-      //       status: status,
-      //     }
-      //   : {};
-      // Get list booking by land renter
       const [bookings, total_count] = await Promise.all([
         this.bookingRepository.find({
           where: filter_condition,
@@ -315,6 +311,7 @@ export class BookingsService implements IBookingService {
             land_renter: true,
             staff: true,
             extends: true,
+            service_specific: true,
           },
           select: {
             land_renter: {
@@ -337,12 +334,23 @@ export class BookingsService implements IBookingService {
           where: filter_condition,
         }),
       ]);
-      // Parse contract image to url link
-      // bookings.forEach((booking) => {
-      //   booking.contract_image = booking.contract_image
-      //     ? parseUrlLink(booking.contract_image)
-      //     : null;
-      // });
+      // Count total acreage land is used for buy service
+      if (user.role === UserRole.land_renter) {
+        let total_acreage_land_is_used: number = 0;
+        (bookings as any).map((booking: any) => {
+          if (booking.service_specific.length > 0) {
+            booking.service_specific.forEach((service: ServiceSpecific) => {
+              if (service.status === ServiceSpecificStatus.used) {
+                total_acreage_land_is_used += service.acreage_land;
+              }
+            });
+          }
+          booking.acreage_land_can_used =
+            booking.land.acreage_land - total_acreage_land_is_used > 0
+              ? booking.land.acreage_land - total_acreage_land_is_used
+              : 0;
+        });
+      }
       // Get total page
       const total_page = Math.ceil(total_count / pagination.page_size);
       return {

@@ -41,7 +41,10 @@ export class Land extends AbstractEntity {
   @Column('uuid', { name: 'land_type_id', nullable: true })
   land_type_id: string;
 
-  @Column('decimal', { scale: 2 })
+  @Column({
+    type: 'int',
+    default: 1,
+  })
   price_booking_per_month: number;
 
   @Column({
