@@ -194,28 +194,44 @@ export class ReportsService implements IReportService {
       let new_report: Report = report_exist;
       if (report_exist) {
         // update report
-        new_report = await this.reportRepository.save({
-          ...report_exist,
-          content: data.content,
-          quality_plant_expect: data.quality_plant_expect,
-          mass_plant_expect: data.mass_plant_expect,
-          quality_plant: data.quality_plant,
-          mass_plant: data.mass_plant,
-          price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
-        });
+        if (task_exist.request.type === RequestType.product_purchase) {
+          new_report = await this.reportRepository.save({
+            ...report_exist,
+            content: data.content,
+            quality_plant_expect: data.quality_plant_expect,
+            mass_plant_expect: data.mass_plant_expect,
+            price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
+          });
+        } else if (task_exist.request.type === RequestType.product_puchase_harvest) {
+          new_report = await this.reportRepository.save({
+            ...report_exist,
+            content: data.content,
+            quality_plant: data.quality_plant,
+            mass_plant: data.mass_plant,
+            price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
+          });
+        }
+
         // delete all url report
         await this.reportURLRepo.delete({ report_id: new_report.report_id });
       } else {
-        // create a new instance of the Report entity
-        new_report = await this.reportRepository.save({
-          task_id: task_id,
-          content: data.content,
-          quality_plant_expect: data.quality_plant_expect,
-          mass_plant_expect: data.mass_plant_expect,
-          quality_plant: data.quality_plant,
-          mass_plant: data.mass_plant,
-          price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
-        });
+        if (task_exist.request.type === RequestType.product_purchase) {
+          new_report = await this.reportRepository.save({
+            task_id: task_id,
+            content: data.content,
+            quality_plant_expect: data.quality_plant_expect,
+            mass_plant_expect: data.mass_plant_expect,
+            price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
+          });
+        } else if (task_exist.request.type === RequestType.product_puchase_harvest) {
+          new_report = await this.reportRepository.save({
+            task_id: task_id,
+            content: data.content,
+            quality_plant: data.quality_plant,
+            mass_plant: data.mass_plant,
+            price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
+          });
+        }
       }
 
       //crete url report
