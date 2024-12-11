@@ -444,59 +444,57 @@ export class RequestsService implements IRequestService {
 
   async createRequestPurchase(createRequestPurchase: CreateRequestPurchaseDto): Promise<any> {
     try {
-      const time_start = getDateWithoutTime(new Date());
       //check request purchase for service is exist
       const request_purchase_exist = await this.requestRepo.findOne({
         where: {
           service_specific_id: createRequestPurchase.service_specific_id,
           type: RequestType.product_purchase,
-          time_start: time_start,
         },
       });
-      if (request_purchase_exist) {
-        throw new BadRequestException('Request purchase already exist');
-      }
-      //check service specific have service package have puchase
-      const service_specific_detail: ServiceSpecific =
-        await this.servicePackageService.getDetailServiceSpecific(
-          createRequestPurchase.service_specific_id,
-        );
-      if (!service_specific_detail) {
-        throw new BadRequestException('Service specific not found');
-      }
-
-      if (service_specific_detail.service_package.purchase === true) {
-        //create new request purchase
-        const new_request = await this.requestRepo.save({
-          ...createRequestPurchase,
-          sender_id: service_specific_detail.landrenter_id,
-          type: RequestType.product_purchase,
-          status: RequestStatus.assigned,
-        });
-        if (!new_request) {
-          throw new BadRequestException('You do not use process of plant');
+      if (!request_purchase_exist) {
+        //check service specific have service package have puchase
+        const service_specific_detail: ServiceSpecific =
+          await this.servicePackageService.getDetailServiceSpecific(
+            createRequestPurchase.service_specific_id,
+          );
+        if (!service_specific_detail) {
+          throw new BadRequestException('Service specific not found');
         }
-        // create task for the request
-        const new_task = await this.taskService.createTaskAuto(
-          new_request.request_id,
-          service_specific_detail.process_technical_specific.expert_id,
-        );
-        if (!new_task) {
-          throw new BadRequestException('Unable to create task');
+
+        if (service_specific_detail.service_package.purchase === true) {
+          //create new request purchase
+          const new_request = await this.requestRepo.save({
+            ...createRequestPurchase,
+            sender_id: service_specific_detail.landrenter_id,
+            type: RequestType.product_purchase,
+            status: RequestStatus.assigned,
+            time_start: getDateWithoutTime(new Date()),
+          });
+          if (!new_request) {
+            throw new BadRequestException('You do not use process of plant');
+          }
+          // create task for the request
+          const new_task = await this.taskService.createTaskAuto(
+            new_request.request_id,
+            service_specific_detail.process_technical_specific.expert_id,
+          );
+          if (!new_task) {
+            throw new BadRequestException('Unable to create task');
+          }
+          //update status request
+          await this.updateRequestStatus(new_request.request_id, RequestStatus.assigned);
+
+          // create Notication for expert
+          await this.notificationService.createNotification({
+            user_id: service_specific_detail.process_technical_specific.expert_id,
+            title: NotificationTitleEnum.create_task,
+            content: NotificationContentEnum.assigned_task(),
+            component_id: new_request.request_id,
+            type: NotificationType.request,
+          });
+
+          return new_request;
         }
-        //update status request
-        await this.updateRequestStatus(new_request.request_id, RequestStatus.assigned);
-
-        // create Notication for expert
-        await this.notificationService.createNotification({
-          user_id: service_specific_detail.process_technical_specific.expert_id,
-          title: NotificationTitleEnum.create_task,
-          content: NotificationContentEnum.assigned_task(),
-          component_id: new_request.request_id,
-          type: NotificationType.request,
-        });
-
-        return new_request;
       }
     } catch (error) {
       this.loggerService.error(error.message, error.stack);
