@@ -78,18 +78,13 @@ export class BookingsService implements IBookingService {
    *
    * @returns
    */
-  async createBooking(
-    createBookingDto: CreateBookingDto,
-    land_renter: IUser,
-  ): Promise<any> {
+  async createBooking(createBookingDto: CreateBookingDto, land_renter: IUser): Promise<any> {
     try {
       // create time end booking equal time_start + total_month
       const time_end = new Date(createBookingDto.time_start);
       time_end.setMonth(time_end.getMonth() + createBookingDto.total_month);
       // Get detail land
-      const land: Land = await this.landService.getDetailLandById(
-        createBookingDto.land_id,
-      );
+      const land: Land = await this.landService.getDetailLandById(createBookingDto.land_id);
       //  Check if exist booking of land in time land
       const booking_land_exist = await this.bookingRepository.find({
         where: [
@@ -160,13 +155,9 @@ export class BookingsService implements IBookingService {
         throw new BadRequestException('Land is already booked');
       }
       // check payment frequency
-      if (
-        createBookingDto.payment_frequency === BookingPaymentFrequency.multiple
-      ) {
+      if (createBookingDto.payment_frequency === BookingPaymentFrequency.multiple) {
         if (createBookingDto.total_month < 12) {
-          throw new BadRequestException(
-            'You can only pay multiple of at least 12 months',
-          );
+          throw new BadRequestException('You can only pay multiple of at least 12 months');
         }
       }
       // create new booking
@@ -204,9 +195,7 @@ export class BookingsService implements IBookingService {
           full_name: land_renter.full_name,
           land_id: land.land_id,
           land_name: land.name,
-          time_start: new Date(
-            createBookingDto.time_start,
-          ).toLocaleDateString(),
+          time_start: new Date(createBookingDto.time_start).toLocaleDateString(),
           time_end: time_end.toLocaleDateString(),
           total_month: createBookingDto.total_month,
           price_per_month: land.price_booking_per_month,
@@ -247,19 +236,14 @@ export class BookingsService implements IBookingService {
           throw new BadRequestException('Manager only get booking');
         }
         // check valid status params
-        if (
-          status === BookingStatus.pending ||
-          status === BookingStatus.rejected
-        ) {
+        if (status === BookingStatus.pending || status === BookingStatus.rejected) {
           throw new BadRequestException('Manager not get pending and rejected');
         }
         // Check status
         if (status) {
           filter_condition.status = status;
         } else {
-          filter_condition.status = Not(
-            In([BookingStatus.pending, BookingStatus.rejected]),
-          );
+          filter_condition.status = Not(In([BookingStatus.pending, BookingStatus.rejected]));
         }
       }
       // Filter condition by staff
@@ -281,9 +265,7 @@ export class BookingsService implements IBookingService {
         // 2. Get all booking by staff and status
         if (type === 'request') {
           if (status === BookingStatus.pending_contract) {
-            filter_condition.status = Not(
-              In([BookingStatus.pending, BookingStatus.rejected]),
-            );
+            filter_condition.status = Not(In([BookingStatus.pending, BookingStatus.rejected]));
           } else {
             if (status) {
               filter_condition.status = status;
@@ -449,17 +431,11 @@ export class BookingsService implements IBookingService {
       // return strategy
       const updateStatusBookingStrategy = {
         [BookingStatus.pending_sign]: this.updateStatusToPendingSign.bind(this),
-        [BookingStatus.pending_contract]:
-          this.updateStatusToPendingContract.bind(this),
-        [BookingStatus.pending_payment]:
-          this.updateStatusToPendingPayment.bind(this),
+        [BookingStatus.pending_contract]: this.updateStatusToPendingContract.bind(this),
+        [BookingStatus.pending_payment]: this.updateStatusToPendingPayment.bind(this),
         [BookingStatus.rejected]: this.updateStatusToRejected.bind(this),
       };
-      return await updateStatusBookingStrategy[data.status](
-        booking_exist,
-        data,
-        user,
-      );
+      return await updateStatusBookingStrategy[data.status](booking_exist, data, user);
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
@@ -491,17 +467,13 @@ export class BookingsService implements IBookingService {
         throw new ForbiddenException('User is not staff');
       }
       // get detail land
-      const land_exist: Land = await this.landService.getDetailLandById(
-        booking_exist.land_id,
-      );
+      const land_exist: Land = await this.landService.getDetailLandById(booking_exist.land_id);
       // Check staff is match with land staff
       if (land_exist.staff_id !== user.user_id) {
         throw new ForbiddenException('You are not staff of this land');
       }
       // send notification to manager
-      const manager: User[] = await this.userService.getListUserByRole(
-        UserRole.manager,
-      );
+      const manager: User[] = await this.userService.getListUserByRole(UserRole.manager);
       // send notification to manager
       await this.notificationService.createNotification({
         user_id: manager[0].user_id,
@@ -518,10 +490,7 @@ export class BookingsService implements IBookingService {
       });
       return update_booking;
     } catch (error) {
-      if (
-        error instanceof BadRequestException ||
-        error instanceof ForbiddenException
-      ) {
+      if (error instanceof BadRequestException || error instanceof ForbiddenException) {
         throw error;
       }
       throw new InternalServerErrorException(error.message);
@@ -551,9 +520,7 @@ export class BookingsService implements IBookingService {
         throw new BadRequestException('Status booking is not pending contract');
       }
       // config update
-      (booking_exist.expired_schedule_at = new Date(
-        new Date().getTime() + 48 * 60 * 60 * 1000,
-      )),
+      (booking_exist.expired_schedule_at = new Date(new Date().getTime() + 48 * 60 * 60 * 1000)),
         (booking_exist.status = BookingStatus.pending_sign);
       // update status booking to pending sign
       const update_booking = await this.bookingRepository.save({
@@ -576,8 +543,7 @@ export class BookingsService implements IBookingService {
           total_price: this.getTotalPriceBooking(booking_exist),
           status: 'Chờ ký tên',
           user_mail: user.email,
-          expired_schedule_at:
-            update_booking.expired_schedule_at.toLocaleDateString(),
+          expired_schedule_at: update_booking.expired_schedule_at.toLocaleDateString(),
           staff_full_name: booking_exist.staff.full_name,
           staff_mail: booking_exist.staff.email,
           staff_phone: booking_exist.staff.full_name,
@@ -601,10 +567,7 @@ export class BookingsService implements IBookingService {
       });
       return update_booking;
     } catch (error) {
-      if (
-        error instanceof BadRequestException ||
-        error instanceof ForbiddenException
-      ) {
+      if (error instanceof BadRequestException || error instanceof ForbiddenException) {
         throw error;
       }
       throw new InternalServerErrorException(error.message);
@@ -634,9 +597,7 @@ export class BookingsService implements IBookingService {
         throw new ForbiddenException('User is not staff');
       }
       // get detail land
-      const land_exist: Land = await this.landService.getDetailLandById(
-        booking_exist.land_id,
-      );
+      const land_exist: Land = await this.landService.getDetailLandById(booking_exist.land_id);
       // Check staff is match with land staff
       if (land_exist.staff_id !== user.user_id) {
         throw new ForbiddenException('You are not staff of this land');
@@ -663,16 +624,12 @@ export class BookingsService implements IBookingService {
         ...booking_exist,
       });
       // Create transaction for payment
-      const transaction =
-        await this.transactionService.createTransactionPaymentBookingLand(
-          booking_exist.booking_id,
-        );
+      const transaction = await this.transactionService.createTransactionPaymentBookingLand(
+        booking_exist.booking_id,
+      );
       return transaction;
     } catch (error) {
-      if (
-        error instanceof BadRequestException ||
-        error instanceof ForbiddenException
-      ) {
+      if (error instanceof BadRequestException || error instanceof ForbiddenException) {
         throw error;
       }
       throw new InternalServerErrorException(error.message);
@@ -711,9 +668,7 @@ export class BookingsService implements IBookingService {
       const update_booking = await this.bookingRepository.save({
         ...booking_exist,
       });
-      this.loggerService.log(
-        `Booking ${transaction.booking_land_id} is completed`,
-      );
+      this.loggerService.log(`Booking ${transaction.booking_land_id} is completed`);
 
       await Promise.all([
         // Send mail to land renter
@@ -730,9 +685,7 @@ export class BookingsService implements IBookingService {
             total_month: booking_exist.total_month,
             price_per_month: booking_exist.price_per_month,
             price_deposit: booking_exist.price_deposit,
-            total_price: parsePriceToVND(
-              this.getTotalPriceBooking(booking_exist),
-            ),
+            total_price: parsePriceToVND(this.getTotalPriceBooking(booking_exist)),
             status: 'Đã hoàn thành',
             user_mail: booking_exist.land_renter.email,
             transaction_code: transaction.transaction_code,
@@ -750,9 +703,7 @@ export class BookingsService implements IBookingService {
         this.notificationService.createNotification({
           user_id: booking_exist.land_renter.user_id,
           title: NotificationTitleEnum.booking_completed,
-          content: NotificationContentEnum.booking_completed(
-            booking_exist.land.name,
-          ),
+          content: NotificationContentEnum.booking_completed(booking_exist.land.name),
           type: NotificationType.booking_land,
           component_id: booking_exist.booking_id,
         }),
@@ -760,9 +711,7 @@ export class BookingsService implements IBookingService {
         this.notificationService.createNotification({
           user_id: booking_exist.staff_id,
           title: NotificationTitleEnum.booking_completed,
-          content: NotificationContentEnum.booking_completed(
-            booking_exist.land.name,
-          ),
+          content: NotificationContentEnum.booking_completed(booking_exist.land.name),
           type: NotificationType.booking_land,
           component_id: booking_exist.booking_id,
         }),
@@ -821,10 +770,7 @@ export class BookingsService implements IBookingService {
       });
       return update_booking;
     } catch (error) {
-      if (
-        error instanceof BadRequestException ||
-        error instanceof ForbiddenException
-      ) {
+      if (error instanceof BadRequestException || error instanceof ForbiddenException) {
         throw error;
       }
       throw new InternalServerErrorException(error.message);
@@ -916,10 +862,7 @@ export class BookingsService implements IBookingService {
       for (const booking of list_booking_expired) {
         if (booking.extends.length > 0) {
           for (const extend of booking.extends) {
-            booking.time_end = getTimeByPlusMonths(
-              booking.time_end,
-              extend.total_month,
-            );
+            booking.time_end = getTimeByPlusMonths(booking.time_end, extend.total_month);
           }
         }
         // check condition
@@ -969,10 +912,7 @@ export class BookingsService implements IBookingService {
     }
   }
 
-  async updateBookingByExtend(
-    booking_id: string,
-    total_month: number,
-  ): Promise<any> {
+  async updateBookingByExtend(booking_id: string, total_month: number): Promise<any> {
     try {
       const booking = await this.bookingRepository.findOne({
         where: {
@@ -987,9 +927,7 @@ export class BookingsService implements IBookingService {
       }
       // get time end by plus month
       const time_end = new Date(
-        new Date(booking.time_end).setMonth(
-          new Date(booking.time_end).getMonth() + total_month,
-        ),
+        new Date(booking.time_end).setMonth(new Date(booking.time_end).getMonth() + total_month),
       );
       // update booking
       const update_booking = await this.bookingRepository.save({
@@ -1018,10 +956,9 @@ export class BookingsService implements IBookingService {
         purpose: TransactionPurpose.booking_land,
         type: TransactionType.refund,
       };
-      const transaction: Transaction =
-        await this.transactionService.createTransaction(
-          transactionDTO as CreateTransactionDTO,
-        );
+      const transaction: Transaction = await this.transactionService.createTransaction(
+        transactionDTO as CreateTransactionDTO,
+      );
       // send notification to land renter
       await this.notificationService.createNotification({
         user_id: booking.landrenter_id,
@@ -1052,10 +989,7 @@ export class BookingsService implements IBookingService {
    * @returns
    */
 
-  async updateBookingByReport(
-    booking_id: string,
-    quality_report: number,
-  ): Promise<any> {
+  async updateBookingByReport(booking_id: string, quality_report: number): Promise<any> {
     try {
       const booking = await this.bookingRepository.findOne({
         where: {
@@ -1106,8 +1040,7 @@ export class BookingsService implements IBookingService {
 
   private getTotalPriceBooking(booking: BookingLand): number {
     const total_price_booking: number =
-      (booking.time_end.getMonth() - booking.time_start.getMonth() + 1) *
-        booking.price_per_month +
+      (booking.time_end.getMonth() - booking.time_start.getMonth() + 1) * booking.price_per_month +
       booking.price_deposit;
     const total_price = total_price_booking + booking.price_deposit;
     return total_price;

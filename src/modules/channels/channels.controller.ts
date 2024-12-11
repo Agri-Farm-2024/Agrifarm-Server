@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { ChannelsService } from './channels.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateMessageDTO } from './dto/create-message.dto';
@@ -34,14 +26,8 @@ export class ChannelsController {
 
   @UseGuards(AuthGuard)
   @Get('/messages/:channel_id')
-  async getMessagesByChannel(
-    @Request() req: any,
-    @Param('channel_id') channel_id: string,
-  ) {
+  async getMessagesByChannel(@Request() req: any, @Param('channel_id') channel_id: string) {
     const user: IUser = req['user'];
-    return this.channelsService.getListMessageByChannelId(
-      channel_id,
-      user.user_id,
-    );
+    return this.channelsService.getListMessageByChannelId(channel_id, user.user_id);
   }
 }

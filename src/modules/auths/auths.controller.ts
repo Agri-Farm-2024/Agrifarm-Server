@@ -11,35 +11,35 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 export class AuthsController {
   constructor(private readonly authsService: AuthsService) {}
 
+  @Post('/login')
   @ApiQuery({
     name: 'type',
     required: false,
     example: 'emailAndPassword',
     description: 'type of login: emailAndPassword',
   })
-  @Post('/login')
   async login(@Body() data: LoginDTO, @Query('type') typeLogin: string) {
     return await this.authsService.loginStrategy(data, typeLogin);
   }
 
+  @Post('/sendOTP')
   @ApiQuery({
     name: 'type',
     required: false,
     example: 'register',
     description: 'type of otp: register or forgotPassword',
   })
-  @Post('/sendOTP')
   async sendOTP(@Body() data: OTPDto, @Query('type') type: string) {
     return await this.authsService.sendOTPStrategy(data.email, type);
   }
 
+  @Post('/verifyOTP')
   @ApiQuery({
     name: 'type',
     required: false,
     example: 'register',
     description: 'type of otp: register or forgotPassword',
   })
-  @Post('/verifyOTP')
   async verifyOTP(@Body() data: OTPVerifyDTO, @Query('type') type: string) {
     return await this.authsService.verifyOTP(data.email, data.otp, type);
   }

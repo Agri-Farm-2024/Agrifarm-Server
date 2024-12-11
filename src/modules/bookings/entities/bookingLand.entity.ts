@@ -2,14 +2,7 @@ import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { Extend } from 'src/modules/extends/entities/extend.entity';
 import { Land } from 'src/modules/lands/entities/land.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { BookingStatus } from '../types/booking-status.enum';
 import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
 import { BookingPaymentFrequency } from '../types/booking-payment.enum';
@@ -100,7 +93,9 @@ export class BookingLand extends AbstractEntity {
     default: BookingStatus.pending,
   })
   status: BookingStatus;
+
   // Relations
+
   @OneToMany(() => Extend, (extend) => extend.booking_land)
   extends: Extend[];
 
@@ -120,19 +115,13 @@ export class BookingLand extends AbstractEntity {
   @JoinColumn({ name: 'land_id' })
   land: Land;
 
-  @OneToMany(
-    () => ServiceSpecific,
-    (serviceSpecific) => serviceSpecific.booking_land,
-  )
+  @OneToMany(() => ServiceSpecific, (serviceSpecific) => serviceSpecific.booking_land)
   service_specific: ServiceSpecific[];
 
   @OneToMany(() => Transaction, (transaction) => transaction.booking_land)
   transactions: Transaction[];
 
-  @OneToMany(
-    () => BookingMaterial,
-    (bookingMaterial) => bookingMaterial.booking_land,
-  )
+  @OneToMany(() => BookingMaterial, (bookingMaterial) => bookingMaterial.booking_land)
   booking_materials: BookingMaterial[];
 
   @OneToMany(() => Request, (request) => request.booking_land)

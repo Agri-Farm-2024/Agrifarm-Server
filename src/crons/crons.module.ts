@@ -7,13 +7,7 @@ import { ProcessesModule } from 'src/modules/processes/processes.module';
 import { MaterialsModule } from 'src/modules/materials/materials.module';
 
 @Module({
-  imports: [
-    TransactionsModule,
-    BookingsModule,
-    ServicesModule,
-    ProcessesModule,
-    MaterialsModule,
-  ],
+  imports: [TransactionsModule, BookingsModule, ServicesModule, ProcessesModule, MaterialsModule],
   providers: [JobService],
   exports: [JobService],
 })

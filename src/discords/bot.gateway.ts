@@ -29,16 +29,12 @@ export class BotGateway {
       try {
         // Check if the message is sent in the payment channel
         if (
-          message.channelId ===
-            this.configService.get('DISCORD_PAYMENT_CHANNEL_ID') &&
+          message.channelId === this.configService.get('DISCORD_PAYMENT_CHANNEL_ID') &&
           message.author.id !== '1302050576833450016'
         ) {
           let price = message.content.split('\n')[0].split(' ')[6];
           price = price.replace(/,/g, '');
-          const message_price = message.content
-            .split('\n')[0]
-            .split(' ')[5]
-            .trim();
+          const message_price = message.content.split('\n')[0].split(' ')[5].trim();
           console.log(message_price);
           if (message_price === 'giảm') {
             const transaction_code = message.content
@@ -66,10 +62,7 @@ export class BotGateway {
               transaction_code = transaction_code.slice(0, 6);
 
               // call service
-              await this.transactionService.handleTransactionPayment(
-                transaction_code,
-                +price,
-              );
+              await this.transactionService.handleTransactionPayment(transaction_code, +price);
               // reply message
               message.reply('Success');
               return;
@@ -84,10 +77,7 @@ export class BotGateway {
                 `Payment by condition user send by other bank ${transaction_code}`,
               );
               // call service
-              await this.transactionService.handleTransactionPayment(
-                transaction_code,
-                +price,
-              );
+              await this.transactionService.handleTransactionPayment(transaction_code, +price);
               // reply message
               message.reply('Success');
 
@@ -103,10 +93,7 @@ export class BotGateway {
                 `Payment by condition user send by other bank ${transaction_code}`,
               );
               // call service
-              await this.transactionService.handleTransactionPayment(
-                transaction_code,
-                +price,
-              );
+              await this.transactionService.handleTransactionPayment(transaction_code, +price);
               // reply message
               message.reply('Success');
               return;
@@ -120,10 +107,7 @@ export class BotGateway {
               `Payment by condition user send by other bank ${transaction_code}`,
             );
             // call service
-            await this.transactionService.handleTransactionPayment(
-              transaction_code,
-              +price,
-            );
+            await this.transactionService.handleTransactionPayment(transaction_code, +price);
             // reply message
             message.reply('Success');
             return;

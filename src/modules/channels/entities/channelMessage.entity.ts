@@ -1,11 +1,5 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ChannelMessageType } from '../types/channel-message-type.enum';
 import { Channel } from './channel.entity';
 import { User } from 'src/modules/users/entities/user.entity';

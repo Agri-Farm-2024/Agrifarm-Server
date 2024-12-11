@@ -88,10 +88,7 @@ export class AuthsService implements IAuthService {
         throw new BadRequestException('User not found');
       }
       // 2. Check the password
-      const isPasswordMatch = await bcrypt.compareSync(
-        data.password,
-        user.password,
-      );
+      const isPasswordMatch = await bcrypt.compareSync(data.password, user.password);
 
       if (!isPasswordMatch) {
         throw new BadRequestException('Invalid password');
@@ -135,7 +132,7 @@ export class AuthsService implements IAuthService {
   }
 
   /**
-   * @function sendOTPStrategy
+   * Send OTP strategy
    * @param email
    * @param type
    * @returns
@@ -237,10 +234,7 @@ export class AuthsService implements IAuthService {
     // update otp status
     exist_otp_obj.status = OTPStatus.verified;
     // save otp to redis
-    await this.redisService.set(
-      `otp:${email}:${type}`,
-      JSON.stringify(exist_otp_obj),
-    );
+    await this.redisService.set(`otp:${email}:${type}`, JSON.stringify(exist_otp_obj));
     return {
       status: OTPStatus.verified,
     };
@@ -304,12 +298,8 @@ export class AuthsService implements IAuthService {
   private async generateToken(payload: IUser): Promise<any> {
     try {
       // Create 2 public and private keys with crypto
-      const publicKey = this.configService
-        .get('JWT_PUBLIC_KEY')
-        .replace(/\\n/g, '\n');
-      const privateKey = this.configService
-        .get('JWT_PRIVATE_KEY')
-        .replace(/\\n/g, '\n');
+      const publicKey = this.configService.get('JWT_PUBLIC_KEY').replace(/\\n/g, '\n');
+      const privateKey = this.configService.get('JWT_PRIVATE_KEY').replace(/\\n/g, '\n');
       // const { publicKey, privateKey } = generateKeyPairSync('rsa', {
       //   modulusLength: 4096,
       //   publicKeyEncoding: {

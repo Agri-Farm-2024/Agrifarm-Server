@@ -1,6 +1,7 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -11,11 +12,6 @@ import { User } from 'src/modules/users/entities/user.entity';
 
 @Entity('channels_join')
 export class ChannelJoin extends AbstractEntity {
-  constructor(partial: Partial<ChannelJoin>) {
-    super();
-    Object.assign(this, partial);
-  }
-
   @PrimaryGeneratedColumn('uuid')
   channel_join_id: string;
 
@@ -24,6 +20,9 @@ export class ChannelJoin extends AbstractEntity {
 
   @Column('uuid')
   user_join_id: string;
+
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  join_at: Date;
 
   // Relation
   @ManyToOne(() => Channel, (channel) => channel.joins)

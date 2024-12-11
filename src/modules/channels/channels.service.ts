@@ -113,9 +113,7 @@ export class ChannelsService implements IChannelService {
       }
       // check channel is expired
       if (channel_exist.status === ChannelStatus.expired) {
-        throw new BadRequestException(
-          'Channel is expired can not send message',
-        );
+        throw new BadRequestException('Channel is expired can not send message');
       }
       // check user is in channel
       const is_join = await this.channelJoinRepository.findOne({
@@ -133,11 +131,7 @@ export class ChannelsService implements IChannelService {
         message_from_id: user_id,
       });
       // send socket message to channel
-      this.eventGateway.sendEventToGroup(
-        data.message_to_id,
-        message,
-        SocketEvent.message,
-      );
+      this.eventGateway.sendEventToGroup(data.message_to_id, message, SocketEvent.message);
       return message;
     } catch (error) {
       this.logger.error(error.message);
@@ -157,10 +151,7 @@ export class ChannelsService implements IChannelService {
    * @returns
    */
 
-  async getListMessageByChannelId(
-    channel_id: string,
-    user_id: string,
-  ): Promise<any> {
+  async getListMessageByChannelId(channel_id: string, user_id: string): Promise<any> {
     try {
       // check user is in channel
       const is_join = await this.channelJoinRepository.findOne({

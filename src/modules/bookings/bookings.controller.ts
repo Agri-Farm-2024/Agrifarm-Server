@@ -1,14 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  UseGuards,
-  Request,
-  Get,
-  Param,
-  Put,
-  Query,
-} from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, Get, Param, Put, Query } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
@@ -17,10 +7,7 @@ import { Roles } from 'src/common/decorations/role.decoration';
 import { UserRole } from '../users/types/user-role.enum';
 import { UpdateStatusBookingDTO } from './dto/update-status-booking.dto';
 import { BookingStatus } from './types/booking-status.enum';
-import {
-  ApplyPaginationMetadata,
-  Pagination,
-} from 'src/common/decorations/pagination.decoration';
+import { ApplyPaginationMetadata, Pagination } from 'src/common/decorations/pagination.decoration';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 
 @ApiTags('Booking')
@@ -35,16 +22,11 @@ export class BookingsController {
     @Body() createBookingDto: CreateBookingDto,
     @Request() request: any,
   ): Promise<any> {
-    return await this.bookingsService.createBooking(
-      createBookingDto,
-      request.user,
-    );
+    return await this.bookingsService.createBooking(createBookingDto, request.user);
   }
 
   @Get('/:booking_id')
-  async getBookingDetail(
-    @Param('booking_id') booking_id: string,
-  ): Promise<any> {
+  async getBookingDetail(@Param('booking_id') booking_id: string): Promise<any> {
     return await this.bookingsService.getBookingDetail(booking_id);
   }
 
@@ -61,12 +43,7 @@ export class BookingsController {
     @Pagination() pagination: PaginationParams,
   ): Promise<any> {
     const user = request['user'];
-    return await this.bookingsService.getListBooking(
-      user,
-      status,
-      type,
-      pagination,
-    );
+    return await this.bookingsService.getListBooking(user, status, type, pagination);
   }
 
   @UseGuards(AuthGuard)
@@ -77,10 +54,6 @@ export class BookingsController {
     @Body() data: UpdateStatusBookingDTO,
     @Request() request: any,
   ): Promise<any> {
-    return await this.bookingsService.updateStatusBookingStrategy(
-      booking_id,
-      data,
-      request.user,
-    );
+    return await this.bookingsService.updateStatusBookingStrategy(booking_id, data, request.user);
   }
 }
