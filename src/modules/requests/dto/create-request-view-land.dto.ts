@@ -33,8 +33,7 @@ export class CreateRequestViewLandDTO {
 
   @ApiProperty({
     example: '2024-10-15 10:30:00',
-    description:
-      'The start time for the request in "YYYY-MM-DD HH:mm:ss" format',
+    description: 'The start time for the request in "YYYY-MM-DD HH:mm:ss" format',
   })
   @Transform(({ value }) => value.replace(' ', 'T') + 'Z') // Transform input to ISO 8601 format
   @IsDateString({}, { message: 'Invalid date-time format' })

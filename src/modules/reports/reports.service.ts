@@ -57,7 +57,15 @@ export class ReportsService implements IReportService {
     private readonly servicePackageService: ServicesService,
   ) {}
 
-  async createReport(data: CreateReportDTO, task_id: string, user: IUser) {
+  /**
+   * Create a new report
+   * @param data
+   * @param task_id
+   * @param user
+   * @returns
+   */
+
+  async createReport(data: CreateReportDTO, task_id: string, user: IUser): Promise<any> {
     try {
       // get detail task
       const task_exist: Task = await this.taskService.getDetailTask(task_id);
@@ -117,8 +125,7 @@ export class ReportsService implements IReportService {
        */
       if (
         task_exist.request.type === RequestType.view_land ||
-        task_exist.request.type ===
-          RequestType.material_process_specfic_stage ||
+        task_exist.request.type === RequestType.material_process_specfic_stage ||
         task_exist.request.type === RequestType.create_process_standard
       ) {
         request_status = RequestStatus.completed;
@@ -131,19 +138,12 @@ export class ReportsService implements IReportService {
         await this.channelService.setChannelToExpired(task_exist.request_id);
       }
       //update request status to pending_approval
-      await this.requestService.updateRequestStatus(
-        task_exist.request_id,
-        request_status,
-      );
+      await this.requestService.updateRequestStatus(task_exist.request_id, request_status);
       // get detail manager
-      const manager: User[] = await this.userService.getListUserByRole(
-        UserRole.manager,
-      );
+      const manager: User[] = await this.userService.getListUserByRole(UserRole.manager);
       // send notification to assigned this task
       await this.notificationService.createNotification({
-        user_id: task_exist.assigned_by_id
-          ? task_exist.assigned_by_id
-          : manager[0].user_id,
+        user_id: task_exist.assigned_by_id ? task_exist.assigned_by_id : manager[0].user_id,
         title: NotificationTitleEnum.create_report,
         content: NotificationContentEnum.create_report(new_report.content),
         type: NotificationType.report,
@@ -164,7 +164,7 @@ export class ReportsService implements IReportService {
     data: CreateReportPurchaseDto,
     task_id: string,
     user: IUser,
-  ) {
+  ): Promise<any> {
     try {
       //chekc report exist
       const report_exist = await this.reportRepository.findOne({
@@ -200,8 +200,7 @@ export class ReportsService implements IReportService {
         mass_plant_expect: data.mass_plant_expect,
         quality_plant: data.quality_plant,
         mass_plant: data.mass_plant,
-        price_purchase_per_kg:
-          task_exist.request.service_specific.price_purchase_per_kg,
+        price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
       });
       //crete url report
       if (data.url) {
@@ -221,9 +220,7 @@ export class ReportsService implements IReportService {
       );
       // send notification to assigned this task
       // get detail manager
-      const manager: User[] = await this.userService.getListUserByRole(
-        UserRole.manager,
-      );
+      const manager: User[] = await this.userService.getListUserByRole(UserRole.manager);
       if (task_exist.request.type === RequestType.product_purchase) {
         await this.notificationService.createNotification({
           user_id: task_exist.assigned_by_id || manager[0].user_id,

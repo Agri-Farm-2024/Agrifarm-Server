@@ -1,13 +1,6 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { RequestSupportType } from '../types/request-support-type.enum';
 import { RequestType } from '../types/request-type.enum';
 import { Task } from 'src/modules/tasks/entities/task.entity';
@@ -107,10 +100,7 @@ export class Request extends AbstractEntity {
   @JoinColumn({ name: 'process_technical_specific_stage_content_id' })
   process_technical_specific_stage_content: ProcessSpecificStageContent;
 
-  @ManyToOne(
-    () => ServiceSpecific,
-    (serviceSpecific) => serviceSpecific.requests,
-  )
+  @ManyToOne(() => ServiceSpecific, (serviceSpecific) => serviceSpecific.requests)
   @JoinColumn({ name: 'service_specific_id' })
   service_specific: ServiceSpecific;
 

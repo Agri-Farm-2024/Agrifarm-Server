@@ -12,10 +12,7 @@ import {
 import { RequestsService } from './requests.service';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CreateRequestViewLandDTO } from './dto/create-request-view-land.dto';
-import {
-  ApplyPaginationMetadata,
-  Pagination,
-} from 'src/common/decorations/pagination.decoration';
+import { ApplyPaginationMetadata, Pagination } from 'src/common/decorations/pagination.decoration';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { RequestType } from './types/request-type.enum';
 import { CreateRequestProcessStandardDTO } from './dto/create-request-processStandard.dto';
@@ -37,9 +34,7 @@ export class RequestsController {
   }
 
   @Post('/createRequestProcessStandard')
-  async createRequestProcessStandard(
-    @Body() data: CreateRequestProcessStandardDTO,
-  ) {
+  async createRequestProcessStandard(@Body() data: CreateRequestProcessStandardDTO) {
     return await this.requestsService.createRequestProcessStandard(data);
   }
 
@@ -56,18 +51,11 @@ export class RequestsController {
     @Request() req: any,
   ): Promise<any> {
     const user = req['user'];
-    return await this.requestsService.getListRequest(
-      pagination,
-      status,
-      type,
-      user,
-    );
+    return await this.requestsService.getListRequest(pagination, status, type, user);
   }
 
   @Get(':request_id')
-  async getDetailRequest(
-    @Param('request_id') request_id: string,
-  ): Promise<any> {
+  async getDetailRequest(@Param('request_id') request_id: string): Promise<any> {
     return await this.requestsService.getDetailRequest(request_id);
   }
 

@@ -23,18 +23,11 @@ export interface IRequestService {
 
   getDetailRequest(request_id: string): Promise<any>;
 
-  createRequestProcessStandard(
-    data: CreateRequestProcessStandardDTO,
-  ): Promise<any>;
+  createRequestProcessStandard(data: CreateRequestProcessStandardDTO): Promise<any>;
 
-  createRequestMaterial(
-    process_specific_stage: ProcessSpecificStage,
-  ): Promise<any>;
+  createRequestMaterial(process_specific_stage: ProcessSpecificStage): Promise<any>;
 
-  createRequestPurchase(
-    createRequestPurchase: CreateRequestPurchaseDto,
-    user: IUser,
-  ): Promise<any>;
+  createRequestPurchase(createRequestPurchase: CreateRequestPurchaseDto, user: IUser): Promise<any>;
 
   createRequestPurchaseharvest(service_specific_id: string): Promise<any>;
 
@@ -46,10 +39,7 @@ export interface IRequestService {
     process_specific_stage_content: ProcessSpecificStageContent,
   ): Promise<any>;
 
-  createRequestTechnicalSupport(
-    data: createRequestTechnicalSupportDTO,
-    user: IUser,
-  ): Promise<any>;
+  createRequestTechnicalSupport(data: createRequestTechnicalSupportDTO, user: IUser): Promise<any>;
 
   confirmRequest(request_id: string, data: UpdateStatusTaskDTO): Promise<any>;
 }

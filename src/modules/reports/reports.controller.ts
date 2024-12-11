@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Request, UseGuards } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { CreateReportDTO } from './dto/create-report.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -21,11 +13,7 @@ export class ReportsController {
 
   @UseGuards(AuthGuard)
   @Post('/:task_id')
-  create(
-    @Body() data: CreateReportDTO,
-    @Param('task_id') task_id: string,
-    @Request() req: any,
-  ) {
+  create(@Body() data: CreateReportDTO, @Param('task_id') task_id: string, @Request() req: any) {
     const user = req['user'];
     return this.reportsService.createReport(data, task_id, user);
   }

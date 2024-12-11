@@ -1,11 +1,5 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ReportUrlType } from '../types/report-url-type.enum';
 import { Report } from './report.entity';
 

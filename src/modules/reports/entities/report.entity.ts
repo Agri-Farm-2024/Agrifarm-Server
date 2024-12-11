@@ -1,12 +1,5 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ReportURL } from './reportURL.entity';
 import { Task } from 'src/modules/tasks/entities/task.entity';
 
