@@ -18,7 +18,7 @@ import { SubjectMailEnum } from 'src/mails/types/mail-subject.type';
 import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
 import { UserStatus } from './types/user-status.enum';
 import { UserRole } from './types/user-role.enum';
-import { IUser } from '../auths/types/IUser.interface';
+import { IUser } from '../auths/interfaces/IUser.interface';
 import { RequestStatus } from '../requests/types/request-status.enum';
 
 @Injectable()

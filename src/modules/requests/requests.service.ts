@@ -34,7 +34,7 @@ import { CreateRequestPurchaseDto } from './dto/create-request-puchase.dto';
 import { ServicesService } from '../servicesPackage/servicesPackage.service';
 import { BookingsService } from '../bookings/bookings.service';
 import { ServiceSpecific } from '../servicesPackage/entities/serviceSpecific.entity';
-import { IUser } from '../auths/types/IUser.interface';
+import { IUser } from '../auths/interfaces/IUser.interface';
 import { createRequestTechnicalSupportDTO } from './dto/create-request-technical-support.dto';
 import { ServiceSpecificStatus } from '../servicesPackage/types/service-specific-status.enum';
 import { ProcessSpecificStageContent } from '../processes/entities/specifics/processSpecificStageContent.entity';

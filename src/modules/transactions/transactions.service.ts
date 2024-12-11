@@ -16,7 +16,7 @@ import { BookingLand } from '../bookings/entities/bookingLand.entity';
 import { BookingPaymentFrequency } from '../bookings/types/booking-payment.enum';
 import { TransactionStatus } from './types/transaction-status.enum';
 import { TransactionPurpose } from './types/transaction-purpose.enum';
-import { IUser } from '../auths/types/IUser.interface';
+import { IUser } from '../auths/interfaces/IUser.interface';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { ServicesService } from '../servicesPackage/servicesPackage.service';
 import { OrdersService } from '../orders/orders.service';

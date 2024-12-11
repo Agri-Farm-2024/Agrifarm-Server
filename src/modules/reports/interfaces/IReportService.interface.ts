@@ -1,4 +1,4 @@
-import { IUser } from 'src/modules/auths/types/IUser.interface';
+import { IUser } from 'src/modules/auths/interfaces/IUser.interface';
 import { CreateReportProcessStandardDTO } from '../dto/create-report-processStandard.dto';
 import { CreateReportPurchaseDto } from '../dto/create-report-purchase.dto';
 import { CreateReportDTO } from '../dto/create-report.dto';

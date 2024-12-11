@@ -1,4 +1,4 @@
-import { IUser } from 'src/modules/auths/types/IUser.interface';
+import { IUser } from 'src/modules/auths/interfaces/IUser.interface';
 import { CreateExtendDto } from '../dto/create-extend.dto';
 import { UpdateExtendDTO } from '../dto/update-extend.dto';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';

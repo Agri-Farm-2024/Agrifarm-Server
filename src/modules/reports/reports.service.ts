@@ -14,7 +14,7 @@ import { Repository } from 'typeorm';
 import { TasksService } from '../tasks/tasks.service';
 import { Report } from './entities/report.entity';
 import { CreateReportDTO } from './dto/create-report.dto';
-import { IUser } from '../auths/types/IUser.interface';
+import { IUser } from '../auths/interfaces/IUser.interface';
 import { ReportURL } from './entities/reportURL.entity';
 import { RequestsService } from '../requests/requests.service';
 import { RequestStatus } from '../requests/types/request-status.enum';

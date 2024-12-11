@@ -11,7 +11,7 @@ import { ChannelsService } from './channels.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateMessageDTO } from './dto/create-message.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
-import { IUser } from '../auths/types/IUser.interface';
+import { IUser } from '../auths/interfaces/IUser.interface';
 
 @ApiTags('Channels')
 @Controller('channels')

@@ -12,7 +12,7 @@ import { Repository } from 'typeorm';
 import { ITaskService } from './interfaces/ITaskService.interface';
 import { UsersService } from '../users/users.service';
 import { RequestsService } from '../requests/requests.service';
-import { IUser } from '../auths/types/IUser.interface';
+import { IUser } from '../auths/interfaces/IUser.interface';
 import { RequestStatus } from '../requests/types/request-status.enum';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';

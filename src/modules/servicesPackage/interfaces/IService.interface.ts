@@ -1,4 +1,4 @@
-import { IUser } from 'src/modules/auths/types/IUser.interface';
+import { IUser } from 'src/modules/auths/interfaces/IUser.interface';
 import { CreateServicePackageDTO } from '../dto/create-service-package.dto';
 import { CreateServiceSpecificDTO } from '../dto/create-service-specific.dto';
 import { Transaction } from 'src/modules/transactions/entities/transaction.entity';

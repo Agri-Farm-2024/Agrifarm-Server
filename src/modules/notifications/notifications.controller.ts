@@ -7,7 +7,7 @@ import {
 } from 'src/common/decorations/pagination.decoration';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { AuthGuard } from 'src/common/guards/auth.guard';
-import { IUser } from '../auths/types/IUser.interface';
+import { IUser } from '../auths/interfaces/IUser.interface';
 
 @ApiTags('Notification')
 @Controller('notifications')

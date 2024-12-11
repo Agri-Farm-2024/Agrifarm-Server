@@ -19,7 +19,7 @@ import { UserRole } from '../users/types/user-role.enum';
 import { LandType } from './entities/landType.entity';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { LandTypeStatus } from './types/landType-status.enum';
-import { IUser } from '../auths/types/IUser.interface';
+import { IUser } from '../auths/interfaces/IUser.interface';
 import { selectUser } from 'src/utils/select.util';
 
 @Injectable()

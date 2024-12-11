@@ -1,6 +1,6 @@
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { BuyMaterialDTO } from '../dto/buy-material.dto';
-import { IUser } from 'src/modules/auths/types/IUser.interface';
+import { IUser } from 'src/modules/auths/interfaces/IUser.interface';
 import { MaterialType } from '../types/material-type.enum';
 import { RentMaterialDto } from '../dto/rent-material.dto';
 import { UpdateBookingMaterialDTO } from '../dto/update-booking.material.dto';

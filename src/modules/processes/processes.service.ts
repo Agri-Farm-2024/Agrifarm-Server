@@ -17,7 +17,7 @@ import { CreateProcessStageDto } from './dto/create-process-stage.dto';
 import { CreateProcessStageContentDto } from './dto/create-process-stage-content.dto';
 import { CreateProcessStageMaterialDto } from './dto/create-process-stage-material.dto';
 import { ProcessStandardStageMaterial } from './entities/standards/processStandardStageMaterial.entity';
-import { IUser } from '../auths/types/IUser.interface';
+import { IUser } from '../auths/interfaces/IUser.interface';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { ProcessTechnicalStandardStatus } from './types/status-processStandard.enum';
 import { ServiceSpecific } from '../servicesPackage/entities/serviceSpecific.entity';

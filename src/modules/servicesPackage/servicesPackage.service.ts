@@ -27,7 +27,7 @@ import { ProcessesService } from '../processes/processes.service';
 import { ServicePackageStatus } from './types/service-package-status.enum';
 import { BookingsService } from '../bookings/bookings.service';
 import { BookingLand } from '../bookings/entities/bookingLand.entity';
-import { IUser } from '../auths/types/IUser.interface';
+import { IUser } from '../auths/interfaces/IUser.interface';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { UserRole } from '../users/types/user-role.enum';
 import { RequestsService } from '../requests/requests.service';

@@ -4,7 +4,7 @@ import { RequestType } from '../types/request-type.enum';
 import { CreateRequestProcessStandardDTO } from '../dto/create-request-processStandard.dto';
 import { RequestStatus } from '../types/request-status.enum';
 import { UpdateStatusTaskDTO } from '../dto/update-status-task.dto';
-import { IUser } from 'src/modules/auths/types/IUser.interface';
+import { IUser } from 'src/modules/auths/interfaces/IUser.interface';
 import { CreateRequestPurchaseDto } from '../dto/create-request-puchase.dto';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 import { createRequestTechnicalSupportDTO } from '../dto/create-request-technical-support.dto';

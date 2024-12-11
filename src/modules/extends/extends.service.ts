@@ -16,7 +16,7 @@ import { In, Not, Repository } from 'typeorm';
 import { BookingStatus } from '../bookings/types/booking-status.enum';
 import { ExtendStatus } from './types/extend-status.enum';
 import { UpdateExtendDTO } from './dto/update-extend.dto';
-import { IUser } from '../auths/types/IUser.interface';
+import { IUser } from '../auths/interfaces/IUser.interface';
 import { UserRole } from '../users/types/user-role.enum';
 import { TransactionsService } from '../transactions/transactions.service';
 import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';

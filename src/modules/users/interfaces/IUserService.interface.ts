@@ -1,7 +1,7 @@
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { UserRole } from '../types/user-role.enum';
 import { UserStatus } from '../types/user-status.enum';
-import { IUser } from 'src/modules/auths/types/IUser.interface';
+import { IUser } from 'src/modules/auths/interfaces/IUser.interface';
 
 export interface IUserService {
   create(createUserDto: any): any;

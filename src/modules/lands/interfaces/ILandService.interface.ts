@@ -1,6 +1,6 @@
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { LandStatus } from '../types/land-status.enum';
-import { IUser } from 'src/modules/auths/types/IUser.interface';
+import { IUser } from 'src/modules/auths/interfaces/IUser.interface';
 
 export interface ILandService {
   createLand(data: any): any;

@@ -16,7 +16,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BookingLand } from './entities/bookingLand.entity';
 import { In, LessThanOrEqual, MoreThanOrEqual, Not, Repository } from 'typeorm';
 import { BookingStatus } from './types/booking-status.enum';
-import { IUser } from '../auths/types/IUser.interface';
+import { IUser } from '../auths/interfaces/IUser.interface';
 import { UserRole } from '../users/types/user-role.enum';
 import { UpdateStatusBookingDTO } from './dto/update-status-booking.dto';
 import { MailService } from 'src/mails/mail.service';

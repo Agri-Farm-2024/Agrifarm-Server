@@ -1,4 +1,4 @@
-import { IUser } from 'src/modules/auths/types/IUser.interface';
+import { IUser } from 'src/modules/auths/interfaces/IUser.interface';
 import { UpdateStatusBookingDTO } from '../dto/update-status-booking.dto';
 import { BookingLand } from '../entities/bookingLand.entity';
 import { BookingStatus } from '../types/booking-status.enum';

@@ -1,4 +1,4 @@
-import { IUser } from 'src/modules/auths/types/IUser.interface';
+import { IUser } from 'src/modules/auths/interfaces/IUser.interface';
 import { RequestStatus } from 'src/modules/requests/types/request-status.enum';
 
 export interface ITaskService {

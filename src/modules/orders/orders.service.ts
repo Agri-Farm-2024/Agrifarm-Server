@@ -14,7 +14,7 @@ import { LoggerService } from 'src/logger/logger.service';
 import { OrderDetail } from './entities/orderDetail.entity';
 import { CreateOrderDetailDto } from './dto/create-order-detail.dto';
 import { MaterialsService } from '../materials/materials.service';
-import { IUser } from '../auths/types/IUser.interface';
+import { IUser } from '../auths/interfaces/IUser.interface';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 
 @Injectable()

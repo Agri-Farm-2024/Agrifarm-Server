@@ -20,7 +20,7 @@ import { UserRole } from '../users/types/user-role.enum';
 import { TransactionStatus } from './types/transaction-status.enum';
 import { TransactionPurpose } from './types/transaction-purpose.enum';
 import { TransactionType } from './types/transaction-type.enum';
-import { IUser } from '../auths/types/IUser.interface';
+import { IUser } from '../auths/interfaces/IUser.interface';
 
 @ApiTags('Transactions')
 @Controller('transactions')

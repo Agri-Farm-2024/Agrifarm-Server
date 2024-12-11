@@ -20,8 +20,8 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UserRole } from '../users/types/user-role.enum';
 import { ConfigService } from '@nestjs/config';
 import { UserStatus } from '../users/types/user-status.enum';
-import { IUser } from './types/IUser.interface';
-import { IOtp } from './types/IntoOTP.type';
+import { IUser } from './interfaces/IUser.interface';
+import { IOTP } from './interfaces/IOTP.interface';
 
 @Injectable()
 export class AuthsService implements IAuthService {
@@ -126,7 +126,7 @@ export class AuthsService implements IAuthService {
     }
     // check verify otp register
     const exist_otp = await this.redisService.get(`otp:${data.email}:register`);
-    const exist_otp_obj: IOtp = JSON.parse(exist_otp);
+    const exist_otp_obj: IOTP = JSON.parse(exist_otp);
     if (!exist_otp_obj || exist_otp_obj.status !== OTPStatus.verified) {
       throw new BadRequestException('Please verify the OTP first');
     }
@@ -218,7 +218,7 @@ export class AuthsService implements IAuthService {
     // get otp from redis
     const exist_otp = await this.redisService.get(`otp:${email}:${type}`);
     // parse to object
-    const exist_otp_obj: IOtp = JSON.parse(exist_otp);
+    const exist_otp_obj: IOTP = JSON.parse(exist_otp);
     if (!exist_otp_obj) {
       throw new BadRequestException('OTP is invalid');
     }

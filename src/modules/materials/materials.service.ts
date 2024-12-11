@@ -15,7 +15,7 @@ import { LessThan, Like, Not, Repository } from 'typeorm';
 import { LoggerService } from 'src/logger/logger.service';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { Order } from '../orders/entities/order.entity';
-import { IUser } from '../auths/types/IUser.interface';
+import { IUser } from '../auths/interfaces/IUser.interface';
 import { OrdersService } from '../orders/orders.service';
 import { MaterialType } from './types/material-type.enum';
 import { TransactionsService } from '../transactions/transactions.service';
