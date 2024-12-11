@@ -930,7 +930,8 @@ export class ProcessesService implements IProcessesService {
           // check is get material
           if (
             request.type === RequestType.material_process_specfic_stage &&
-            request.status === RequestStatus.completed
+            (request.status === RequestStatus.in_progress ||
+              request.status === RequestStatus.completed)
           ) {
             stage.is_get_material = true;
           }

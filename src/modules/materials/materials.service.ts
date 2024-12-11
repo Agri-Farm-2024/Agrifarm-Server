@@ -376,8 +376,10 @@ export class MaterialsService implements IMaterialService {
         }
       }
       const time_start = new Date();
+      time_start.setHours(0, 0, 0, 0);
       // time end = time start + total day
-      const time_end = time_start.setDate(time_start.getDate() + data.total_day);
+      const time_end = new Date(time_start);
+      time_end.setDate(time_end.getDate() + data.total_day);
       // Create a new booking material
       const new_booking_material: BookingMaterial = await this.bookingMaterialRepo.save({
         landrenter_id: user.user_id,
