@@ -526,7 +526,7 @@ export class RequestsService implements IRequestService {
           throw new BadRequestException('Service specific not found');
         }
         //create new request purchase
-        let time_start = getDateWithoutTime(new Date());
+        let time_start = getDateWithoutTime(service_specific_detail.time_end);
         time_start = getTimeByPlusDays(time_start, 7);
         // time_start = new Date(time_start.setHours(time_start.getHours() + 7));
         const new_request = await this.requestRepo.save({
