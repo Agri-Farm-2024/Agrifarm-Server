@@ -181,6 +181,9 @@ export class TasksService implements ITaskService {
               },
             },
             process_technical_specific_stage: {
+              process_technical_specific_stage_material: {
+                materialSpecific: true,
+              },
               process_technical_specific: {
                 service_specific: {
                   plant_season: {
@@ -194,6 +197,9 @@ export class TasksService implements ITaskService {
             },
             process_technical_specific_stage_content: {
               process_technical_specific_stage: {
+                process_technical_specific_stage_material: {
+                  materialSpecific: true,
+                },
                 process_technical_specific: {
                   service_specific: {
                     plant_season: {

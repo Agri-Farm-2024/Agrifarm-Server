@@ -41,10 +41,7 @@ export class JobService implements ICronJob {
       await this.materialService.checkBookingMaterialIsExpired();
     } catch (error) {
       this.logger.error(`Error when check every day ${error.message}`);
-      this.loggerService.error(
-        `Error when check every day ${error.message}`,
-        error.stack,
-      );
+      this.loggerService.error(`Error when check every day ${error.message}`, error.stack);
     }
   }
 
@@ -57,10 +54,7 @@ export class JobService implements ICronJob {
       this.loggerService.log('Check transaction expire is running');
     } catch (error) {
       this.logger.error(`Error when check every one hour ${error.message}`);
-      this.loggerService.error(
-        `Error when check every one hour ${error.message}`,
-        error.stack,
-      );
+      this.loggerService.error(`Error when check every one hour ${error.message}`, error.stack);
     }
   }
 
@@ -70,23 +64,14 @@ export class JobService implements ICronJob {
       // Check and create task process content for expert\
       await this.processService.checkAndCreateTaskProcessContentForExpert();
       this.logger.log('Check task process content for expert is running');
-      this.loggerService.log(
-        'Check task process content for expert is running',
-      );
+      this.loggerService.log('Check task process content for expert is running');
       // Check and send notification for landrenter before new stage
       await this.processService.CheckNewStageProcessSpecific();
-      this.logger.log(
-        'Check and send noti process stage for land renter is running',
-      );
-      this.loggerService.log(
-        'Check and send noti process stage for land renter is running',
-      );
+      this.logger.log('Check and send noti process stage for land renter is running');
+      this.loggerService.log('Check and send noti process stage for land renter is running');
     } catch (error) {
       this.logger.error(`Error when check every five pm  ${error.message}`);
-      this.loggerService.error(
-        `Error when check every five pm  ${error.message}`,
-        error.stack,
-      );
+      this.loggerService.error(`Error when check every five pm  ${error.message}`, error.stack);
     }
   }
 
@@ -96,15 +81,10 @@ export class JobService implements ICronJob {
       // Check and create task process content for land renter
       await this.servicePackageService.checkAndCreatePurchaseProductService();
       this.logger.log('Check and create purchase product service is running');
-      this.loggerService.log(
-        'Check and create purchase product service is running',
-      );
+      this.loggerService.log('Check and create purchase product service is running');
     } catch (error) {
       this.logger.error(`Error when check every eight am  ${error.message}`);
-      this.loggerService.error(
-        `Error when check every eight am  ${error.message}`,
-        error.stack,
-      );
+      this.loggerService.error(`Error when check every eight am  ${error.message}`, error.stack);
     }
   }
 }

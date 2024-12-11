@@ -43,6 +43,7 @@ import { User } from '../users/entities/user.entity';
 import { selectUser } from 'src/utils/select.util';
 import { MaterialsService } from '../materials/materials.service';
 import { ServiceSpecificStatus } from '../servicesPackage/types/service-specific-status.enum';
+import { RequestType } from '../requests/types/request-type.enum';
 
 @Injectable()
 export class ProcessesService implements IProcessesService {
@@ -663,20 +664,28 @@ export class ProcessesService implements IProcessesService {
         throw new BadRequestException('You have no permission');
       }
       //update process Specific
-      const data_process_specific = {
-        time_start: data.time_start,
-        time_end: data.time_end,
-      };
       const update_process_specific = await this.processSpecificRepo.save({
         ...process_specific,
-        ...data_process_specific,
+        time_start: data.time_start,
+        time_end: data.time_end,
       });
       // update process specific stage
 
-      if (data.stage) {
+      if (data.stage.length > 0) {
         for (let i = 0; i < data.stage.length; i++) {
           //delete stage
           if (data.stage[i].is_deleted) {
+            // delete all content
+            await this.processSpecificStageContentRepo.delete({
+              process_technical_specific_stage_id:
+                data.stage[i].process_technical_specific_stage_id,
+            });
+            // delete all material
+            await this.processSpecificStageMaterialRepo.delete({
+              process_technical_specific_stage_id:
+                data.stage[i].process_technical_specific_stage_id,
+            });
+            // delete stage
             await this.processSpecificStageRepo.delete(
               data.stage[i].process_technical_specific_stage_id,
             );
@@ -702,14 +711,15 @@ export class ProcessesService implements IProcessesService {
               },
             );
           }
-          if (data.stage[i].content) {
+          if (data.stage[i].content.length > 0) {
             for (let j = 0; j < data.stage[i].content.length; j++) {
-              //delete content
+              // Check is deleted content
               if (data.stage[i].content[j].is_deleted) {
                 await this.processSpecificStageContentRepo.delete(
                   data.stage[i].content[j].process_technical_specific_stage_content_id,
                 );
               }
+              // Check exist id for update or create new content
               if (!data.stage[i].content[j].process_technical_specific_stage_content_id) {
                 //create new content
                 await this.processSpecificStageContentRepo.save({
@@ -784,7 +794,7 @@ export class ProcessesService implements IProcessesService {
     is_dinary?: boolean,
   ): Promise<any> {
     try {
-      return await this.processSpecificRepo.findOne({
+      const process_specific: ProcessSpecific | any = await this.processSpecificRepo.findOne({
         where: {
           process_technical_specific_id,
         },
@@ -804,6 +814,9 @@ export class ProcessesService implements IProcessesService {
               },
             },
             request: true,
+            process_technical_specific_stage_material: {
+              materialSpecific: true,
+            },
           },
         },
         order: {
@@ -870,6 +883,20 @@ export class ProcessesService implements IProcessesService {
           },
         },
       });
+      // loop to check is get material
+      for (const stage of process_specific.process_technical_specific_stage) {
+        stage.is_get_material = false;
+        // loop to check request material
+        for (const request of stage.request) {
+          if (
+            request.type === RequestType.material_process_specfic_stage &&
+            request.status === RequestStatus.completed
+          ) {
+            stage.is_get_material = true;
+          }
+        }
+      }
+      return process_specific;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
