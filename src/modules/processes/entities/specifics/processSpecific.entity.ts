@@ -50,10 +50,7 @@ export class ProcessSpecific extends AbstractEntity {
   status: ProcessSpecificStatus;
 
   // Relation
-  @ManyToOne(
-    () => ProcessStandard,
-    (processStandard) => processStandard.process_technical_standard,
-  )
+  @ManyToOne(() => ProcessStandard, (processStandard) => processStandard.process_technical_standard)
   @JoinColumn({ name: 'process_technical_standard_id' })
   process_technical_standard: ProcessStandard;
 

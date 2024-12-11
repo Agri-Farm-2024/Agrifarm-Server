@@ -1,13 +1,6 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ProcessSpecific } from './processSpecific.entity';
 import { ProcessSpecificStageContent } from './processSpecificStageContent.entity';
 import { ProcessSpecificStageMaterial } from './processSpecificStageMaterial.entity';
@@ -37,7 +30,9 @@ export class ProcessSpecificStage extends AbstractEntity {
 
   @Column()
   time_end: Date;
-  // Re;ations
+
+  // Relations
+
   @ManyToOne(
     () => ProcessSpecific,
     (processSpecific) => processSpecific.process_technical_specific_stage,
@@ -47,21 +42,16 @@ export class ProcessSpecificStage extends AbstractEntity {
 
   @OneToMany(
     () => ProcessSpecificStageContent,
-    (processSpecificStageContent) =>
-      processSpecificStageContent.process_technical_specific_stage,
+    (processSpecificStageContent) => processSpecificStageContent.process_technical_specific_stage,
   )
   process_technical_specific_stage_content: ProcessSpecificStageContent[];
 
   @OneToMany(
     () => ProcessSpecificStageMaterial,
-    (processSpecificStageMaterial) =>
-      processSpecificStageMaterial.process_technical_specific_stage,
+    (processSpecificStageMaterial) => processSpecificStageMaterial.process_technical_specific_stage,
   )
   process_technical_specific_stage_material: ProcessSpecificStageMaterial[];
 
-  @OneToMany(
-    () => Request,
-    (request) => request.process_technical_specific_stage,
-  )
+  @OneToMany(() => Request, (request) => request.process_technical_specific_stage)
   request: Request[];
 }

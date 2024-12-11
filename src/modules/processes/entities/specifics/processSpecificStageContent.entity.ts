@@ -14,9 +14,7 @@ import { Request } from 'src/modules/requests/entities/request.entity';
 
 @Entity('processes_technical_specific_stage_content')
 export class ProcessSpecificStageContent extends AbstractEntity {
-  constructor(
-    processSpecificStageContent: Partial<ProcessSpecificStageContent>,
-  ) {
+  constructor(processSpecificStageContent: Partial<ProcessSpecificStageContent>) {
     super();
     Object.assign(this, processSpecificStageContent);
   }
@@ -41,11 +39,12 @@ export class ProcessSpecificStageContent extends AbstractEntity {
 
   @Column()
   time_end: Date;
+
   // Relation
+
   @ManyToOne(
     () => ProcessSpecificStage,
-    (processSpecificStage) =>
-      processSpecificStage.process_technical_specific_stage_content,
+    (processSpecificStage) => processSpecificStage.process_technical_specific_stage_content,
   )
   @JoinColumn({ name: 'process_technical_specific_stage_id' })
   process_technical_specific_stage: ProcessSpecificStage;
@@ -56,9 +55,6 @@ export class ProcessSpecificStageContent extends AbstractEntity {
   )
   dinary_stage: DinaryStage;
 
-  @OneToMany(
-    () => Request,
-    (request) => request.process_technical_specific_stage_content,
-  )
+  @OneToMany(() => Request, (request) => request.process_technical_specific_stage_content)
   requests: Request[];
 }

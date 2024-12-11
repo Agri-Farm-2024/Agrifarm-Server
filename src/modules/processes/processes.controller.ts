@@ -17,10 +17,7 @@ import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { Roles } from 'src/common/decorations/role.decoration';
 import { UserRole } from '../users/types/user-role.enum';
-import {
-  ApplyPaginationMetadata,
-  Pagination,
-} from 'src/common/decorations/pagination.decoration';
+import { ApplyPaginationMetadata, Pagination } from 'src/common/decorations/pagination.decoration';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { ProcessTechnicalStandardStatus } from './types/status-processStandard.enum';
 import { UpdateProcessStandardDto } from './dto/update-processStandardStatus.dto';
@@ -36,10 +33,7 @@ export class ProcessesController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.expert)
   @Post('/createProcessStandard')
-  createProcessStandard(
-    @Body() data: CreateProcessDto,
-    @Request() request: any,
-  ): Promise<any> {
+  createProcessStandard(@Body() data: CreateProcessDto, @Request() request: any): Promise<any> {
     return this.processesService.createProcessStandard(data, request.user);
   }
 
@@ -59,11 +53,7 @@ export class ProcessesController {
     @Query('status') status: ProcessTechnicalStandardStatus,
     @Query('plant_id') plant_id: string,
   ): Promise<any> {
-    return this.processesService.getListProcessStandard(
-      pagination,
-      status,
-      plant_id,
-    );
+    return this.processesService.getListProcessStandard(pagination, status, plant_id);
   }
 
   @Put('/updateProcessStandardStatus/:id')
@@ -107,12 +97,7 @@ export class ProcessesController {
     @Request() req: any,
   ): Promise<any> {
     const user = req['user'];
-    return this.processesService.getListProcessSpecific(
-      pagination,
-      status,
-      plant_id,
-      user,
-    );
+    return this.processesService.getListProcessSpecific(pagination, status, plant_id, user);
   }
 
   @UseGuards(AuthGuard)
@@ -152,9 +137,6 @@ export class ProcessesController {
     @Param('process_specific_id') process_specific_id: string,
     @Body() data: any,
   ): Promise<any> {
-    return this.processesService.updateProcessSpecificPublic(
-      process_specific_id,
-      data.is_public,
-    );
+    return this.processesService.updateProcessSpecificPublic(process_specific_id, data.is_public);
   }
 }

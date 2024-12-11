@@ -83,10 +83,7 @@ export class ProcessesService implements IProcessesService {
     private readonly materialService: MaterialsService,
   ) {}
 
-  async createProcessStandard(
-    data: CreateProcessDto,
-    expert: IUser,
-  ): Promise<any> {
+  async createProcessStandard(data: CreateProcessDto, expert: IUser): Promise<any> {
     try {
       //check if plant id and type process name is already exist
       const process = await this.processStandardRepo.findOne({
@@ -108,10 +105,7 @@ export class ProcessesService implements IProcessesService {
       if (data.stage) {
         for (let i = 0; i < data.stage.length; i++) {
           data.stage[i].stage_numberic_order = i + 1;
-          await this.createProcessStage(
-            data.stage[i],
-            new_process.process_technical_standard_id,
-          );
+          await this.createProcessStage(data.stage[i], new_process.process_technical_standard_id);
         }
       }
 
@@ -124,10 +118,7 @@ export class ProcessesService implements IProcessesService {
     }
   }
 
-  async createProcessStage(
-    data: CreateProcessStageDto,
-    process_id: string,
-  ): Promise<any> {
+  async createProcessStage(data: CreateProcessStageDto, process_id: string): Promise<any> {
     try {
       const new_process_stage = await this.processStandardStageRepo.save({
         ...data,
@@ -255,10 +246,7 @@ export class ProcessesService implements IProcessesService {
 
   //update status of process
 
-  async updateProcessStandardStatus(
-    id: string,
-    updateDto: UpdateProcessStandardDto,
-  ): Promise<any> {
+  async updateProcessStandardStatus(id: string, updateDto: UpdateProcessStandardDto): Promise<any> {
     try {
       // get process standard by id
       const process_standard = await this.processStandardRepo.findOne({
@@ -506,26 +494,23 @@ export class ProcessesService implements IProcessesService {
   async createProcessSpecific(service_specific: ServiceSpecific): Promise<any> {
     try {
       // get detail of process standard
-      const process_technical_standard = await this.processStandardRepo.findOne(
-        {
-          where: {
-            plant_season_id: service_specific.plant_season_id,
-          },
-          relations: {
-            process_standard_stage: {
-              process_standard_stage_content: true,
-              process_standard_stage_material: true,
-            },
+      const process_technical_standard = await this.processStandardRepo.findOne({
+        where: {
+          plant_season_id: service_specific.plant_season_id,
+        },
+        relations: {
+          process_standard_stage: {
+            process_standard_stage_content: true,
+            process_standard_stage_material: true,
           },
         },
-      );
+      });
       // get list expert free time
       const list_expert_free_time: User[] =
         await this.userService.getListExpertByProcessSpecificFreeTime();
       // create new process specific
       const process_technical_specific = await this.processSpecificRepo.save({
-        process_technical_standard_id:
-          process_technical_standard.process_technical_standard_id,
+        process_technical_standard_id: process_technical_standard.process_technical_standard_id,
         service_specific_id: service_specific.service_specific_id,
         time_start: service_specific.time_start,
         time_end: service_specific.time_end,
@@ -535,22 +520,13 @@ export class ProcessesService implements IProcessesService {
       // create process specific stage
       for (const stage of process_technical_standard.process_standard_stage) {
         // create process specific stage
-        const process_specific_stage = await this.processSpecificStageRepo.save(
-          {
-            process_technical_specific_id:
-              process_technical_specific.process_technical_specific_id,
-            stage_numberic_order: stage.stage_numberic_order,
-            stage_title: stage.stage_title,
-            time_start: getTimeByPlusDays(
-              service_specific.time_start,
-              stage.time_start,
-            ),
-            time_end: getTimeByPlusDays(
-              service_specific.time_start,
-              stage.time_end,
-            ),
-          },
-        );
+        const process_specific_stage = await this.processSpecificStageRepo.save({
+          process_technical_specific_id: process_technical_specific.process_technical_specific_id,
+          stage_numberic_order: stage.stage_numberic_order,
+          stage_title: stage.stage_title,
+          time_start: getTimeByPlusDays(service_specific.time_start, stage.time_start),
+          time_end: getTimeByPlusDays(service_specific.time_start, stage.time_end),
+        });
         // create process specific stage content
         for (const content of stage.process_standard_stage_content) {
           await this.processSpecificStageContentRepo.save({
@@ -559,14 +535,8 @@ export class ProcessesService implements IProcessesService {
             content_numberic_order: content.content_numberic_order,
             title: content.title,
             content: content.content,
-            time_start: getTimeByPlusDays(
-              service_specific.time_start,
-              content.time_start,
-            ),
-            time_end: getTimeByPlusDays(
-              service_specific.time_start,
-              content.time_end,
-            ),
+            time_start: getTimeByPlusDays(service_specific.time_start, content.time_start),
+            time_end: getTimeByPlusDays(service_specific.time_start, content.time_end),
           });
         }
         // create process specific stage material
@@ -737,14 +707,10 @@ export class ProcessesService implements IProcessesService {
               //delete content
               if (data.stage[i].content[j].is_deleted) {
                 await this.processSpecificStageContentRepo.delete(
-                  data.stage[i].content[j]
-                    .process_technical_specific_stage_content_id,
+                  data.stage[i].content[j].process_technical_specific_stage_content_id,
                 );
               }
-              if (
-                !data.stage[i].content[j]
-                  .process_technical_specific_stage_content_id
-              ) {
+              if (!data.stage[i].content[j].process_technical_specific_stage_content_id) {
                 //create new content
                 await this.processSpecificStageContentRepo.save({
                   process_technical_specific_stage_id:
@@ -758,8 +724,7 @@ export class ProcessesService implements IProcessesService {
               } else {
                 //update content
                 await this.processSpecificStageContentRepo.update(
-                  data.stage[i].content[j]
-                    .process_technical_specific_stage_content_id,
+                  data.stage[i].content[j].process_technical_specific_stage_content_id,
                   {
                     title: data.stage[i].content[j].title,
                     content: data.stage[i].content[j].content,
@@ -917,9 +882,7 @@ export class ProcessesService implements IProcessesService {
    * @returns
    */
 
-  async getDetailProcessSpecificStage(
-    process_technical_specific_stage_id: string,
-  ): Promise<any> {
+  async getDetailProcessSpecificStage(process_technical_specific_stage_id: string): Promise<any> {
     try {
       return await this.processSpecificStageRepo.findOne({
         where: {
@@ -941,9 +904,7 @@ export class ProcessesService implements IProcessesService {
    * @returns
    */
 
-  async updateStatusProcessSpecificToACtive(
-    process_technical_specific_id: string,
-  ): Promise<any> {
+  async updateStatusProcessSpecificToACtive(process_technical_specific_id: string): Promise<any> {
     try {
       // Check process specific exist
       const process_specific_exist = await this.processSpecificRepo.findOne({
@@ -1028,27 +989,23 @@ export class ProcessesService implements IProcessesService {
       // get all process specific content
       const check_time = getTimeByPlusDays(new Date(), 1);
       console.log('check_time', check_time);
-      const process_specific_stage_content =
-        await this.processSpecificStageContentRepo.find({
-          where: {
-            time_start: Between(new Date(), check_time),
-            process_technical_specific_stage: {
-              process_technical_specific: {
-                status: ProcessSpecificStatus.active,
-                expert_id: Not(IsNull()),
-              },
+      const process_specific_stage_content = await this.processSpecificStageContentRepo.find({
+        where: {
+          time_start: Between(new Date(), check_time),
+          process_technical_specific_stage: {
+            process_technical_specific: {
+              status: ProcessSpecificStatus.active,
+              expert_id: Not(IsNull()),
             },
           },
-          relations: {
-            process_technical_specific_stage: {
-              process_technical_specific: true,
-            },
+        },
+        relations: {
+          process_technical_specific_stage: {
+            process_technical_specific: true,
           },
-        });
-      console.log(
-        'process_specific_stage_content',
-        process_specific_stage_content,
-      );
+        },
+      });
+      console.log('process_specific_stage_content', process_specific_stage_content);
       // create task for expert
       for (const content of process_specific_stage_content) {
         await this.requestService.createRequestCultivateProcessContent(content);
@@ -1062,34 +1019,31 @@ export class ProcessesService implements IProcessesService {
     try {
       const time_by_plus_1_day = getTimeByPlusDays(new Date(), 1);
       // get all process specific stage
-      const process_technical_specific_stage =
-        await this.processSpecificStageRepo.find({
-          where: {
-            time_start: Between(new Date(), time_by_plus_1_day),
-            process_technical_specific: {
-              status: ProcessSpecificStatus.active,
-              service_specific: {
-                status: ServiceSpecificStatus.used,
-              },
+      const process_technical_specific_stage = await this.processSpecificStageRepo.find({
+        where: {
+          time_start: Between(new Date(), time_by_plus_1_day),
+          process_technical_specific: {
+            status: ProcessSpecificStatus.active,
+            service_specific: {
+              status: ServiceSpecificStatus.used,
             },
           },
-          relations: {
-            process_technical_specific: {
-              service_specific: true,
-            },
+        },
+        relations: {
+          process_technical_specific: {
+            service_specific: true,
           },
-        });
+        },
+      });
       // Send notification for land renter
       for (const stage of process_technical_specific_stage) {
         await this.notificationService.createNotification({
-          user_id:
-            stage.process_technical_specific.service_specific.landrenter_id,
+          user_id: stage.process_technical_specific.service_specific.landrenter_id,
           content: NotificationContentEnum.ready_process_stage(
             stage.stage_title,
             stage.stage_numberic_order,
           ),
-          component_id:
-            stage.process_technical_specific.process_technical_specific_id,
+          component_id: stage.process_technical_specific.process_technical_specific_id,
           type: NotificationType.process,
           title: NotificationTitleEnum.ready_process_stage,
         });
@@ -1108,10 +1062,7 @@ export class ProcessesService implements IProcessesService {
    *
    */
 
-  async updateProcessSpecificPublic(
-    process_specific_id: string,
-    is_public: boolean,
-  ): Promise<any> {
+  async updateProcessSpecificPublic(process_specific_id: string, is_public: boolean): Promise<any> {
     try {
       const process_specific = await this.processSpecificRepo.findOne({
         where: {
@@ -1134,41 +1085,33 @@ export class ProcessesService implements IProcessesService {
    * @param process_technical_specific_stage_id : string
    */
 
-  async updateMaterialSpecificStage(
-    process_technical_specific_stage_id: string,
-  ): Promise<void> {
+  async updateMaterialSpecificStage(process_technical_specific_stage_id: string): Promise<void> {
     // get detail of material specific stage
-    const process_technical_specific_stage =
-      await this.processSpecificStageRepo.findOne({
-        where: {
-          process_technical_specific_stage_id,
+    const process_technical_specific_stage = await this.processSpecificStageRepo.findOne({
+      where: {
+        process_technical_specific_stage_id,
+      },
+      relations: {
+        process_technical_specific_stage_material: true,
+        process_technical_specific: {
+          service_specific: true,
         },
-        relations: {
-          process_technical_specific_stage_material: true,
-          process_technical_specific: {
-            service_specific: true,
-          },
-        },
-      });
+      },
+    });
     // update store material
     for (const material of process_technical_specific_stage.process_technical_specific_stage_material) {
       // update quantity of material in stock
-      await this.materialService.updateQuantityMaterial(
-        material.material_id,
-        material.quantity,
-      );
+      await this.materialService.updateQuantityMaterial(material.material_id, material.quantity);
     }
     // Send noti to user
     await this.notificationService.createNotification({
       user_id:
-        process_technical_specific_stage.process_technical_specific
-          .service_specific.landrenter_id,
+        process_technical_specific_stage.process_technical_specific.service_specific.landrenter_id,
       content: NotificationContentEnum.update_material_specific_stage(
         process_technical_specific_stage.stage_title,
         process_technical_specific_stage.stage_numberic_order,
       ),
-      component_id:
-        process_technical_specific_stage.process_technical_specific_stage_id,
+      component_id: process_technical_specific_stage.process_technical_specific_stage_id,
       type: NotificationType.process,
       title: NotificationTitleEnum.update_material_specific_stage,
     });

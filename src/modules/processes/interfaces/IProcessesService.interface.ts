@@ -17,10 +17,7 @@ export interface IProcessesService {
     plant_id: string,
   ): Promise<any>;
 
-  updateProcessStandardStatus(
-    id: string,
-    updateDto: UpdateProcessStandardDto,
-  ): Promise<any>;
+  updateProcessStandardStatus(id: string, updateDto: UpdateProcessStandardDto): Promise<any>;
 
   updateProcessStandard(
     process_technical_standard_id: string,
@@ -49,20 +46,13 @@ export interface IProcessesService {
     user: IUser,
   ): Promise<any>;
 
-  updateStatusProcessSpecificToACtive(
-    process_technical_specific_id: string,
-  ): Promise<any>;
+  updateStatusProcessSpecificToACtive(process_technical_specific_id: string): Promise<any>;
 
   checkAndCreateTaskProcessContentForExpert(): Promise<any>;
 
   CheckNewStageProcessSpecific(): Promise<any>;
 
-  updateProcessSpecificPublic(
-    process_specific_id: string,
-    is_public: boolean,
-  ): Promise<any>;
+  updateProcessSpecificPublic(process_specific_id: string, is_public: boolean): Promise<any>;
 
-  updateMaterialSpecificStage(
-    process_technical_specific_stage_id: string,
-  ): Promise<void>;
+  updateMaterialSpecificStage(process_technical_specific_stage_id: string): Promise<void>;
 }

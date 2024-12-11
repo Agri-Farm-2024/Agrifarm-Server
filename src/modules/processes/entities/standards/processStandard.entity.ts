@@ -9,7 +9,6 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-// import { TypeProcess } from '../../types/type-process.enum';
 import { ProcessStandardStage } from './processStandardStage.entity';
 import { PlantSeason } from 'src/modules/plants/entities/plantSeason.entity';
 import { ProcessTechnicalStandardStatus } from '../../types/status-processStandard.enum';
@@ -42,11 +41,8 @@ export class ProcessStandard extends AbstractEntity {
     default: ProcessTechnicalStandardStatus.pending,
   })
   status: ProcessTechnicalStandardStatus;
-
-  @OneToOne(
-    () => PlantSeason,
-    (plantSeason) => plantSeason.process_technical_standard,
-  )
+  // Relations
+  @OneToOne(() => PlantSeason, (plantSeason) => plantSeason.process_technical_standard)
   @JoinColumn({ name: 'plant_season_id' })
   plant_season: PlantSeason;
 
@@ -60,9 +56,6 @@ export class ProcessStandard extends AbstractEntity {
   )
   process_standard_stage: ProcessStandardStage[];
 
-  @OneToMany(
-    () => ProcessSpecific,
-    (processSpecific) => processSpecific.process_technical_standard,
-  )
+  @OneToMany(() => ProcessSpecific, (processSpecific) => processSpecific.process_technical_standard)
   process_technical_standard: ProcessSpecific[];
 }

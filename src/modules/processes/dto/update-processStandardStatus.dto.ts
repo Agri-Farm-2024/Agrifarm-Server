@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional } from 'class-validator';
-import { ProcessTechnicalStandardStatus } from '../types/status-processStandard.enum';
+import { IsOptional } from 'class-validator';
 
 export class UpdateProcessStandardDto {
   @ApiProperty({

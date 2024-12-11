@@ -1,19 +1,11 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ProcessStandardStage } from './processStandardStage.entity';
 import { Material } from 'src/modules/materials/entities/material.entity';
 
 @Entity('processes_technical_standard_stage_material')
 export class ProcessStandardStageMaterial extends AbstractEntity {
-  constructor(
-    processStandardStageMaterial: Partial<ProcessStandardStageMaterial>,
-  ) {
+  constructor(processStandardStageMaterial: Partial<ProcessStandardStageMaterial>) {
     super();
     Object.assign(this, processStandardStageMaterial);
   }
@@ -29,16 +21,15 @@ export class ProcessStandardStageMaterial extends AbstractEntity {
 
   @Column('int')
   quantity: number;
-
+  // Relations
   @ManyToOne(
     () => ProcessStandardStage,
-    (processStandardStage) =>
-      processStandardStage.process_standard_stage_content,
+    (processStandardStage) => processStandardStage.process_standard_stage_content,
   )
   @JoinColumn({ name: 'process_technical_standard_stage_id' })
   process_standard_stage_material: ProcessStandardStage;
 
   @ManyToOne(() => Material, (material) => material.material_process_standard_stage_material)
-  @JoinColumn({name: 'material_id'})
+  @JoinColumn({ name: 'material_id' })
   material: Material;
 }
