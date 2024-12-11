@@ -23,8 +23,6 @@ export const setTimeExpireSchedule = (): Date => {
   return result;
 };
 
-export const setHourToZero = (time: Date): Date => {
-  const result = new Date(time);
-  result.setHours(0, 0, 0, 0);
-  return result;
+export const getDateWithoutTime = (time: Date): Date => {
+  return new Date(time.setUTCHours(0, 0, 0, 0));
 };

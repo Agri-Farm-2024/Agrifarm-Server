@@ -36,7 +36,6 @@ import { BookingsService } from '../bookings/bookings.service';
 import { ServiceSpecific } from '../servicesPackage/entities/serviceSpecific.entity';
 import { IUser } from '../auths/types/IUser.interface';
 import { createRequestTechnicalSupportDTO } from './dto/create-request-technical-support.dto';
-import { ChannelsService } from '../channels/channels.service';
 import { ServiceSpecificStatus } from '../servicesPackage/types/service-specific-status.enum';
 import { ProcessSpecificStageContent } from '../processes/entities/specifics/processSpecificStageContent.entity';
 import { selectUser } from 'src/utils/select.util';
@@ -45,6 +44,11 @@ import { TransactionsService } from '../transactions/transactions.service';
 import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
 import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
 import { TransactionType } from '../transactions/types/transaction-type.enum';
+import {
+  getDateWithoutTime,
+  getTimeByPlusDays,
+  getTimeByPlusMonths,
+} from 'src/utils/time.utl';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -71,11 +75,7 @@ export class RequestsService implements IRequestService {
 
     private readonly servicePackageService: ServicesService,
 
-    private readonly channelService: ChannelsService,
-
     private readonly transactionService: TransactionsService,
-
-    private readonly materialSerivce: MaterialsService,
   ) {}
 
   async createRequestViewLand(data: CreateRequestViewLandDTO): Promise<any> {
@@ -393,15 +393,13 @@ export class RequestsService implements IRequestService {
   ): Promise<void> {
     try {
       // set time start is  0h next day
-      const time_start = new Date();
-      time_start.setDate(time_start.getDate() + 1);
-      time_start.setHours(0, 0, 0, 0);
+      console.log(getTimeByPlusDays(getDateWithoutTime(new Date()), 1));
       const request_exist_material = await this.requestRepo.findOne({
         where: {
           process_technical_specific_stage_id:
             process_specific_stage.process_technical_specific_stage_id,
           type: RequestType.material_process_specfic_stage,
-          time_start: time_start,
+          time_start: getTimeByPlusDays(getDateWithoutTime(new Date()), 1),
         },
       });
       if (!request_exist_material) {
@@ -438,6 +436,7 @@ export class RequestsService implements IRequestService {
         where: {
           service_specific_id: createRequestPurchase.service_specific_id,
           type: RequestType.product_purchase,
+          time_start: getDateWithoutTime(new Date()),
         },
       });
       if (request_purchase_exist) {
@@ -504,11 +503,14 @@ export class RequestsService implements IRequestService {
     service_specific_id: string,
   ): Promise<any> {
     try {
+      const time_start = new Date();
+      time_start.setHours(0, 0, 0, 0);
       //check request purchase for service is exist
       const request_purchase_hasvest_exist = await this.requestRepo.findOne({
         where: {
           service_specific_id: service_specific_id,
           type: RequestType.product_puchase_harvest,
+          time_start: getTimeByPlusMonths(getDateWithoutTime(new Date()), 1),
         },
       });
       if (request_purchase_hasvest_exist) {
@@ -861,7 +863,7 @@ export class RequestsService implements IRequestService {
       const new_request = await this.requestRepo.save({
         process_technical_specific_stage_content_id:
           process_specific_stage_content.process_technical_specific_stage_content_id,
-        time_start: process_specific_stage_content.time_start,
+        time_start: getTimeByPlusDays(getDateWithoutTime(new Date()), 1),
         type: RequestType.cultivate_process_content,
         status: RequestStatus.assigned,
       });
