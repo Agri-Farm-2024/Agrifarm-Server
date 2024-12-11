@@ -9,10 +9,7 @@ export interface ITransactionService {
 
   createTransactionPaymentBookingLand(booking_id: string): Promise<any>;
 
-  handleTransactionPayment(
-    transaction_code: string,
-    total_price: number,
-  ): Promise<any>;
+  handleTransactionPayment(transaction_code: string, total_price: number): Promise<any>;
 
   handlePaymentBookingLand(transaction: Transaction): Promise<any>;
 

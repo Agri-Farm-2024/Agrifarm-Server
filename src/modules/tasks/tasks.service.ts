@@ -39,6 +39,12 @@ export class TasksService implements ITaskService {
     private readonly channelService: ChannelsService,
   ) {}
 
+  /**
+   *  Create a new task with request pending
+   * @param request_id
+   * @returns
+   */
+
   async createTask(request_id: string): Promise<any> {
     try {
       // Create a new task
@@ -49,10 +55,14 @@ export class TasksService implements ITaskService {
     }
   }
 
-  async createTaskAuto(
-    request_id: string,
-    assigned_to_id: string,
-  ): Promise<any> {
+  /**
+   * Create a new task with request auto assign to user
+   * @param request_id
+   * @param assigned_to_id
+   * @returns
+   */
+
+  async createTaskAuto(request_id: string, assigned_to_id: string): Promise<any> {
     try {
       // Create a new task
       const new_task = await this.taskEntity.save({
@@ -74,11 +84,15 @@ export class TasksService implements ITaskService {
     }
   }
 
-  async assignTask(
-    task_id: string,
-    assigned_to_id: string,
-    assigned_by_user: IUser,
-  ): Promise<any> {
+  /**
+   * Assign task to user
+   * @param task_id
+   * @param assigned_to_id
+   * @param assigned_by_user
+   * @returns
+   */
+
+  async assignTask(task_id: string, assigned_to_id: string, assigned_by_user: IUser): Promise<any> {
     try {
       // check task exist
       const task = await this.taskEntity.findOne({
@@ -116,10 +130,7 @@ export class TasksService implements ITaskService {
         assigned_at: new Date(),
       });
       // update request status to assigned
-      await this.requestSerivce.updateRequestStatus(
-        task.request_id,
-        RequestStatus.assigned,
-      );
+      await this.requestSerivce.updateRequestStatus(task.request_id, RequestStatus.assigned);
       // send notification to assigned user
       await this.notificationService.createNotification({
         user_id: assigned_to_id,
@@ -220,6 +231,13 @@ export class TasksService implements ITaskService {
     }
   }
 
+  /**
+   * Start task update status to in progress
+   * @param task_id
+   * @param user
+   * @returns
+   */
+
   async startTask(task_id: string, user: IUser): Promise<any> {
     try {
       // check task exist
@@ -263,9 +281,7 @@ export class TasksService implements ITaskService {
         await this.notificationService.createNotification({
           user_id: task.request.sender_id,
           title: NotificationTitleEnum.create_chat,
-          content: NotificationContentEnum.create_chat(
-            task.request.description,
-          ),
+          content: NotificationContentEnum.create_chat(task.request.description),
           type: NotificationType.channel,
           component_id: new_channel.channel_id,
         });
@@ -277,15 +293,19 @@ export class TasksService implements ITaskService {
       );
       return updated_request;
     } catch (error) {
-      if (
-        error instanceof BadRequestException ||
-        error instanceof ForbiddenException
-      ) {
+      if (error instanceof BadRequestException || error instanceof ForbiddenException) {
         throw error;
       }
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  /**
+   * Complete task update status to pending approval
+   * @param task_id
+   * @param user
+   * @returns
+   */
 
   async approveTask(task_id: string, user: IUser): Promise<any> {
     try {
@@ -314,15 +334,18 @@ export class TasksService implements ITaskService {
       );
       return updated_request;
     } catch (error) {
-      if (
-        error instanceof BadRequestException ||
-        error instanceof ForbiddenException
-      ) {
+      if (error instanceof BadRequestException || error instanceof ForbiddenException) {
         throw error;
       }
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  /**
+   * get detail task call by other service
+   * @param task_id
+   * @returns
+   */
 
   async getDetailTask(task_id: string): Promise<any> {
     try {

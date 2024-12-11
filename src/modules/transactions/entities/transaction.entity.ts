@@ -1,13 +1,6 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { Order } from 'src/modules/orders/entities/order.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { TransactionType } from '../types/transaction-type.enum';
 import { TransactionStatus } from '../types/transaction-status.enum';
 import { TransactionPurpose } from '../types/transaction-purpose.enum';
@@ -92,23 +85,13 @@ export class Transaction extends AbstractEntity {
   @JoinColumn({ name: 'booking_land_id' })
   booking_land: BookingLand;
 
-  @ManyToOne(
-    () => ServiceSpecific,
-    (serviceSpecific) => serviceSpecific.transactions,
-  )
+  @ManyToOne(() => ServiceSpecific, (serviceSpecific) => serviceSpecific.transactions)
   @JoinColumn({ name: 'service_specific_id' })
   service_specific: ServiceSpecific;
 
-  @ManyToOne(
-    () => BookingMaterial,
-    (bookingMaterial) => bookingMaterial.transaction,
-  )
+  @ManyToOne(() => BookingMaterial, (bookingMaterial) => bookingMaterial.transaction)
   @JoinColumn({ name: 'booking_material_id' })
   booking_material: BookingMaterial;
-
-  // @ManyToOne(() => Order, (bookingLand) => bookingLand.transactions)
-  // @JoinColumn({ name: 'booking_land_id' })
-  // order: BookingLand;
 
   @ManyToOne(() => Extend, (extend) => extend.transactions)
   @JoinColumn({ name: 'extend_id' })

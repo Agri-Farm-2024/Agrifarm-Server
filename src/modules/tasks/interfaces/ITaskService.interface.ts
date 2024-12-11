@@ -4,11 +4,7 @@ import { RequestStatus } from 'src/modules/requests/types/request-status.enum';
 export interface ITaskService {
   createTask(request_id: string): Promise<any>;
 
-  assignTask(
-    task_id: string,
-    assigned_to_id: string,
-    assigned_by_user: IUser,
-  ): Promise<any>;
+  assignTask(task_id: string, assigned_to_id: string, assigned_by_user: IUser): Promise<any>;
 
   getTasksByUserId(user_id: string, status: RequestStatus): Promise<any>;
 

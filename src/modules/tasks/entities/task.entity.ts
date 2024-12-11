@@ -2,14 +2,7 @@ import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { Report } from 'src/modules/reports/entities/report.entity';
 import { Request } from 'src/modules/requests/entities/request.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('tasks')
 export class Task extends AbstractEntity {

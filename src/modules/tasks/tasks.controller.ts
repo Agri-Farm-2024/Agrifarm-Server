@@ -30,11 +30,7 @@ export class TasksController {
     @Body() data: AssignTaskDto,
     @Request() request: any,
   ) {
-    return this.tasksService.assignTask(
-      task_id,
-      data.assigned_to_id,
-      request.user,
-    );
+    return this.tasksService.assignTask(task_id, data.assigned_to_id, request.user);
   }
 
   @UseGuards(AuthGuard)
@@ -58,10 +54,7 @@ export class TasksController {
     required: false,
   })
   @Get('/getByUser')
-  async getTasksByUserId(
-    @Request() request: any,
-    @Query('status') status: RequestStatus,
-  ) {
+  async getTasksByUserId(@Request() request: any, @Query('status') status: RequestStatus) {
     const user = request['user'];
     return await this.tasksService.getTasksByUserId(user.user_id, status);
   }

@@ -69,9 +69,7 @@ export class TransactionsService implements ITransactionService {
       // create new transaction
       if (!transactionDTO.expired_at) {
         // set expired at 1 day
-        transactionDTO.expired_at = new Date(
-          new Date().setDate(new Date().getDate() + 1),
-        );
+        transactionDTO.expired_at = new Date(new Date().setDate(new Date().getDate() + 1));
       }
       // create new transaction
       const new_transaction: any = await this.transactionRepository.save({
@@ -100,8 +98,7 @@ export class TransactionsService implements ITransactionService {
         return this.createTransactionPaymentBookingLand(booking_id);
       }
       // Get booking by id
-      const booking: BookingLand =
-        await this.bookingService.getBookingDetail(booking_id);
+      const booking: BookingLand = await this.bookingService.getBookingDetail(booking_id);
       // Get total price booking
       const total_price = this.getTotalPriceBooking(booking);
       // check frequency payment
@@ -147,16 +144,12 @@ export class TransactionsService implements ITransactionService {
           booking_land_id: booking_id,
           transaction_code: transaction_code_2,
           total_price: Math.ceil(total_price / 3),
-          expired_at: new Date(
-            new Date().setDate(booking.time_end.getDate() - 10),
-          ),
+          expired_at: new Date(new Date().setDate(booking.time_end.getDate() - 10)),
           status: TransactionStatus.pending,
           user_id: booking.landrenter_id,
         });
         // return detail transaction
-        return await this.getDetailTransaction(
-          first_transaction.transaction_id,
-        );
+        return await this.getDetailTransaction(first_transaction.transaction_id);
       }
     } catch (error) {}
   }
@@ -167,10 +160,7 @@ export class TransactionsService implements ITransactionService {
    * @returns
    */
 
-  async handleTransactionPayment(
-    transaction_code: string,
-    total_price: number,
-  ): Promise<any> {
+  async handleTransactionPayment(transaction_code: string, total_price: number): Promise<any> {
     try {
       // get transaction
       const transaction = await this.transactionRepository.findOne({
@@ -199,13 +189,9 @@ export class TransactionsService implements ITransactionService {
         case TransactionPurpose.booking_land:
           return this.handlePaymentBookingLand(transaction);
         case TransactionPurpose.service:
-          return this.servicePackageService.handlePaymentServiceSpecificSuccess(
-            transaction,
-          );
+          return this.servicePackageService.handlePaymentServiceSpecificSuccess(transaction);
         case TransactionPurpose.extend:
-          return this.extendService.updateExtendToComplete(
-            transaction.extend_id,
-          );
+          return this.extendService.updateExtendToComplete(transaction.extend_id);
         case TransactionPurpose.booking_material:
           return this.materialService.handlePaymentBookingMaterial(transaction);
         default:
@@ -221,17 +207,13 @@ export class TransactionsService implements ITransactionService {
 
   async handlePaymentBookingLand(transaction: Transaction): Promise<any> {
     try {
-      const update_booking =
-        await this.bookingService.updateStatusToCompleted(transaction);
+      const update_booking = await this.bookingService.updateStatusToCompleted(transaction);
       // send order to land renter
       return update_booking;
     } catch (error) {}
   }
 
-  async getListTransactionByUser(
-    user: IUser,
-    pagination: PaginationParams,
-  ): Promise<any> {
+  async getListTransactionByUser(user: IUser, pagination: PaginationParams): Promise<any> {
     try {
       // get list transaction by user
       const [transactions, total_count] = await Promise.all([
@@ -411,8 +393,7 @@ export class TransactionsService implements ITransactionService {
 
   private getTotalPriceBooking(booking: BookingLand): number {
     // check payment frequency
-    const total_price_booking: number =
-      booking.total_month * booking.price_per_month;
+    const total_price_booking: number = booking.total_month * booking.price_per_month;
     const total_price = total_price_booking + booking.price_deposit;
     return total_price;
   }
@@ -453,9 +434,7 @@ export class TransactionsService implements ITransactionService {
             transaction_backup.service_specific_id,
           );
         case TransactionPurpose.order:
-          return await this.orderService.cancelOrder(
-            transaction_backup.order_id,
-          );
+          return await this.orderService.cancelOrder(transaction_backup.order_id);
         case TransactionPurpose.booking_material:
           return await this.materialService.cancelBookingMaterial(
             transaction_backup.booking_material_id,
@@ -489,14 +468,10 @@ export class TransactionsService implements ITransactionService {
           if (transaction.purpose === TransactionPurpose.order) {
             await this.transactionRepository.delete(transaction.transaction_id);
             await this.orderService.cancelOrder(transaction.order_id);
-            this.loggerService.log(
-              `Cancel transaction order with ${transaction.order_id}`,
-            );
+            this.loggerService.log(`Cancel transaction order with ${transaction.order_id}`);
           } else if (transaction.purpose === TransactionPurpose.service) {
             await this.transactionRepository.delete(transaction.transaction_id);
-            await this.servicePackageService.deleteServiceSpecific(
-              transaction.service_specific_id,
-            );
+            await this.servicePackageService.deleteServiceSpecific(transaction.service_specific_id);
           } else {
             transaction.status = TransactionStatus.expired;
             await this.transactionRepository.save(transaction);
