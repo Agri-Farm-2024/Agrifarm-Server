@@ -43,7 +43,7 @@ export class OrdersService implements IOrdersService {
     return await this.orderDetailRepo.save(newOrderDetail);
   }
 
-  async deleteOrder(order_id: string) {
+  async deleteOrder(order_id: string): Promise<string> {
     try {
       // get order detail
       const orderDetail = await this.orderDetailRepo.find({
@@ -63,7 +63,7 @@ export class OrdersService implements IOrdersService {
     }
   }
 
-  async cancelOrder(order_id: string) {
+  async cancelOrder(order_id: string): Promise<string> {
     try {
       // get order
       const order = await this.orderRepo.findOne({
@@ -105,10 +105,7 @@ export class OrdersService implements IOrdersService {
     }
   }
 
-  async getOrdersByUser(
-    user: IUser,
-    pagination: PaginationParams,
-  ): Promise<Order[]> {
+  async getOrdersByUser(user: IUser, pagination: PaginationParams): Promise<Order[]> {
     return await this.orderRepo.find({
       where: {
         landrenter_id: user.user_id,

@@ -1,11 +1,5 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Order } from './order.entity';
 import { Material } from 'src/modules/materials/entities/material.entity';
 @Entity('order_details')
