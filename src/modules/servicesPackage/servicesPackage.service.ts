@@ -202,11 +202,10 @@ export class ServicesService implements IService {
       const plant_season: PlantSeason = await this.PlantsService.getDetailPlantSeason(
         createServiceSpecificDTO.plant_season_id,
       );
-
       // check if the plant season is active
       if (
         plant_season.status !== PlantSeasonStatus.active ||
-        plant_season.month_start !== createServiceSpecificDTO.time_start.getMonth()
+        plant_season.month_start !== new Date(createServiceSpecificDTO.time_start).getMonth() + 1
       ) {
         throw new BadRequestException('Plant season is not applying');
       }
