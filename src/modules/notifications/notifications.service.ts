@@ -21,11 +21,7 @@ export class NotificationsService {
       ...data,
     });
     // send socket to the user
-    this.eventGateway.sendEventToUserId(
-      data.user_id,
-      notification,
-      SocketEvent.notification,
-    );
+    this.eventGateway.sendEventToUserId(data.user_id, notification, SocketEvent.notification);
     // // send socket to the group of user
     // this.eventGateway.sendEventToGroup(
     //   data.user_id,
@@ -35,25 +31,20 @@ export class NotificationsService {
     return this.notificationRepository.save(notification);
   }
 
-  async getListByUser(
-    userId: string,
-    pagination: PaginationParams,
-  ): Promise<any> {
+  async getListByUser(userId: string, pagination: PaginationParams): Promise<any> {
     try {
-      const [notifications, total_count, total_is_not_seen] = await Promise.all(
-        [
-          this.notificationRepository.find({
-            where: { user_id: userId },
-            order: { created_at: 'DESC' },
-            skip: (pagination.page_index - 1) * pagination.page_size,
-            take: pagination.page_size,
-          }),
-          this.notificationRepository.count({ where: { user_id: userId } }),
-          this.notificationRepository.count({
-            where: { user_id: userId, is_seen: false },
-          }),
-        ],
-      );
+      const [notifications, total_count, total_is_not_seen] = await Promise.all([
+        this.notificationRepository.find({
+          where: { user_id: userId },
+          order: { created_at: 'DESC' },
+          skip: (pagination.page_index - 1) * pagination.page_size,
+          take: pagination.page_size,
+        }),
+        this.notificationRepository.count({ where: { user_id: userId } }),
+        this.notificationRepository.count({
+          where: { user_id: userId, is_seen: false },
+        }),
+      ]);
       // get total page
       const total_page = Math.ceil(total_count / pagination.page_size);
 
@@ -70,10 +61,7 @@ export class NotificationsService {
 
   async seen(userId: string): Promise<any> {
     try {
-      await this.notificationRepository.update(
-        { user_id: userId },
-        { is_seen: true },
-      );
+      await this.notificationRepository.update({ user_id: userId }, { is_seen: true });
       return { message: 'Seen all notifications' };
     } catch (error) {
       throw new InternalServerErrorException(error.message);

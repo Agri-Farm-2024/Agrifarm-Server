@@ -104,19 +104,14 @@ export class MaterialsService implements IMaterialService {
         ...createMaterialDto,
       });
 
-      this.loggerService.log(
-        `New material is created with ${new_material.name}`,
-      );
+      this.loggerService.log(`New material is created with ${new_material.name}`);
       return new_material;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
   }
 
-  async updateMaterial(
-    id: string,
-    updateMaterialDto: UpdateMaterialDto,
-  ): Promise<Material> {
+  async updateMaterial(id: string, updateMaterialDto: UpdateMaterialDto): Promise<Material> {
     try {
       //check material is exist
       const material_exist = await this.materialRepo.findOne({
@@ -158,10 +153,7 @@ export class MaterialsService implements IMaterialService {
   }
 
   // update quantiy material for request material
-  async updateQuantityMaterial(
-    material: string,
-    quantity: number,
-  ): Promise<any> {
+  async updateQuantityMaterial(material: string, quantity: number): Promise<any> {
     try {
       const material_exist = await this.materialRepo.findOne({
         where: {
@@ -178,8 +170,7 @@ export class MaterialsService implements IMaterialService {
       }
 
       if (material_exist.type === MaterialType.rent) {
-        material_exist.quantity_of_rented =
-          material_exist.quantity_of_rented + quantity;
+        material_exist.quantity_of_rented = material_exist.quantity_of_rented + quantity;
       }
 
       const update_material = await this.materialRepo.save({
@@ -193,10 +184,7 @@ export class MaterialsService implements IMaterialService {
   }
 
   //Get ALL materials
-  async getMaterials(
-    pagination: PaginationParams,
-    type: MaterialType,
-  ): Promise<any> {
+  async getMaterials(pagination: PaginationParams, type: MaterialType): Promise<any> {
     try {
       // filter condition
       const filter: any = {};
@@ -253,9 +241,7 @@ export class MaterialsService implements IMaterialService {
         }
         // check quantity of material
         if (material_detail.total_quantity < material.quantity) {
-          throw new BadRequestException(
-            `Not enough quantity for material ${material_detail.name}`,
-          );
+          throw new BadRequestException(`Not enough quantity for material ${material_detail.name}`);
         }
       }
       // Create a new order for the transaction
@@ -360,8 +346,9 @@ export class MaterialsService implements IMaterialService {
   async bookingMaterial(data: RentMaterialDto, user: IUser): Promise<any> {
     try {
       // CHeck booking is exist
-      const booking_land: BookingLand =
-        await this.bookingLandService.getBookingDetail(data.booking_land_id);
+      const booking_land: BookingLand = await this.bookingLandService.getBookingDetail(
+        data.booking_land_id,
+      );
       if (booking_land.status !== BookingStatus.completed) {
         throw new BadRequestException('Booking is not completed');
       }
@@ -386,20 +373,17 @@ export class MaterialsService implements IMaterialService {
         }
         // check quantity of material
         if (material_detail.total_quantity < material.quantity) {
-          throw new BadRequestException(
-            `Not enough quantity for material ${material_detail.name}`,
-          );
+          throw new BadRequestException(`Not enough quantity for material ${material_detail.name}`);
         }
       }
       // Create a new booking material
-      const new_booking_material: BookingMaterial =
-        await this.bookingMaterialRepo.save({
-          landrenter_id: user.user_id,
-          time_start: new Date(),
-          time_end: getTimeByPlusDays(new Date(), data.total_day),
-          booking_land_id: data.booking_land_id,
-          staff_id: booking_land.staff_id,
-        });
+      const new_booking_material: BookingMaterial = await this.bookingMaterialRepo.save({
+        landrenter_id: user.user_id,
+        time_start: new Date(),
+        time_end: getTimeByPlusDays(new Date(), data.total_day),
+        booking_land_id: data.booking_land_id,
+        staff_id: booking_land.staff_id,
+      });
       // Caculate total_price for transaction
       let total_price = 0;
       // Loop through each material in the array
@@ -425,14 +409,12 @@ export class MaterialsService implements IMaterialService {
           },
           {
             total_quantity: material_detail.total_quantity - item.quantity,
-            quantity_of_rented:
-              material_detail.quantity_of_rented + item.quantity,
+            quantity_of_rented: material_detail.quantity_of_rented + item.quantity,
           },
         );
         // Calculate the total price
         total_price +=
-          (material_detail.price_of_rent + material_detail.deposit_per_piece) *
-          item.quantity;
+          (material_detail.price_of_rent + material_detail.deposit_per_piece) * item.quantity;
       }
       // create transaction DTO and create transaction
       const transactionData: Partial<CreateTransactionDTO> = {
@@ -444,9 +426,7 @@ export class MaterialsService implements IMaterialService {
       // send noti to staff
       await this.notificationService.createNotification({
         title: NotificationTitleEnum.new_booking_material,
-        content: NotificationContentEnum.new_booking_material(
-          booking_land.land.name,
-        ),
+        content: NotificationContentEnum.new_booking_material(booking_land.land.name),
         user_id: booking_land.staff_id,
         component_id: new_booking_material.booking_material_id,
         type: NotificationType.booking_material,
@@ -644,9 +624,7 @@ export class MaterialsService implements IMaterialService {
       });
       // loop and delete booking material detail
       for (const item of booking_material.booking_material_detail) {
-        await this.bookingMaterialDetailRepo.delete(
-          item.booking_material_detail_id,
-        );
+        await this.bookingMaterialDetailRepo.delete(item.booking_material_detail_id);
       }
       // delete booking material
       await this.bookingMaterialRepo.delete(booking_material_id);
@@ -717,12 +695,11 @@ export class MaterialsService implements IMaterialService {
         },
       });
       // get all booking detail
-      const bookings_detail_material =
-        await this.bookingMaterialDetailRepo.find({
-          where: {
-            booking_material_id: request.booking_material_id,
-          },
-        });
+      const bookings_detail_material = await this.bookingMaterialDetailRepo.find({
+        where: {
+          booking_material_id: request.booking_material_id,
+        },
+      });
       // define total price deposit
       let total_price_deposit: number = 0;
       // loop through each booking detail
@@ -737,9 +714,7 @@ export class MaterialsService implements IMaterialService {
         purpose: TransactionPurpose.report_booking_material,
         booking_material_id: request.booking_material_id,
       };
-      await this.transactionService.createTransaction(
-        transactionData as CreateTransactionDTO,
-      );
+      await this.transactionService.createTransaction(transactionData as CreateTransactionDTO);
       this.loggerService.log(
         `Refund transaction is created for booking material ${booking_material.booking_material_id}`,
       );

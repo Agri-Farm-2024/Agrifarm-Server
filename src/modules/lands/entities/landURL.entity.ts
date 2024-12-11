@@ -1,14 +1,7 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Land } from './land.entity';
 import { LandURLType } from '../types/land-url-type.enum';
 
@@ -34,6 +27,8 @@ export class LandURL extends AbstractEntity {
 
   @Column('uuid', { name: 'land_id' })
   land_id: string;
+
+  // Relations
 
   @ManyToOne(() => Land, (land) => land.url, {
     nullable: true,

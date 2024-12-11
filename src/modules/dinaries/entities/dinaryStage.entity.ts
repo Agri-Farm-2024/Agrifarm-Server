@@ -1,12 +1,5 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import {
-  Entity,
-  Column,
-  JoinColumn,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  OneToOne,
-} from 'typeorm';
+import { Entity, Column, JoinColumn, OneToMany, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
 
 import { DinaryLink } from './dinaryLink.entity';
 import { ProcessSpecificStageContent } from 'src/modules/processes/entities/specifics/processSpecificStageContent.entity';

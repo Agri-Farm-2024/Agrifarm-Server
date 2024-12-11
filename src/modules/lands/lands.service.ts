@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateLandDto } from './dto/create-land.dto';
 import { UpdateLandDTO } from './dto/update-land.dto';
 import { ILandService } from './interfaces/ILandService.interface';
@@ -309,9 +305,7 @@ export class LandsService implements ILandService {
       // check if data have staff_id
       if (data.staff_id) {
         // check if staff_id is exist
-        const staff_exist: User = await this.userService.findUserById(
-          data.staff_id,
-        );
+        const staff_exist: User = await this.userService.findUserById(data.staff_id);
         if (staff_exist.role !== UserRole.staff) {
           throw new BadRequestException('User is not staff');
         }

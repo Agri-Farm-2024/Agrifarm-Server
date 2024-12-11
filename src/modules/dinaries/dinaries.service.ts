@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  forwardRef,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateDinaryDto } from './dto/create-dinary.dto';
 import { UpdateDinaryDto } from './dto/update-dinary.dto';
 import { IDinariesService } from './interfaces/IDinariesService.interface';
@@ -37,20 +32,12 @@ export class DinariesService implements IDinariesService {
     private readonly requestService: RequestsService,
   ) {}
 
-  async createDinary(
-    data: CreateDinaryDto,
-    process_stage_content_id: string,
-  ): Promise<any> {
+  async createDinary(data: CreateDinaryDto, process_stage_content_id: string): Promise<any> {
     try {
       // get detail process stage content
       const request_process_stage_content_multivate: Request =
-        await this.requestService.getDetailRequestCultivateProcess(
-          process_stage_content_id,
-        );
-      if (
-        request_process_stage_content_multivate.status !==
-        RequestStatus.in_progress
-      ) {
+        await this.requestService.getDetailRequestCultivateProcess(process_stage_content_id);
+      if (request_process_stage_content_multivate.status !== RequestStatus.in_progress) {
         throw new BadRequestException('Task not started yet');
       }
       //check if dinary stage exist
@@ -62,9 +49,8 @@ export class DinariesService implements IDinariesService {
       // check dinary is exist
       if (dinary_stage) {
         //get dianry stage by process  technical stage content id
-        const dinary_stage_view = await this.getDinaryStageByProcessContent(
-          process_stage_content_id,
-        );
+        const dinary_stage_view =
+          await this.getDinaryStageByProcessContent(process_stage_content_id);
         return dinary_stage_view;
       }
       //crete new dinary stage
@@ -94,10 +80,7 @@ export class DinariesService implements IDinariesService {
   }
 
   //update dinary stage
-  async updateDinary(
-    updateDinaryDto: UpdateDinaryDto,
-    id: string,
-  ): Promise<any> {
+  async updateDinary(updateDinaryDto: UpdateDinaryDto, id: string): Promise<any> {
     try {
       const dinary_stage = await this.dinariesStageRepo.findOne({
         where: {
@@ -135,9 +118,7 @@ export class DinariesService implements IDinariesService {
   }
 
   //get list dianry by process spcific id
-  async getDinaryStageByProcessSpecificId(
-    process_specific_id: string,
-  ): Promise<any> {
+  async getDinaryStageByProcessSpecificId(process_specific_id: string): Promise<any> {
     try {
       const process_specific_exist: ProcessSpecific =
         await this.processService.getDetailProcessSpecific(process_specific_id);
@@ -149,10 +130,7 @@ export class DinariesService implements IDinariesService {
       if (process_specific_exist.is_public === false) {
         throw new BadRequestException('Public standard stage not found');
       }
-      return await this.processService.getDetailProcessSpecific(
-        process_specific_id,
-        true,
-      );
+      return await this.processService.getDetailProcessSpecific(process_specific_id, true);
     } catch (error) {
       throw new BadRequestException(error.message);
     }

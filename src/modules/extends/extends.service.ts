@@ -56,25 +56,16 @@ export class ExtendsService implements IExtendService {
       const extend_exist = await this.extendRepository.findOne({
         where: {
           booking_land_id: createExtendDTO.booking_land_id,
-          status: Not(
-            In([
-              ExtendStatus.canceled,
-              ExtendStatus.rejected,
-              ExtendStatus.completed,
-            ]),
-          ),
+          status: Not(In([ExtendStatus.canceled, ExtendStatus.rejected, ExtendStatus.completed])),
         },
       });
       if (extend_exist) {
-        throw new BadRequestException(
-          'Extend is already exist please handle this extend first',
-        );
+        throw new BadRequestException('Extend is already exist please handle this extend first');
       }
       // Get booking land by id
-      const bookingLand: BookingLand =
-        await this.bookingLandService.getBookingDetail(
-          createExtendDTO.booking_land_id,
-        );
+      const bookingLand: BookingLand = await this.bookingLandService.getBookingDetail(
+        createExtendDTO.booking_land_id,
+      );
       // check booking status
       if (bookingLand.status !== BookingStatus.completed) {
         throw new BadRequestException('Booking is not paid yet');
@@ -88,8 +79,7 @@ export class ExtendsService implements IExtendService {
       // get time end by plus month
       const time_end = new Date(
         new Date(bookingLand.time_end).setMonth(
-          new Date(bookingLand.time_end).getMonth() +
-            createExtendDTO.total_month,
+          new Date(bookingLand.time_end).getMonth() + createExtendDTO.total_month,
         ),
       );
       // check exist booking land in time
@@ -156,9 +146,7 @@ export class ExtendsService implements IExtendService {
       await this.notificationService.createNotification({
         user_id: new_extend.booking_land.landrenter_id,
         component_id: new_extend.extend_id,
-        content: NotificationContentEnum.request_extend(
-          booking_previous.land.name,
-        ),
+        content: NotificationContentEnum.request_extend(booking_previous.land.name),
         type: NotificationType.extend,
         title: NotificationTitleEnum.request_extend,
       });
@@ -178,11 +166,7 @@ export class ExtendsService implements IExtendService {
    * @returns
    */
 
-  async updateExtend(
-    data: UpdateExtendDTO,
-    extend_id: string,
-    user: IUser,
-  ): Promise<any> {
+  async updateExtend(data: UpdateExtendDTO, extend_id: string, user: IUser): Promise<any> {
     try {
       // find extend by id
       const extend = await this.extendRepository.findOne({
@@ -227,9 +211,7 @@ export class ExtendsService implements IExtendService {
         await this.notificationService.createNotification({
           user_id: extend.booking_land.land.staff_id,
           component_id: extend.extend_id,
-          content: NotificationContentEnum.create_extend(
-            extend.booking_land.land.name,
-          ),
+          content: NotificationContentEnum.create_extend(extend.booking_land.land.name),
           type: NotificationType.extend,
           title: NotificationTitleEnum.create_extend,
         });
@@ -241,9 +223,7 @@ export class ExtendsService implements IExtendService {
           extend.status !== ExtendStatus.pending &&
           extend.status !== ExtendStatus.pending_contract
         ) {
-          throw new BadRequestException(
-            'Extend is not pending or pending contract',
-          );
+          throw new BadRequestException('Extend is not pending or pending contract');
         }
         // Check status is pending rejected by land renter
         if (extend.status === ExtendStatus.pending) {
@@ -272,9 +252,7 @@ export class ExtendsService implements IExtendService {
           await this.notificationService.createNotification({
             user_id: extend.booking_land.land.staff_id,
             component_id: extend.extend_id,
-            content: NotificationContentEnum.reject_extend(
-              extend.booking_land.land.name,
-            ),
+            content: NotificationContentEnum.reject_extend(extend.booking_land.land.name),
             type: NotificationType.extend,
             title: NotificationTitleEnum.reject_extend,
           });
@@ -302,9 +280,7 @@ export class ExtendsService implements IExtendService {
           await this.notificationService.createNotification({
             user_id: extend.booking_land.landrenter_id,
             component_id: extend.extend_id,
-            content: NotificationContentEnum.reject_extend(
-              extend.booking_land.land.name,
-            ),
+            content: NotificationContentEnum.reject_extend(extend.booking_land.land.name),
             type: NotificationType.extend,
             title: NotificationTitleEnum.reject_extend,
           });
@@ -324,9 +300,7 @@ export class ExtendsService implements IExtendService {
         await this.notificationService.createNotification({
           user_id: extend.booking_land.landrenter_id,
           component_id: extend.extend_id,
-          content: NotificationContentEnum.pending_sign_extend(
-            extend.booking_land.land.name,
-          ),
+          content: NotificationContentEnum.pending_sign_extend(extend.booking_land.land.name),
           type: NotificationType.extend,
           title: NotificationTitleEnum.pending_sign_extend,
         });
@@ -352,16 +326,12 @@ export class ExtendsService implements IExtendService {
           purpose: TransactionPurpose.extend,
           user_id: extend.booking_land.landrenter_id,
         };
-        await this.transactionService.createTransaction(
-          transactionData as CreateTransactionDTO,
-        );
+        await this.transactionService.createTransaction(transactionData as CreateTransactionDTO);
         // send notification to user
         await this.notificationService.createNotification({
           user_id: extend.booking_land.landrenter_id,
           component_id: extend.extend_id,
-          content: NotificationContentEnum.pending_payment_extend(
-            extend.booking_land.land.name,
-          ),
+          content: NotificationContentEnum.pending_payment_extend(extend.booking_land.land.name),
           type: NotificationType.extend,
           title: NotificationTitleEnum.pending_payment_extend,
         });
@@ -376,10 +346,7 @@ export class ExtendsService implements IExtendService {
         where: { extend_id: extend_id },
       });
     } catch (error) {
-      if (
-        error instanceof BadRequestException ||
-        error instanceof ForbiddenException
-      ) {
+      if (error instanceof BadRequestException || error instanceof ForbiddenException) {
         throw error;
       }
       throw new InternalServerErrorException(error.message);
@@ -431,9 +398,7 @@ export class ExtendsService implements IExtendService {
       await this.notificationService.createNotification({
         user_id: extend.booking_land.landrenter_id,
         component_id: extend.extend_id,
-        content: NotificationContentEnum.extend_completed(
-          extend.booking_land.land.name,
-        ),
+        content: NotificationContentEnum.extend_completed(extend.booking_land.land.name),
         type: NotificationType.extend,
         title: NotificationTitleEnum.extend_completed,
       });
@@ -447,15 +412,10 @@ export class ExtendsService implements IExtendService {
           land_id: extend.booking_land.land_id,
           land_name: extend.booking_land.land.name,
           time_start: extend.time_start.toLocaleDateString(),
-          time_end: getTimeByPlusMonths(
-            extend.time_start,
-            extend.total_month,
-          ).toLocaleDateString(),
+          time_end: getTimeByPlusMonths(extend.time_start, extend.total_month).toLocaleDateString(),
           total_month: extend.total_month,
           price_per_month: extend.price_per_month,
-          total_price: parsePriceToVND(
-            extend.total_month * extend.price_per_month,
-          ),
+          total_price: parsePriceToVND(extend.total_month * extend.price_per_month),
           status: 'Đã hoàn thành',
           user_mail: extend.booking_land.land_renter.email,
           transaction_code: extend.transactions[0].transaction_code,

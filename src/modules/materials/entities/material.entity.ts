@@ -63,6 +63,8 @@ export class Material extends AbstractEntity {
   })
   status: MaterialStatus;
 
+  // Relations
+
   @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.material)
   orders_detail: OrderDetail[];
 
@@ -74,14 +76,10 @@ export class Material extends AbstractEntity {
 
   @OneToMany(
     () => ProcessSpecificStageMaterial,
-    (processSpecificSTageMaterial) =>
-      processSpecificSTageMaterial.materialSpecific,
+    (processSpecificSTageMaterial) => processSpecificSTageMaterial.materialSpecific,
   )
   process_specific_stage_material: ProcessSpecificStageMaterial[];
 
-  @OneToMany(
-    () => BookingMaterialDetail,
-    (bookingMaterialDetail) => bookingMaterialDetail.material,
-  )
+  @OneToMany(() => BookingMaterialDetail, (bookingMaterialDetail) => bookingMaterialDetail.material)
   material_booking_detail: BookingMaterialDetail[];
 }

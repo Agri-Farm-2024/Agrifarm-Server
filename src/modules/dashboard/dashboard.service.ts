@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { RequestsService } from '../requests/requests.service';
 import { BookingsService } from '../bookings/bookings.service';

@@ -8,11 +8,7 @@ export interface IExtendService {
 
   createRequestExtend(booking_previous: BookingLand): Promise<any>;
 
-  updateExtend(
-    data: UpdateExtendDTO,
-    extend_id: string,
-    user: IUser,
-  ): Promise<any>;
+  updateExtend(data: UpdateExtendDTO, extend_id: string, user: IUser): Promise<any>;
 
   updateExtendToComplete(extend_id: string): Promise<any>;
 }

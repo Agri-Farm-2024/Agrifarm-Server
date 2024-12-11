@@ -5,17 +5,9 @@ import { IUser } from 'src/modules/auths/interfaces/IUser.interface';
 export interface ILandService {
   createLand(data: any): any;
 
-  getListByLandrenter(
-    status: LandStatus,
-    pagination: PaginationParams,
-    land_type_id: string,
-  ): any;
+  getListByLandrenter(status: LandStatus, pagination: PaginationParams, land_type_id: string): any;
 
-  getListLandByStaff(
-    status: LandStatus,
-    pagination: PaginationParams,
-    user: IUser,
-  ): any;
+  getListLandByStaff(status: LandStatus, pagination: PaginationParams, user: IUser): any;
 
   getDetailLandById(id: string): any;
 

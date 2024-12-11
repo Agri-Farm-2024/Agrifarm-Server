@@ -25,8 +25,7 @@ export const NotificationContentEnum = {
   booking_refund: (land_name: string, price: string) =>
     `Yêu cầu hoàn tiền đã được tạo trên ${land_name} với số tiền ${price} `,
 
-  create_extend: (land_name: string) =>
-    `Yêu cầu gia hạn thuê đất trên ${land_name} vừa được tạo v`,
+  create_extend: (land_name: string) => `Yêu cầu gia hạn thuê đất trên ${land_name} vừa được tạo v`,
 
   pending_payment_extend: (land_name: string) =>
     `Yêu cầu gia hạn thuê đất trên ${land_name} đang chờ thanh toán`,
@@ -37,10 +36,7 @@ export const NotificationContentEnum = {
   reject_extend: (land_name: string) =>
     `Yêu cầu gia hạn thuê đất trên ${land_name} của đã bị từ chối`,
 
-  update_material_specific_stage: (
-    stage_title: string,
-    stage_numberic_order: number,
-  ) => {
+  update_material_specific_stage: (stage_title: string, stage_numberic_order: number) => {
     return `Cập nhật vật liệu cho giai đoạn ${stage_numberic_order} : ${stage_title}`;
   },
 
@@ -56,12 +52,10 @@ export const NotificationContentEnum = {
   transaction_booking_material_expired: (land_name: string) =>
     `Thanh toán cho thuê vật tư trên ${land_name} đã hết hạn`,
 
-  new_booking_material: (land_name: string) =>
-    `Yêu cầu thuê vật tư mới được tạo trên ${land_name}`,
+  new_booking_material: (land_name: string) => `Yêu cầu thuê vật tư mới được tạo trên ${land_name}`,
 
   booking_material_pending_sign: (land_name: string) =>
     `Thanh toán thành công, yêu cầu thuê vật tư trên ${land_name} đang chờ ký tên`,
 
-  booking_material_expired: () =>
-    `Thuê vật tư đã hết hạn chúng tôi sẽ tiến hành kiểm tra.`,
+  booking_material_expired: () => `Thuê vật tư đã hết hạn chúng tôi sẽ tiến hành kiểm tra.`,
 } as const;

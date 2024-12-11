@@ -1,11 +1,5 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { BookingMaterial } from './booking-material.entity';
 import { Material } from './material.entity';
 
@@ -34,10 +28,7 @@ export class BookingMaterialDetail extends AbstractEntity {
   @Column('int')
   price_per_piece_item: number;
   // Relations
-  @ManyToOne(
-    () => BookingMaterial,
-    (bookingMaterial) => bookingMaterial.booking_material_id,
-  )
+  @ManyToOne(() => BookingMaterial, (bookingMaterial) => bookingMaterial.booking_material_id)
   @JoinColumn({ name: 'booking_material_id' })
   bookingMaterial: BookingMaterial;
 

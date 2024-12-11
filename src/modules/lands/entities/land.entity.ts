@@ -1,14 +1,7 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { LandURL } from './landURL.entity';
 import { LandStatus } from '../types/land-status.enum';
 import { LandType } from './landType.entity';
@@ -53,6 +46,8 @@ export class Land extends AbstractEntity {
     default: LandStatus.free,
   })
   status: LandStatus;
+
+  // Relationss
 
   @OneToMany(() => LandURL, (landURL) => landURL.land)
   url: LandURL[];

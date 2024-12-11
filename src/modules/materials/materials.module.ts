@@ -16,11 +16,7 @@ import { RequestsModule } from '../requests/requests.module';
   controllers: [MaterialsController],
   providers: [MaterialsService],
   imports: [
-    TypeOrmModule.forFeature([
-      Material,
-      BookingMaterial,
-      BookingMaterialDetail,
-    ]),
+    TypeOrmModule.forFeature([Material, BookingMaterial, BookingMaterialDetail]),
     LoggerModule,
     forwardRef(() => OrdersModule),
     forwardRef(() => TransactionsModule),

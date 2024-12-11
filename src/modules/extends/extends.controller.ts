@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Param,
-  Put,
-  UseGuards,
-  Request,
-} from '@nestjs/common';
+import { Controller, Post, Body, Param, Put, UseGuards, Request } from '@nestjs/common';
 import { ExtendsService } from './extends.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateExtendDto } from './dto/create-extend.dto';
@@ -25,9 +17,9 @@ export class ExtendsController {
     return await this.extendsService.createExtend(createExtendDto);
   }
 
+  @Put('/:extend_id')
   @UseGuards(AuthGuard)
   @Roles(UserRole.manager, UserRole.land_renter, UserRole.staff)
-  @Put('/:extend_id')
   async update(
     @Body() data: UpdateExtendDTO,
     @Param('extend_id') extend_id: string,

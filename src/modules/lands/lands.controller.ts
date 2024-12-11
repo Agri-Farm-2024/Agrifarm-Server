@@ -16,10 +16,7 @@ import { UpdateLandDTO } from './dto/update-land.dto';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { LandStatus } from './types/land-status.enum';
 import { CreateLandTypeDto } from './dto/create-landType.dto';
-import {
-  ApplyPaginationMetadata,
-  Pagination,
-} from 'src/common/decorations/pagination.decoration';
+import { ApplyPaginationMetadata, Pagination } from 'src/common/decorations/pagination.decoration';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 
@@ -56,11 +53,7 @@ export class LandsController {
     @Pagination() pagination: PaginationParams,
     @Query('land_type_id') land_type_id: string,
   ) {
-    return this.landsService.getListByLandrenter(
-      status,
-      pagination,
-      land_type_id,
-    );
+    return this.landsService.getListByLandrenter(status, pagination, land_type_id);
   }
 
   @UseGuards(AuthGuard)
@@ -97,10 +90,7 @@ export class LandsController {
   }
 
   @Put('/updateLandType/:id')
-  updateLandType(
-    @Param('id') id: string,
-    @Body() updateLandTypeDto: CreateLandTypeDto,
-  ) {
+  updateLandType(@Param('id') id: string, @Body() updateLandTypeDto: CreateLandTypeDto) {
     return this.landsService.updateLandType(updateLandTypeDto, id);
   }
 

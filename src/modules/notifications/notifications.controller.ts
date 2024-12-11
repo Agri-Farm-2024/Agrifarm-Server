@@ -1,10 +1,7 @@
 import { Controller, Get, UseGuards, Request, Patch } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { ApiTags } from '@nestjs/swagger';
-import {
-  ApplyPaginationMetadata,
-  Pagination,
-} from 'src/common/decorations/pagination.decoration';
+import { ApplyPaginationMetadata, Pagination } from 'src/common/decorations/pagination.decoration';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { IUser } from '../auths/interfaces/IUser.interface';
@@ -17,15 +14,9 @@ export class NotificationsController {
   @ApplyPaginationMetadata
   @UseGuards(AuthGuard)
   @Get()
-  async getByUser(
-    @Pagination() pagination: PaginationParams,
-    @Request() req: any,
-  ) {
+  async getByUser(@Pagination() pagination: PaginationParams, @Request() req: any) {
     const user: IUser = req['user'];
-    return await this.notificationsService.getListByUser(
-      user.user_id,
-      pagination,
-    );
+    return await this.notificationsService.getListByUser(user.user_id, pagination);
   }
 
   @Patch('/seen')

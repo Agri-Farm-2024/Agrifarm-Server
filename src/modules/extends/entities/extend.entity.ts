@@ -1,14 +1,7 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { BookingLand } from 'src/modules/bookings/entities/bookingLand.entity';
 import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ExtendStatus } from '../types/extend-status.enum';
 
 @Entity('extends')
@@ -45,7 +38,9 @@ export class Extend extends AbstractEntity {
     default: ExtendStatus.pending_contract,
   })
   status: ExtendStatus;
+
   // relation
+
   @ManyToOne(() => BookingLand, (bookingLand) => bookingLand.extends)
   @JoinColumn({ name: 'booking_land_id' })
   booking_land: BookingLand;

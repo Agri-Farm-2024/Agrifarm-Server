@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, Max, Min } from 'class-validator';
-import { ExtendStatus } from '../types/extend-status.enum';
 
 export class CreateExtendDto {
   @ApiProperty({

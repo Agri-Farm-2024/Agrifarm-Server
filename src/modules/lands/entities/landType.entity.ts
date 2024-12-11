@@ -27,6 +27,8 @@ export class LandType extends AbstractEntity {
   })
   status: LandTypeStatus;
 
+  // Relations
+
   @OneToMany(() => Land, (land) => land.land_type)
   lands: Land[];
 

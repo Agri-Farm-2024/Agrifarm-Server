@@ -1,12 +1,6 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import {
-  Entity,
-  ManyToOne,
-  JoinColumn,
-  Column,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Entity, ManyToOne, JoinColumn, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { NotificationType } from '../types/notification-type.enum';
 
 @Entity('notifications')
