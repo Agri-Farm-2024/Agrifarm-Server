@@ -60,20 +60,16 @@ export class PlantSeason extends AbstractEntity {
   })
   status: PlantSeasonStatus;
 
+  // Relations
+
   @ManyToOne(() => Plant, (plant) => plant.plants_season, { nullable: true })
   @JoinColumn({ name: 'plant_id' })
   plant: Plant;
 
-  @OneToMany(
-    () => ServiceSpecific,
-    (serviceSpecific) => serviceSpecific.plant_season,
-  )
+  @OneToMany(() => ServiceSpecific, (serviceSpecific) => serviceSpecific.plant_season)
   service_specific: ServiceSpecific[];
 
-  @OneToOne(
-    () => ProcessStandard,
-    (processStandard) => processStandard.plant_season,
-  )
+  @OneToOne(() => ProcessStandard, (processStandard) => processStandard.plant_season)
   process_technical_standard: ProcessStandard;
 
   @OneToMany(() => Request, (request) => request.plant_season)

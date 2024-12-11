@@ -1,13 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEnum,
-  IsInt,
-  IsNotEmpty,
-  IsNumber,
-  IsPositive,
-  Max,
-  Min,
-} from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsPositive, Max, Min } from 'class-validator';
 import { PlantSeasonType } from '../types/plant-season-type.enum';
 
 export class CreatePlantSeasonDto {

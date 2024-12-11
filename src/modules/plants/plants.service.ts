@@ -78,15 +78,11 @@ export class PlantsService implements IPlantService {
       });
 
       if (data.type === 'in_season' && seasonTypeCount >= 1) {
-        throw new BadRequestException(
-          'Only one in-season is allowed per plant variety',
-        );
+        throw new BadRequestException('Only one in-season is allowed per plant variety');
       }
 
       if (data.type === 'out_season' && seasonTypeCount >= 2) {
-        throw new BadRequestException(
-          'Only two out-seasons are allowed per plant variety',
-        );
+        throw new BadRequestException('Only two out-seasons are allowed per plant variety');
       }
 
       // Create a new plant season if validations pass
@@ -132,10 +128,7 @@ export class PlantsService implements IPlantService {
     }
   }
 
-  async updatePlantSeason(
-    id: string,
-    data: UpdatePlantSeasonDto,
-  ): Promise<PlantSeason> {
+  async updatePlantSeason(id: string, data: UpdatePlantSeasonDto): Promise<PlantSeason> {
     try {
       // Find the existing plant season by ID
       const plant_season = await this.plantSeasonEntity.findOne({
@@ -156,15 +149,11 @@ export class PlantsService implements IPlantService {
         });
 
         if (data.type === 'in_season' && seasonTypeCount >= 1) {
-          throw new BadRequestException(
-            'Only one in-season is allowed per plant variety',
-          );
+          throw new BadRequestException('Only one in-season is allowed per plant variety');
         }
 
         if (data.type === 'out_season' && seasonTypeCount >= 2) {
-          throw new BadRequestException(
-            'Only two out-seasons are allowed per plant variety',
-          );
+          throw new BadRequestException('Only two out-seasons are allowed per plant variety');
         }
       }
 
@@ -244,10 +233,7 @@ export class PlantsService implements IPlantService {
     }
   }
 
-  async getAllPlants(
-    pagination: PaginationParams,
-    land_type_id: string,
-  ): Promise<any> {
+  async getAllPlants(pagination: PaginationParams, land_type_id: string): Promise<any> {
     // check filter condition
     const filter_search = pagination.search.reduce((acc, searchItem) => {
       if (searchItem.field && searchItem.value) {
