@@ -1,12 +1,5 @@
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ServiceSpecific } from './serviceSpecific.entity';
 import { ServicePackageStatus } from '../types/service-package-status.enum';
 
@@ -45,9 +38,6 @@ export class ServicePackage extends AbstractEntity {
   })
   status: ServicePackageStatus;
 
-  @OneToMany(
-    () => ServiceSpecific,
-    (serviceSpecific) => serviceSpecific.service_package,
-  )
+  @OneToMany(() => ServiceSpecific, (serviceSpecific) => serviceSpecific.service_package)
   service_specific: ServiceSpecific[];
 }

@@ -44,11 +44,7 @@ import { TransactionsService } from '../transactions/transactions.service';
 import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
 import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
 import { TransactionType } from '../transactions/types/transaction-type.enum';
-import {
-  getDateWithoutTime,
-  getTimeByPlusDays,
-  getTimeByPlusMonths,
-} from 'src/utils/time.utl';
+import { getDateWithoutTime, getTimeByPlusDays, getTimeByPlusMonths } from 'src/utils/time.utl';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -95,15 +91,11 @@ export class RequestsService implements IRequestService {
         throw new BadRequestException('Unable to create request');
       }
       // create task for the request
-      const new_task = await this.taskService.createTask(
-        new_request.request_id,
-      );
+      const new_task = await this.taskService.createTask(new_request.request_id);
       if (!new_task) {
         throw new BadRequestException('Unable to create task');
       }
-      this.loggerService.log(
-        `New request view land created by ${data.guest_email}`,
-      );
+      this.loggerService.log(`New request view land created by ${data.guest_email}`);
       // send mail
       return new_request;
     } catch (error) {
@@ -245,9 +237,7 @@ export class RequestsService implements IRequestService {
    * @returns
    */
 
-  async getDetailRequestPrcocessStandard(
-    plant_season_id: string,
-  ): Promise<any> {
+  async getDetailRequestPrcocessStandard(plant_season_id: string): Promise<any> {
     try {
       const requestProcess = await this.requestRepo.findOne({
         where: {
@@ -277,8 +267,7 @@ export class RequestsService implements IRequestService {
     try {
       const requestCultivate = await this.requestRepo.findOne({
         where: {
-          process_technical_specific_stage_content_id:
-            process_technical_specific_stage_content_id,
+          process_technical_specific_stage_content_id: process_technical_specific_stage_content_id,
           type: RequestType.cultivate_process_content,
         },
       });
@@ -299,10 +288,7 @@ export class RequestsService implements IRequestService {
    * @returns
    */
 
-  async updateRequestStatus(
-    request_id: string,
-    status: RequestStatus,
-  ): Promise<any> {
+  async updateRequestStatus(request_id: string, status: RequestStatus): Promise<any> {
     try {
       // check request exist
       const request = await this.requestRepo.findOne({
@@ -338,10 +324,7 @@ export class RequestsService implements IRequestService {
         );
       }
       // check type of view land for sending mail to user
-      if (
-        status === RequestStatus.assigned &&
-        request.type === RequestType.view_land
-      ) {
+      if (status === RequestStatus.assigned && request.type === RequestType.view_land) {
         // send mail to user
         await this.mailService.sendMail(
           request.guest_email,
@@ -382,9 +365,7 @@ export class RequestsService implements IRequestService {
    * @returns
    */
 
-  async createRequestProcessStandard(
-    data: CreateRequestProcessStandardDTO,
-  ): Promise<any> {
+  async createRequestProcessStandard(data: CreateRequestProcessStandardDTO): Promise<any> {
     try {
       //check if request have plant_season_id
       const request_exist_plantseaosn = await this.requestRepo.findOne({
@@ -394,9 +375,7 @@ export class RequestsService implements IRequestService {
         },
       });
       if (request_exist_plantseaosn) {
-        throw new BadRequestException(
-          'Request create this plant season already exist',
-        );
+        throw new BadRequestException('Request create this plant season already exist');
       }
 
       // Create a new request
@@ -408,9 +387,7 @@ export class RequestsService implements IRequestService {
         throw new BadRequestException('Unable to create request');
       }
       // create task for the request
-      const new_task = await this.taskService.createTask(
-        new_request.request_id,
-      );
+      const new_task = await this.taskService.createTask(new_request.request_id);
       if (!new_task) {
         throw new BadRequestException('Unable to create task');
       }
@@ -426,9 +403,7 @@ export class RequestsService implements IRequestService {
    * @returns
    */
 
-  async createRequestMaterial(
-    process_specific_stage: ProcessSpecificStage,
-  ): Promise<void> {
+  async createRequestMaterial(process_specific_stage: ProcessSpecificStage): Promise<void> {
     try {
       // set time start is  0h next day
       console.log(getTimeByPlusDays(getDateWithoutTime(new Date()), 1));
@@ -465,9 +440,7 @@ export class RequestsService implements IRequestService {
    * @returns
    */
 
-  async createRequestPurchase(
-    createRequestPurchase: CreateRequestPurchaseDto,
-  ): Promise<any> {
+  async createRequestPurchase(createRequestPurchase: CreateRequestPurchaseDto): Promise<any> {
     try {
       //check request purchase for service is exist
       const request_purchase_exist = await this.requestRepo.findOne({
@@ -509,10 +482,7 @@ export class RequestsService implements IRequestService {
           throw new BadRequestException('Unable to create task');
         }
         //update status request
-        await this.updateRequestStatus(
-          new_request.request_id,
-          RequestStatus.assigned,
-        );
+        await this.updateRequestStatus(new_request.request_id, RequestStatus.assigned);
 
         // create Notication for expert
         await this.notificationService.createNotification({
@@ -537,9 +507,7 @@ export class RequestsService implements IRequestService {
    * @returns
    */
 
-  async createRequestPurchaseharvest(
-    service_specific_id: string,
-  ): Promise<any> {
+  async createRequestPurchaseharvest(service_specific_id: string): Promise<any> {
     try {
       //check request purchase for service is exist
       const request_purchase_hasvest_exist = await this.requestRepo.findOne({
@@ -554,9 +522,7 @@ export class RequestsService implements IRequestService {
       }
       //check service specific have service package have puchase
       const service_specific_detail: ServiceSpecific =
-        await this.servicePackageService.getDetailServiceSpecific(
-          service_specific_id,
-        );
+        await this.servicePackageService.getDetailServiceSpecific(service_specific_id);
       if (!service_specific_detail) {
         throw new BadRequestException('Service specific not found');
       }
@@ -574,10 +540,7 @@ export class RequestsService implements IRequestService {
         service_specific_detail.process_technical_specific.expert_id,
       );
       //update status request
-      await this.updateRequestStatus(
-        new_request.request_id,
-        RequestStatus.assigned,
-      );
+      await this.updateRequestStatus(new_request.request_id, RequestStatus.assigned);
       if (!new_task) {
         throw new BadRequestException('Unable to create task');
       }
@@ -625,19 +588,13 @@ export class RequestsService implements IRequestService {
         await this.notificationService.createNotification({
           user_id: booking_land.staff_id,
           title: NotificationTitleEnum.create_report_land,
-          content: NotificationContentEnum.create_report_land(
-            booking_land.land.name,
-          ),
+          content: NotificationContentEnum.create_report_land(booking_land.land.name),
           component_id: new_request.request_id,
           type: NotificationType.request,
         });
         // log
-        this.logger.log(
-          `New request report land created for ${booking_land.booking_id}`,
-        );
-        this.loggerService.log(
-          `New request report land created for ${booking_land.booking_id}`,
-        );
+        this.logger.log(`New request report land created for ${booking_land.booking_id}`);
+        this.loggerService.log(`New request report land created for ${booking_land.booking_id}`);
       }
     } catch (error) {
       this.loggerService.error(error.message, error.stack);
@@ -651,10 +608,7 @@ export class RequestsService implements IRequestService {
    * @returns
    */
 
-  async confirmRequest(
-    request_id: string,
-    data: UpdateStatusTaskDTO,
-  ): Promise<any> {
+  async confirmRequest(request_id: string, data: UpdateStatusTaskDTO): Promise<any> {
     try {
       // check request exist
       const request = await this.requestRepo.findOne({
@@ -676,10 +630,7 @@ export class RequestsService implements IRequestService {
         throw new BadRequestException('Request not found');
       }
       // check status is valid to complete or reject
-      if (
-        data.status !== RequestStatus.completed &&
-        data.status !== RequestStatus.rejected
-      ) {
+      if (data.status !== RequestStatus.completed && data.status !== RequestStatus.rejected) {
         throw new BadRequestException('Invalid status to update');
       }
 
@@ -711,10 +662,7 @@ export class RequestsService implements IRequestService {
         }
         //   //update quantity material
         for (const item of process_specific_stage_detail.process_technical_specific_stage_material) {
-          await this.materialService.updateQuantityMaterial(
-            item.material_id,
-            -item.quantity,
-          );
+          await this.materialService.updateQuantityMaterial(item.material_id, -item.quantity);
         }
       }
 
@@ -743,15 +691,10 @@ export class RequestsService implements IRequestService {
           user_id: request.service_specific.landrenter_id,
           type: TransactionType.refund,
         };
-        await this.transactionService.createTransaction(
-          transactionData as CreateTransactionDTO,
-        );
+        await this.transactionService.createTransaction(transactionData as CreateTransactionDTO);
       }
       // Check condition of report land with completed status
-      if (
-        request.type === RequestType.report_land &&
-        data.status === RequestStatus.completed
-      ) {
+      if (request.type === RequestType.report_land && data.status === RequestStatus.completed) {
         // call boooking service to create transaction refund
         await this.bookingService.createRefundBooking(request.booking_land);
       }
@@ -761,9 +704,7 @@ export class RequestsService implements IRequestService {
         data.status === RequestStatus.completed
       ) {
         // // call booking service to create transaction refund
-        await this.materialService.createRefundTransactionBookingMaterial(
-          request,
-        );
+        await this.materialService.createRefundTransactionBookingMaterial(request);
       }
       // Check condition of report service specific with completed status
       if (
@@ -771,9 +712,7 @@ export class RequestsService implements IRequestService {
         data.status === RequestStatus.completed
       ) {
         // call service package service to create transaction refund
-        await this.servicePackageService.createRefundTransactionServiceSpecific(
-          request,
-        );
+        await this.servicePackageService.createRefundTransactionServiceSpecific(request);
       }
       // update request status
       const updated_request = await this.requestRepo.update(
@@ -785,9 +724,7 @@ export class RequestsService implements IRequestService {
         },
       );
       // log
-      this.loggerService.log(
-        `Request ${request_id} is updated to ${data.status}`,
-      );
+      this.loggerService.log(`Request ${request_id} is updated to ${data.status}`);
       return updated_request;
     } catch (error) {
       this.loggerService.error(error.message, error.stack);
@@ -806,9 +743,7 @@ export class RequestsService implements IRequestService {
       // check service exist
       if (data.service_specific_id) {
         const service_specific: ServiceSpecific =
-          await this.servicePackageService.getDetailServiceSpecific(
-            data.service_specific_id,
-          );
+          await this.servicePackageService.getDetailServiceSpecific(data.service_specific_id);
         // check service is available
         if (service_specific.status !== ServiceSpecificStatus.used) {
           throw new BadRequestException('Service is not available');
@@ -854,20 +789,19 @@ export class RequestsService implements IRequestService {
 
   async getAllRequestForDashbaoard(): Promise<any> {
     try {
-      const [total_request, total_in_progress, total_completed] =
-        await Promise.all([
-          this.requestRepo.count(),
-          this.requestRepo.count({
-            where: {
-              status: RequestStatus.in_progress,
-            },
-          }),
-          this.requestRepo.count({
-            where: {
-              status: RequestStatus.completed,
-            },
-          }),
-        ]);
+      const [total_request, total_in_progress, total_completed] = await Promise.all([
+        this.requestRepo.count(),
+        this.requestRepo.count({
+          where: {
+            status: RequestStatus.in_progress,
+          },
+        }),
+        this.requestRepo.count({
+          where: {
+            status: RequestStatus.completed,
+          },
+        }),
+      ]);
       return {
         total_request,
         total_in_progress,
@@ -891,9 +825,7 @@ export class RequestsService implements IRequestService {
         },
       });
       if (request_exist) {
-        throw new BadRequestException(
-          'Request cultivate process content exist',
-        );
+        throw new BadRequestException('Request cultivate process content exist');
       }
       // Create a new request
       const new_request = await this.requestRepo.save({
@@ -906,14 +838,14 @@ export class RequestsService implements IRequestService {
       // create task for the request
       await this.taskService.createTaskAuto(
         new_request.request_id,
-        process_specific_stage_content.process_technical_specific_stage
-          .process_technical_specific.expert_id,
+        process_specific_stage_content.process_technical_specific_stage.process_technical_specific
+          .expert_id,
       );
       // send noti to expert
       await this.notificationService.createNotification({
         user_id:
-          process_specific_stage_content.process_technical_specific_stage
-            .process_technical_specific.expert_id,
+          process_specific_stage_content.process_technical_specific_stage.process_technical_specific
+            .expert_id,
         title: NotificationTitleEnum.create_task,
         content: NotificationContentEnum.assigned_task(),
         component_id: new_request.request_id,
@@ -931,9 +863,7 @@ export class RequestsService implements IRequestService {
    * @param booking_material_id
    */
 
-  async createRequestReportBookingMaterial(
-    booking_material_id: string,
-  ): Promise<void> {
+  async createRequestReportBookingMaterial(booking_material_id: string): Promise<void> {
     try {
       // create a new request
       const new_request = await this.requestRepo.save({
@@ -955,9 +885,7 @@ export class RequestsService implements IRequestService {
    * @param service_specific_id
    */
 
-  async createRequestReportServiceSpecific(
-    service_specific_id: string,
-  ): Promise<void> {
+  async createRequestReportServiceSpecific(service_specific_id: string): Promise<void> {
     try {
       // create a new request
       const new_request = await this.requestRepo.save({

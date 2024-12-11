@@ -63,9 +63,7 @@ export class ServicesService implements IService {
    * @function createServicePackage
    * @param createServicePackageDTO
    */
-  async createServicePackage(
-    createServicePackageDTO: CreateServicePackageDTO,
-  ): Promise<any> {
+  async createServicePackage(createServicePackageDTO: CreateServicePackageDTO): Promise<any> {
     try {
       // check if the service package already exists
       const service_package_exist = await this.servicePackageRepo.findOne({
@@ -191,10 +189,9 @@ export class ServicesService implements IService {
         throw new BadRequestException('Service package does not exist');
       }
       // get detail plant season
-      const plant_season: PlantSeason =
-        await this.PlantsService.getDetailPlantSeason(
-          createServicePackage.plant_season_id,
-        );
+      const plant_season: PlantSeason = await this.PlantsService.getDetailPlantSeason(
+        createServicePackage.plant_season_id,
+      );
 
       // check if the plant season is active
       if (plant_season.status !== PlantSeasonStatus.active) {
@@ -202,31 +199,22 @@ export class ServicesService implements IService {
       }
       // check if the plant season has a technical standard process
       if (!plant_season.process_technical_standard) {
-        throw new BadRequestException(
-          'Plant season does not have a technical standard process',
-        );
+        throw new BadRequestException('Plant season does not have a technical standard process');
       }
       // check if the technical standard process is accepted
       if (
-        plant_season.process_technical_standard.status !==
-        ProcessTechnicalStandardStatus.accepted
+        plant_season.process_technical_standard.status !== ProcessTechnicalStandardStatus.accepted
       ) {
-        throw new BadRequestException(
-          'Process standard is not accepted for this plant season',
-        );
+        throw new BadRequestException('Process standard is not accepted for this plant season');
       }
       // get detail booking
-      const booking_detail: BookingLand =
-        await this.bookingLandService.getBookingDetail(
-          createServicePackage.booking_id,
-        );
+      const booking_detail: BookingLand = await this.bookingLandService.getBookingDetail(
+        createServicePackage.booking_id,
+      );
       // check time is valid with booking
       if (
         booking_detail.time_end <
-        getTimeByPlusMonths(
-          createServicePackage.time_start,
-          plant_season.total_month,
-        )
+        getTimeByPlusMonths(createServicePackage.time_start, plant_season.total_month)
       ) {
         throw new BadRequestException(
           `Time is not valid with booking expired in ${booking_detail.time_end.toLocaleDateString()}`,
@@ -243,34 +231,25 @@ export class ServicesService implements IService {
       list_service_specific.forEach((service) => {
         total_acreage += service.acreage_land;
       });
-      if (
-        total_acreage + createServicePackage.acreage_land >
-        booking_detail.land.acreage_land
-      ) {
+      if (total_acreage + createServicePackage.acreage_land > booking_detail.land.acreage_land) {
         throw new BadRequestException(
           `Acreage land is not enough. You still have ${booking_detail.land.acreage_land - total_acreage} acreage land`,
         );
       }
       // convert time_start
-      createServicePackage.time_start = getDateWithoutTime(
-        createServicePackage.time_start,
-      );
+      createServicePackage.time_start = getDateWithoutTime(createServicePackage.time_start);
       // create a new service specific
       const new_service_specific = await this.serviceSpecificRepo.save({
         ...createServicePackage,
         price_process: plant_season.price_process,
         price_package: service_package.price,
-        time_end: getTimeByPlusMonths(
-          createServicePackage.time_start,
-          plant_season.total_month,
-        ),
+        time_end: getTimeByPlusMonths(createServicePackage.time_start, plant_season.total_month),
         landrenter_id: user.user_id,
         price_purchase_per_kg: plant_season.price_purchase_per_kg,
       });
       // calculate total price
       const total_price =
-        (new_service_specific.price_package +
-          new_service_specific.price_process) *
+        (new_service_specific.price_package + new_service_specific.price_process) *
         (new_service_specific.acreage_land / 1000);
       // calculate price deposit
       const price_deposit = total_price * 0.1;
@@ -340,9 +319,7 @@ export class ServicesService implements IService {
     }
   }
 
-  async handlePaymentServiceSpecificSuccess(
-    transaction: Transaction,
-  ): Promise<any> {
+  async handlePaymentServiceSpecificSuccess(transaction: Transaction): Promise<any> {
     try {
       // get detail service specific
       const service_specific = await this.serviceSpecificRepo.findOne({
@@ -355,9 +332,7 @@ export class ServicesService implements IService {
       }
       // check default status
       if (service_specific.status !== ServiceSpecificStatus.pending_payment) {
-        throw new BadRequestException(
-          'Service specific is not pending payment',
-        );
+        throw new BadRequestException('Service specific is not pending payment');
       }
       // update service specific status
       await this.serviceSpecificRepo.update(
@@ -428,14 +403,10 @@ export class ServicesService implements IService {
         throw new BadRequestException('Service specific does not exist');
       }
       if (service_specific.status !== ServiceSpecificStatus.pending_payment) {
-        throw new BadRequestException(
-          'Service specific is not pending payment',
-        );
+        throw new BadRequestException('Service specific is not pending payment');
       }
       // delete service specific
-      await this.serviceSpecificRepo.delete(
-        service_specific.service_specific_id,
-      );
+      await this.serviceSpecificRepo.delete(service_specific.service_specific_id);
       return 'Cancel service specific successfully';
     } catch (error) {
       if (error instanceof BadRequestException) {
@@ -657,8 +628,7 @@ export class ServicesService implements IService {
     try {
       // Define price for deposit
       const price_for_deposit =
-        (request.service_specific.price_package +
-          request.service_specific.price_process) *
+        (request.service_specific.price_package + request.service_specific.price_process) *
         (request.service_specific.acreage_land / 1000) *
         0.1;
       // create transaction DTO and create transaction for refund deposit

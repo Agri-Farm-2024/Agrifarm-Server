@@ -89,9 +89,6 @@ export class ServiceSpecific extends AbstractEntity {
   @OneToMany(() => Request, (request) => request.service_specific)
   requests: Request[];
 
-  @OneToOne(
-    () => ProcessSpecific,
-    (processSpecific) => processSpecific.service_specific,
-  )
+  @OneToOne(() => ProcessSpecific, (processSpecific) => processSpecific.service_specific)
   process_technical_specific: ProcessSpecific;
 }

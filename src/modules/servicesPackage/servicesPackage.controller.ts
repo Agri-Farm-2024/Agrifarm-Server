@@ -18,10 +18,7 @@ import { CreateServiceSpecificDTO } from './dto/create-service-specific.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { Roles } from 'src/common/decorations/role.decoration';
 import { UserRole } from '../users/types/user-role.enum';
-import {
-  ApplyPaginationMetadata,
-  Pagination,
-} from 'src/common/decorations/pagination.decoration';
+import { ApplyPaginationMetadata, Pagination } from 'src/common/decorations/pagination.decoration';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { ServiceSpecificStatus } from './types/service-specific-status.enum';
 import { UpdateStatusUsedServiceSpecificDTO } from './dto/update-status-used-service-specific.dto';
@@ -56,20 +53,13 @@ export class ServicesController {
     @Query('status') status: ServiceSpecificStatus,
   ) {
     const user = req['user'];
-    return this.servicesService.getListServiceSpecific(
-      pagination,
-      user,
-      status,
-    );
+    return this.servicesService.getListServiceSpecific(pagination, user, status);
   }
 
   @UseGuards(AuthGuard)
   @Roles(UserRole.land_renter)
   @Post('/buyServiceSpecific')
-  async buyServiceSpecific(
-    @Body() data: CreateServiceSpecificDTO,
-    @Request() req: any,
-  ) {
+  async buyServiceSpecific(@Body() data: CreateServiceSpecificDTO, @Request() req: any) {
     const user = req['user'];
     return this.servicesService.buyServiceSpecific(data, user);
   }

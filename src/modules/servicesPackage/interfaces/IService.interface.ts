@@ -6,16 +6,11 @@ import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { ServiceSpecificStatus } from '../types/service-specific-status.enum';
 
 export interface IService {
-  createServicePackage(
-    createServicePackage: CreateServicePackageDTO,
-  ): Promise<any>;
+  createServicePackage(createServicePackage: CreateServicePackageDTO): Promise<any>;
 
   getListServicePackages(): Promise<any>;
 
-  buyServiceSpecific(
-    createServicePackage: CreateServiceSpecificDTO,
-    user: IUser,
-  ): Promise<any>;
+  buyServiceSpecific(createServicePackage: CreateServiceSpecificDTO, user: IUser): Promise<any>;
 
   getDetailServiceSpecific(service_specific_id: string): Promise<any>;
 
@@ -37,10 +32,7 @@ export interface IService {
 
   checkServiceIsExpired(): Promise<any>;
 
-  updateToUsedServiceSpecific(
-    service_specific_id: string,
-    contract_image: string,
-  ): Promise<any>;
+  updateToUsedServiceSpecific(service_specific_id: string, contract_image: string): Promise<any>;
 
   checkAndCreatePurchaseProductService(): Promise<any>;
 
