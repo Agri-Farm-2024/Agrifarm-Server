@@ -463,12 +463,14 @@ export class RequestsService implements IRequestService {
 
         if (service_specific_detail.service_package.purchase === true) {
           //create new request purchase
+          let time_start = getDateWithoutTime(new Date());
+          // time_start = new Date(time_start.setHours(time_start.getHours() + 7));
           const new_request = await this.requestRepo.save({
             ...createRequestPurchase,
             sender_id: service_specific_detail.landrenter_id,
             type: RequestType.product_purchase,
             status: RequestStatus.assigned,
-            time_start: getDateWithoutTime(new Date()),
+            time_start: time_start,
           });
           if (!new_request) {
             throw new BadRequestException('You do not use process of plant');
@@ -524,9 +526,9 @@ export class RequestsService implements IRequestService {
           throw new BadRequestException('Service specific not found');
         }
         //create new request purchase
-        let time_start = new Date();
-        time_start = getDateWithoutTime(time_start);
+        let time_start = getDateWithoutTime(new Date());
         time_start = getTimeByPlusDays(time_start, 7);
+        // time_start = new Date(time_start.setHours(time_start.getHours() + 7));
         const new_request = await this.requestRepo.save({
           service_specific_id: service_specific_id,
           type: RequestType.product_puchase_harvest,
@@ -563,6 +565,59 @@ export class RequestsService implements IRequestService {
         throw error;
       }
       throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async createRequestCultivateProcessContent(
+    process_specific_stage_content: ProcessSpecificStageContent,
+  ): Promise<void> {
+    try {
+      // check exist
+      const request_exist = await this.requestRepo.findOne({
+        where: {
+          process_technical_specific_stage_content_id:
+            process_specific_stage_content.process_technical_specific_stage_content_id,
+          type: RequestType.cultivate_process_content,
+        },
+      });
+      if (!request_exist) {
+        let time_start = getDateWithoutTime(new Date());
+        time_start = getTimeByPlusDays(time_start, 1);
+        // time_start = new Date(time_start.setHours(time_start.getHours() + 7));
+        // Create a new request
+        const new_request = await this.requestRepo.save({
+          process_technical_specific_stage_content_id:
+            process_specific_stage_content.process_technical_specific_stage_content_id,
+          time_start: time_start,
+          type: RequestType.cultivate_process_content,
+          status: RequestStatus.assigned,
+        });
+        // create task for the request
+        await this.taskService.createTaskAuto(
+          new_request.request_id,
+          process_specific_stage_content.process_technical_specific_stage.process_technical_specific
+            .expert_id,
+        );
+        // send noti to expert
+        await this.notificationService.createNotification({
+          user_id:
+            process_specific_stage_content.process_technical_specific_stage
+              .process_technical_specific.expert_id,
+          title: NotificationTitleEnum.create_task,
+          content: NotificationContentEnum.assigned_task(),
+          component_id: new_request.request_id,
+          type: NotificationType.request,
+        });
+        // log
+        this.logger.log(
+          `New request cultivate process content created for ${process_specific_stage_content.process_technical_specific_stage_content_id}`,
+        );
+        this.loggerService.log(
+          `New request cultivate process content created for ${process_specific_stage_content.process_technical_specific_stage_content_id}`,
+        );
+      }
+    } catch (error) {
+      this.loggerService.error(error.message, error.stack);
     }
   }
 
@@ -823,59 +878,6 @@ export class RequestsService implements IRequestService {
       };
     } catch (error) {
       throw new InternalServerErrorException(error.message);
-    }
-  }
-
-  async createRequestCultivateProcessContent(
-    process_specific_stage_content: ProcessSpecificStageContent,
-  ): Promise<void> {
-    try {
-      // check exist
-      const request_exist = await this.requestRepo.findOne({
-        where: {
-          process_technical_specific_stage_content_id:
-            process_specific_stage_content.process_technical_specific_stage_content_id,
-          type: RequestType.cultivate_process_content,
-        },
-      });
-      if (!request_exist) {
-        const time_start = getTimeByPlusDays(getDateWithoutTime(new Date()), 1);
-        // // set utc +7
-        // time_start = new Date(time_start.setHours(time_start.getHours() + 7));
-        // Create a new request
-        const new_request = await this.requestRepo.save({
-          process_technical_specific_stage_content_id:
-            process_specific_stage_content.process_technical_specific_stage_content_id,
-          time_start: time_start,
-          type: RequestType.cultivate_process_content,
-          status: RequestStatus.assigned,
-        });
-        // create task for the request
-        await this.taskService.createTaskAuto(
-          new_request.request_id,
-          process_specific_stage_content.process_technical_specific_stage.process_technical_specific
-            .expert_id,
-        );
-        // send noti to expert
-        await this.notificationService.createNotification({
-          user_id:
-            process_specific_stage_content.process_technical_specific_stage
-              .process_technical_specific.expert_id,
-          title: NotificationTitleEnum.create_task,
-          content: NotificationContentEnum.assigned_task(),
-          component_id: new_request.request_id,
-          type: NotificationType.request,
-        });
-        // log
-        this.logger.log(
-          `New request cultivate process content created for ${process_specific_stage_content.process_technical_specific_stage_content_id}`,
-        );
-        this.loggerService.log(
-          `New request cultivate process content created for ${process_specific_stage_content.process_technical_specific_stage_content_id}`,
-        );
-      }
-    } catch (error) {
-      this.loggerService.error(error.message, error.stack);
     }
   }
 

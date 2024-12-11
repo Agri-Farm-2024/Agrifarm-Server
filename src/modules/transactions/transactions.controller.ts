@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Query, Request, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Patch, Query, Request, UseGuards } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
@@ -48,5 +48,12 @@ export class TransactionsController {
   @Delete('/:transaction_id')
   cancelTransaction(@Param('transaction_id') transaction_id: string) {
     return this.transactionsService.cancelTransaction(transaction_id);
+  }
+
+  @Patch('/confirm/:transaction_id')
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.admin, UserRole.manager)
+  updateRefundTransactionToConfirm(@Param('transaction_id') transaction_id: string) {
+    return this.transactionsService.updateRefundTransactionToConfirm(transaction_id);
   }
 }

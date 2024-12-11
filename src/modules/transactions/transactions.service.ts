@@ -547,4 +547,31 @@ export class TransactionsService implements ITransactionService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  async updateRefundTransactionToConfirm(transaction_id: string): Promise<any> {
+    try {
+      const transaction = await this.transactionRepository.findOne({
+        where: { transaction_id },
+      });
+      if (!transaction) {
+        throw new BadRequestException('Transaction not found');
+      }
+      if (
+        transaction.type !== TransactionType.refund ||
+        transaction.status !== TransactionStatus.approved
+      ) {
+        throw new BadRequestException('Transaction is not refund or not approved');
+      }
+      transaction.status = TransactionStatus.succeed;
+      this.loggerService.log(`Update refund transaction to confirm ${transaction_id}`);
+
+      return await this.transactionRepository.save(transaction);
+      // send noti to landrenter
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }
