@@ -78,6 +78,12 @@ export class RequestsService implements IRequestService {
     private readonly transactionService: TransactionsService,
   ) {}
 
+  /**
+   * Create request view land
+   * @param CreateRequestViewLandDTO
+   * @returns
+   */
+
   async createRequestViewLand(data: CreateRequestViewLandDTO): Promise<any> {
     try {
       // Create a new request
@@ -108,6 +114,15 @@ export class RequestsService implements IRequestService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  /**
+   * Get list request by status and type
+   * @param pagination
+   * @param status
+   * @param type
+   * @param user
+   * @returns
+   */
 
   async getListRequest(
     pagination: PaginationParams,
@@ -188,6 +203,12 @@ export class RequestsService implements IRequestService {
     }
   }
 
+  /**
+   *  Get detail request by request_id
+   * @param request_id
+   * @returns
+   */
+
   async getDetailRequest(request_id: string): Promise<any> {
     try {
       const request = await this.requestRepo.findOne({
@@ -218,6 +239,12 @@ export class RequestsService implements IRequestService {
     }
   }
 
+  /**
+   * Get detail request by plant_season_id
+   * @param plant_season_id
+   * @returns
+   */
+
   async getDetailRequestPrcocessStandard(
     plant_season_id: string,
   ): Promise<any> {
@@ -237,6 +264,12 @@ export class RequestsService implements IRequestService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  /**
+   * Get detail request by process_technical_specific_stage_content_id
+   * @param process_technical_specific_stage_content_id
+   * @returns
+   */
 
   async getDetailRequestCultivateProcess(
     process_technical_specific_stage_content_id: string,
@@ -343,7 +376,12 @@ export class RequestsService implements IRequestService {
     }
   }
 
-  //create request for expert to create processStandard
+  /**
+   * Create request process standard
+   * @param data
+   * @returns
+   */
+
   async createRequestProcessStandard(
     data: CreateRequestProcessStandardDTO,
   ): Promise<any> {
@@ -503,8 +541,6 @@ export class RequestsService implements IRequestService {
     service_specific_id: string,
   ): Promise<any> {
     try {
-      const time_start = new Date();
-      time_start.setHours(0, 0, 0, 0);
       //check request purchase for service is exist
       const request_purchase_hasvest_exist = await this.requestRepo.findOne({
         where: {
