@@ -33,7 +33,6 @@ import { BookingMaterialStatus } from './types/booking-material-status.enum';
 import { UserRole } from '../users/types/user-role.enum';
 import { Transaction } from '../transactions/entities/transaction.entity';
 import { UpdateBookingMaterialDTO } from './dto/update-booking.material.dto';
-import { getTimeByPlusDays } from 'src/utils/time.utl';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../notifications/types/notification-type.enum';
 import { NotificationTitleEnum } from '../notifications/types/notification-title.enum';
@@ -376,11 +375,14 @@ export class MaterialsService implements IMaterialService {
           throw new BadRequestException(`Not enough quantity for material ${material_detail.name}`);
         }
       }
+      const time_start = new Date();
+      // time end = time start + total day
+      const time_end = time_start.setDate(time_start.getDate() + data.total_day);
       // Create a new booking material
       const new_booking_material: BookingMaterial = await this.bookingMaterialRepo.save({
         landrenter_id: user.user_id,
-        time_start: new Date(),
-        time_end: getTimeByPlusDays(new Date(), data.total_day),
+        time_start: time_start,
+        time_end: time_end,
         booking_land_id: data.booking_land_id,
         staff_id: booking_land.staff_id,
       });
