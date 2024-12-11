@@ -33,6 +33,7 @@ import { UserRole } from '../users/types/user-role.enum';
 import { RequestsService } from '../requests/requests.service';
 import { updateServicePackageDTO } from './dto/update-service-package.dto';
 import { Request } from '../requests/entities/request.entity';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class ServicesService implements IService {
@@ -57,6 +58,8 @@ export class ServicesService implements IService {
 
     @Inject(forwardRef(() => RequestsService))
     private readonly requestService: RequestsService,
+
+    private readonly loggerService: LoggerService,
   ) {}
 
   /**
@@ -391,7 +394,7 @@ export class ServicesService implements IService {
     }
   }
 
-  async deleteServiceSpecific(service_specific_id: string): Promise<any> {
+  async deleteServiceSpecific(service_specific_id: string): Promise<string> {
     try {
       // get detail
       const service_specific = await this.serviceSpecificRepo.findOne({
@@ -407,7 +410,11 @@ export class ServicesService implements IService {
       }
       // delete service specific
       await this.serviceSpecificRepo.delete(service_specific.service_specific_id);
-      return 'Cancel service specific successfully';
+      // log
+      this.loggerService.log(`Service specific ${service_specific_id} is deleted`);
+      this.logger.log(`Service specific ${service_specific_id} is deleted`);
+
+      return 'Delete service specific successfully';
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;

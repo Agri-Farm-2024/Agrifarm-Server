@@ -24,5 +24,5 @@ export const setTimeExpireSchedule = (): Date => {
 };
 
 export const getDateWithoutTime = (time: Date): Date => {
-  return new Date(time.setUTCHours(0, 0, 0, 0));
+  return new Date(new Date(time).setUTCHours(0, 0, 0, 0));
 };

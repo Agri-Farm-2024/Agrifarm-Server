@@ -464,19 +464,9 @@ export class TransactionsService implements ITransactionService {
         },
       });
       if (transactions_expired.length > 0) {
-        transactions_expired.forEach(async (transaction) => {
-          if (transaction.purpose === TransactionPurpose.order) {
-            await this.transactionRepository.delete(transaction.transaction_id);
-            await this.orderService.cancelOrder(transaction.order_id);
-            this.loggerService.log(`Cancel transaction order with ${transaction.order_id}`);
-          } else if (transaction.purpose === TransactionPurpose.service) {
-            await this.transactionRepository.delete(transaction.transaction_id);
-            await this.servicePackageService.deleteServiceSpecific(transaction.service_specific_id);
-          } else {
-            transaction.status = TransactionStatus.expired;
-            await this.transactionRepository.save(transaction);
-          }
-        });
+        for (const transaction of transactions_expired) {
+          await this.cancelTransaction(transaction.transaction_id);
+        }
       }
     } catch (error) {
       this.loggerService.error(

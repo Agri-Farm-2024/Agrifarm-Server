@@ -37,8 +37,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     // Config environment variables
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath:
-        process.env.NODE_ENV === 'development' ? '.env.development' : '.env',
+      envFilePath: process.env.NODE_ENV === 'development' ? '.env.development' : '.env',
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, 'uploadFile'), // Use __dirname to point to dist/uploadFile
