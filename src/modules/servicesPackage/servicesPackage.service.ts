@@ -15,7 +15,7 @@ import { CreateServicePackageDTO } from './dto/create-service-package.dto';
 import { CreateServiceSpecificDTO } from './dto/create-service-specific.dto';
 import { PlantsService } from '../plants/plants.service';
 import { PlantSeason } from '../plants/entities/plantSeason.entity';
-import { getTimeByPlusMonths } from 'src/utils/time.utl';
+import { getDateWithoutTime, getTimeByPlusMonths } from 'src/utils/time.utl';
 import { TransactionsService } from '../transactions/transactions.service';
 import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
 import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
@@ -169,22 +169,18 @@ export class ServicesService implements IService {
     }
   }
 
+  /**
+   *  Buy service specific
+   * @param createServicePackage
+   * @param user
+   * @returns
+   */
+
   async buyServiceSpecific(
     createServicePackage: CreateServiceSpecificDTO,
     user: IUser,
   ): Promise<any> {
     try {
-      // get booking detail
-      const booking_detail: BookingLand =
-        await this.bookingLandService.getBookingDetail(
-          createServicePackage.booking_id,
-        );
-
-      if (
-        createServicePackage.acreage_land > booking_detail.land.acreage_land
-      ) {
-        throw new BadRequestException('Acreage land is not enough');
-      }
       // check if the service package exists
       const service_package = await this.servicePackageRepo.findOne({
         where: {
@@ -204,11 +200,13 @@ export class ServicesService implements IService {
       if (plant_season.status !== PlantSeasonStatus.active) {
         throw new BadRequestException('Plant season is not applying');
       }
+      // check if the plant season has a technical standard process
       if (!plant_season.process_technical_standard) {
         throw new BadRequestException(
           'Plant season does not have a technical standard process',
         );
       }
+      // check if the technical standard process is accepted
       if (
         plant_season.process_technical_standard.status !==
         ProcessTechnicalStandardStatus.accepted
@@ -217,6 +215,11 @@ export class ServicesService implements IService {
           'Process standard is not accepted for this plant season',
         );
       }
+      // get detail booking
+      const booking_detail: BookingLand =
+        await this.bookingLandService.getBookingDetail(
+          createServicePackage.booking_id,
+        );
       // check time is valid with booking
       if (
         booking_detail.time_end <
@@ -248,6 +251,10 @@ export class ServicesService implements IService {
           `Acreage land is not enough. You still have ${booking_detail.land.acreage_land - total_acreage} acreage land`,
         );
       }
+      // convert time_start
+      createServicePackage.time_start = getDateWithoutTime(
+        createServicePackage.time_start,
+      );
       // create a new service specific
       const new_service_specific = await this.serviceSpecificRepo.save({
         ...createServicePackage,
