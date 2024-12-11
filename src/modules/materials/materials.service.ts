@@ -426,6 +426,8 @@ export class MaterialsService implements IMaterialService {
         total_price: total_price * data.total_day,
         purpose: TransactionPurpose.booking_material,
         user_id: user.user_id,
+        // set expired_at after 10 minutes
+        expired_at: new Date(new Date().getTime() + 10 * 60000),
       };
       // send noti to staff
       await this.notificationService.createNotification({
@@ -539,10 +541,15 @@ export class MaterialsService implements IMaterialService {
         type: NotificationType.booking_material,
       });
       // update status
-      booking_material.status = BookingMaterialStatus.pending_sign;
-      return await this.bookingMaterialRepo.save({
-        ...booking_material,
-      });
+      await this.bookingMaterialRepo.update(
+        {
+          booking_material_id: transaction.booking_material_id,
+        },
+        {
+          status: BookingMaterialStatus.pending_sign,
+        },
+      );
+      return booking_material;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
