@@ -9,7 +9,9 @@ export class UpdateProcessStandardsDto {
     example: 'Process 1',
   })
   @ToLowerCase()
-  @IsNotEmpty()
+  @IsNotEmpty({
+    message: 'The name of the process is required',
+  })
   name: string;
 
   @ApiProperty({

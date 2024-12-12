@@ -17,7 +17,9 @@ export class UpdateProcessStandardStageDto {
     example: 'Stage 1',
   })
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({
+    message: 'The title of the stage is required',
+  })
   stage_title: string;
 
   @ApiProperty({
@@ -46,6 +48,7 @@ export class UpdateProcessStandardStageDto {
     message: 'time_end must be greater than time_start',
   })
   time_end: number;
+
   @ApiProperty({
     description: 'the material of the stage',
     type: [UpdateProcessStandardStageMaterialDto],

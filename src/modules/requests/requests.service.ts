@@ -383,17 +383,14 @@ export class RequestsService implements IRequestService {
         ...data,
         type: RequestType.create_process_standard,
       });
-      if (!new_request) {
-        throw new BadRequestException('Unable to create request');
-      }
       // create task for the request
-      const new_task = await this.taskService.createTask(new_request.request_id);
-      if (!new_task) {
-        throw new BadRequestException('Unable to create task');
-      }
+      await this.taskService.createTask(new_request.request_id);
+
       return new_request;
     } catch (error) {
+      this.logger.error(error.message, error.stack);
       this.loggerService.error(error.message, error.stack);
+      throw new InternalServerErrorException(error.message);
     }
   }
 

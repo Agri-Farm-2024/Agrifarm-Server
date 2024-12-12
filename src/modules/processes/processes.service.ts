@@ -976,7 +976,7 @@ export class ProcessesService implements IProcessesService {
             // throw error if material is not enough
 
             throw new BadRequestException(
-              `Vật t ${material.materialSpecific.name} không đủ số lượng cần thêm ${material.quantity - material.materialSpecific.total_quantity}`,
+              `Vật tư ${material.materialSpecific.name} không đủ số lượng cần thêm ${material.quantity - material.materialSpecific.total_quantity}`,
             );
           }
         }

@@ -461,6 +461,7 @@ export class TransactionsService implements ITransactionService {
         where: {
           status: TransactionStatus.approved,
           expired_at: LessThan(new Date()),
+          type: TransactionType.payment,
         },
       });
       if (transactions_expired.length > 0) {

@@ -282,9 +282,7 @@ export class UsersService implements IUserService {
         );
       }
       // logs
-      this.loggerService.log(
-        `User ${user.email} status has been updated to ${status}`,
-      );
+      this.loggerService.log(`User ${user.email} status has been updated to ${status}`);
       return;
     } catch (error) {
       if (error instanceof BadRequestException) {
@@ -325,8 +323,7 @@ export class UsersService implements IUserService {
       // orders expert by the number of service specific
       experts.sort((a, b) => {
         return (
-          a.expert_process_technical_specific.length -
-          b.expert_process_technical_specific.length
+          a.expert_process_technical_specific.length - b.expert_process_technical_specific.length
         );
       });
       return experts;
