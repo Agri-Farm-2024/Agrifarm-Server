@@ -6,7 +6,6 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-
 import { CreateReportProcessStandardDTO } from './dto/create-report-processStandard.dto';
 import { IReportService } from './interfaces/IReportService.interface';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -125,8 +124,7 @@ export class ReportsService implements IReportService {
        */
       if (
         task_exist.request.type === RequestType.view_land ||
-        task_exist.request.type === RequestType.material_process_specfic_stage ||
-        task_exist.request.type === RequestType.create_process_standard
+        task_exist.request.type === RequestType.material_process_specfic_stage
       ) {
         request_status = RequestStatus.completed;
       }
@@ -159,7 +157,14 @@ export class ReportsService implements IReportService {
     }
   }
 
-  //create report purchase
+  /**
+   * Create a new report purchase
+   * @param data
+   * @param task_id
+   * @param user
+   * @returns
+   */
+
   async createReportPurchase(
     data: CreateReportPurchaseDto,
     task_id: string,

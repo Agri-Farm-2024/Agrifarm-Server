@@ -304,16 +304,16 @@ export class RequestsService implements IRequestService {
       if (!request) {
         throw new BadRequestException('Request not found');
       }
-      // check type of create process standard to update status process standard
-      if (
-        status == RequestStatus.completed &&
-        request.type == RequestType.create_process_standard
-      ) {
-        await this.processService.updateStatusProcessTechnicalStandardByRequest(
-          request.plant_season_id,
-          ProcessTechnicalStandardStatus.accepted,
-        );
-      }
+      // // check type of create process standard to update status process standard
+      // if (
+      //   status == RequestStatus.completed &&
+      //   request.type == RequestType.create_process_standard
+      // ) {
+      //   await this.processService.updateStatusProcessTechnicalStandardByRequest(
+      //     request.plant_season_id,
+      //     ProcessTechnicalStandardStatus.accepted,
+      //   );
+      // }
       // Check type of material process specific stage to update status process specific stage
       if (
         status === RequestStatus.completed &&
@@ -716,6 +716,16 @@ export class RequestsService implements IRequestService {
         // call service package service to create transaction refund
         await this.servicePackageService.createRefundTransactionServiceSpecific(request);
       }
+      // Check condition of request purchase with completed status
+      if (
+        request.type === RequestType.create_process_standard &&
+        data.status === RequestStatus.completed
+      ) {
+        await this.processService.updateStatusProcessTechnicalStandardByRequest(
+          request.plant_season_id,
+          ProcessTechnicalStandardStatus.accepted,
+        );
+      }
       // update request status
       const updated_request = await this.requestRepo.update(
         {
@@ -816,7 +826,7 @@ export class RequestsService implements IRequestService {
 
   async createRequestCultivateProcessContent(
     process_specific_stage_content: ProcessSpecificStageContent,
-  ): Promise<any> {
+  ): Promise<void> {
     try {
       // check exist
       const request_exist = await this.requestRepo.findOne({
@@ -826,34 +836,36 @@ export class RequestsService implements IRequestService {
           type: RequestType.cultivate_process_content,
         },
       });
-      if (request_exist) {
-        throw new BadRequestException('Request cultivate process content exist');
-      }
-      // Create a new request
-      const new_request = await this.requestRepo.save({
-        process_technical_specific_stage_content_id:
-          process_specific_stage_content.process_technical_specific_stage_content_id,
-        time_start: getTimeByPlusDays(getDateWithoutTime(new Date()), 1),
-        type: RequestType.cultivate_process_content,
-        status: RequestStatus.assigned,
-      });
-      // create task for the request
-      await this.taskService.createTaskAuto(
-        new_request.request_id,
-        process_specific_stage_content.process_technical_specific_stage.process_technical_specific
-          .expert_id,
-      );
-      // send noti to expert
-      await this.notificationService.createNotification({
-        user_id:
+      if (!request_exist) {
+        // Create a new request
+        const new_request = await this.requestRepo.save({
+          process_technical_specific_stage_content_id:
+            process_specific_stage_content.process_technical_specific_stage_content_id,
+          time_start: getTimeByPlusDays(getDateWithoutTime(new Date()), 1),
+          type: RequestType.cultivate_process_content,
+          status: RequestStatus.assigned,
+        });
+        // create task for the request
+        await this.taskService.createTaskAuto(
+          new_request.request_id,
           process_specific_stage_content.process_technical_specific_stage.process_technical_specific
             .expert_id,
-        title: NotificationTitleEnum.create_task,
-        content: NotificationContentEnum.assigned_task(),
-        component_id: new_request.request_id,
-        type: NotificationType.request,
-      });
-      return new_request;
+        );
+        // send noti to expert
+        await this.notificationService.createNotification({
+          user_id:
+            process_specific_stage_content.process_technical_specific_stage
+              .process_technical_specific.expert_id,
+          title: NotificationTitleEnum.create_task,
+          content: NotificationContentEnum.assigned_task(),
+          component_id: new_request.request_id,
+          type: NotificationType.request,
+        });
+        // log
+        this.logger.log(
+          `New request cultivate process content created for ${process_specific_stage_content.process_technical_specific_stage_content_id}`,
+        );
+      }
     } catch (error) {
       this.loggerService.error(error.message, error.stack);
     }

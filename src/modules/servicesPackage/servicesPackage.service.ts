@@ -251,15 +251,16 @@ export class ServicesService implements IService {
         price_purchase_per_kg: plant_season.price_purchase_per_kg,
       });
       // calculate total price
-      const total_price =
-        (new_service_specific.price_package + new_service_specific.price_process) *
-        (new_service_specific.acreage_land / 1000);
-      // calculate price deposit
-      const price_deposit = total_price * 0.1;
+      const total_price = this.caculateTotalPriceServiceSpecific(
+        new_service_specific.price_package,
+        new_service_specific.price_process,
+        new_service_specific.acreage_land,
+      );
+
       // create transaction DTO and create transaction
       const transactionData: Partial<CreateTransactionDTO> = {
         service_specific_id: new_service_specific.service_specific_id,
-        total_price: total_price + price_deposit,
+        total_price: total_price,
         purpose: TransactionPurpose.service,
         user_id: user.user_id,
       };
@@ -655,5 +656,13 @@ export class ServicesService implements IService {
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
+  }
+
+  private caculateTotalPriceServiceSpecific(
+    price_package: number,
+    price_process: number,
+    acreage_land: number,
+  ) {
+    return (price_package + price_process) * (acreage_land / 1000);
   }
 }
