@@ -34,6 +34,7 @@ import { RequestsService } from '../requests/requests.service';
 import { updateServicePackageDTO } from './dto/update-service-package.dto';
 import { Request } from '../requests/entities/request.entity';
 import { LoggerService } from 'src/logger/logger.service';
+import { ExtendStatus } from '../extends/types/extend-status.enum';
 
 @Injectable()
 export class ServicesService implements IService {
@@ -214,6 +215,15 @@ export class ServicesService implements IService {
       const booking_detail: BookingLand = await this.bookingLandService.getBookingDetail(
         createServicePackage.booking_id,
       );
+      // map booking extends
+      booking_detail.extends.map((extend) => {
+        if (extend.status === ExtendStatus.completed) {
+          booking_detail.time_end = getTimeByPlusMonths(
+            booking_detail.time_end,
+            extend.total_month,
+          );
+        }
+      });
       // check time is valid with booking
       if (
         booking_detail.time_end <
