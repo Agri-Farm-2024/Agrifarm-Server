@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './modules/users/users.module';
 import { LandsModule } from './modules/lands/lands.module';
@@ -30,6 +30,7 @@ import { DiscordsModule } from './discords/discords.module';
 import { CronsModule } from './crons/crons.module';
 import { TestModule } from './modules/test/test.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { LoggingMiddleware } from './common/middleware/logging.middleware';
 // import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 // import { MetricsController } from './metrics.controller';
 
@@ -78,4 +79,8 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
   ],
   // controllers: [MetricsController],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggingMiddleware).forRoutes('*');
+  }
+}

@@ -5,6 +5,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { CreateReportProcessStandardDTO } from './dto/create-report-processStandard.dto';
 import { IReportService } from './interfaces/IReportService.interface';
@@ -30,9 +31,11 @@ import { NotificationTitleEnum } from '../notifications/types/notification-title
 import { NotificationContentEnum } from '../notifications/types/notification-content.enum';
 import { ChannelsService } from '../channels/channels.service';
 import { ServicesService } from '../servicesPackage/servicesPackage.service';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class ReportsService implements IReportService {
+  private readonly logger = new Logger(ReportsService.name);
   constructor(
     @InjectRepository(Report)
     private readonly reportRepository: Repository<Report>,
@@ -54,6 +57,8 @@ export class ReportsService implements IReportService {
     private readonly channelService: ChannelsService,
 
     private readonly servicePackageService: ServicesService,
+
+    private readonly loggerService: LoggerService,
   ) {}
 
   /**
@@ -150,6 +155,8 @@ export class ReportsService implements IReportService {
 
       return new_report;
     } catch (error) {
+      this.loggerService.error(error.message, error.trace);
+      this.logger.error(error.message, error.trace);
       if (error instanceof ForbiddenException) {
         throw error;
       }

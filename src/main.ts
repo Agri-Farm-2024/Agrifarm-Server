@@ -4,6 +4,8 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { AllExceptionsFilter } from './common/filters/exception.filter';
 import { ValidationPipe } from '@nestjs/common';
+import * as morgan from 'morgan';
+
 // import { getDateWithoutTime, getTimeByPlusDays } from './utils/time.utl';
 
 async function bootstrap() {
@@ -48,6 +50,9 @@ async function bootstrap() {
     origin: '*', // Adjust according to your client URL
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   });
+  // Config morgan
+  const format_morgan: string = process.env.NODE_ENV === 'production' ? 'combined' : 'dev';
+  app.use(morgan(format_morgan));
   // Run app
   await app.listen(process.env.HOST_PORT);
 }

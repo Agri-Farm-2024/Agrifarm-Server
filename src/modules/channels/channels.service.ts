@@ -199,6 +199,12 @@ export class ChannelsService implements IChannelService {
         channel_id: channel.channel_id,
         user_join_id: data.expert_id,
       });
+      // create first message for channel
+      await this.channelMessageRepository.save({
+        message_from_id: data.sender_id,
+        message_to_id: channel.channel_id,
+        content: data.description,
+      });
       return channel;
     } catch (error) {
       this.logger.error(error.message);

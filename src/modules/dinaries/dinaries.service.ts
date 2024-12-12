@@ -1,4 +1,11 @@
-import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { CreateDinaryDto } from './dto/create-dinary.dto';
 import { UpdateDinaryDto } from './dto/update-dinary.dto';
 import { IDinariesService } from './interfaces/IDinariesService.interface';
@@ -16,6 +23,7 @@ import { ProcessSpecific } from '../processes/entities/specifics/processSpecific
 
 @Injectable()
 export class DinariesService implements IDinariesService {
+  private readonly logger = new Logger(DinariesService.name);
   constructor(
     @InjectRepository(DinaryStage)
     private readonly dinariesStageRepo: Repository<DinaryStage>,
@@ -75,7 +83,12 @@ export class DinariesService implements IDinariesService {
       );
       return new_dinary_stage;
     } catch (error) {
-      throw new BadRequestException(error.message);
+      this.logger.error(error.message, error.stack);
+      this.loggerService.error(error.message, error.stack);
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
     }
   }
 

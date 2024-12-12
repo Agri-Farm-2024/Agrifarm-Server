@@ -42,45 +42,33 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (userId) {
         this.clients[userId] = client;
         this.logger.log(`User online: ${userId} (Socket ID: ${client.id})`);
-        this.loggerService.log(
-          `User online: ${userId} (Socket ID: ${client.id})`,
-        );
+        this.loggerService.log(`User online: ${userId} (Socket ID: ${client.id})`);
         // Join the room of channel with the user role
         const list_channel_by_user: Channel[] =
           await this.channelService.getListChannelByUser(userId);
         list_channel_by_user.forEach((channel) => {
           client.join(`${channel.channel_id}`);
-          this.logger.log(
-            `User join channel: ${channel.channel_id} (Socket ID: ${client.id})`,
-          );
+          this.logger.log(`User join channel: ${channel.channel_id} (Socket ID: ${client.id})`);
           this.loggerService.log(
             `User join channel: ${channel.channel_id} (Socket ID: ${client.id})`,
           );
         });
       } else {
-        this.logger.warn(
-          `online-user event missing userId for Socket ID: ${client.id}`,
-        );
+        this.logger.warn(`online-user event missing userId for Socket ID: ${client.id}`);
       }
     });
   }
 
   handleDisconnect(client: Socket) {
     // Remove client from the list of connected clients
-    const userId = Object.keys(this.clients).find(
-      (key) => this.clients[key].id === client.id,
-    );
+    const userId = Object.keys(this.clients).find((key) => this.clients[key].id === client.id);
 
     if (userId) {
       delete this.clients[userId];
       this.logger.log(`User offline: ${userId} (Socket ID: ${client.id})`);
     } else {
-      this.logger.log(
-        `Client disconnected: ${client.id} (no associated userId)`,
-      );
-      this.loggerService.log(
-        `Client disconnected: ${client.id} (no associated userId)`,
-      );
+      this.logger.log(`Client disconnected: ${client.id} (no associated userId)`);
+      this.loggerService.log(`Client disconnected: ${client.id} (no associated userId)`);
     }
   }
 

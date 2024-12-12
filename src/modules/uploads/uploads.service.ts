@@ -1,9 +1,5 @@
 // uploads.service.ts
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { join } from 'path';
 import { promises as fs } from 'fs';
 
@@ -12,10 +8,7 @@ export class UploadsService {
   async uploadFile(file: Express.Multer.File): Promise<any> {
     try {
       // check if the file is image
-      if (
-        !file.mimetype.includes('image') &&
-        !file.mimetype.includes('video')
-      ) {
+      if (!file.mimetype.includes('image') && !file.mimetype.includes('video')) {
         throw new BadRequestException('Invalid file type');
       }
       // Define the upload directory

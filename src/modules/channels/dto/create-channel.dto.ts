@@ -9,4 +9,7 @@ export class CreateChannelDTO {
 
   @IsNotEmpty()
   expert_id: string;
+
+  @IsNotEmpty()
+  description: string;
 }

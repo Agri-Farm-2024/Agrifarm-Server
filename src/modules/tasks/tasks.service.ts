@@ -282,6 +282,7 @@ export class TasksService implements ITaskService {
           request_id: task.request_id,
           sender_id: task.request.sender_id,
           expert_id: task.assigned_to_id,
+          description: task.request.description,
         });
         // send notification to sender
         await this.notificationService.createNotification({

@@ -1,10 +1,5 @@
 // uploads.controller.ts
-import {
-  Controller,
-  Post,
-  UseInterceptors,
-  UploadedFile,
-} from '@nestjs/common';
+import { Controller, Post, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadsService } from './uploads.service';
 import { ApiTags, ApiBody, ApiConsumes } from '@nestjs/swagger';
