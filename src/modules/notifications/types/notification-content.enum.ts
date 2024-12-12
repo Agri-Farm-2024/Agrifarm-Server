@@ -58,4 +58,7 @@ export const NotificationContentEnum = {
     `Thanh toán thành công, yêu cầu thuê vật tư trên ${land_name} đang chờ ký tên`,
 
   booking_material_expired: () => `Thuê vật tư đã hết hạn chúng tôi sẽ tiến hành kiểm tra.`,
+
+  create_request_purchase_harvest: (land_name: string) =>
+    `Yêu cầu mua sản phẩm sau thu hoạch mới được tạo trên ${land_name}`,
 } as const;

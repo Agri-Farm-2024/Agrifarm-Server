@@ -10,4 +10,5 @@ export enum NotificationType {
   extend = 'extend',
   transaction = 'transaction',
   booking_material = 'booking_material',
+  service = 'service',
 }

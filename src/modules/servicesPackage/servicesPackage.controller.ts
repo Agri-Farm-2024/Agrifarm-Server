@@ -83,14 +83,13 @@ export class ServicesController {
     );
   }
 
+  @Put('/updateServicePackage/:service_package_id')
   @UseGuards(AuthGuard)
-  @Roles(UserRole.staff)
-  @Put('/updateServicePackage/:service_specific_id')
+  @Roles(UserRole.staff, UserRole.manager)
   async updateServicePackage(
     @Body() data: updateServicePackageDTO,
-    @Request() req: any,
-    @Param('service_specific_id') service_specific_id: string,
+    @Param('service_package_id') service_package_id: string,
   ) {
-    return this.servicesService.updateServicePackage(service_specific_id, data);
+    return this.servicesService.updateServicePackage(service_package_id, data);
   }
 }

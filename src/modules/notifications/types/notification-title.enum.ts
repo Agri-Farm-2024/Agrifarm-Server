@@ -4,6 +4,7 @@ export enum NotificationTitleEnum {
   pending_sign_extend = 'Yêu cầu gia hạn thuê đất đang chờ ký tên',
   // Request
   reject_request_purchase = ' Chất lượng sản phẩm không đạt yêu càu',
+  create_request_purchase_harvest = 'Yêu cầu mua sản phẩm sau thu hoạch mới được tạo',
   // Task
   create_task = 'Bạn có một nhiệm vụ mới',
   // Report

@@ -544,13 +544,15 @@ export class RequestsService implements IRequestService {
       if (!new_task) {
         throw new BadRequestException('Unable to create task');
       }
-      //create notification for staff
+      //create notification for land renter
       await this.notificationService.createNotification({
-        user_id: service_specific_detail.process_technical_specific.expert_id,
-        title: NotificationTitleEnum.create_task,
-        content: NotificationContentEnum.assigned_task(),
-        component_id: new_request.request_id,
-        type: NotificationType.request,
+        user_id: service_specific_detail.landrenter_id,
+        title: NotificationTitleEnum.create_request_purchase_harvest,
+        content: NotificationContentEnum.create_request_purchase_harvest(
+          service_specific_detail.booking_land.land.name,
+        ),
+        component_id: service_specific_detail.service_specific_id,
+        type: NotificationType.service,
       });
       return new_request;
     } catch (error) {

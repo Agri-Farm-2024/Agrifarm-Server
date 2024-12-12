@@ -285,7 +285,9 @@ export class ServicesService implements IService {
         relations: {
           service_package: true,
           process_technical_specific: true,
-          booking_land: true,
+          booking_land: {
+            land: true,
+          },
         },
       });
       if (!service_specific) {
@@ -533,7 +535,6 @@ export class ServicesService implements IService {
 
   /**
    * Update service package
-   * @function updateServicePackage
    * @param service_package_id
    * @param data
    * @returns
@@ -553,13 +554,14 @@ export class ServicesService implements IService {
       if (!service_package) {
         throw new BadRequestException('Service package does not exist');
       }
+      this.loggerService.log(`Service package ${service_package_id} is updated`);
       // update service package
-      await this.servicePackageRepo.save({
+      return await this.servicePackageRepo.save({
         ...service_package,
         ...data,
       });
-      return 'Update service package successfully';
     } catch (error) {
+      this.loggerService.error(`Error when update service package ${error.message}`, error.stack);
       if (error instanceof BadRequestException) {
         throw error;
       }

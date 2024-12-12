@@ -31,6 +31,7 @@ import { CronsModule } from './crons/crons.module';
 import { TestModule } from './modules/test/test.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 // import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+// import { MetricsController } from './metrics.controller';
 
 @Module({
   imports: [
@@ -75,5 +76,6 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     DiscordsModule,
     // PrometheusModule.register(),
   ],
+  // controllers: [MetricsController],
 })
 export class AppModule {}

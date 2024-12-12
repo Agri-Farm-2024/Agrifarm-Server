@@ -1,14 +1,16 @@
 version: '3'
+
 services:
+  # Nest JS app
   app:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
-      - ./uploadFile:/app/dist/uploadFile  
-      - ./logs:/app/dist/logs  
+      - ./uploadFile:/app/dist/uploadFile
+      - ./logs:/app/dist/logs
     env_file:
       - .env
     environment:
@@ -16,6 +18,23 @@ services:
       - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
       - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
     restart: always
+
+  # # Prometheus Service
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   ports:
+  #     - '9090:9090'
+  #   volumes:
+  #     - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  # # Grafana Service
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   ports:
+  #     - '3001:3000'
+  #   environment:
+  #     - 'GF_SECURITY_ADMIN_USER=admin'
+  #     - 'GF_SECURITY_ADMIN_PASSWORD=admin'
 
 volumes:
   uploadFile:
