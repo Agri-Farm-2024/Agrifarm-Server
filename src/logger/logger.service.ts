@@ -20,8 +20,8 @@ export class LoggerService extends Logger {
       ),
       transports: [
         new winston.transports.DailyRotateFile({
-          dirname: path.join('logs', this.getCurrentMonthFolder()), // Monthly folder
-          filename: '%DATE%.log',
+          dirname: path.join('logs', this.getYearFolder(), this.getMonthFolder()), // Year/Month folder
+          filename: '%DATE%.log', // Daily file
           datePattern: 'YYYY-MM-DD',
           zippedArchive: true,
           level: 'info',
@@ -31,12 +31,21 @@ export class LoggerService extends Logger {
   }
 
   /**
-   * Generate the current month folder name.
-   * Format: YYYY-MM
+   * Generate the current year folder name.
+   * Format: YYYY
    */
-  private getCurrentMonthFolder(): string {
+  private getYearFolder(): string {
     const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    return `${now.getFullYear()}`;
+  }
+
+  /**
+   * Generate the current month folder name.
+   * Format: MM
+   */
+  private getMonthFolder(): string {
+    const now = new Date();
+    return `${String(now.getMonth() + 1).padStart(2, '0')}`;
   }
 
   log(message: string, context?: string) {
