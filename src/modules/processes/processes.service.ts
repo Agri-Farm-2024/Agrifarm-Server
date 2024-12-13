@@ -812,6 +812,7 @@ export class ProcessesService implements IProcessesService {
               dinary_stage: {
                 dinaries_link: true,
               },
+              requests: true,
             },
             request: true,
             process_technical_specific_stage_material: {
@@ -888,11 +889,26 @@ export class ProcessesService implements IProcessesService {
         stage.is_get_material = false;
         // loop to check request material
         for (const request of stage.request) {
+          // check is get material
           if (
             request.type === RequestType.material_process_specfic_stage &&
             request.status === RequestStatus.completed
           ) {
             stage.is_get_material = true;
+          }
+        }
+        // check can write diary loop content
+        for (const content of stage.process_technical_specific_stage_content) {
+          content.can_write_dinary = false;
+          // loop to check request material
+          for (const request of content.requests) {
+            // check is get material
+            if (
+              request.type === RequestType.cultivate_process_content &&
+              request.status === RequestStatus.in_progress
+            ) {
+              content.can_write_dinary = true;
+            }
           }
         }
       }
