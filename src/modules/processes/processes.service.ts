@@ -350,7 +350,7 @@ export class ProcessesService implements IProcessesService {
   }
 
   /**
-   * @function updateProcessStandard
+   * Update process standard
    * @param process_technical_standard_id : string
    * @param data : UpdateProcessStandardsDto
    */
@@ -476,6 +476,19 @@ export class ProcessesService implements IProcessesService {
             }
           }
         }
+      }
+      // get request create process standard
+      const request_create_process_standard: Request =
+        await this.requestService.getDetailRequestPrcocessStandard(
+          process_standard.plant_season_id,
+        );
+      // check if status is reject update status to in progress
+      if (update_process_standard.status === ProcessTechnicalStandardStatus.rejected) {
+        // update request to in progress
+        await this.requestService.updateRequestStatus(
+          request_create_process_standard.request_id,
+          RequestStatus.in_progress,
+        );
       }
       return update_process_standard;
     } catch (error) {
@@ -1159,4 +1172,6 @@ export class ProcessesService implements IProcessesService {
       title: NotificationTitleEnum.update_material_specific_stage,
     });
   }
+
+  // async updateProcessStandard()
 }

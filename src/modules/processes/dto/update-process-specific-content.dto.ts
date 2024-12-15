@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, Min } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class UpdateProcessSpecificStageContentDto {
   @ApiProperty({
