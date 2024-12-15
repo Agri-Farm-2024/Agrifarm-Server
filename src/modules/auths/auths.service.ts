@@ -233,32 +233,39 @@ export class AuthsService implements IAuthService {
    */
 
   async verifyOTP(email: string, otp: number, type: string): Promise<any> {
-    // get otp from redis
-    const exist_otp = await this.redisService.get(`otp:${email}:${type}`);
-    // parse to object
-    const exist_otp_obj: IOTP = JSON.parse(exist_otp);
-    if (!exist_otp_obj) {
-      throw new BadRequestException('OTP is invalid');
+    try {
+      // get otp from redis
+      const exist_otp = await this.redisService.get(`otp:${email}:${type}`);
+      // parse to object
+      const exist_otp_obj: IOTP = JSON.parse(exist_otp);
+      if (!exist_otp_obj) {
+        throw new BadRequestException('OTP is invalid');
+      }
+      // check otp is expired
+      if (exist_otp_obj.expired_at < Date.now()) {
+        throw new BadRequestException('OTP is expired');
+      }
+      // check otp is verified
+      if (exist_otp_obj.status === OTPStatus.verified) {
+        throw new BadRequestException('OTP is verified');
+      }
+      // check otp is match
+      if (exist_otp_obj.otp !== otp) {
+        throw new BadRequestException('OTP is invalid');
+      }
+      // update otp status
+      exist_otp_obj.status = OTPStatus.verified;
+      // save otp to redis
+      await this.redisService.set(`otp:${email}:${type}`, JSON.stringify(exist_otp_obj));
+      return {
+        status: OTPStatus.verified,
+      };
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
     }
-    // check otp is expired
-    if (exist_otp_obj.expired_at < Date.now()) {
-      throw new BadRequestException('OTP is expired');
-    }
-    // check otp is verified
-    if (exist_otp_obj.status === OTPStatus.verified) {
-      throw new BadRequestException('OTP is verified');
-    }
-    // check otp is match
-    if (exist_otp_obj.otp !== otp) {
-      throw new BadRequestException('OTP is invalid');
-    }
-    // update otp status
-    exist_otp_obj.status = OTPStatus.verified;
-    // save otp to redis
-    await this.redisService.set(`otp:${email}:${type}`, JSON.stringify(exist_otp_obj));
-    return {
-      status: OTPStatus.verified,
-    };
   }
 
   async getAccessToken(refreshToken: string): Promise<any> {

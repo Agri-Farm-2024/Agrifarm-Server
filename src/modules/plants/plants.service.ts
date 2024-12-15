@@ -359,14 +359,13 @@ export class PlantsService implements IPlantService {
   }
 
   /**
-   * Get plant season by expert create process
+   * Get plant season by expert for create process standard
    * @param user
    * @returns
    */
 
   async getPlantSeasonByExpertCreateProcess(user: IUser): Promise<PlantSeason[]> {
     try {
-      //get plant season by expert
       const plant_season = await this.plantSeasonEntity.find({
         where: {
           requests: {
@@ -382,9 +381,14 @@ export class PlantsService implements IPlantService {
             land_type: true,
           },
           process_technical_standard: true,
+          requests: true,
         },
       });
-      return plant_season;
+      // filter plant season by process
+      const filter_plant_season = plant_season.filter((plant) => {
+        return plant.process_technical_standard === null;
+      });
+      return filter_plant_season;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
