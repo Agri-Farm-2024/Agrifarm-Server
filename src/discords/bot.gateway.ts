@@ -35,7 +35,6 @@ export class BotGateway {
           let price = message.content.split('\n')[0].split(' ')[6];
           price = price.replace(/,/g, '');
           const message_price = message.content.split('\n')[0].split(' ')[5].trim();
-          console.log(message_price);
           if (message_price === 'giảm') {
             const transaction_code = message.content
               .split('\n')[1]

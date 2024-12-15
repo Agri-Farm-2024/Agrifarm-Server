@@ -502,6 +502,11 @@ export class MaterialsService implements IMaterialService {
     try {
       // update booking material status
       const booking_material = await this.bookingMaterialRepo.findOne({
+        relations: {
+          booking_land: {
+            land: true,
+          },
+        },
         where: {
           booking_material_id: transaction.booking_material_id,
         },
