@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Put,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { PlantsService } from './plants.service';
 import { CreatePlantDto } from './dto/create-plant.dto';
 import { UpdatePlantDto } from './dto/update-plant.dto';
@@ -8,6 +20,7 @@ import { ApplyPaginationMetadata, Pagination } from 'src/common/decorations/pagi
 import { CreatePlantSeasonDto } from './dto/create-plantSeason.dto';
 import { StatusPlant } from './types/plant-status.enum';
 import { UpdatePlantSeasonDto } from './dto/update-plantSeason.dto';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 
 @ApiTags('Plants')
 @Controller('plants')
@@ -24,6 +37,7 @@ export class PlantsController {
     return this.plantsService.createPlantSeason(CreatePlantSeasonDto);
   }
 
+  @Get('/')
   @ApplyPaginationMetadata
   @ApiProperty({
     type: StatusPlant,
@@ -35,7 +49,6 @@ export class PlantsController {
     description: 'Filter plants by land type',
     required: false,
   })
-  @Get('/')
   async getAllPlants(
     @Pagination() pagination: PaginationParams,
     @Query('land_type_id') land_type_id: string,
@@ -43,6 +56,7 @@ export class PlantsController {
     return await this.plantsService.getAllPlants(pagination, land_type_id);
   }
 
+  @Get('/plantSeasons')
   @ApplyPaginationMetadata
   @ApiQuery({
     name: 'time_start',
@@ -54,13 +68,19 @@ export class PlantsController {
     required: false,
     description: 'Filter plant seasons by total_months',
   })
-  @Get('/plantSeasons')
   async getAllPlantSeasons(
     @Pagination() pagination: PaginationParams,
     @Query('time_start') time_start: number,
     @Query('total_month') total_month: number,
   ): Promise<any> {
     return await this.plantsService.getAllPlantSeasons(pagination, time_start, total_month);
+  }
+
+  @Get('/getPlantSeasonByExpert')
+  @UseGuards(AuthGuard)
+  async getPlantSeasonByExpert(@Request() req: any) {
+    const user = req['user'];
+    return await this.plantsService.getPlantSeasonByExpertCreateProcess(user);
   }
 
   @Patch('/updateplant/:id')

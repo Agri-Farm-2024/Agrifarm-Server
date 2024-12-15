@@ -19,6 +19,9 @@ import { PlantSeasonStatus } from './types/plant-season-status.enum';
 import { UpdatePlantDto } from './dto/update-plant.dto';
 import { Not } from 'typeorm';
 import { UpdatePlantSeasonDto } from './dto/update-plantSeason.dto';
+import { IUser } from '../auths/interfaces/IUser.interface';
+import { RequestType } from '../requests/types/request-type.enum';
+import { RequestStatus } from '../requests/types/request-status.enum';
 
 @Injectable()
 export class PlantsService implements IPlantService {
@@ -351,6 +354,38 @@ export class PlantsService implements IPlantService {
       if (error instanceof BadRequestException) {
         throw error;
       }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  /**
+   * Get plant season by expert create process
+   * @param user
+   * @returns
+   */
+
+  async getPlantSeasonByExpertCreateProcess(user: IUser): Promise<PlantSeason[]> {
+    try {
+      //get plant season by expert
+      const plant_season = await this.plantSeasonEntity.find({
+        where: {
+          requests: {
+            type: RequestType.create_process_standard,
+            status: RequestStatus.in_progress,
+            task: {
+              assigned_to_id: user.user_id,
+            },
+          },
+        },
+        relations: {
+          plant: {
+            land_type: true,
+          },
+          process_technical_standard: true,
+        },
+      });
+      return plant_season;
+    } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
   }
