@@ -10,7 +10,7 @@ services:
       - '3000:3000'
     volumes:
       - ./uploadFile:/app/dist/uploadFile
-      - ./logs:/app/dist/logs
+      - ./logs:/app/logs
     env_file:
       - .env
     environment:
