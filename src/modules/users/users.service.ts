@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -8,9 +9,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { In, Like, MoreThan, Not, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
 import { LoggerService } from '../../logger/logger.service';
-import { RedisService } from 'src/caches/redis/redis.service';
 import { MailService } from 'src/mails/mail.service';
 import { IUserService } from './interfaces/IUserService.interface';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
@@ -27,13 +27,15 @@ export class UsersService implements IUserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-
     private readonly loggerService: LoggerService,
-
-    private readonly redisService: RedisService,
-
     private readonly mailService: MailService,
   ) {}
+
+  /**
+   *  Find user by email call by other services
+   * @param email
+   * @returns
+   */
 
   async findUserByEmail(email: string) {
     try {
@@ -89,9 +91,9 @@ export class UsersService implements IUserService {
         throw new BadRequestException('Email already exists');
       }
       // generate password
-      const password = Math.random().toString(36).slice(-8);
+      const password = this.generatePassword();
       // Hash the password
-      const password_hash = await bcrypt.hash(password, 8);
+      const password_hash = await this.hashPassword(password);
       // Create a new user
       const new_user = await this.userRepository.save({
         ...createUserDto,
@@ -357,5 +359,105 @@ export class UsersService implements IUserService {
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
+  }
+
+  /**
+   * Update password
+   * @param email
+   */
+
+  async updatePassword(email: string): Promise<any> {
+    try {
+      // find user
+      const user = await this.userRepository.findOne({
+        where: {
+          email: email,
+        },
+      });
+      // check user
+      if (!user) {
+        throw new BadRequestException('User not found');
+      }
+      // generate password
+      const password = this.generatePassword();
+      // update password
+      user.password = await this.hashPassword(password);
+      // save user
+      await this.userRepository.save(user);
+      // send mail
+      this.mailService.sendMail(
+        user.email,
+        SubjectMailEnum.registerWelcome,
+        TemplateMailEnum.registerWelcome,
+        {
+          full_name: user.full_name,
+          email: user.email,
+          phone: user.phone,
+          password: password,
+          created_at: user.created_at.toLocaleDateString(),
+          status: 'Đã xác nhận',
+        },
+      );
+      // logs
+      this.loggerService.log(`User ${user.email} password has been updated`);
+      return `Password has been updated for ${user.email}`;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  /**
+   *  Update user
+   * @param userId
+   * @returns user
+   */
+
+  async updateUser(userId: string, updateUserDto: any, user: IUser): Promise<User> {
+    try {
+      // check user role
+      if (user.role === UserRole.land_renter) {
+        if (user.user_id !== userId) {
+          throw new ForbiddenException('You do not have permission');
+        }
+      }
+      // find user
+      const update_user = await this.userRepository.findOne({
+        where: {
+          user_id: userId,
+        },
+      });
+      // check user
+      if (!update_user) {
+        throw new BadRequestException('User not found');
+      }
+      // update user
+      await this.userRepository.update(
+        {
+          user_id: userId,
+        },
+        {
+          ...updateUserDto,
+        },
+      );
+      // logs
+      this.loggerService.log(`User ${update_user.email} has been updated`);
+      return update_user;
+    } catch (error) {
+      if (error instanceof BadRequestException || error instanceof ForbiddenException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  private generatePassword(): string {
+    return Math.random().toString(36).slice(-8);
+  }
+
+  private async hashPassword(password: string): Promise<string> {
+    return await bcrypt.hash(password, 8);
   }
 }
