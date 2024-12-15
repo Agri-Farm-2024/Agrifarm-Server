@@ -1,8 +1,9 @@
 import { IsNotEmpty, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateProcessStageDto } from './create-process-stage.dto';
+import { CreateProcessStageDto } from './create-process-standard-stage.dto';
 import { ToLowerCase } from 'src/common/decorations/makeLowerCaseText.decoration';
-export class CreateProcessDto {
+
+export class CreateProcessStandardDTO {
   @ApiProperty({
     description: 'the UUID of the plant',
     example: '123e4567-e89b-12d3-a456-426614174000',

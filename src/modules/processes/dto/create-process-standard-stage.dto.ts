@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, Min, IsOptional, Validate } from 'class-validator';
-import { CreateProcessStageContentDto } from './create-process-stage-content.dto';
-import { CreateProcessStageMaterialDto } from './create-process-stage-material.dto';
+import { CreateProcessStageContentDto } from './create-process-standard-stage-content.dto';
+import { CreateProcessStageMaterialDto } from './create-process-standard-stage-material.dto';
 import { IsTimeEndGreaterThanStart } from 'src/common/decorations/isTimeEndGreaterThanStart.decoration';
 
 export class CreateProcessStageDto {

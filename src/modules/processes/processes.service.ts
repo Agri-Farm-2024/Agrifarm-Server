@@ -6,16 +6,16 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { CreateProcessDto } from './dto/create-process.dto';
+import { CreateProcessStandardDTO } from './dto/create-process-standard.dto';
 import { IProcessesService } from './interfaces/IProcessesService.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProcessStandard } from './entities/standards/processStandard.entity';
 import { Between, IsNull, Not, Repository } from 'typeorm';
 import { ProcessStandardStage } from './entities/standards/processStandardStage.entity';
 import { ProcessStandardStageContent } from './entities/standards/processStandardStageContent.entity';
-import { CreateProcessStageDto } from './dto/create-process-stage.dto';
-import { CreateProcessStageContentDto } from './dto/create-process-stage-content.dto';
-import { CreateProcessStageMaterialDto } from './dto/create-process-stage-material.dto';
+import { CreateProcessStageDto } from './dto/create-process-standard-stage.dto';
+import { CreateProcessStageContentDto } from './dto/create-process-standard-stage-content.dto';
+import { CreateProcessStageMaterialDto } from './dto/create-process-standard-stage-material.dto';
 import { ProcessStandardStageMaterial } from './entities/standards/processStandardStageMaterial.entity';
 import { IUser } from '../auths/interfaces/IUser.interface';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
@@ -29,7 +29,7 @@ import { getTimeByPlusDays } from 'src/utils/time.utl';
 import { RequestsService } from '../requests/requests.service';
 import { Request } from '../requests/entities/request.entity';
 import { RequestStatus } from '../requests/types/request-status.enum';
-import { UpdateProcessStandardDto } from './dto/update-processStandardStatus.dto';
+import { UpdateProcessStandardDto } from './dto/update-process-standard-status.dto';
 import { UpdateProcessStandardsDto } from './dto/update-process-standard.dto';
 import { ProcessSpecificStatus } from './types/processSpecific-status.enum';
 import { UPdateProcessSpecificDto } from './dto/update-process-specific.dto';
@@ -84,7 +84,7 @@ export class ProcessesService implements IProcessesService {
     private readonly materialService: MaterialsService,
   ) {}
 
-  async createProcessStandard(data: CreateProcessDto, expert: IUser): Promise<any> {
+  async createProcessStandard(data: CreateProcessStandardDTO, expert: IUser): Promise<any> {
     try {
       //check if plant id and type process name is already exist
       const process = await this.processStandardRepo.findOne({

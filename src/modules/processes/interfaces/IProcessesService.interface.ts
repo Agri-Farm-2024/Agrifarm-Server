@@ -1,7 +1,7 @@
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
-import { CreateProcessDto } from '../dto/create-process.dto';
+import { CreateProcessStandardDTO } from '../dto/create-process-standard.dto';
 import { ProcessTechnicalStandardStatus } from '../types/status-processStandard.enum';
-import { UpdateProcessStandardDto } from '../dto/update-processStandardStatus.dto';
+import { UpdateProcessStandardDto } from '../dto/update-process-standard-status.dto';
 import { ProcessSpecificStatus } from '../types/processSpecific-status.enum';
 import { UPdateProcessSpecificDto } from '../dto/update-process-specific.dto';
 import { IUser } from 'src/modules/auths/interfaces/IUser.interface';
@@ -9,7 +9,7 @@ import { UpdateProcessStandardsDto } from '../dto/update-process-standard.dto';
 import { ServiceSpecific } from 'src/modules/servicesPackage/entities/serviceSpecific.entity';
 
 export interface IProcessesService {
-  createProcessStandard(data: CreateProcessDto, expert: any): Promise<any>;
+  createProcessStandard(data: CreateProcessStandardDTO, expert: any): Promise<any>;
 
   getListProcessStandard(
     pagination: PaginationParams,

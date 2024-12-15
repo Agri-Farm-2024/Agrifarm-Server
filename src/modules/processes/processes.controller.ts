@@ -12,7 +12,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { ProcessesService } from './processes.service';
-import { CreateProcessDto } from './dto/create-process.dto';
+import { CreateProcessStandardDTO } from './dto/create-process-standard.dto';
 import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { Roles } from 'src/common/decorations/role.decoration';
@@ -20,7 +20,7 @@ import { UserRole } from '../users/types/user-role.enum';
 import { ApplyPaginationMetadata, Pagination } from 'src/common/decorations/pagination.decoration';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
 import { ProcessTechnicalStandardStatus } from './types/status-processStandard.enum';
-import { UpdateProcessStandardDto } from './dto/update-processStandardStatus.dto';
+import { UpdateProcessStandardDto } from './dto/update-process-standard-status.dto';
 import { UpdateProcessStandardsDto } from './dto/update-process-standard.dto';
 import { ProcessSpecificStatus } from './types/processSpecific-status.enum';
 import { UPdateProcessSpecificDto } from './dto/update-process-specific.dto';
@@ -33,7 +33,10 @@ export class ProcessesController {
   @UseGuards(AuthGuard)
   @Roles(UserRole.expert)
   @Post('/createProcessStandard')
-  createProcessStandard(@Body() data: CreateProcessDto, @Request() request: any): Promise<any> {
+  createProcessStandard(
+    @Body() data: CreateProcessStandardDTO,
+    @Request() request: any,
+  ): Promise<any> {
     return this.processesService.createProcessStandard(data, request.user);
   }
 

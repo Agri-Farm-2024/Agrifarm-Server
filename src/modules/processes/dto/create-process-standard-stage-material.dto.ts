@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, Min } from 'class-validator';
+
 export class CreateProcessStageMaterialDto {
   @ApiProperty({
     description: 'the material id',
