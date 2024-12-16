@@ -246,7 +246,7 @@ export class RequestsService implements IRequestService {
         },
       });
       if (!requestProcess) {
-        throw new BadRequestException('Request not found');
+        return {};
       }
 
       return requestProcess;

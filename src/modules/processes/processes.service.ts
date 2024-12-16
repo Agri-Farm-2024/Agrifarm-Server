@@ -234,7 +234,7 @@ export class ProcessesService implements IProcessesService {
       const total_page = Math.ceil(total_count / pagination.page_size);
       // Checking for request can edit process standard
       for (const process of process_technical_standard as any) {
-        process.can_edit = true;
+        process.can_edit = false;
         // get request by plant season id
         const request: Request = await this.requestService.getDetailRequestPrcocessStandard(
           process.plant_season_id,
