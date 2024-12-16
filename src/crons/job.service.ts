@@ -26,6 +26,12 @@ export class JobService implements ICronJob {
     private readonly materialService: MaterialsService,
   ) {}
 
+  /**
+   * Check and create report land everyday
+   * Check and create report service everyday
+   * Check and create report material everyday
+   */
+
   @Cron(CronTime.every_new_day)
   async checkEverydayIsExpired(): Promise<void> {
     try {
@@ -45,6 +51,10 @@ export class JobService implements ICronJob {
     }
   }
 
+  /**
+   *  Check transaction expire everyday
+   */
+
   @Cron(CronTime.every_one_hour_a_day)
   async checkTransactionIsExpired(): Promise<void> {
     try {
@@ -57,6 +67,11 @@ export class JobService implements ICronJob {
       this.loggerService.error(`Error when check every one hour ${error.message}`, error.stack);
     }
   }
+
+  /**
+   * Check and create task process content for expert
+   * Check and send notification for landrenter before new stage
+   */
 
   @Cron(CronTime.every_five_pm_hours_a_day)
   async checkTaskProcessContentForExpert(): Promise<void> {
@@ -74,6 +89,10 @@ export class JobService implements ICronJob {
       this.loggerService.error(`Error when check every five pm  ${error.message}`, error.stack);
     }
   }
+
+  /**
+   * Check and create purchase product service
+   */
 
   @Cron(CronTime.every_eight_am_hours_a_day)
   async checkAndCreatePurchaseProductService(): Promise<void> {

@@ -15,7 +15,7 @@ import { CreateServicePackageDTO } from './dto/create-service-package.dto';
 import { CreateServiceSpecificDTO } from './dto/create-service-specific.dto';
 import { PlantsService } from '../plants/plants.service';
 import { PlantSeason } from '../plants/entities/plantSeason.entity';
-import { getDateWithoutTime, getTimeByPlusMonths } from 'src/utils/time.utl';
+import { getDateWithoutTime, getTimeByPlusDays, getTimeByPlusMonths } from 'src/utils/time.utl';
 import { TransactionsService } from '../transactions/transactions.service';
 import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
 import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
@@ -527,7 +527,7 @@ export class ServicesService implements IService {
             purchase: true,
             process_of_plant: true,
           },
-          time_end: getTimeByPlusMonths(date, 1),
+          time_end: getTimeByPlusDays(date, 7),
         },
       });
       if (list_service.length > 0) {
