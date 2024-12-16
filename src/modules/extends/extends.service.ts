@@ -5,6 +5,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { IExtendService } from './interfaces/IExtendService.interface';
 import { CreateExtendDto } from './dto/create-extend.dto';
@@ -32,9 +33,11 @@ import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
 import { getTimeByPlusMonths } from 'src/utils/time.utl';
 import { parsePriceToVND } from 'src/utils/price.util';
 import { getNameOfPath } from 'src/utils/link.util';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class ExtendsService implements IExtendService {
+  private readonly logger = new Logger(ExtendsService.name);
   constructor(
     @Inject(forwardRef(() => BookingsService))
     private readonly bookingLandService: BookingsService,
@@ -48,6 +51,7 @@ export class ExtendsService implements IExtendService {
     private readonly notificationService: NotificationsService,
 
     private readonly mailService: MailService,
+    private readonly loggerService: LoggerService,
   ) {}
 
   async createExtend(createExtendDTO: CreateExtendDto): Promise<any> {
@@ -355,7 +359,6 @@ export class ExtendsService implements IExtendService {
 
   /**
    * update extend to complete call by transaction service when transaction is succeed
-   * @function
    * @param extend_id
    * @returns
    */
@@ -438,6 +441,36 @@ export class ExtendsService implements IExtendService {
         throw error;
       }
       throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  /**
+   * Cancel extend by transaction service when transaction is expired
+   */
+
+  async cancelExtend(extend_id: string): Promise<void> {
+    try {
+      // get detail extend by id
+      const extend = await this.extendRepository.findOne({
+        where: { extend_id: extend_id },
+        relations: {
+          booking_land: {
+            land: true,
+            land_renter: true,
+          },
+        },
+      });
+      if (extend) {
+        // check extend status
+        if (extend.status === ExtendStatus.pending_payment) {
+          // delete extend
+          await this.extendRepository.delete(extend_id);
+          // logs
+          this.logger.log(`Delete extend ${extend_id}`);
+        }
+      }
+    } catch (error) {
+      this.logger.error(`Error when cancel extend ${error.message}`);
     }
   }
 }

@@ -426,7 +426,19 @@ export class TransactionsService implements ITransactionService {
       // back_up detail transaction
       const transaction_backup = { ...transaction };
       // delete transaction
-      await this.transactionRepository.delete(transaction_id);
+      if (transaction.purpose === TransactionPurpose.booking_land) {
+        // If is booking land just update status to cancel
+        await this.transactionRepository.update(
+          {
+            transaction_id,
+          },
+          {
+            status: TransactionStatus.expired,
+          },
+        );
+      } else {
+        await this.transactionRepository.delete(transaction_id);
+      }
       // check purpose transaction
       switch (transaction.purpose) {
         case TransactionPurpose.service:
@@ -439,6 +451,8 @@ export class TransactionsService implements ITransactionService {
           return await this.materialService.cancelBookingMaterial(
             transaction_backup.booking_material_id,
           );
+        case TransactionPurpose.extend:
+          return await this.extendService.cancelExtend(transaction_backup.extend_id);
         default:
           return `Can't cancel transaction with purpose ${transaction.purpose}`;
       }
