@@ -232,6 +232,19 @@ export class ProcessesService implements IProcessesService {
       ]);
       // get total page
       const total_page = Math.ceil(total_count / pagination.page_size);
+      // Checking for request can edit process standard
+      for (const process of process_technical_standard as any) {
+        process.can_edit = true;
+        // get request by plant season id
+        const request: Request = await this.requestService.getDetailRequestPrcocessStandard(
+          process.plant_season_id,
+        );
+        // check status of request
+        if (request.status === RequestStatus.in_progress) {
+          process.can_edit = true;
+        }
+      }
+
       return {
         process_technical_standard,
         pagination: {
