@@ -1102,6 +1102,7 @@ export class ProcessesService implements IProcessesService {
           process_technical_specific: {
             service_specific: true,
           },
+          process_technical_specific_stage_material: true,
         },
       });
       // Send notification for land renter
