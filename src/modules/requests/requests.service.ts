@@ -511,7 +511,7 @@ export class RequestsService implements IRequestService {
         where: {
           service_specific_id: service_specific_id,
           type: RequestType.product_puchase_harvest,
-          time_start: getTimeByPlusMonths(getDateWithoutTime(new Date()), 1),
+          time_start: getTimeByPlusDays(getDateWithoutTime(new Date()), 7),
         },
       });
       if (request_purchase_hasvest_exist) {
