@@ -506,12 +506,15 @@ export class RequestsService implements IRequestService {
 
   async createRequestPurchaseharvest(service_specific_id: string): Promise<any> {
     try {
+      let time_start = new Date();
+      time_start = getDateWithoutTime(time_start);
+      time_start = getTimeByPlusDays(time_start, 7);
       //check request purchase for service is exist
       const request_purchase_hasvest_exist = await this.requestRepo.findOne({
         where: {
           service_specific_id: service_specific_id,
           type: RequestType.product_puchase_harvest,
-          time_start: getTimeByPlusDays(getDateWithoutTime(new Date()), 7),
+          time_start: time_start,
         },
       });
       if (request_purchase_hasvest_exist) {

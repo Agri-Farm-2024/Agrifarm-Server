@@ -234,6 +234,11 @@ export class TransactionsService implements ITransactionService {
               booking_land: {
                 land: true,
               },
+              requests: {
+                task: {
+                  report: true,
+                },
+              },
             },
           },
           where: {

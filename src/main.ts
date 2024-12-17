@@ -5,8 +5,7 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 import { AllExceptionsFilter } from './common/filters/exception.filter';
 import { ValidationPipe } from '@nestjs/common';
 import * as morgan from 'morgan';
-
-// import { getDateWithoutTime, getTimeByPlusDays } from './utils/time.utl';
+import { getDateWithoutTime, getTimeByPlusDays } from './utils/time.utl';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
