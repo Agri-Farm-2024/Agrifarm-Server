@@ -212,6 +212,10 @@ export class LandsService implements ILandService {
           },
           skip: (pagination.page_index - 1) * pagination.page_size,
           take: pagination.page_size,
+          order: {
+            updated_at: 'DESC',
+            status: 'ASC',
+          },
         }),
         this.landRepo.count({
           where: filter_condition,
