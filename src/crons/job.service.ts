@@ -76,11 +76,16 @@ export class JobService implements ICronJob {
   @Cron(CronTime.every_five_pm_hours_a_day)
   async checkTaskProcessContentForExpert(): Promise<void> {
     try {
-      // Check and create task process content for expert\
+      /**
+       *Create task process content and write dinary for expert
+       */
       await this.processService.checkAndCreateTaskProcessContentForExpert();
       this.logger.log('Check task process content for expert is running');
       this.loggerService.log('Check task process content for expert is running');
-      // Check and send notification for landrenter before new stage
+      /**
+       * Create noti before new stage
+       * Create request material for expert before new stage
+       */
       await this.processService.CheckNewStageProcessSpecific();
       this.logger.log('Check and send noti process stage for land renter is running');
       this.loggerService.log('Check and send noti process stage for land renter is running');

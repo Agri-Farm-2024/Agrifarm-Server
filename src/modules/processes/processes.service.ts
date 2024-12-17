@@ -1117,7 +1117,9 @@ export class ProcessesService implements IProcessesService {
           title: NotificationTitleEnum.ready_process_stage,
         });
         // create request material stage for expert
-        await this.requestService.createRequestMaterial(stage);
+        if (stage.process_technical_specific_stage_material.length > 0) {
+          await this.requestService.createRequestMaterial(stage);
+        }
       }
     } catch (error) {
       this.logger.error(`Error when check every five pm  ${error.message}`);
