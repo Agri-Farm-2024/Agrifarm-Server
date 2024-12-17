@@ -501,6 +501,7 @@ export class ServicesService implements IService {
           plant_season: {
             plant: true,
           },
+          service_package: true,
         },
       });
       if (!service_specific) {

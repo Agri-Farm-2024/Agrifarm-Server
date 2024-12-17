@@ -424,6 +424,12 @@ export class RequestsService implements IRequestService {
           new_request.request_id,
           process_specific_stage.process_technical_specific.expert_id,
         );
+        this.logger.log(
+          `New request material created for ${process_specific_stage.process_technical_specific_stage_id}`,
+        );
+        this.loggerService.log(
+          `New request material created for ${process_specific_stage.process_technical_specific_stage_id}`,
+        );
       }
     } catch (error) {
       this.loggerService.error(error.message, error.stack);
@@ -432,19 +438,19 @@ export class RequestsService implements IRequestService {
 
   /**
    * Create request purchase call by schedule job
-   * @function createRequestPurchase
    * @param createRequestPurchase
    * @returns
    */
 
   async createRequestPurchase(createRequestPurchase: CreateRequestPurchaseDto): Promise<any> {
     try {
+      const time_start = getDateWithoutTime(new Date());
       //check request purchase for service is exist
       const request_purchase_exist = await this.requestRepo.findOne({
         where: {
           service_specific_id: createRequestPurchase.service_specific_id,
           type: RequestType.product_purchase,
-          time_start: getDateWithoutTime(new Date()),
+          time_start: time_start,
         },
       });
       if (request_purchase_exist) {
@@ -866,6 +872,9 @@ export class RequestsService implements IRequestService {
         });
         // log
         this.logger.log(
+          `New request cultivate process content created for ${process_specific_stage_content.process_technical_specific_stage_content_id}`,
+        );
+        this.loggerService.log(
           `New request cultivate process content created for ${process_specific_stage_content.process_technical_specific_stage_content_id}`,
         );
       }

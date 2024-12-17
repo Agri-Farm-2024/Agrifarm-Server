@@ -16,6 +16,7 @@ import { CreateOrderDetailDto } from './dto/create-order-detail.dto';
 import { MaterialsService } from '../materials/materials.service';
 import { IUser } from '../auths/interfaces/IUser.interface';
 import { PaginationParams } from 'src/common/decorations/types/pagination.type';
+import { UserRole } from '../users/types/user-role.enum';
 
 @Injectable()
 export class OrdersService implements IOrdersService {
@@ -106,10 +107,14 @@ export class OrdersService implements IOrdersService {
   }
 
   async getOrdersByUser(user: IUser, pagination: PaginationParams): Promise<Order[]> {
+    const filter_condition: any = {};
+
+    if (user.role === UserRole.land_renter) {
+      filter_condition.landrenter_id = user.user_id;
+    }
+
     return await this.orderRepo.find({
-      where: {
-        landrenter_id: user.user_id,
-      },
+      where: filter_condition,
       take: pagination.page_size,
       skip: (pagination.page_index - 1) * pagination.page_size,
       order: {

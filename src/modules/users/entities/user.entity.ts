@@ -73,10 +73,7 @@ export class User extends AbstractEntity {
   @OneToMany(() => Task, (task) => task.assign_to)
   task_assigned_to: Task[];
 
-  @OneToMany(
-    () => ServiceSpecific,
-    (serviceSpecific) => serviceSpecific.land_renter,
-  )
+  @OneToMany(() => ServiceSpecific, (serviceSpecific) => serviceSpecific.land_renter)
   service_specific: ServiceSpecific[];
 
   @OneToMany(() => BookingLand, (bookingLand) => bookingLand.land_renter)
@@ -97,10 +94,7 @@ export class User extends AbstractEntity {
   @OneToMany(() => BookingMaterial, (bookingMaterial) => bookingMaterial.staff)
   staff_booking_materials: BookingMaterial[];
 
-  @OneToMany(
-    () => BookingMaterial,
-    (bookingMaterial) => bookingMaterial.landrenter,
-  )
+  @OneToMany(() => BookingMaterial, (bookingMaterial) => bookingMaterial.landrenter)
   landrenter_booking_materials: BookingMaterial[];
 
   @OneToMany(() => ProcessSpecific, (processSpecific) => processSpecific.expert)
@@ -109,9 +103,6 @@ export class User extends AbstractEntity {
   @OneToMany(() => ChannelJoin, (channelJoin) => channelJoin.user)
   channels_join: ChannelJoin[];
 
-  @OneToMany(
-    () => ChannelMessage,
-    (channelMessage) => channelMessage.message_from,
-  )
+  @OneToMany(() => ChannelMessage, (channelMessage) => channelMessage.message_from)
   messages_sended: ChannelMessage[];
 }

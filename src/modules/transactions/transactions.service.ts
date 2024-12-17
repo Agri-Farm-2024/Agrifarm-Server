@@ -305,7 +305,6 @@ export class TransactionsService implements ITransactionService {
             updated_at: 'DESC',
           },
           relations: {
-            user: true,
             booking_land: {
               land: true,
             },
@@ -317,6 +316,16 @@ export class TransactionsService implements ITransactionService {
             service_specific: {
               booking_land: {
                 land: true,
+              },
+              requests: {
+                task: {
+                  report: true,
+                },
+              },
+            },
+            booking_material: {
+              booking_material_detail: {
+                material: true,
               },
             },
           },

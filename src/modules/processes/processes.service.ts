@@ -1057,7 +1057,6 @@ export class ProcessesService implements IProcessesService {
     try {
       // get all process specific content
       const check_time = getTimeByPlusDays(new Date(), 1);
-      console.log('check_time', check_time);
       const process_specific_stage_content = await this.processSpecificStageContentRepo.find({
         where: {
           time_start: Between(new Date(), check_time),
@@ -1074,7 +1073,6 @@ export class ProcessesService implements IProcessesService {
           },
         },
       });
-      console.log('process_specific_stage_content', process_specific_stage_content);
       // create task for expert
       for (const content of process_specific_stage_content) {
         await this.requestService.createRequestCultivateProcessContent(content);
