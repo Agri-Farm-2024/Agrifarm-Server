@@ -31,6 +31,7 @@ export class TestService {
       //   await this.userService.getListExpertByProcessSpecificFreeTime();
       // return users;
       await this.jobService.checkTransactionIsExpired();
+      await this.jobService.checkEverydayIsExpired();
       // await this.serviceService.checkAndCreatePurchaseProductService();
       // await this.mailService.sendMail(
       //   'phuoc.18112002@gmail.com',

@@ -834,11 +834,14 @@ export class RequestsService implements IRequestService {
         },
       });
       if (!request_exist) {
+        let time_start = getTimeByPlusDays(getDateWithoutTime(new Date()), 1);
+        // // set utc +7
+        // time_start = new Date(time_start.setHours(time_start.getHours() + 7));
         // Create a new request
         const new_request = await this.requestRepo.save({
           process_technical_specific_stage_content_id:
             process_specific_stage_content.process_technical_specific_stage_content_id,
-          time_start: getTimeByPlusDays(getDateWithoutTime(new Date()), 1),
+          time_start: time_start,
           type: RequestType.cultivate_process_content,
           status: RequestStatus.assigned,
         });

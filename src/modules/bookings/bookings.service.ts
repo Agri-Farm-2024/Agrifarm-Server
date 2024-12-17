@@ -528,7 +528,7 @@ export class BookingsService implements IBookingService {
       });
       // Send mail to land renter and make expred schedule after 48h
       await this.mailService.sendMail(
-        user.email,
+        booking_exist.land_renter.email,
         SubjectMailEnum.bookingSheduleSign,
         TemplateMailEnum.bookingSheduleSign,
         {
@@ -851,9 +851,7 @@ export class BookingsService implements IBookingService {
         },
         where: {
           status: BookingStatus.completed,
-          extends: {
-            status: ExtendStatus.completed,
-          },
+          time_end: LessThanOrEqual(new Date()),
         },
       });
       // define booking_expired
@@ -862,7 +860,9 @@ export class BookingsService implements IBookingService {
       for (const booking of list_booking_expired) {
         if (booking.extends.length > 0) {
           for (const extend of booking.extends) {
-            booking.time_end = getTimeByPlusMonths(booking.time_end, extend.total_month);
+            if (extend.status === ExtendStatus.completed) {
+              booking.time_end = getTimeByPlusMonths(booking.time_end, extend.total_month);
+            }
           }
         }
         // check condition
