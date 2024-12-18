@@ -543,9 +543,15 @@ export class TransactionsService implements ITransactionService {
       }
       // loop transaction to revenue
       transactions.forEach((transaction) => {
-        const month = transaction.pay_at.getMonth() + 1;
-        if (revenue[month]) {
-          revenue[month].total_price += transaction.total_price;
+        if (transaction.pay_at) {
+          const month = transaction.pay_at.getMonth() + 1;
+          if (revenue[month]) {
+            if (transaction.type === TransactionType.payment) {
+              revenue[month].total_price += transaction.total_price;
+            } else {
+              revenue[month].total_price -= transaction.total_price;
+            }
+          }
         }
       });
 
