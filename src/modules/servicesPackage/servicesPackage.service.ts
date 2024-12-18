@@ -728,14 +728,29 @@ export class ServicesService implements IService {
     service_specific_id: string,
     data: updateServicePackagePurchaseDTO,
   ): Promise<any> {
-    return await this.serviceSpecificRepo.update(
-      {
-        service_specific_id,
-      },
-      {
+    try {
+      // check exist
+      const service_specific = await this.serviceSpecificRepo.findOne({
+        where: {
+          service_specific_id,
+        },
+      });
+      if (!service_specific) {
+        throw new BadRequestException('Service specific does not exist');
+      }
+      this.loggerService.log(`Service specific ${service_specific_id} is updated`);
+      // update service specific
+      return await this.serviceSpecificRepo.save({
+        ...service_specific,
         ...data,
-      },
-    );
+      });
+    } catch (error) {
+      this.loggerService.error(`Error when update service specific ${error.message}`, error.stack);
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   private caculateTotalPriceServiceSpecific(

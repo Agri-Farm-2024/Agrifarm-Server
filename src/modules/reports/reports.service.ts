@@ -204,14 +204,12 @@ export class ReportsService implements IReportService {
             // price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
           });
 
-          const update_service_data: Partial<updateServicePackagePurchaseDTO> = {
-            quality_plant_expect: data.quality_plant_expect,
-            mass_plant_expect: data.mass_plant_expect,
-          };
-
           await this.servicePackageService.updateServiceSpecificByRequestPurchase(
-            task_exist.request_id,
-            update_service_data,
+            task_exist.request.service_specific_id,
+            {
+              quality_plant_expect: data.quality_plant_expect,
+              mass_plant_expect: data.mass_plant_expect,
+            },
           );
         } else if (task_exist.request.type === RequestType.product_puchase_harvest) {
           new_report = await this.reportRepository.save({
@@ -221,13 +219,13 @@ export class ReportsService implements IReportService {
             // mass_plant: data.mass_plant,
             // price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
           });
-          const update_service_data: Partial<updateServicePackagePurchaseDTO> = {
-            quality_plant: data.quality_plant,
-            mass_plant: data.mass_plant,
-          };
+
           await this.servicePackageService.updateServiceSpecificByRequestPurchase(
-            task_exist.request_id,
-            update_service_data,
+            task_exist.request.service_specific_id,
+            {
+              quality_plant: data.quality_plant,
+              mass_plant: data.mass_plant,
+            },
           );
         }
 
@@ -238,18 +236,32 @@ export class ReportsService implements IReportService {
           new_report = await this.reportRepository.save({
             task_id: task_id,
             content: data.content,
-            quality_plant_expect: data.quality_plant_expect,
-            mass_plant_expect: data.mass_plant_expect,
-            price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
+            // quality_plant_expect: data.quality_plant_expect,
+            // mass_plant_expect: data.mass_plant_expect,
+            // price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
           });
+          await this.servicePackageService.updateServiceSpecificByRequestPurchase(
+            task_exist.request.service_specific_id,
+            {
+              quality_plant_expect: data.quality_plant_expect,
+              mass_plant_expect: data.mass_plant_expect,
+            },
+          );
         } else if (task_exist.request.type === RequestType.product_puchase_harvest) {
           new_report = await this.reportRepository.save({
             task_id: task_id,
             content: data.content,
-            quality_plant: data.quality_plant,
-            mass_plant: data.mass_plant,
-            price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
+            // quality_plant: data.quality_plant,
+            // mass_plant: data.mass_plant,
+            // price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
           });
+          await this.servicePackageService.updateServiceSpecificByRequestPurchase(
+            task_exist.request.service_specific_id,
+            {
+              quality_plant: data.quality_plant,
+              mass_plant: data.mass_plant,
+            },
+          );
         }
       }
 
