@@ -179,20 +179,20 @@ export class ServicesService implements IService {
 
   /**
    *  Buy service specific
-   * @param createServicePackage
+   * @param createServiceSpecificDTO
    * @param user
    * @returns
    */
 
   async buyServiceSpecific(
-    createServicePackage: CreateServiceSpecificDTO,
+    createServiceSpecificDTO: CreateServiceSpecificDTO,
     user: IUser,
   ): Promise<any> {
     try {
       // check if the service package exists
       const service_package = await this.servicePackageRepo.findOne({
         where: {
-          service_package_id: createServicePackage.service_package_id,
+          service_package_id: createServiceSpecificDTO.service_package_id,
         },
       });
       if (!service_package) {
@@ -200,11 +200,14 @@ export class ServicesService implements IService {
       }
       // get detail plant season
       const plant_season: PlantSeason = await this.PlantsService.getDetailPlantSeason(
-        createServicePackage.plant_season_id,
+        createServiceSpecificDTO.plant_season_id,
       );
 
       // check if the plant season is active
-      if (plant_season.status !== PlantSeasonStatus.active) {
+      if (
+        plant_season.status !== PlantSeasonStatus.active ||
+        plant_season.month_start !== createServiceSpecificDTO.time_start.getMonth()
+      ) {
         throw new BadRequestException('Plant season is not applying');
       }
       // check if the plant season has a technical standard process
@@ -219,7 +222,7 @@ export class ServicesService implements IService {
       }
       // get detail booking
       const booking_detail: BookingLand = await this.bookingLandService.getBookingDetail(
-        createServicePackage.booking_id,
+        createServiceSpecificDTO.booking_id,
       );
       // map booking extends
       booking_detail.extends.map((extend) => {
@@ -233,7 +236,7 @@ export class ServicesService implements IService {
       // check time is valid with booking
       if (
         booking_detail.time_end <
-        getTimeByPlusMonths(createServicePackage.time_start, plant_season.total_month)
+        getTimeByPlusMonths(createServiceSpecificDTO.time_start, plant_season.total_month)
       ) {
         throw new BadRequestException(
           `Time is not valid with booking expired in ${booking_detail.time_end.toLocaleDateString()}`,
@@ -242,7 +245,7 @@ export class ServicesService implements IService {
       // get list service by this booking for acreage land
       const list_service_specific = await this.serviceSpecificRepo.find({
         where: {
-          booking_id: createServicePackage.booking_id,
+          booking_id: createServiceSpecificDTO.booking_id,
           status: Not(ServiceSpecificStatus.expired),
         },
       });
@@ -250,19 +253,25 @@ export class ServicesService implements IService {
       list_service_specific.forEach((service) => {
         total_acreage += service.acreage_land;
       });
-      if (total_acreage + createServicePackage.acreage_land > booking_detail.land.acreage_land) {
+      if (
+        total_acreage + createServiceSpecificDTO.acreage_land >
+        booking_detail.land.acreage_land
+      ) {
         throw new BadRequestException(
           `Acreage land is not enough. You still have ${booking_detail.land.acreage_land - total_acreage} acreage land`,
         );
       }
       // convert time_start
-      createServicePackage.time_start = getDateWithoutTime(createServicePackage.time_start);
+      createServiceSpecificDTO.time_start = getDateWithoutTime(createServiceSpecificDTO.time_start);
       // create a new service specific
       const new_service_specific = await this.serviceSpecificRepo.save({
-        ...createServicePackage,
+        ...createServiceSpecificDTO,
         price_process: plant_season.price_process,
         price_package: service_package.price,
-        time_end: getTimeByPlusMonths(createServicePackage.time_start, plant_season.total_month),
+        time_end: getTimeByPlusMonths(
+          createServiceSpecificDTO.time_start,
+          plant_season.total_month,
+        ),
         landrenter_id: user.user_id,
         price_purchase_per_kg: plant_season.price_purchase_per_kg,
       });
