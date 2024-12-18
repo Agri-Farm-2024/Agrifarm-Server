@@ -222,6 +222,7 @@ export class TransactionsService implements ITransactionService {
             updated_at: 'DESC',
           },
           relations: {
+            user: true,
             booking_land: {
               land: true,
             },
@@ -305,6 +306,7 @@ export class TransactionsService implements ITransactionService {
             updated_at: 'DESC',
           },
           relations: {
+            user: true,
             booking_land: {
               land: true,
             },
@@ -363,6 +365,7 @@ export class TransactionsService implements ITransactionService {
       const transaction: any = await this.transactionRepository.findOne({
         where: { transaction_id },
         relations: {
+          user: true,
           booking_land: {
             land: true,
           },
