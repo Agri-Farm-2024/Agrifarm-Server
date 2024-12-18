@@ -240,6 +240,11 @@ export class TransactionsService implements ITransactionService {
                 },
               },
             },
+            booking_material: {
+              booking_material_detail: {
+                material: true,
+              },
+            },
           },
           where: {
             user_id: user.user_id,
