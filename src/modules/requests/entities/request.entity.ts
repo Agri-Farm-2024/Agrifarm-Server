@@ -35,6 +35,9 @@ export class Request extends AbstractEntity {
   @Column({ nullable: true })
   description: string;
 
+  @Column({ nullable: true })
+  reason_for_reject: string;
+
   @Column({ nullable: true, type: 'timestamptz' })
   time_start: Date;
 
