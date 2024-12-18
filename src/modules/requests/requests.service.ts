@@ -730,31 +730,47 @@ export class RequestsService implements IRequestService {
         request.type === RequestType.product_purchase &&
         data.status === RequestStatus.completed
       ) {
-        // check quality expect
-        if (request.task.report.quality_plant_expect === 0) {
-          // create transaction refund
-          const transactionData: Partial<CreateTransactionDTO> = {
-            service_specific_id: request.service_specific_id,
-            purpose: TransactionPurpose.cancel_purchase_product,
-            total_price:
-              request.service_specific.price_purchase_per_kg *
-              request.task.report.mass_plant_expect,
-            user_id: request.service_specific.landrenter_id,
-            type: TransactionType.payment,
-          };
-          // cretae transaction
-          await this.transactionService.createTransaction(transactionData as CreateTransactionDTO);
+        if (request.task.report.mass_plant_expect === 0) {
+          // update request to rejected
+          data.status = RequestStatus.rejected;
+          data.reason_for_reject = `Không đủ số lượng sản phẩm`;
           // send noti to user
           await this.notificationService.createNotification({
             user_id: request.service_specific.landrenter_id,
-            title: NotificationTitleEnum.cancel_purchase_product,
-            content: NotificationContentEnum.cancel_purchase_product(),
+            title: NotificationTitleEnum.reject_request_purchase,
+            content: NotificationContentEnum.reject_request_purchase(),
             component_id: request.request_id,
             type: NotificationType.service,
           });
         } else {
-          //create new request purchase hasvest
-          await this.createRequestPurchaseharvest(request.service_specific_id);
+          // check quality expect
+          if (request.task.report.quality_plant_expect === 0) {
+            // create transaction refund
+            const transactionData: Partial<CreateTransactionDTO> = {
+              service_specific_id: request.service_specific_id,
+              purpose: TransactionPurpose.cancel_purchase_product,
+              total_price:
+                request.service_specific.price_purchase_per_kg *
+                request.task.report.mass_plant_expect,
+              user_id: request.service_specific.landrenter_id,
+              type: TransactionType.payment,
+            };
+            // cretae transaction
+            await this.transactionService.createTransaction(
+              transactionData as CreateTransactionDTO,
+            );
+            // send noti to user
+            await this.notificationService.createNotification({
+              user_id: request.service_specific.landrenter_id,
+              title: NotificationTitleEnum.cancel_purchase_product,
+              content: NotificationContentEnum.cancel_purchase_product(),
+              component_id: request.request_id,
+              type: NotificationType.service,
+            });
+          } else {
+            //create new request purchase hasvest
+            await this.createRequestPurchaseharvest(request.service_specific_id);
+          }
         }
       }
 
@@ -763,18 +779,32 @@ export class RequestsService implements IRequestService {
         request.type === RequestType.product_puchase_harvest &&
         data.status === RequestStatus.completed
       ) {
-        //create transaction
-        const transactionData: Partial<CreateTransactionDTO> = {
-          service_specific_id: request.service_specific_id,
-          total_price:
-            request.service_specific.price_purchase_per_kg *
-            request.task.report.quality_plant *
-            (request.task.report.mass_plant / 1000),
-          purpose: TransactionPurpose.service_purchase_product,
-          user_id: request.service_specific.landrenter_id,
-          type: TransactionType.refund,
-        };
-        await this.transactionService.createTransaction(transactionData as CreateTransactionDTO);
+        if (request.task.report.mass_plant === 0) {
+          // update request to rejected
+          data.status = RequestStatus.rejected;
+          data.reason_for_reject = `Không đủ số lượng sản phẩm`;
+          // send noti to user
+          await this.notificationService.createNotification({
+            user_id: request.service_specific.landrenter_id,
+            title: NotificationTitleEnum.reject_request_purchase,
+            content: NotificationContentEnum.reject_request_purchase(),
+            component_id: request.request_id,
+            type: NotificationType.service,
+          });
+        } else {
+          //create transaction
+          const transactionData: Partial<CreateTransactionDTO> = {
+            service_specific_id: request.service_specific_id,
+            total_price:
+              request.service_specific.price_purchase_per_kg *
+              request.task.report.quality_plant *
+              request.task.report.mass_plant,
+            purpose: TransactionPurpose.service_purchase_product,
+            user_id: request.service_specific.landrenter_id,
+            type: TransactionType.refund,
+          };
+          await this.transactionService.createTransaction(transactionData as CreateTransactionDTO);
+        }
       }
       // Check condition of report land with completed status
       if (request.type === RequestType.report_land && data.status === RequestStatus.completed) {
@@ -813,7 +843,7 @@ export class RequestsService implements IRequestService {
           request_id: request_id,
         },
         {
-          status: data.status,
+          ...data,
         },
       );
       // log
