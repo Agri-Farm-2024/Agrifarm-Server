@@ -61,4 +61,6 @@ export const NotificationContentEnum = {
 
   create_request_purchase_harvest: (land_name: string) =>
     `Yêu cầu mua sản phẩm sau thu hoạch mới được tạo trên ${land_name}`,
+
+  cancel_purchase_product: () => ` Yêu cầu hủy bao tiêu đã được tạo`,
 } as const;

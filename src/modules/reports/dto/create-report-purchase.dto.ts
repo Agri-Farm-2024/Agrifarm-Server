@@ -15,7 +15,7 @@ export class CreateReportPurchaseDto {
     example: 100,
   })
   @IsOptional()
-  @Min(1)
+  @Min(0)
   @Max(100)
   quality_plant: number;
 
@@ -24,7 +24,7 @@ export class CreateReportPurchaseDto {
     example: 100,
   })
   @IsOptional()
-  @Min(1)
+  @Min(0)
   @Max(100)
   quality_plant_expect: number;
 
@@ -32,6 +32,7 @@ export class CreateReportPurchaseDto {
     description: ' the mass of plant ',
     example: 1000,
   })
+  @Min(0)
   @IsOptional()
   mass_plant: number;
 
@@ -39,6 +40,7 @@ export class CreateReportPurchaseDto {
     description: ' the mass of plant expected ',
     example: 1000,
   })
+  @Min(0)
   @IsOptional()
   mass_plant_expect: number;
 
