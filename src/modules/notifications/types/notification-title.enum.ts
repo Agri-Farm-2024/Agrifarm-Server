@@ -37,4 +37,6 @@ export enum NotificationTitleEnum {
   new_booking_material = 'Yêu cầu thuê vật tư mới được tạo',
   booking_material_pending_sign = 'Thanh toán thành công, yêu cầu thuê vật tư đang chờ ký tên',
   booking_material_expired = 'Yêu cầu thuê vật tư đã hết hạn',
+  // Product purchase
+  cancel_purchase_product = 'Yêu cầu hủy bao tiêu',
 }

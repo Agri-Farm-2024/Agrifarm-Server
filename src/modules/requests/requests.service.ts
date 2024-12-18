@@ -730,8 +730,32 @@ export class RequestsService implements IRequestService {
         request.type === RequestType.product_purchase &&
         data.status === RequestStatus.completed
       ) {
-        //create new request purchase hasvest
-        await this.createRequestPurchaseharvest(request.service_specific_id);
+        // check quality expect
+        if (request.task.report.quality_plant_expect === 0) {
+          // create transaction refund
+          const transactionData: Partial<CreateTransactionDTO> = {
+            service_specific_id: request.service_specific_id,
+            purpose: TransactionPurpose.cancel_purchase_product,
+            total_price:
+              request.service_specific.price_purchase_per_kg *
+              request.task.report.mass_plant_expect,
+            user_id: request.service_specific.landrenter_id,
+            type: TransactionType.payment,
+          };
+          // cretae transaction
+          await this.transactionService.createTransaction(transactionData as CreateTransactionDTO);
+          // send noti to user
+          await this.notificationService.createNotification({
+            user_id: request.service_specific.landrenter_id,
+            title: NotificationTitleEnum.cancel_purchase_product,
+            content: NotificationContentEnum.cancel_purchase_product(),
+            component_id: request.request_id,
+            type: NotificationType.service,
+          });
+        } else {
+          //create new request purchase hasvest
+          await this.createRequestPurchaseharvest(request.service_specific_id);
+        }
       }
 
       //check request hasvest complete
