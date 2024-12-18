@@ -41,7 +41,7 @@ import { NotificationContentEnum } from '../notifications/types/notification-con
 import { parsePriceToVND } from 'src/utils/price.util';
 import { ExtendStatus } from '../extends/types/extend-status.enum';
 import { getTimeByPlusMonths } from 'src/utils/time.utl';
-import { getNameOfPath } from 'src/utils/link.util';
+import { convertArrayToContractfile } from 'src/utils/link.util';
 import { ServiceSpecificStatus } from '../servicesPackage/types/service-specific-status.enum';
 import { ServiceSpecific } from '../servicesPackage/entities/serviceSpecific.entity';
 
@@ -52,12 +52,6 @@ export class BookingsService implements IBookingService {
     @InjectRepository(BookingLand)
     private readonly bookingRepository: Repository<BookingLand>,
 
-    private readonly landService: LandsService,
-
-    private readonly mailService: MailService,
-
-    private readonly loggerService: LoggerService,
-
     @Inject(forwardRef(() => TransactionsService))
     private readonly transactionService: TransactionsService,
 
@@ -66,6 +60,12 @@ export class BookingsService implements IBookingService {
 
     @Inject(forwardRef(() => RequestsService))
     private readonly requestService: RequestsService,
+
+    private readonly landService: LandsService,
+
+    private readonly mailService: MailService,
+
+    private readonly loggerService: LoggerService,
 
     private readonly notificationService: NotificationsService,
 
@@ -669,7 +669,10 @@ export class BookingsService implements IBookingService {
         ...booking_exist,
       });
       this.loggerService.log(`Booking ${transaction.booking_land_id} is completed`);
-
+      // Config contract image path
+      const contract_image_path: any = convertArrayToContractfile(booking_exist.contract_image);
+      // conmvert contract image path to name
+      contract_image_path;
       await Promise.all([
         // Send mail to land renter
         this.mailService.sendMail(
@@ -692,12 +695,7 @@ export class BookingsService implements IBookingService {
             transaction_price: transaction.total_price,
             transaction_status: 'Thành công',
           },
-          [
-            {
-              filename: getNameOfPath(booking_exist.contract_image),
-              path: booking_exist.contract_image,
-            },
-          ],
+          contract_image_path,
         ),
         // Send notification to land renter
         this.notificationService.createNotification({
@@ -983,7 +981,6 @@ export class BookingsService implements IBookingService {
 
   /**
    * update booking call by report service
-   * @function updateBookingByReport
    * @param booking_id
    * @param data
    * @returns

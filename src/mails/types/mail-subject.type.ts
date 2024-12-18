@@ -6,4 +6,6 @@ export enum SubjectMailEnum {
   paymentBooking = 'Thanh toán thành công',
   landViewingSchedule = 'Lịch xem đất',
   paymentExtend = 'Thanh toán gia hạn thành công',
+  buyService = 'Thanh toán dịch vụ thành công',
+  pendingSignService = 'Dịch vụ của bạn đang chờ ký tên',
 }

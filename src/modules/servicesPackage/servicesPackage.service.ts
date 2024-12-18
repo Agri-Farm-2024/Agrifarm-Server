@@ -35,6 +35,10 @@ import { updateServicePackageDTO } from './dto/update-service-package.dto';
 import { Request } from '../requests/entities/request.entity';
 import { LoggerService } from 'src/logger/logger.service';
 import { ExtendStatus } from '../extends/types/extend-status.enum';
+import { MailService } from 'src/mails/mail.service';
+import { SubjectMailEnum } from 'src/mails/types/mail-subject.type';
+import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
+import { convertArrayToContractfile } from 'src/utils/link.util';
 
 @Injectable()
 export class ServicesService implements IService {
@@ -61,6 +65,8 @@ export class ServicesService implements IService {
     private readonly requestService: RequestsService,
 
     private readonly loggerService: LoggerService,
+
+    private readonly mailService: MailService,
   ) {}
 
   /**
@@ -472,12 +478,12 @@ export class ServicesService implements IService {
 
   /**
    * Update service package for manager upload contract image
-   * @function updateToUsedServiceSpecific
+   * @function updateServiceSpecificToUsed
    * @param service_specific_id
    * @param updateServicePackageDTO
    */
 
-  async updateToUsedServiceSpecific(
+  async updateServiceSpecificToUsed(
     service_specific_id: string,
     contract_image: string,
   ): Promise<any> {
@@ -486,6 +492,15 @@ export class ServicesService implements IService {
       const service_specific = await this.serviceSpecificRepo.findOne({
         where: {
           service_specific_id,
+        },
+        relations: {
+          booking_land: {
+            land: true,
+          },
+          land_renter: true,
+          plant_season: {
+            plant: true,
+          },
         },
       });
       if (!service_specific) {
@@ -497,11 +512,42 @@ export class ServicesService implements IService {
       }
       // update contract image
       service_specific.contract_image = contract_image;
-      service_specific.status = ServiceSpecificStatus.used;
-      const new_service = await this.serviceSpecificRepo.save(service_specific);
+      const new_service = await this.serviceSpecificRepo.update(
+        {
+          service_specific_id,
+        },
+        {
+          status: ServiceSpecificStatus.used,
+          contract_image,
+        },
+      );
       // // create process specific
       await this.processService.createProcessSpecific(service_specific);
+      // convert contract image
+      const contract_path = convertArrayToContractfile(contract_image);
       // send email to user
+      await this.mailService.sendMail(
+        service_specific.land_renter.email,
+        SubjectMailEnum.buyService,
+        TemplateMailEnum.buyService,
+        {
+          is_buy: true,
+          full_name: service_specific.land_renter.full_name,
+          service_description: service_specific.service_package.description,
+          plant: service_specific.plant_season.plant.name,
+          land_name: service_specific.booking_land.land.name,
+          time_start: service_specific.time_start,
+          time_end: service_specific.time_end,
+          total_price: this.caculateTotalPriceServiceSpecific(
+            service_specific.price_package,
+            service_specific.price_process,
+            service_specific.acreage_land,
+          ),
+          status: 'Đã ký tên',
+          user_mail: service_specific.land_renter.email,
+        },
+        contract_path,
+      );
       // send notification to user
       return new_service;
     } catch (error) {

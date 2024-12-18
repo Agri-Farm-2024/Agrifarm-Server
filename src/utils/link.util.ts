@@ -17,3 +17,19 @@ export const getNameOfPath = (path: string): string => {
 export const parseQrCodeLink = async (path: string): Promise<string> => {
   return await QRCode.toDataURL(parseUrlLink(path));
 };
+
+export const convertArrayToContractfile = (str: string): any => {
+  const out = str
+    .substring(1, str.length - 1)
+    .split(',')
+    .map((item) => item.trim());
+
+  const pathOutPut = out.map((path) => {
+    return {
+      filename: getNameOfPath(path),
+      path: path,
+    };
+  });
+
+  return pathOutPut;
+};

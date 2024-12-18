@@ -32,7 +32,7 @@ export interface IService {
 
   checkServiceIsExpired(): Promise<any>;
 
-  updateToUsedServiceSpecific(service_specific_id: string, contract_image: string): Promise<any>;
+  updateServiceSpecificToUsed(service_specific_id: string, contract_image: string): Promise<any>;
 
   checkAndCreatePurchaseProductService(): Promise<any>;
 

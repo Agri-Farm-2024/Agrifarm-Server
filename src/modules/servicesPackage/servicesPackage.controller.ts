@@ -77,7 +77,7 @@ export class ServicesController {
     @Request() req: any,
     @Param('service_specific_id') service_specific_id: string,
   ) {
-    return this.servicesService.updateToUsedServiceSpecific(
+    return this.servicesService.updateServiceSpecificToUsed(
       service_specific_id,
       data.contract_image,
     );

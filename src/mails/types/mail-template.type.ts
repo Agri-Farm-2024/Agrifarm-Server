@@ -6,4 +6,5 @@ export enum TemplateMailEnum {
   paymentBooking = '/bookingLand/paymentBooking',
   landViewingSchedule = '/request/landViewingSchedule',
   paymentExtend = '/extend/paymentExtend',
+  buyService = '/service/buyService',
 }
