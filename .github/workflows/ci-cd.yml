@@ -31,5 +31,5 @@ jobs:
             # Step 3: Stop docker containers and remove image
             docker-compose down --rmi all
 
-            # Step 5: Rebuild and start docker containers
+            # Step 4: Rebuild and start docker containers
             docker-compose up --build -d

@@ -44,7 +44,7 @@ import { TransactionsService } from '../transactions/transactions.service';
 import { CreateTransactionDTO } from '../transactions/dto/create-transaction.dto';
 import { TransactionPurpose } from '../transactions/types/transaction-purpose.enum';
 import { TransactionType } from '../transactions/types/transaction-type.enum';
-import { getDateWithoutTime, getTimeByPlusDays, getTimeByPlusMonths } from 'src/utils/time.utl';
+import { getDateWithoutTime, getTimeByPlusDays } from 'src/utils/time.utl';
 
 @Injectable()
 export class RequestsService implements IRequestService {
@@ -503,62 +503,60 @@ export class RequestsService implements IRequestService {
 
   /**
    * Create request purchase harvest by call from schedule job
-   * @function createRequestPurchaseharvest
    * @param service_specific_id
    * @returns
    */
 
   async createRequestPurchaseharvest(service_specific_id: string): Promise<any> {
     try {
-      let time_start = new Date();
-      time_start = getDateWithoutTime(time_start);
-      time_start = getTimeByPlusDays(time_start, 7);
       //check request purchase for service is exist
       const request_purchase_hasvest_exist = await this.requestRepo.findOne({
         where: {
           service_specific_id: service_specific_id,
           type: RequestType.product_puchase_harvest,
-          time_start: time_start,
         },
       });
-      if (request_purchase_hasvest_exist) {
-        throw new BadRequestException('Request purchase already exist');
+      if (!request_purchase_hasvest_exist) {
+        //check service specific have service package have puchase
+        const service_specific_detail: ServiceSpecific =
+          await this.servicePackageService.getDetailServiceSpecific(service_specific_id);
+        if (!service_specific_detail) {
+          throw new BadRequestException('Service specific not found');
+        }
+        //create new request purchase
+        let time_start = new Date();
+        time_start = getDateWithoutTime(time_start);
+        time_start = getTimeByPlusDays(time_start, 7);
+        const new_request = await this.requestRepo.save({
+          service_specific_id: service_specific_id,
+          type: RequestType.product_puchase_harvest,
+          time_start: time_start,
+        });
+        if (!new_request) {
+          throw new BadRequestException('Unable to create request');
+        }
+        // create task for the request
+        const new_task = await this.taskService.createTaskAuto(
+          new_request.request_id,
+          service_specific_detail.process_technical_specific.expert_id,
+        );
+        //update status request
+        await this.updateRequestStatus(new_request.request_id, RequestStatus.assigned);
+        if (!new_task) {
+          throw new BadRequestException('Unable to create task');
+        }
+        //create notification for land renter
+        await this.notificationService.createNotification({
+          user_id: service_specific_detail.landrenter_id,
+          title: NotificationTitleEnum.create_request_purchase_harvest,
+          content: NotificationContentEnum.create_request_purchase_harvest(
+            service_specific_detail.booking_land.land.name,
+          ),
+          component_id: service_specific_detail.service_specific_id,
+          type: NotificationType.service,
+        });
+        return new_request;
       }
-      //check service specific have service package have puchase
-      const service_specific_detail: ServiceSpecific =
-        await this.servicePackageService.getDetailServiceSpecific(service_specific_id);
-      if (!service_specific_detail) {
-        throw new BadRequestException('Service specific not found');
-      }
-      //create new request purchase
-      const new_request = await this.requestRepo.save({
-        service_specific_id: service_specific_id,
-        type: RequestType.product_puchase_harvest,
-      });
-      if (!new_request) {
-        throw new BadRequestException('Unable to create request');
-      }
-      // create task for the request
-      const new_task = await this.taskService.createTaskAuto(
-        new_request.request_id,
-        service_specific_detail.process_technical_specific.expert_id,
-      );
-      //update status request
-      await this.updateRequestStatus(new_request.request_id, RequestStatus.assigned);
-      if (!new_task) {
-        throw new BadRequestException('Unable to create task');
-      }
-      //create notification for land renter
-      await this.notificationService.createNotification({
-        user_id: service_specific_detail.landrenter_id,
-        title: NotificationTitleEnum.create_request_purchase_harvest,
-        content: NotificationContentEnum.create_request_purchase_harvest(
-          service_specific_detail.booking_land.land.name,
-        ),
-        component_id: service_specific_detail.service_specific_id,
-        type: NotificationType.service,
-      });
-      return new_request;
     } catch (error) {
       this.loggerService.error(error.message, error.stack);
       if (error instanceof BadRequestException) {
@@ -841,7 +839,7 @@ export class RequestsService implements IRequestService {
         },
       });
       if (!request_exist) {
-        let time_start = getTimeByPlusDays(getDateWithoutTime(new Date()), 1);
+        const time_start = getTimeByPlusDays(getDateWithoutTime(new Date()), 1);
         // // set utc +7
         // time_start = new Date(time_start.setHours(time_start.getHours() + 7));
         // Create a new request
