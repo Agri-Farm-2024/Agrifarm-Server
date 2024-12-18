@@ -797,7 +797,7 @@ export class RequestsService implements IRequestService {
             service_specific_id: request.service_specific_id,
             total_price:
               request.service_specific.price_purchase_per_kg *
-              request.task.report.quality_plant *
+              (request.task.report.quality_plant / 100) *
               request.task.report.mass_plant,
             purpose: TransactionPurpose.service_purchase_product,
             user_id: request.service_specific.landrenter_id,
