@@ -505,7 +505,14 @@ export class ProcessesService implements IProcessesService {
         // update request to in progress
         await this.requestService.updateRequestStatus(
           request_create_process_standard.request_id,
-          RequestStatus.in_progress,
+          RequestStatus.pending_approval,
+        );
+        // update process to pending
+        await this.processStandardRepo.update(
+          { process_technical_standard_id: process_technical_standard_id },
+          {
+            status: ProcessTechnicalStandardStatus.pending,
+          },
         );
       }
       return update_process_standard;
