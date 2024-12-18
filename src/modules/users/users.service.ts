@@ -315,6 +315,7 @@ export class UsersService implements IUserService {
       const experts = await this.userRepository.find({
         where: {
           role: UserRole.expert,
+          status: UserStatus.active,
         },
         relations: {
           expert_process_technical_specific: {
