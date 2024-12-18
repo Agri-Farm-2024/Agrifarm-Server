@@ -402,23 +402,24 @@ export class RequestsService implements IRequestService {
 
   async createRequestMaterial(process_specific_stage: ProcessSpecificStage): Promise<void> {
     try {
-      // set time start is  0h next day
-      console.log(getTimeByPlusDays(getDateWithoutTime(new Date()), 1));
       const request_exist_material = await this.requestRepo.findOne({
         where: {
           process_technical_specific_stage_id:
             process_specific_stage.process_technical_specific_stage_id,
           type: RequestType.material_process_specfic_stage,
-          time_start: getTimeByPlusDays(getDateWithoutTime(new Date()), 1),
         },
       });
       if (!request_exist_material) {
         // Create a new request
+        let time_start = getDateWithoutTime(new Date());
+        time_start = getTimeByPlusDays(time_start, 1);
+        // time_start = new Date(time_start.setHours(time_start.getHours() + 7));
         const new_request = await this.requestRepo.save({
           process_technical_specific_stage_id:
             process_specific_stage.process_technical_specific_stage_id,
           type: RequestType.material_process_specfic_stage,
           status: RequestStatus.assigned,
+          time_start: time_start,
         });
         await this.taskService.createTaskAuto(
           new_request.request_id,
@@ -851,7 +852,6 @@ export class RequestsService implements IRequestService {
 
   /**
    * Get all request for dashboard
-   * @function getAllRequestForDashbaoard
    * @returns
    */
 

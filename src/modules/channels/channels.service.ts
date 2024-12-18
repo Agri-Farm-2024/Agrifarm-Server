@@ -10,7 +10,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoggerService } from 'src/logger/logger.service';
 import { Channel } from './entities/channel.entity';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { ChannelJoin } from './entities/channelJoin.entity';
 import { ChannelMessage } from './entities/channelMessage.entity';
 import { IChannelService } from './interfaces/IChannelService.interface';
@@ -299,6 +299,38 @@ export class ChannelsService implements IChannelService {
         throw error;
       }
       throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async checkingChannelIsExpired(): Promise<any> {
+    try {
+      // get list channel is expired
+      const channels = await this.channelRepository.find({
+        where: {
+          status: ChannelStatus.expired,
+          expired_at: LessThan(new Date()),
+        },
+      });
+      // set channel to expired
+      for (let i = 0; i < channels.length; i++) {
+        // remove join
+        await this.channelJoinRepository.delete({
+          channel_id: channels[i].channel_id,
+        });
+        // remove message
+        await this.channelMessageRepository.delete({
+          message_to_id: channels[i].channel_id,
+        });
+        // remove channel
+        await this.channelRepository.delete({
+          channel_id: channels[i].channel_id,
+        });
+        this.logger.log(`Channel is deleted: ${channels[i].channel_id}`);
+        this.loggerService.log(`Channel is deleted: ${channels[i].channel_id}`);
+      }
+    } catch (error) {
+      this.logger.error(error.message);
+      this.loggerService.error(error.message, error.stack);
     }
   }
 }

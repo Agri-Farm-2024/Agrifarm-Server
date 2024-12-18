@@ -8,6 +8,7 @@ import { LoggerService } from 'src/logger/logger.service';
 import { ServicesService } from 'src/modules/servicesPackage/servicesPackage.service';
 import { ProcessesService } from 'src/modules/processes/processes.service';
 import { MaterialsService } from 'src/modules/materials/materials.service';
+import { ChannelsService } from 'src/modules/channels/channels.service';
 
 @Injectable()
 export class JobService implements ICronJob {
@@ -24,6 +25,8 @@ export class JobService implements ICronJob {
     private readonly processService: ProcessesService,
 
     private readonly materialService: MaterialsService,
+
+    private readonly channelService: ChannelsService,
   ) {}
 
   /**
@@ -45,6 +48,12 @@ export class JobService implements ICronJob {
       this.loggerService.log('Check service expire is running');
       // Checking booking material is expired
       await this.materialService.checkBookingMaterialIsExpired();
+      this.logger.log('Check booking material expire is running');
+      this.loggerService.log('Check booking material expire is running');
+      // Checking channel is expired
+      await this.channelService.checkingChannelIsExpired();
+      this.logger.log('Check channel expire is running');
+      this.loggerService.log('Check channel expire is running');
     } catch (error) {
       this.logger.error(`Error when check every day ${error.message}`);
       this.loggerService.error(`Error when check every day ${error.message}`, error.stack);

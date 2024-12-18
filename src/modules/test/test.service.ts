@@ -31,7 +31,7 @@ export class TestService {
       //   await this.userService.getListExpertByProcessSpecificFreeTime();
       // return users;
       // await this.jobService.checkTransactionIsExpired();
-      // await this.jobService.checkEverydayIsExpired();
+      await this.jobService.checkEverydayIsExpired();
       // await this.jobService.checkTaskProcessContentForExpert();
       // await this.jobService.checkAndCreatePurchaseProductService();
       // await this.serviceService.checkAndCreatePurchaseProductService();
