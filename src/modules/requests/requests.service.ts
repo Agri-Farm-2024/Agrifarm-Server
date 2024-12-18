@@ -745,13 +745,14 @@ export class RequestsService implements IRequestService {
         } else {
           // check quality expect
           if (request.task.report.quality_plant_expect === 0) {
-            // create transaction refund
+            // create transaction f0r land renter
             const transactionData: Partial<CreateTransactionDTO> = {
               service_specific_id: request.service_specific_id,
               purpose: TransactionPurpose.cancel_purchase_product,
               total_price:
                 request.service_specific.price_purchase_per_kg *
-                request.task.report.mass_plant_expect,
+                request.task.report.mass_plant_expect *
+                3,
               user_id: request.service_specific.landrenter_id,
               type: TransactionType.payment,
             };
