@@ -183,6 +183,7 @@ export class ProcessesService implements IProcessesService {
     pagination: PaginationParams,
     status: ProcessTechnicalStandardStatus,
     plant_id: string,
+    user: IUser,
   ): Promise<any> {
     try {
       // filter conditon by status and plant id
@@ -194,6 +195,10 @@ export class ProcessesService implements IProcessesService {
         filter_condition.plant_season = {
           plant_id: plant_id,
         };
+      }
+
+      if (user.role === UserRole.expert) {
+        filter_condition.expert_id = user.user_id;
       }
 
       const [process_technical_standard, total_count] = await Promise.all([

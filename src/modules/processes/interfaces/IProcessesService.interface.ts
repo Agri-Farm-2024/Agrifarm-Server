@@ -15,6 +15,7 @@ export interface IProcessesService {
     pagination: PaginationParams,
     status: ProcessTechnicalStandardStatus,
     plant_id: string,
+    user: IUser,
   ): Promise<any>;
 
   updateProcessStandardStatus(id: string, updateDto: UpdateProcessStandardDto): Promise<any>;

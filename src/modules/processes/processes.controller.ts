@@ -40,6 +40,9 @@ export class ProcessesController {
     return this.processesService.createProcessStandard(data, request.user);
   }
 
+  @Get('/getListProcessStandard')
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.expert, UserRole.manager)
   @ApiQuery({
     name: 'status',
     required: false,
@@ -50,13 +53,14 @@ export class ProcessesController {
     required: false,
   })
   @ApplyPaginationMetadata
-  @Get('/getListProcessStandard')
   getListProcessStandard(
     @Pagination() pagination: PaginationParams,
     @Query('status') status: ProcessTechnicalStandardStatus,
     @Query('plant_id') plant_id: string,
+    @Request() req: any,
   ): Promise<any> {
-    return this.processesService.getListProcessStandard(pagination, status, plant_id);
+    const user = req['user'];
+    return this.processesService.getListProcessStandard(pagination, status, plant_id, user);
   }
 
   @Put('/updateProcessStandardStatus/:id')
