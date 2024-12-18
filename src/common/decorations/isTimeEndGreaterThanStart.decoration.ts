@@ -1,4 +1,3 @@
-// is-time-end-greater-than-start.validator.ts
 import {
   ValidatorConstraint,
   ValidatorConstraintInterface,

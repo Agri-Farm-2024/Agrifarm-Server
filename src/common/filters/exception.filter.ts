@@ -1,10 +1,4 @@
-import {
-  ExceptionFilter,
-  Catch,
-  ArgumentsHost,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 @Catch()
@@ -24,9 +18,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       // Handle array or string messages
       message = Array.isArray(errorResponse.message)
         ? errorResponse.message.join(', ') // Join array of messages into a single string
-        : errorResponse.message ||
-          exception.message ||
-          this.getDefaultMessage(status);
+        : errorResponse.message || exception.message || this.getDefaultMessage(status);
 
       metadata = errorResponse.metadata || null; // Optional: additional error data
     } else {
