@@ -181,20 +181,7 @@ export class ReportsService implements IReportService {
       //chekc report exist
       const report_exist = await this.reportRepository.findOne({
         where: { task_id: task_id },
-        relations: {
-          task: {
-            request: {
-              service_specific: {
-                plant_season: true,
-                service_package: true,
-              },
-            },
-          },
-        },
       });
-      if (report_exist) {
-        return report_exist;
-      }
       // Check task exist
       const task_exist: Task = await this.taskService.getDetailTask(task_id);
 
@@ -204,16 +191,33 @@ export class ReportsService implements IReportService {
           'You are not assigned to this task, you cannot create a report',
         );
       }
-      // create a new instance of the Report entity
-      const new_report = await this.reportRepository.save({
-        task_id: task_id,
-        content: data.content,
-        quality_plant_expect: data.quality_plant_expect,
-        mass_plant_expect: data.mass_plant_expect,
-        quality_plant: data.quality_plant,
-        mass_plant: data.mass_plant,
-        price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
-      });
+      let new_report: Report = report_exist;
+      if (report_exist) {
+        // update report
+        new_report = await this.reportRepository.save({
+          ...report_exist,
+          content: data.content,
+          quality_plant_expect: data.quality_plant_expect,
+          mass_plant_expect: data.mass_plant_expect,
+          quality_plant: data.quality_plant,
+          mass_plant: data.mass_plant,
+          price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
+        });
+        // delete all url report
+        await this.reportURLRepo.delete({ report_id: new_report.report_id });
+      } else {
+        // create a new instance of the Report entity
+        new_report = await this.reportRepository.save({
+          task_id: task_id,
+          content: data.content,
+          quality_plant_expect: data.quality_plant_expect,
+          mass_plant_expect: data.mass_plant_expect,
+          quality_plant: data.quality_plant,
+          mass_plant: data.mass_plant,
+          price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
+        });
+      }
+
       //crete url report
       if (data.url) {
         for (const url of data.url) {
