@@ -545,8 +545,8 @@ export class ServicesService implements IService {
           service_description: service_specific.service_package.description,
           plant: service_specific.plant_season.plant.name,
           land_name: service_specific.booking_land.land.name,
-          time_start: service_specific.time_start,
-          time_end: service_specific.time_end,
+          time_start: service_specific.time_start.toLocaleDateString(),
+          time_end: service_specific.time_end.toLocaleDateString(),
           total_price: this.caculateTotalPriceServiceSpecific(
             service_specific.price_package,
             service_specific.price_process,
