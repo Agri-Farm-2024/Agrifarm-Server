@@ -114,6 +114,7 @@ export class PlantsService implements IPlantService {
         where: {
           name: updateData.name,
           status: updateData.status,
+          plant_id: Not(id),
         },
       });
       if (plant_name) {
