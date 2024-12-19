@@ -400,7 +400,9 @@ export class RequestsService implements IRequestService {
    * @returns
    */
 
-  async createRequestMaterial(process_specific_stage: ProcessSpecificStage): Promise<void> {
+  async createRequestMaterialByProcessStage(
+    process_specific_stage: ProcessSpecificStage,
+  ): Promise<void> {
     try {
       const request_exist_material = await this.requestRepo.findOne({
         where: {

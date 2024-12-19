@@ -710,6 +710,17 @@ export class MaterialsService implements IMaterialService {
       // loop through each booking detail
       for (const item of bookings_detail_material) {
         total_price_deposit += item.price_deposit_per_item * item.quantity;
+
+        // update quantity material
+        await this.materialRepo.update(
+          {
+            material_id: item.material_id,
+          },
+          {
+            total_quantity: () => `total_quantity + ${item.quantity}`,
+            quantity_of_rented: () => `quantity_of_rented - ${item.quantity}`,
+          },
+        );
       }
       // create transaction
       const transactionData: Partial<CreateTransactionDTO> = {

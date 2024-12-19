@@ -1129,7 +1129,7 @@ export class ProcessesService implements IProcessesService {
         });
         // create request material stage for expert
         if (stage.process_technical_specific_stage_material.length > 0) {
-          await this.requestService.createRequestMaterial(stage);
+          await this.requestService.createRequestMaterialByProcessStage(stage);
         }
       }
     } catch (error) {

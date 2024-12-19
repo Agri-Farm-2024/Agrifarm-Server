@@ -25,7 +25,7 @@ export interface IRequestService {
 
   createRequestProcessStandard(data: CreateRequestProcessStandardDTO): Promise<any>;
 
-  createRequestMaterial(process_specific_stage: ProcessSpecificStage): Promise<any>;
+  createRequestMaterialByProcessStage(process_specific_stage: ProcessSpecificStage): Promise<void>;
 
   createRequestPurchase(createRequestPurchase: CreateRequestPurchaseDto, user: IUser): Promise<any>;
 
