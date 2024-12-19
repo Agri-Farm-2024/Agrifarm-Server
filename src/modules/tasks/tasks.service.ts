@@ -215,6 +215,12 @@ export class TasksService implements ITaskService {
             booking_land: {
               land: true,
             },
+            booking_material: {
+              booking_material_detail: {
+                material: true,
+              },
+              landrenter: true,
+            },
           },
           assign_by: true,
           report: {

@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { IRequestService } from './interfaces/IRequestService.interface';
 import { CreateRequestViewLandDTO } from './dto/create-request-view-land.dto';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Request } from './entities/request.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MailService } from 'src/mails/mail.service';
@@ -136,6 +136,9 @@ export class RequestsService implements IRequestService {
       // check if type is provided
       if (type) {
         filter_condition.type = type;
+      }
+      if (!type) {
+        filter_condition.type = Not[RequestType.view_land];
       }
       // get list request
       const [requests, total_count] = await Promise.all([
