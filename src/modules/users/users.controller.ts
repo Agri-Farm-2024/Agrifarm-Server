@@ -34,7 +34,7 @@ export class UsersController {
 
   @Get()
   @UseGuards(AuthGuard)
-  @Roles(UserRole.admin, UserRole.manager)
+  @Roles(UserRole.admin, UserRole.manager, UserRole.staff)
   @ApplyPaginationMetadata
   @ApiQuery({ name: 'role', required: false, enum: UserRole })
   @ApiQuery({ name: 'status', required: false, enum: UserStatus })
