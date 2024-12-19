@@ -138,7 +138,7 @@ export class RequestsService implements IRequestService {
         filter_condition.type = type;
       }
       if (!type) {
-        filter_condition.type = Not[RequestType.view_land];
+        filter_condition.type = Not(RequestType.view_land);
       }
       // get list request
       const [requests, total_count] = await Promise.all([
