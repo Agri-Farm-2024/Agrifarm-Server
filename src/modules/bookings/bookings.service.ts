@@ -950,7 +950,7 @@ export class BookingsService implements IBookingService {
       const transactionDTO: Partial<CreateTransactionDTO> = {
         booking_land_id: booking.booking_id,
         user_id: booking.landrenter_id,
-        total_price: booking.price_deposit * booking.quality_report || 0,
+        total_price: booking.price_deposit * (booking.quality_report / 100) || 0,
         purpose: TransactionPurpose.booking_land,
         type: TransactionType.refund,
       };

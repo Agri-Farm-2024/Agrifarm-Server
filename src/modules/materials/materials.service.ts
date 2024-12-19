@@ -726,7 +726,7 @@ export class MaterialsService implements IMaterialService {
       const transactionData: Partial<CreateTransactionDTO> = {
         user_id: booking_material.landrenter_id,
         type: TransactionType.refund,
-        total_price: total_price_deposit * request.task.report.quality_report,
+        total_price: total_price_deposit * (request.task.report.quality_report / 100),
         purpose: TransactionPurpose.report_booking_material,
         booking_material_id: request.booking_material_id,
       };
