@@ -220,6 +220,9 @@ export class TasksService implements ITaskService {
                 material: true,
               },
               landrenter: true,
+              booking_land: {
+                land: true,
+              },
             },
           },
           assign_by: true,
