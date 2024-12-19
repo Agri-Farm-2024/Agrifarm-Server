@@ -735,7 +735,7 @@ export class RequestsService implements IRequestService {
         request.type === RequestType.product_purchase &&
         data.status === RequestStatus.completed
       ) {
-        if (request.task.report.mass_plant_expect === 0) {
+        if (request.service_specific.mass_plant_expect === 0) {
           // update request to rejected
           data.status = RequestStatus.rejected;
           data.reason_for_reject = `Không đủ số lượng sản phẩm`;
@@ -749,14 +749,14 @@ export class RequestsService implements IRequestService {
           });
         } else {
           // check quality expect
-          if (request.task.report.quality_plant_expect === 0) {
+          if (request.service_specific.quality_plant_expect === 0) {
             // create transaction f0r land renter
             const transactionData: Partial<CreateTransactionDTO> = {
               service_specific_id: request.service_specific_id,
               purpose: TransactionPurpose.cancel_purchase_product,
               total_price:
                 request.service_specific.price_purchase_per_kg *
-                request.task.report.mass_plant_expect *
+                request.service_specific.mass_plant_expect *
                 3,
               user_id: request.service_specific.landrenter_id,
               type: TransactionType.payment,
@@ -785,7 +785,7 @@ export class RequestsService implements IRequestService {
         request.type === RequestType.product_puchase_harvest &&
         data.status === RequestStatus.completed
       ) {
-        if (request.task.report.mass_plant === 0) {
+        if (request.service_specific.mass_plant === 0) {
           // update request to rejected
           data.status = RequestStatus.rejected;
           data.reason_for_reject = `Không đủ số lượng sản phẩm`;
@@ -803,8 +803,8 @@ export class RequestsService implements IRequestService {
             service_specific_id: request.service_specific_id,
             total_price:
               request.service_specific.price_purchase_per_kg *
-              (request.task.report.quality_plant / 100) *
-              request.task.report.mass_plant,
+              (request.service_specific.quality_plant / 100) *
+              request.service_specific.mass_plant,
             purpose: TransactionPurpose.service_purchase_product,
             user_id: request.service_specific.landrenter_id,
             type: TransactionType.refund,

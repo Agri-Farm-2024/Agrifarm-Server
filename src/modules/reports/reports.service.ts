@@ -32,6 +32,7 @@ import { NotificationContentEnum } from '../notifications/types/notification-con
 import { ChannelsService } from '../channels/channels.service';
 import { ServicesService } from '../servicesPackage/servicesPackage.service';
 import { LoggerService } from 'src/logger/logger.service';
+import { updateServicePackagePurchaseDTO } from '../servicesPackage/dto/update-service-package-purchase.dto';
 
 @Injectable()
 export class ReportsService implements IReportService {
@@ -198,18 +199,36 @@ export class ReportsService implements IReportService {
           new_report = await this.reportRepository.save({
             ...report_exist,
             content: data.content,
+            // quality_plant_expect: data.quality_plant_expect,
+            // mass_plant_expect: data.mass_plant_expect,
+            // price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
+          });
+
+          const update_service_data: Partial<updateServicePackagePurchaseDTO> = {
             quality_plant_expect: data.quality_plant_expect,
             mass_plant_expect: data.mass_plant_expect,
-            price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
-          });
+          };
+
+          await this.servicePackageService.updateServiceSpecificByRequestPurchase(
+            task_exist.request_id,
+            update_service_data,
+          );
         } else if (task_exist.request.type === RequestType.product_puchase_harvest) {
           new_report = await this.reportRepository.save({
             ...report_exist,
             content: data.content,
+            // quality_plant: data.quality_plant,
+            // mass_plant: data.mass_plant,
+            // price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
+          });
+          const update_service_data: Partial<updateServicePackagePurchaseDTO> = {
             quality_plant: data.quality_plant,
             mass_plant: data.mass_plant,
-            price_purchase_per_kg: task_exist.request.service_specific.price_purchase_per_kg,
-          });
+          };
+          await this.servicePackageService.updateServiceSpecificByRequestPurchase(
+            task_exist.request_id,
+            update_service_data,
+          );
         }
 
         // delete all url report

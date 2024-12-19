@@ -60,6 +60,18 @@ export class ServiceSpecific extends AbstractEntity {
   @Column({ nullable: true })
   contract_image: string;
 
+  @Column({ default: 0, type: 'float' })
+  quality_plant: number;
+
+  @Column({ default: 0, type: 'float' })
+  quality_plant_expect: number;
+
+  @Column({ default: 0 })
+  mass_plant: number;
+
+  @Column({ default: 0 })
+  mass_plant_expect: number;
+
   @Column({
     type: 'enum',
     enum: ServiceSpecificStatus,

@@ -39,6 +39,7 @@ import { MailService } from 'src/mails/mail.service';
 import { SubjectMailEnum } from 'src/mails/types/mail-subject.type';
 import { TemplateMailEnum } from 'src/mails/types/mail-template.type';
 import { convertArrayToContractfile } from 'src/utils/link.util';
+import { updateServicePackagePurchaseDTO } from './dto/update-service-package-purchase.dto';
 
 @Injectable()
 export class ServicesService implements IService {
@@ -474,10 +475,10 @@ export class ServicesService implements IService {
             status: ServiceSpecificStatus.expired,
           },
         );
-        // Create request report this service specific
-        await this.requestService.createRequestReportServiceSpecific(
-          service_specific.service_specific_id,
-        );
+        // // Create request report this service specific
+        // await this.requestService.createRequestReportServiceSpecific(
+        //   service_specific.service_specific_id,
+        // );
       });
     } catch (error) {
       this.logger.error(`Error when check service is expired ${error.message}`);
@@ -721,6 +722,20 @@ export class ServicesService implements IService {
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
+  }
+
+  async updateServiceSpecificByRequestPurchase(
+    service_specific_id: string,
+    data: updateServicePackagePurchaseDTO,
+  ): Promise<any> {
+    return await this.serviceSpecificRepo.update(
+      {
+        service_specific_id,
+      },
+      {
+        ...data,
+      },
+    );
   }
 
   private caculateTotalPriceServiceSpecific(
