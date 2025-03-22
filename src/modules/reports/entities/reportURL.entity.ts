@@ -1,12 +1,9 @@
-import { request } from 'http';
 import { AbstractEntity } from 'src/database/postgres/entities/abstract.entity';
-import { User } from 'src/modules/users/entities/user.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ReportUrlType } from '../types/report-url-type.enum';

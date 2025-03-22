@@ -83,8 +83,8 @@ export class ServiceSpecific extends AbstractEntity {
   @JoinColumn({ name: 'booking_id' })
   booking_land: BookingLand;
 
-  @OneToOne(() => Transaction, (transaction) => transaction.service_specific)
-  transaction: Transaction;
+  @OneToMany(() => Transaction, (transaction) => transaction.service_specific)
+  transactions: Transaction[];
 
   @OneToMany(() => Request, (request) => request.service_specific)
   requests: Request[];
